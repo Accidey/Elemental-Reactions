@@ -166,52 +166,6 @@ public class StaticShockHandler {
         if (projectile instanceof net.minecraft.world.entity.projectile.ThrownPotion) return;
         HitResult hitResult = event.getRayTraceResult();
         if (hitResult.getType() == HitResult.Type.ENTITY && ((EntityHitResult) hitResult).getEntity() instanceof LivingEntity) return;
-        Vec3 hitPos = hitResult.getLocation();
-        BlockPos blockPos = BlockPos.containing(hitPos);
-        AABB area = new AABB(blockPos).inflate(2.0);
-        boolean charged = false;
-        for (AreaEffectCloud cloud : level.getEntitiesOfClass(AreaEffectCloud.class, area,
-                c -> c.getTags().contains(SteamReactionHandler.TAG_STEAM_CLOUD)
-                        && !c.getTags().contains(SteamReactionHandler.TAG_HIGH_HEAT)
-                        && !c.getTags().contains(SteamReactionHandler.TAG_STATIC_CHARGED))) {
-            if (cloud.getBoundingBox().inflate(0.1).intersects(area)) {
-                cloud.addTag(SteamReactionHandler.TAG_STATIC_CHARGED);
-                charged = true;
-                for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, cloud.getBoundingBox())) {
-                    if (WetnessHandler.getWetnessLevel(e) > 0) {
-                        WetnessHandler.clearWetnessData(e);
-                    }
-                }
-            }
-        }
-        if (charged) {
-            level.playSound(null, hitPos.x, hitPos.y, hitPos.z,
-                    SoundEvents.TRIDENT_THUNDER, SoundSource.PLAYERS, 0.5f, 1.2f);
-        }
-        if (projectile.isInWater()
-                || level.getFluidState(blockPos).is(FluidTags.WATER)
-                || level.getFluidState(blockPos.below()).is(FluidTags.WATER)) {
-            level.playSound(null, hitPos.x, hitPos.y, hitPos.z,
-                    SoundEvents.TRIDENT_THUNDER, SoundSource.PLAYERS, 0.5f, 1.2f);
-            if (level instanceof ServerLevel sl) {
-                sl.sendParticles(ModParticles.THUNDER_SPARK_PERSISTENT.get(),
-                        hitPos.x, hitPos.y + 0.5, hitPos.z, 8, 1.5, 0.5, 1.5, 0);
-                ResourceKey<Level> wDim = sl.dimension();
-                long wGameTime = sl.getGameTime();
-                Long cdEnd = waterElectrificationCooldowns.get(wDim);
-                if (cdEnd != null && wGameTime < cdEnd) return;
-                int pStacks = thunderPower / Math.max(1, threshold);
-                if (pStacks < 1) pStacks = 1;
-                double range = ElementalThunderFrostReactionsConfig.waterElectrificationRangeBase
-                        + (pStacks - 1) * ElementalThunderFrostReactionsConfig.waterElectrificationRangePerStack;
-                int wDuration = ElementalThunderFrostReactionsConfig.waterElectrificationParalysisDuration;
-                ActiveElectrification water = new ActiveElectrification(
-                        hitPos.x, hitPos.y, hitPos.z, range, wGameTime, wDuration, 0f);
-                activeElectrifications.put(wDim, water);
-                int coolTicks = ElementalThunderFrostReactionsConfig.paralysisCooldownTicks;
-                waterElectrificationCooldowns.put(wDim, wGameTime + wDuration + coolTicks);
-            }
-        }
     }
 
     private static boolean isInOrOnWater(LivingEntity entity) {
