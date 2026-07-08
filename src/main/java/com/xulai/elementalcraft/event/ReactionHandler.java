@@ -27,7 +27,10 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
@@ -38,6 +41,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -409,6 +413,15 @@ public class ReactionHandler {
         if (isFrost) {
             durationTicks = (int) (durationTicks * ElementalFireNatureReactionsConfig.sporeFrostDurationMultiplier);
         }
+        double coldMult = ElementalFireNatureReactionsConfig.sporeColdBiomeDurationMultiplier;
+        if (coldMult < 1.0) {
+            Level level = target.level();
+            BlockPos pos = target.blockPosition();
+            Biome biome = level.getBiome(pos).value();
+            if (biome != null && biome.getBaseTemperature() <= 0.3) {
+                durationTicks = (int) (durationTicks * coldMult);
+            }
+        }
 
         if (newStacks > 0) {
             target.addEffect(new MobEffectInstance(ModMobEffects.SPORES.get(), durationTicks, newStacks - 1, false, false, true));
@@ -779,5 +792,55 @@ public class ReactionHandler {
 
     public static void triggerStaticSporeBlast(LivingEntity target, double firePower) {
         triggerToxicBlast(target.level(), target, target, firePower, target);
+    }
+
+    private static final String NBT_SPORE_HEAT_BLAST_CD = "EC_SporeHeatBlastCooldown";
+
+    public static void checkHeatSporeBlast(LivingEntity entity) {
+        if (entity.level().isClientSide) return;
+        if (!ElementalFireNatureReactionsConfig.sporeHeatBlastEnabled) return;
+        if (ElementalFireNatureReactionsConfig.sporeReactionThreshold <= 0) return;
+        if (!ModMobEffects.SPORES.isPresent()) return;
+        MobEffectInstance sporeEffect = entity.getEffect(ModMobEffects.SPORES.get());
+        if (sporeEffect == null) return;
+        int stacks = sporeEffect.getAmplifier() + 1;
+        if (stacks < ElementalFireNatureReactionsConfig.sporeReactionThreshold) return;
+
+        CompoundTag data = entity.getPersistentData();
+        long cd = data.getLong(NBT_SPORE_HEAT_BLAST_CD);
+        if (entity.level().getGameTime() < cd) return;
+
+        BlockPos pos = entity.blockPosition();
+        double radius = ElementalFireNatureReactionsConfig.wetnessHeatAccelerateRadius;
+        if (radius <= 0) return;
+        int range = (int) Math.ceil(radius);
+        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
+        boolean found = false;
+        outer:
+        for (int x = -range; x <= range; x++) {
+            for (int y = -range; y <= range; y++) {
+                for (int z = -range; z <= range; z++) {
+                    cursor.set(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
+                    BlockState state = entity.level().getBlockState(cursor);
+                    if (state.is(Blocks.CAMPFIRE) || state.is(Blocks.SOUL_CAMPFIRE)) {
+                        if (state.getValue(CampfireBlock.LIT)) {
+                            found = true;
+                            break outer;
+                        }
+                    }
+                    if (state.getBlock() instanceof AbstractFurnaceBlock) {
+                        if (state.getValue(AbstractFurnaceBlock.LIT)) {
+                            found = true;
+                            break outer;
+                        }
+                    }
+                }
+            }
+        }
+        if (!found) return;
+
+        data.putLong(NBT_SPORE_HEAT_BLAST_CD, entity.level().getGameTime() + 40);
+        double firePower = ElementUtils.getDisplayEnhancement(entity, ElementType.FIRE);
+        triggerToxicBlast(entity.level(), entity, entity, firePower);
     }
 }

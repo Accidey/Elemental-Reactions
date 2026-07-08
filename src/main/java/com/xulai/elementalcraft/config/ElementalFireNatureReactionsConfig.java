@@ -19,6 +19,12 @@ public class ElementalFireNatureReactionsConfig {
     public static final ForgeConfigSpec.DoubleValue WETNESS_SELF_DRYING_DAMAGE_PENALTY;
     public static final ForgeConfigSpec.IntValue WETNESS_FIRE_DRYING_TIME;
     public static final ForgeConfigSpec.DoubleValue WETNESS_HEAT_SEARCH_RADIUS;
+    public static final ForgeConfigSpec.DoubleValue WETNESS_HEAT_ACCELERATE_RADIUS;
+    public static final ForgeConfigSpec.DoubleValue WETNESS_HEAT_ACCELERATE_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue WETNESS_BIOME_ACCELERATE_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue WETNESS_COLD_BIOME_DECAY_SLOWDOWN;
+    public static final ForgeConfigSpec.DoubleValue WETNESS_COLD_BIOME_FREEZE_CHANCE;
+    public static final ForgeConfigSpec.DoubleValue WETNESS_COLD_BIOME_FREEZE_LEVEL_BONUS;
     public static final ForgeConfigSpec.BooleanValue WETNESS_WATER_ANIMAL_IMMUNE;
     public static final ForgeConfigSpec.BooleanValue WETNESS_NETHER_DIMENSION_IMMUNE;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> WETNESS_ENTITY_BLACKLIST;
@@ -32,6 +38,7 @@ public class ElementalFireNatureReactionsConfig {
     public static final ForgeConfigSpec.DoubleValue SPORE_NATURE_DURATION_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue SPORE_THUNDER_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue SPORE_FROST_DURATION_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue SPORE_COLD_BIOME_DURATION_MULTIPLIER;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> SPORE_ENTITY_BLACKLIST;
     public static final ForgeConfigSpec.IntValue SPORE_DURABILITY_DAMAGE;
     public static final int CONTAGION_CHECK_INTERVAL = 20;
@@ -65,6 +72,7 @@ public class ElementalFireNatureReactionsConfig {
     public static final ForgeConfigSpec.DoubleValue BLAST_GROWTH_SCORCH_TIME;
 
     public static final ForgeConfigSpec.BooleanValue SPORE_ENVIRONMENTAL_BLAST_ENABLED;
+    public static final ForgeConfigSpec.BooleanValue SPORE_HEAT_BLAST_ENABLED;
     public static final ForgeConfigSpec.DoubleValue BLAST_MAX_BLAST_PROT_CAP;
     public static final ForgeConfigSpec.DoubleValue BLAST_MAX_GENERAL_PROT_CAP;
     public static final ForgeConfigSpec.DoubleValue ENCHANTMENT_CALCULATION_DENOMINATOR;
@@ -210,32 +218,75 @@ public class ElementalFireNatureReactionsConfig {
             .defineInRange("wetness_fire_drying_time", 2, 1, 600);
     BUILDER.comment(" ");
 
-    BUILDER.comment(" ");
-
     WETNESS_HEAT_SEARCH_RADIUS = BUILDER
             .comment("检测周围热源（熔岩/岩浆块）的半径范围（格）。注意：岩浆块的检测半径会-1格。",
                     "Radius (blocks) to search for nearby heat sources (Lava/Magma). Note: Magma Block detection radius is automatically reduced by 1.",
                     "Default: 2.0 / 默认：2.0")
             .defineInRange("wetness_heat_search_radius", 2.0, 1.0, 16.0);
+        BUILDER.comment(" ");
+
+    WETNESS_HEAT_ACCELERATE_MULTIPLIER = BUILDER
+            .comment("营火/点燃的熔炉/高炉/烟熏炉旁边，潮湿倒计时加速倍率。与群系叠乘。1.0 = 不加速。",
+                    "Wetness decay multiplier near campfire/lit furnace/blast furnace/smoker. Stacks with biome. 1.0 = disabled.",
+                    "Default: 2.0 / 默认：2.0")
+            .defineInRange("wetness_heat_accelerate_multiplier", 2.0, 1.0, 10.0);
+    BUILDER.comment(" ");
+
+    WETNESS_HEAT_ACCELERATE_RADIUS = BUILDER
+            .comment("检测营火/熔炉等热源的范围（格）。设为0则关闭此功能。",
+                    "Radius (blocks) to search for campfire/furnace heat sources. Set to 0 to disable.",
+                    "Default: 2.0 / 默认：2.0")
+            .defineInRange("wetness_heat_accelerate_radius", 2.0, 0.0, 16.0);
+    BUILDER.comment(" ");
+
+    WETNESS_BIOME_ACCELERATE_MULTIPLIER = BUILDER
+            .comment("炎热群系晴天时潮湿衰减加速倍率。要求头顶无遮挡（露天），下雨天不加速。与营火/熔炉倍率叠乘。1.0 = 不加速。",
+                    "Hot biome decay acceleration multiplier when sunny. Requires open sky (no blocks above), no effect in rain. Stacks multiplicatively with campfire/furnace. 1.0 = disabled.",
+                    "Default: 2.0 / 默认：2.0")
+            .defineInRange("wetness_biome_accelerate_multiplier", 2.0, 1.0, 10.0);
+    BUILDER.comment(" ");
+
+    WETNESS_COLD_BIOME_DECAY_SLOWDOWN = BUILDER
+            .comment("寒冷群系潮湿衰减减速倍率。要求头顶无遮挡（露天）。0.5 = 衰减速度减半（衣服更难干）。温度 ≤ 0.3 触发。",
+                    "Cold biome decay slowdown multiplier. Requires open sky (no blocks above). 0.5 = half decay speed. Triggered when temperature ≤ 0.3.",
+                    "Default: 0.5 / 默认：0.5")
+            .defineInRange("wetness_cold_biome_decay_slowdown", 0.5, 0.01, 1.0);
+    BUILDER.comment(" ");
+
+    WETNESS_COLD_BIOME_FREEZE_CHANCE = BUILDER
+            .comment("寒冷群系中（温度 ≤ 0.3），如果生物有潮湿效果且头顶无遮挡（露天），雨雪天气时每 20 tick 触发冻结的概率。",
+                    "If entity has Wetness + open sky. In cold biome (temperature ≤ 0.3) + rain/snow, per-check freeze chance.",
+                    "Default: 0.3 / 默认：0.3")
+            .defineInRange("wetness_cold_biome_freeze_chance", 0.3, 0.0, 1.0);
+    BUILDER.comment(" ");
+
+    WETNESS_COLD_BIOME_FREEZE_LEVEL_BONUS = BUILDER
+            .comment("每层潮湿额外增加的冻结触发概率。最终概率 = wetness_cold_biome_freeze_chance + (潮湿层数 - 1) × 此值。",
+                    "Additional freeze trigger chance per wetness level. Final chance = wetness_cold_biome_freeze_chance + (wetnessLevel - 1) × this.",
+                    "Default: 0.1 / 默认：0.1")
+            .defineInRange("wetness_cold_biome_freeze_level_bonus", 0.1, 0.0, 1.0);
 
     BUILDER.push("immunity");
+    BUILDER.comment("潮湿免疫 - Wetness Immunity",
+            "控制哪些生物不会被施加潮湿效果。",
+            "Controls which entities are immune to Wetness.");
     WETNESS_WATER_ANIMAL_IMMUNE = BUILDER
-            .comment("水生生物（如鱼、鱿鱼）是否完全免疫潮湿效果？",
-                    "Are water animals (e.g., fish, squids) completely immune to Wetness?",
+            .comment("水生生物（如鱼、鱿鱼、海豚）是否完全免疫潮湿？它们本身就生活在水里。",
+                    "Are aquatic mobs (fish, squid, dolphin) completely immune to Wetness? They live in water.",
                     "Default: true / 默认：true")
             .define("water_animal_immune", true);
     BUILDER.comment(" ");
 
     WETNESS_NETHER_DIMENSION_IMMUNE = BUILDER
-            .comment("下界维度的生物是否天生免疫潮湿效果？",
-                    "Are entities in the Nether dimension naturally immune to Wetness?",
+            .comment("下界维度的生物是否免疫潮湿？",
+                    "Are entities in the Nether dimension immune to Wetness?",
                     "Default: true / 默认：true")
             .define("nether_dimension_immune", true);
     BUILDER.comment(" ");
 
     WETNESS_ENTITY_BLACKLIST = BUILDER
-            .comment("潮湿效果免疫黑名单（填入实体ID）。",
-                    "Wetness immunity blacklist (Entity IDs).",
+            .comment("潮湿效果免疫黑名单（填入实体ID，如 \"minecraft:blaze\"）。",
+                    "Wetness immunity blacklist (Entity IDs, e.g. \"minecraft:blaze\").",
                     "Default: [] / 默认：[]")
             .defineListAllowEmpty("wetness_entity_blacklist", List.of(), o -> o instanceof String);
     BUILDER.pop();
@@ -829,6 +880,13 @@ public class ElementalFireNatureReactionsConfig {
             .defineInRange("spore_frost_duration_multiplier", 0.5, 0.1, 100.0);
     BUILDER.comment(" ");
 
+    SPORE_COLD_BIOME_DURATION_MULTIPLIER = BUILDER
+            .comment("寒冷生物群系（温度 ≤ 0.3）中孢子持续时间倍率。(0.5 = 时间减半)",
+                    "Spore duration multiplier in cold biomes (temperature ≤ 0.3). (0.5 = Halved duration)",
+                    "Default: 0.5 / 默认：0.5")
+            .defineInRange("spore_cold_biome_duration_multiplier", 0.5, 0.01, 100.0);
+    BUILDER.comment(" ");
+
     SPORE_ENTITY_BLACKLIST = BUILDER
             .comment("易燃孢子效果免疫黑名单（填入实体ID，例如：minecraft:creeper）。",
                     "Flammable Spore immunity blacklist (Entity IDs, e.g., minecraft:creeper).",
@@ -921,6 +979,13 @@ public class ElementalFireNatureReactionsConfig {
                      "生物在岩浆块/熔岩/火焰中受伤或进入下界时，施加灼烧并通过灼烧+孢子触发毒火爆燃。",
                      "Default: true / 默认：true")
             .define("spore_environmental_blast_enabled", true);
+    BUILDER.comment(" ");
+
+    SPORE_HEAT_BLAST_ENABLED = BUILDER
+            .comment("Heat-source triggered Toxic Blast (campfire, lit furnace).",
+                     "生物携带易燃孢子在点燃的营火、烧制中的熔炉旁边时，根据孢子层数触发毒火爆燃。",
+                     "Default: true / 默认：true")
+            .define("spore_heat_blast_enabled", true);
     BUILDER.comment(" ");
 
     BLAST_WEAK_IGNITE_MULT = BUILDER
@@ -1060,11 +1125,18 @@ public class ElementalFireNatureReactionsConfig {
     public static double wetnessSelfDryingDamagePenalty;
     public static int wetnessFireDryingTime;
     public static double wetnessHeatSearchRadius;
+    public static double wetnessHeatAccelerateRadius;
+    public static double wetnessHeatAccelerateMultiplier;
+    public static double wetnessBiomeAccelerateMultiplier;
+    public static double wetnessColdBiomeDecaySlowdown;
+    public static double wetnessColdBiomeFreezeChance;
+    public static double wetnessColdBiomeFreezeLevelBonus;
     public static boolean wetnessWaterAnimalImmune;
     public static boolean wetnessNetherDimensionImmune;
     public static List<? extends String> cachedWetnessBlacklist;
     public static int sporeMaxStacks;
     public static boolean sporeEnvironmentalBlastEnabled;
+    public static boolean sporeHeatBlastEnabled;
     public static int sporeReactionThreshold;
     public static double sporePoisonDamage;
     public static int sporeDamageInterval;
@@ -1074,6 +1146,7 @@ public class ElementalFireNatureReactionsConfig {
     public static double sporeFireDurationReduction;
     public static double sporeNatureDurationMultiplier;
     public static double sporeFrostDurationMultiplier;
+    public static double sporeColdBiomeDurationMultiplier;
     public static List<? extends String> cachedSporeBlacklist;
     public static int sporeDurabilityDamage;
     public static int contagionTransferBase;
@@ -1174,11 +1247,18 @@ public class ElementalFireNatureReactionsConfig {
         wetnessSelfDryingDamagePenalty = WETNESS_SELF_DRYING_DAMAGE_PENALTY.get();
         wetnessFireDryingTime = WETNESS_FIRE_DRYING_TIME.get();
         wetnessHeatSearchRadius = WETNESS_HEAT_SEARCH_RADIUS.get();
+        wetnessHeatAccelerateRadius = WETNESS_HEAT_ACCELERATE_RADIUS.get();
+        wetnessHeatAccelerateMultiplier = WETNESS_HEAT_ACCELERATE_MULTIPLIER.get();
+        wetnessBiomeAccelerateMultiplier = WETNESS_BIOME_ACCELERATE_MULTIPLIER.get();
+        wetnessColdBiomeDecaySlowdown = WETNESS_COLD_BIOME_DECAY_SLOWDOWN.get();
+        wetnessColdBiomeFreezeChance = WETNESS_COLD_BIOME_FREEZE_CHANCE.get();
+        wetnessColdBiomeFreezeLevelBonus = WETNESS_COLD_BIOME_FREEZE_LEVEL_BONUS.get();
         wetnessWaterAnimalImmune = WETNESS_WATER_ANIMAL_IMMUNE.get();
         wetnessNetherDimensionImmune = WETNESS_NETHER_DIMENSION_IMMUNE.get();
         cachedWetnessBlacklist = WETNESS_ENTITY_BLACKLIST.get();
         sporeMaxStacks = SPORE_MAX_STACKS.get();
         sporeEnvironmentalBlastEnabled = SPORE_ENVIRONMENTAL_BLAST_ENABLED.get();
+        sporeHeatBlastEnabled = SPORE_HEAT_BLAST_ENABLED.get();
         sporeReactionThreshold = SPORE_REACTION_THRESHOLD.get();
         sporePoisonDamage = SPORE_POISON_DAMAGE.get();
         sporeDamageInterval = SPORE_DAMAGE_INTERVAL.get();
@@ -1188,6 +1268,7 @@ public class ElementalFireNatureReactionsConfig {
         sporeNatureDurationMultiplier = SPORE_NATURE_DURATION_MULTIPLIER.get();
         sporeThunderMultiplier = SPORE_THUNDER_MULTIPLIER.get();
         sporeFrostDurationMultiplier = SPORE_FROST_DURATION_MULTIPLIER.get();
+        sporeColdBiomeDurationMultiplier = SPORE_COLD_BIOME_DURATION_MULTIPLIER.get();
         cachedSporeBlacklist = SPORE_ENTITY_BLACKLIST.get();
         sporeDurabilityDamage = SPORE_DURABILITY_DAMAGE.get();
         contagionTransferBase = CONTAGION_TRANSFER_BASE.get();

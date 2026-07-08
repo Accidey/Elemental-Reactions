@@ -41,7 +41,6 @@ public final class ElementalThunderFrostReactionsConfig {
     public static final ForgeConfigSpec.DoubleValue THUNDER_COUNTER_HEALTH_RECOVERY_THRESHOLD;
     public static final ForgeConfigSpec.DoubleValue THUNDER_COUNTER_RADIUS;
     public static final ForgeConfigSpec.DoubleValue THUNDER_COUNTER_EXPANSION_SPEED;
-    public static final ForgeConfigSpec.IntValue THUNDER_COUNTER_STRIKE_INTERVAL;
     public static final ForgeConfigSpec.DoubleValue COUNTER_LIGHTNING_DAMAGE;
 
     public static final ForgeConfigSpec.IntValue PARALYSIS_MAX_STACKS;
@@ -74,6 +73,8 @@ public final class ElementalThunderFrostReactionsConfig {
     public static final ForgeConfigSpec.IntValue FROSTBITE_MAX_TOTAL_STACKS;
     public static final ForgeConfigSpec.IntValue FROSTBITE_BASE_DURATION_TICKS;
     public static final ForgeConfigSpec.IntValue FROSTBITE_DURATION_PER_EXTRA_STACK_TICKS;
+    public static final ForgeConfigSpec.DoubleValue FROSTBITE_HOT_BIOME_DURATION_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue FROSTBITE_COLD_BIOME_DURATION_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue FROSTBITE_SPEED_REDUCTION_PER_STACK;
     public static final ForgeConfigSpec.DoubleValue FROSTBITE_PERIODIC_DAMAGE;
     public static final ForgeConfigSpec.IntValue FROSTBITE_DAMAGE_INTERVAL_TICKS;
@@ -396,16 +397,6 @@ public final class ElementalThunderFrostReactionsConfig {
                         "Multiple enchantments stack, but total reduction cannot exceed 100%.")
                 .push("static_enchantment_reduction");
 
-        STATIC_MAX_PROT_CAP = BUILDER
-                .comment("保护附魔对静电伤害的最大减免比例。",
-                         "4件保护IV = 16级 × (该值 / 16) = 该值。",
-                         "Maximum damage reduction from Protection enchantment against Static Shock damage.",
-                         "4 pieces of Protection IV = 16 levels × (this_value / 16) = this_value.",
-                         "Default: 0.25 (25%) / 默认：0.25（25%）")
-                .defineInRange("static_max_prot_cap", 0.25, 0.0, 1.0);
-
-        BUILDER.comment(" ");
-
         STATIC_MAX_PROJECTILE_PROT_CAP = BUILDER
                 .comment("弹射物保护附魔对静电伤害的最大减免比例。",
                          "4件弹射物保护IV = 16级 × (该值 / 16) = 该值。",
@@ -413,6 +404,16 @@ public final class ElementalThunderFrostReactionsConfig {
                          "4 pieces of Projectile Protection IV = 16 levels × (this_value / 16) = this_value.",
                          "Default: 0.50 (50%) / 默认：0.50（50%）")
                 .defineInRange("static_max_projectile_prot_cap", 0.50, 0.0, 1.0);
+
+        BUILDER.comment(" ");
+
+        STATIC_MAX_PROT_CAP = BUILDER
+                .comment("保护附魔对静电伤害的最大减免比例。",
+                         "4件保护IV = 16级 × (该值 / 16) = 该值。",
+                         "Maximum damage reduction from Protection enchantment against Static Shock damage.",
+                         "4 pieces of Protection IV = 16 levels × (this_value / 16) = this_value.",
+                         "Default: 0.25 (25%) / 默认：0.25（25%）")
+                .defineInRange("static_max_prot_cap", 0.25, 0.0, 1.0);
 
         BUILDER.pop();
 
@@ -471,19 +472,13 @@ public final class ElementalThunderFrostReactionsConfig {
 
         BUILDER.comment(" ");
 
-        THUNDER_COUNTER_STRIKE_INTERVAL = BUILDER
-                .comment("每次劈闪电的间隔刻数。20刻 = 1秒。",
-                         "Interval ticks between lightning strikes. 20 ticks = 1 second.",
-                         "Default: 20 / 默认：20")
-                .defineInRange("strike_interval", 20, 5, 100);
-
         BUILDER.pop();
 
         BUILDER.comment("麻痹反应配置 - Paralysis Reaction",
-                        "当静电层数积累到一定程度时，目标会被「麻痹」，无法移动和攻击。",
+                        "当目标同时拥有静电和潮湿效果时，会触发麻痹，无法移动和攻击。",
                         "麻痹期间若目标同时拥有易燃孢子，会必定触发毒火爆燃（无概率判定）。",
                         "麻痹会消耗剩余静电伤害的一定比例作为一次性伤害。",
-                        "When Static Shock stacks accumulate enough, the target becomes Paralyzed and cannot move or attack.",
+                        "Paralysis is triggered when the target has both Static Shock and Wetness simultaneously, making them unable to move or attack.",
                         "During Paralysis, if the target also has Flammable Spores, Toxic Blast triggers unconditionally (no chance roll).",
                         "Paralysis consumes a percentage of remaining Static Shock damage as instant damage.")
                 .push("paralysis");
@@ -514,14 +509,13 @@ public final class ElementalThunderFrostReactionsConfig {
 
         PARALYSIS_COOLDOWN_TICKS = BUILDER
                 .comment("目标在麻痹结束后，再次进入麻痹流程所需的冷却时间（刻）。\n" +
-                         "冷却期间，潮湿和静电效果正常运作（潮湿减火伤、静电持续伤害）。\n" +
-                         "仅在尝试触发麻痹流程时检测冷却，冷却中则清除潮湿和静电效果，\n" +
-                         "不结算静电伤害也不施加麻痹状态。",
+                         "注意：麻痹效果持续期间无法获得潮湿和静电（被阻止）。\n" +
+                         "冷却只在麻痹结束后检测。冷却中则清除静电效果，\n" +
+                         "不结算静电伤害也不施加麻痹状态。潮湿在冷却期间不会被清除。",
                           "Cooldown ticks before a target can enter the Paralysis flow again after Paralysis ends.\n" +
-                          "During cooldown, Wetness still works normally. Only when the\n" +
-                          "paralysis flow is about to be triggered (target has both Wetness and Static), the cooldown\n" +
-                          "is checked. If in cooldown, Static Shock is cleared but NO static damage is dealt\n" +
-                          "and NO Paralysis is applied. Wetness is not cleared during cooldown.",
+                          "Note: While the Paralysis effect is active, Wetness and Static gain are blocked.\n" +
+                          "Cooldown is checked after Paralysis ends. If in cooldown, Static Shock is cleared\n" +
+                          "but NO static damage is dealt and NO Paralysis is applied. Wetness is not cleared during cooldown.",
                          "Default: 200 (10 seconds) / 默认：200（10秒）")
                 .defineInRange("paralysis_cooldown_ticks", 200, 0, 72000);
 
@@ -678,6 +672,22 @@ public final class ElementalThunderFrostReactionsConfig {
                          "Additional duration (in ticks) per extra Frostbite stack beyond the first. 20 ticks = 1 second.",
                          "Default: 100 (5 seconds) / 默认：100（5秒）")
                 .defineInRange("frostbite_duration_per_extra_stack_ticks", 100, 1, 72000);
+
+        BUILDER.comment(" ");
+
+        FROSTBITE_HOT_BIOME_DURATION_MULTIPLIER = BUILDER
+                .comment("炎热生物群系（温度 ≥ 2.0）中霜冻持续时间倍率。0.5 = 时间减半。",
+                         "Frostbite duration multiplier in hot biomes (temperature ≥ 2.0). 0.5 = Halved duration.",
+                         "Default: 0.5 / 默认：0.5")
+                .defineInRange("frostbite_hot_biome_duration_multiplier", 0.5, 0.01, 1.0);
+
+        BUILDER.comment(" ");
+
+        FROSTBITE_COLD_BIOME_DURATION_MULTIPLIER = BUILDER
+                .comment("寒冷生物群系（温度 ≤ 0.3）中霜冻持续时间倍率。1.5 = 延长一半。",
+                         "Frostbite duration multiplier in cold biomes (temperature ≤ 0.3). 1.5 = 50% longer duration.",
+                         "Default: 1.5 / 默认：1.5")
+                .defineInRange("frostbite_cold_biome_duration_multiplier", 1.5, 0.01, 10.0);
 
         BUILDER.comment(" ");
 
@@ -1095,7 +1105,6 @@ public final class ElementalThunderFrostReactionsConfig {
     public static double thunderCounterHealthRecoveryThreshold;
     public static double thunderCounterRadius;
     public static double thunderCounterExpansionSpeed;
-    public static int thunderCounterStrikeInterval;
     public static double counterLightningDamage;
 
     public static List<? extends String> cachedStaticImmunityBlacklist;
@@ -1127,6 +1136,8 @@ public final class ElementalThunderFrostReactionsConfig {
     public static int frostbiteMaxTotalStacks;
     public static int frostbiteBaseDurationTicks;
     public static int frostbiteDurationPerExtraStackTicks;
+    public static double frostbiteHotBiomeDurationMultiplier;
+    public static double frostbiteColdBiomeDurationMultiplier;
     public static double frostbiteSpeedReductionPerStack;
     public static double frostbitePeriodicDamage;
     public static int frostbiteDamageIntervalTicks;
@@ -1217,7 +1228,6 @@ public final class ElementalThunderFrostReactionsConfig {
         thunderCounterHealthRecoveryThreshold = THUNDER_COUNTER_HEALTH_RECOVERY_THRESHOLD.get();
         thunderCounterRadius = THUNDER_COUNTER_RADIUS.get();
         thunderCounterExpansionSpeed = THUNDER_COUNTER_EXPANSION_SPEED.get();
-        thunderCounterStrikeInterval = THUNDER_COUNTER_STRIKE_INTERVAL.get();
         counterLightningDamage = COUNTER_LIGHTNING_DAMAGE.get();
 
         paralysisMaxStacks = PARALYSIS_MAX_STACKS.get();
@@ -1243,6 +1253,8 @@ public final class ElementalThunderFrostReactionsConfig {
         frostbiteMaxTotalStacks = FROSTBITE_MAX_TOTAL_STACKS.get();
         frostbiteBaseDurationTicks = FROSTBITE_BASE_DURATION_TICKS.get();
         frostbiteDurationPerExtraStackTicks = FROSTBITE_DURATION_PER_EXTRA_STACK_TICKS.get();
+        frostbiteHotBiomeDurationMultiplier = FROSTBITE_HOT_BIOME_DURATION_MULTIPLIER.get();
+        frostbiteColdBiomeDurationMultiplier = FROSTBITE_COLD_BIOME_DURATION_MULTIPLIER.get();
         frostbiteSpeedReductionPerStack = FROSTBITE_SPEED_REDUCTION_PER_STACK.get();
         frostbitePeriodicDamage = FROSTBITE_PERIODIC_DAMAGE.get();
         frostbiteDamageIntervalTicks = FROSTBITE_DAMAGE_INTERVAL_TICKS.get();

@@ -36,6 +36,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -358,6 +359,21 @@ public class FrostbiteHandler {
         int baseDuration = ElementalThunderFrostReactionsConfig.frostbiteBaseDurationTicks;
         int perExtraStack = ElementalThunderFrostReactionsConfig.frostbiteDurationPerExtraStackTicks;
         int durationTicks = baseDuration + (newStacks - 1) * perExtraStack;
+
+        BlockPos pos = target.blockPosition();
+        Biome biome = target.level().getBiome(pos).value();
+        if (biome != null) {
+            double temp = biome.getBaseTemperature();
+            double hotMult = ElementalThunderFrostReactionsConfig.frostbiteHotBiomeDurationMultiplier;
+            if (hotMult < 1.0 && temp >= 2.0) {
+                durationTicks = (int) (durationTicks * hotMult);
+            }
+            double coldMult = ElementalThunderFrostReactionsConfig.frostbiteColdBiomeDurationMultiplier;
+            if (coldMult > 1.0 && temp <= 0.3) {
+                durationTicks = (int) (durationTicks * coldMult);
+            }
+        }
+        if (durationTicks < 1) durationTicks = 1;
 
         double speedReduction = ElementalThunderFrostReactionsConfig.frostbiteSpeedReductionPerStack;
 

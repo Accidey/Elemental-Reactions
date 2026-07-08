@@ -373,8 +373,11 @@ public class SteamReactionHandler {
                     convertToFrost = true;
                 }
 
-                if (convertToStatic && ElementalThunderFrostReactionsConfig.staticSteamCloudTriggerStacks > 0) {
-                    int sourceTimer = entity.getPersistentData().getInt(NBT_STATIC_TIMER);
+                if (convertToStatic
+                        && ElementalThunderFrostReactionsConfig.staticSteamCloudTriggerStacks > 0
+                        && auraStaticStacks >= ElementalThunderFrostReactionsConfig.staticSteamCloudTriggerStacks) {
+                    CompoundTag staticData = entity.getPersistentData();
+                    int sourceTimer = staticData.getInt(NBT_STATIC_TIMER);
                     int interval = ElementalThunderFrostReactionsConfig.staticDamageIntervalTicks;
                     int remainingHits = Math.max(1, (sourceTimer + interval - 1) / interval);
                     float settlementDamage = 0;
@@ -387,6 +390,12 @@ public class SteamReactionHandler {
                     if (!entity.level().isClientSide) {
                         entity.level().playSound(null, cloud.getX(), cloud.getY(), cloud.getZ(),
                                 SoundEvents.TRIDENT_THUNDER, SoundSource.PLAYERS, 0.5f, 1.2f);
+                    }
+                    staticData.remove(StaticShockHandler.NBT_STATIC_STACKS);
+                    staticData.remove(NBT_STATIC_TIMER);
+                    staticData.remove(NBT_STATIC_DAMAGE_TIMER);
+                    if (entity.hasEffect(ModMobEffects.STATIC_SHOCK.get())) {
+                        entity.removeEffect(ModMobEffects.STATIC_SHOCK.get());
                     }
                     DebugCommand.StaticSteamCloudLogContext sctx = new DebugCommand.StaticSteamCloudLogContext();
                     sctx.source = entity;

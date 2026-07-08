@@ -3,7 +3,10 @@ package com.xulai.elementalcraft.event;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.command.DebugCommand;
 import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
+import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
+import com.xulai.elementalcraft.util.DebugMode;
 import com.xulai.elementalcraft.event.FrostbiteHandler;
+import com.xulai.elementalcraft.event.ReactionHandler;
 import com.xulai.elementalcraft.potion.ModMobEffects;
 import com.xulai.elementalcraft.util.ElementType;
 import com.xulai.elementalcraft.util.ElementUtils;
@@ -11,6 +14,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -21,10 +25,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -38,9 +45,11 @@ public class WetnessHandler {
     public static final String NBT_WETNESS = "EC_WetnessLevel";
     public static final String NBT_RAIN_TIMER = "EC_WetnessRainTimer";
     public static final String NBT_DECAY_TIMER = "EC_WetnessDecayTimer";
+    public static final String NBT_DECAY_PROGRESS = "EC_WetnessDecayProgress";
     public static final String NBT_LAST_EXHAUSTION = "EC_LastExhaustion";
     public static final String NBT_FIRE_STAND_TIMER = "EC_WetnessFireStandTimer";
     public static final String NBT_REACTION_RESOLVED = "EC_ReactionResolved";
+    public static final String NBT_COLD_FREEZE_TIMER = "EC_ColdFreezeTimer";
 
     private static final RandomSource RANDOM = RandomSource.create();
     private static final int PAUSED_DURATION_TICKS = 24000;
@@ -104,6 +113,7 @@ public class WetnessHandler {
             handleWetnessLogic(entity, isSnowing);
             handleExhaustion(entity);
             wetnessLevel = getWetnessLevel(entity);
+            ReactionHandler.checkHeatSporeBlast(entity);
         }
 
         spawnWetnessParticles(entity, isSnowing);
@@ -198,9 +208,9 @@ public class WetnessHandler {
                 currentLevel = data.getInt(NBT_WETNESS);
             }
             data.putInt(NBT_RAIN_TIMER, 0);
-            data.putInt(NBT_DECAY_TIMER, 0);
+            data.putFloat(NBT_DECAY_PROGRESS, 0);
         } else if (inPrecipitation) {
-            data.putInt(NBT_DECAY_TIMER, 0);
+            data.putFloat(NBT_DECAY_PROGRESS, 0);
             if (currentLevel < maxLevel) {
                 int rainTimer = data.getInt(NBT_RAIN_TIMER) + 1;
                 int requiredRainCount = Math.max(1, ElementalFireNatureReactionsConfig.wetnessRainGainInterval);
@@ -212,21 +222,35 @@ public class WetnessHandler {
                     data.putInt(NBT_RAIN_TIMER, rainTimer);
                 }
             }
+            if (currentLevel > 0) {
+                tryColdBiomeFreeze(entity, level, pos);
+            }
         } else if (inCondensingCloud) {
             data.putInt(NBT_RAIN_TIMER, 0);
-            data.putInt(NBT_DECAY_TIMER, 0);
+            data.putFloat(NBT_DECAY_PROGRESS, 0);
         } else {
             data.putInt(NBT_RAIN_TIMER, 0);
             if (currentLevel > 0) {
-                int decayTimer = data.getInt(NBT_DECAY_TIMER) + 1;
-                int requiredDecayCount = Math.max(1, currentLevel * ElementalFireNatureReactionsConfig.wetnessDecayBaseTime);
-                if (decayTimer >= requiredDecayCount) {
+                migrateDecayNbt(data);
+                double finalMult = computeDecayMultiplier(entity, level, pos);
+                float progress = data.getFloat(NBT_DECAY_PROGRESS) + (float) finalMult;
+                int threshold = Math.max(1, currentLevel * ElementalFireNatureReactionsConfig.wetnessDecayBaseTime);
+                if (progress >= threshold) {
+                    progress -= threshold;
                     currentLevel--;
                     updateWetnessLevel(entity, currentLevel);
-                    data.putInt(NBT_DECAY_TIMER, 0);
-                } else {
-                    data.putInt(NBT_DECAY_TIMER, decayTimer);
+                    while (currentLevel > 0) {
+                        threshold = Math.max(1, currentLevel * ElementalFireNatureReactionsConfig.wetnessDecayBaseTime);
+                        if (progress >= threshold) {
+                            progress -= threshold;
+                            currentLevel--;
+                            updateWetnessLevel(entity, currentLevel);
+                        } else {
+                            break;
+                        }
+                    }
                 }
+                data.putFloat(NBT_DECAY_PROGRESS, Math.max(0, progress));
             }
         }
         if (currentLevel > 0 && !data.getBoolean(NBT_REACTION_RESOLVED)) {
@@ -306,6 +330,103 @@ public class WetnessHandler {
         return false;
     }
 
+    static double checkHeatAccelerator(LivingEntity entity, Level level, BlockPos center) {
+        double mult = ElementalFireNatureReactionsConfig.wetnessHeatAccelerateMultiplier;
+        if (mult <= 1.0) return 1.0;
+        double radius = ElementalFireNatureReactionsConfig.wetnessHeatAccelerateRadius;
+        if (radius <= 0) return 1.0;
+        if (entity.isInWater() || level.isRainingAt(center)) return 1.0;
+        if (radius <= 0) return 1.0;
+        int range = (int)Math.ceil(radius);
+        BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
+        for (int x = -range; x <= range; x++) {
+            for (int y = -range; y <= range; y++) {
+                for (int z = -range; z <= range; z++) {
+                    mutablePos.set(center.getX() + x, center.getY() + y, center.getZ() + z);
+                    BlockState state = level.getBlockState(mutablePos);
+                    if (state.is(Blocks.CAMPFIRE) || state.is(Blocks.SOUL_CAMPFIRE)) {
+                        if (state.getValue(CampfireBlock.LIT)) {
+                            return ElementalFireNatureReactionsConfig.wetnessHeatAccelerateMultiplier;
+                        }
+                    }
+                    if (state.getBlock() instanceof AbstractFurnaceBlock) {
+                        if (state.getValue(AbstractFurnaceBlock.LIT)) {
+                            return ElementalFireNatureReactionsConfig.wetnessHeatAccelerateMultiplier;
+                        }
+                    }
+                }
+            }
+        }
+        return 1.0;
+    }
+
+    static double checkBiomeAccelerator(Level level, BlockPos pos) {
+        double mult = ElementalFireNatureReactionsConfig.wetnessBiomeAccelerateMultiplier;
+        if (mult <= 1.0) return 1.0;
+        var biome = level.getBiome(pos).value();
+        if (biome != null && biome.getBaseTemperature() >= 2.0
+                && level.canSeeSky(pos) && !level.isRaining()) {
+            return mult;
+        }
+        return 1.0;
+    }
+
+    static double checkColdBiomeDecay(Level level, BlockPos pos) {
+        double mult = ElementalFireNatureReactionsConfig.wetnessColdBiomeDecaySlowdown;
+        if (mult >= 1.0) return 1.0;
+        var biome = level.getBiome(pos).value();
+        if (biome != null && biome.getBaseTemperature() <= 0.3) {
+            return mult;
+        }
+        return 1.0;
+    }
+
+    private static double computeDecayMultiplier(LivingEntity entity, Level level, BlockPos pos) {
+        return checkHeatAccelerator(entity, level, pos)
+             * checkBiomeAccelerator(level, pos)
+             * checkColdBiomeDecay(level, pos);
+    }
+
+    private static void migrateDecayNbt(CompoundTag data) {
+        if (data.contains(NBT_DECAY_TIMER) && !data.contains(NBT_DECAY_PROGRESS)) {
+            data.putFloat(NBT_DECAY_PROGRESS, data.getInt(NBT_DECAY_TIMER));
+            data.remove(NBT_DECAY_TIMER);
+        }
+    }
+
+    static void tryColdBiomeFreeze(LivingEntity entity, Level level, BlockPos pos) {
+        double chance = ElementalFireNatureReactionsConfig.wetnessColdBiomeFreezeChance;
+        if (chance <= 0) return;
+        var biome = level.getBiome(pos).value();
+        if (biome == null || biome.getBaseTemperature() > 0.3) return;
+        if (!level.isRaining() || !level.canSeeSky(pos)) return;
+        CompoundTag data = entity.getPersistentData();
+        long cooldownEnd = data.getLong(NBT_COLD_FREEZE_TIMER);
+        if (level.getGameTime() < cooldownEnd) return;
+        int wetnessLevel = getWetnessLevel(entity);
+        if (wetnessLevel <= 0) return;
+        double effectiveChance = chance + (wetnessLevel - 1) * ElementalFireNatureReactionsConfig.wetnessColdBiomeFreezeLevelBonus;
+        float roll = RANDOM.nextFloat();
+        if (roll < effectiveChance) {
+            int freezeDuration = ElementalThunderFrostReactionsConfig.freezeDurationPerStackTicks * wetnessLevel;
+            int freezeAmplifier = Math.min(wetnessLevel - 1, ElementalThunderFrostReactionsConfig.freezeMaxStacks - 1);
+            if (DebugMode.hasAnyDebugEnabled() && entity instanceof Player) {
+                double dbTemp = biome.getBaseTemperature();
+                boolean precipitating = level.isRaining() && level.canSeeSky(pos);
+                DebugCommand.sendDebugMessage(entity,
+                        Component.translatable("debug.elementalcraft.reaction.cold_freeze.frozen",
+                                String.format("%.1f", dbTemp),
+                                String.valueOf(wetnessLevel),
+                                precipitating ? "✓" : "✗",
+                                String.format("%.0f", effectiveChance * 100)));
+            }
+            entity.addEffect(new MobEffectInstance(ModMobEffects.FREEZE.get(),
+                    freezeDuration, freezeAmplifier));
+            data.putLong(NBT_COLD_FREEZE_TIMER,
+                    level.getGameTime() + ElementalThunderFrostReactionsConfig.freezeCooldownTicks);
+        }
+    }
+
     private static boolean isImmune(LivingEntity entity) {
         if (ElementalFireNatureReactionsConfig.wetnessWaterAnimalImmune && entity instanceof WaterAnimal) {
             return true;
@@ -327,6 +448,7 @@ public class WetnessHandler {
         data.remove(NBT_WETNESS);
         data.remove(NBT_RAIN_TIMER);
         data.remove(NBT_DECAY_TIMER);
+        data.remove(NBT_DECAY_PROGRESS);
         data.remove(NBT_FIRE_STAND_TIMER);
         data.remove(NBT_LAST_EXHAUSTION);
         data.remove(NBT_REACTION_RESOLVED);
@@ -382,10 +504,14 @@ public class WetnessHandler {
         if (isPaused) {
             durationTicks = PAUSED_DURATION_TICKS;
         } else {
-            int decayTimer = entity.getPersistentData().getInt(NBT_DECAY_TIMER);
-            int maxDurationSeconds = level * baseTime;
-            int remainingSeconds = Math.max(0, maxDurationSeconds - decayTimer);
-            durationTicks = remainingSeconds * 20 + 5;
+            CompoundTag data = entity.getPersistentData();
+            migrateDecayNbt(data);
+            float progress = data.getFloat(NBT_DECAY_PROGRESS);
+            int threshold = level * baseTime;
+            float remainingUnits = Math.max(0, threshold - progress);
+            double mult = computeDecayMultiplier(entity, entity.level(), entity.blockPosition());
+            int remainingTicks = (int) Math.round(remainingUnits / Math.max(0.01, mult) * 20);
+            durationTicks = Math.max(5, remainingTicks);
         }
 
         if (durationTicks > 0) {
@@ -416,7 +542,9 @@ public class WetnessHandler {
 
     public static void updateWetnessLevel(LivingEntity entity, int level) {
         if (ElementalFireNatureReactionsConfig.wetnessMaxLevel <= 0) return;
-        entity.getPersistentData().putInt(NBT_WETNESS, level);
+        CompoundTag data = entity.getPersistentData();
+        data.putInt(NBT_WETNESS, level);
+        data.remove(NBT_REACTION_RESOLVED);
     }
 
     static boolean blockWetnessIfParalyzed(LivingEntity entity) {
@@ -424,7 +552,8 @@ public class WetnessHandler {
         CompoundTag data = entity.getPersistentData();
         if (!data.getBoolean("EC_WetnessParalysisLogged")) {
             data.putBoolean("EC_WetnessParalysisLogged", true);
-            DebugCommand.sendWetnessReactionFailed(entity, "paralysis", entity.getDisplayName());
+            int remaining = entity.getEffect(ModMobEffects.PARALYSIS.get()).getDuration();
+            DebugCommand.sendWetnessReactionFailed(entity, "paralysis", entity.getDisplayName(), remaining, remaining / 20);
         }
         return true;
     }
@@ -541,10 +670,27 @@ public class WetnessHandler {
         int max = ElementalFireNatureReactionsConfig.wetnessMaxLevel;
         int newLevel = Math.min(max, current + add);
         CompoundTag data = livingTarget.getPersistentData();
-        data.putInt(NBT_DECAY_TIMER, 0);
+        migrateDecayNbt(data);
+        data.putFloat(NBT_DECAY_PROGRESS, 0);
         data.remove(NBT_REACTION_RESOLVED);
         updateWetnessLevel(livingTarget, newLevel);
         syncEffect(livingTarget, getWetnessLevel(livingTarget), livingTarget.isInWater() || livingTarget.level().isRainingAt(livingTarget.blockPosition()) || isSnowingHere(livingTarget));
+    }
+
+    @SubscribeEvent
+    public static void onEntityStruckByLightning(EntityStruckByLightningEvent event) {
+        if (!(event.getEntity() instanceof LivingEntity entity)) return;
+        Level level = entity.level();
+        if (level.isClientSide) return;
+        if (!level.isThundering()) return;
+        int wetnessLevel = getWetnessLevel(entity);
+        if (wetnessLevel <= 0) return;
+        int maxStacks = ElementalThunderFrostReactionsConfig.paralysisMaxStacks;
+        if (maxStacks <= 0) return;
+        int duration = ElementalThunderFrostReactionsConfig.paralysisDurationPerStackTicks * wetnessLevel;
+        int amplifier = Math.min(wetnessLevel - 1, maxStacks - 1);
+        entity.removeEffect(ModMobEffects.PARALYSIS.get());
+        entity.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS.get(), duration, amplifier, false, false, true));
     }
 
     @SubscribeEvent
@@ -558,6 +704,7 @@ public class WetnessHandler {
             data.remove(NBT_WETNESS);
             data.remove(NBT_RAIN_TIMER);
             data.remove(NBT_DECAY_TIMER);
+            data.remove(NBT_DECAY_PROGRESS);
             data.remove(NBT_FIRE_STAND_TIMER);
             data.remove(NBT_LAST_EXHAUSTION);
             data.remove(NBT_REACTION_RESOLVED);
@@ -571,6 +718,11 @@ public class WetnessHandler {
         if (event.getEffectInstance() == null || event.getEffectInstance().getEffect() != ModMobEffects.WETNESS.get()) return;
         LivingEntity entity = event.getEntity();
         if (entity.level().isClientSide) return;
-        clearWetnessData(entity);
+        int level = getWetnessLevel(entity);
+        if (level > 0) {
+            syncEffect(entity, level, entity.isInWater() || entity.level().isRainingAt(entity.blockPosition()) || isSnowingHere(entity));
+        } else {
+            clearWetnessData(entity);
+        }
     }
 }
