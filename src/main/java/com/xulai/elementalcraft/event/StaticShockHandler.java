@@ -457,6 +457,14 @@ public class StaticShockHandler {
             if (processWaterElectrification(entity, stacks)) {
                 return;
             }
+            if (isInOrOnWater(entity)) {
+                long cd = getWaterElectrificationCooldown(entity.level());
+                if (cd > 0) {
+                    DebugCommand.sendReactionCooldownBlock(entity, "water_electrification", cd);
+                }
+                triggerParalysisReaction(null, entity);
+                return;
+            }
         }
 
         int totalTimer = data.getInt(NBT_STATIC_TIMER);
@@ -788,6 +796,17 @@ public class StaticShockHandler {
             return true;
         }
         return false;
+    }
+
+    public static boolean triggerWaterElectrificationDirect(LivingEntity source, int stacks) {
+        return processWaterElectrification(source, stacks);
+    }
+
+    public static long getWaterElectrificationCooldown(Level level) {
+        ResourceKey<Level> dim = level.dimension();
+        Long cdEnd = waterElectrificationCooldowns.get(dim);
+        if (cdEnd == null) return 0;
+        return Math.max(0, cdEnd - level.getGameTime());
     }
 
     public static boolean tryTriggerWaterElectrification(LivingEntity source, int paralysisDuration) {

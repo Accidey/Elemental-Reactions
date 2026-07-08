@@ -325,6 +325,18 @@ public class ThunderSpellHandler {
                     ModMobEffects.STATIC_SHOCK.get(), duration, newStacks - 1, false, false, true));
             com.xulai.elementalcraft.command.DebugCommand.sendStaticShockSuccess(attacker, target, stacksToAdd,
                     ElementType.THUNDER, thunderPower, baseChance, scalingSteps, scalingChance, 0, 0, 0, chance);
+            if (ISSCore.isInOrOnWater(target)
+                    && ElementalThunderFrostReactionsConfig.waterElectrificationRangeBase > 0
+                    && !(attacker instanceof Mob mobCaster && mobCaster.getPersistentData().getBoolean(ISSCore.NBT_MOB_CASTER))) {
+                int stacks = data.getInt(StaticShockHandler.NBT_STATIC_STACKS);
+                if (stacks > 0 && StaticShockHandler.triggerWaterElectrificationDirect(target, stacks)) {
+                    return;
+                }
+                long cd = StaticShockHandler.getWaterElectrificationCooldown(target.level());
+                if (cd > 0) {
+                    com.xulai.elementalcraft.command.DebugCommand.sendReactionCooldownBlock(target, "water_electrification", cd);
+                }
+            }
             data.remove(WetnessHandler.NBT_REACTION_RESOLVED);
             if (target.hasEffect(ModMobEffects.WETNESS.get())) {
                 WetnessHandler.resolveElementReactionConflict(target, attacker);

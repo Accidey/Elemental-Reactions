@@ -158,6 +158,7 @@
 
   "debug.elementalcraft.reaction.water_electrification.header": "[感电水域]",
   "debug.elementalcraft.reaction.water_electrification.message": "%s 使感电水域 (层数 %s)：范围 %s 格，影响 %s 个目标，结算伤害 %s，麻痹持续 %s tick",
+  "debug.elementalcraft.reaction.water_electrification.failed.cooldown": "§d[感电水域] §7被阻止: 触发者冷却中",
   "debug.elementalcraft.reaction.toxic_blast.header": "[毒火爆燃]",
   "debug.elementalcraft.reaction.toxic_blast.message": "%s 引爆了 %s 身上的 %s 层孢子！半径: %s, 影响实体: %s, %s",
   "debug.elementalcraft.reaction.toxic_blast.damage_with_mitigation": "初始伤害: %s | 最终伤害: %s（%s -%s%%）",

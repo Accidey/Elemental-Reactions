@@ -160,6 +160,7 @@
 
   "debug.elementalcraft.reaction.water_electrification.header": "[Water Electrification]",
   "debug.elementalcraft.reaction.water_electrification.message": "%s electrifies water (Stacks %s): Range %s blocks, affected %s target(s), Settlement Damage %s, Paralysis %s ticks",
+  "debug.elementalcraft.reaction.water_electrification.failed.cooldown": "§d[Water Electrification] §7blocked: attacker cooldown active",
   "debug.elementalcraft.reaction.toxic_blast.header": "[Toxic Blast]",
   "debug.elementalcraft.reaction.toxic_blast.message": "%s detonated %s Spores stacks on %s! Radius: %s, Entities affected: %s, %s",
   "debug.elementalcraft.reaction.toxic_blast.damage_with_mitigation": "Raw Damage: %s | Final Damage: %s (%s -%s%%)",
