@@ -748,7 +748,7 @@ public class ScorchedHandler {
     public static final String NBT_FIRE_COUNTER_CD = "ec_fire_counter_cd";
     public static final String NBT_FIRE_COUNTER_INVULN = "ec_fire_counter_invuln";
     private static final String NBT_FIRE_COUNTER_LOCK = "ec_fire_counter_lock";
-    private static final String NBT_FIRE_COUNTER_SAVED_NOAI = "ec_fire_counter_saved_noai";
+    private static final String NBT_FIRE_COUNTER_SAVED_SPEED = "ec_fire_counter_saved_speed";
 
     private static final Map<ResourceKey<Level>, ActiveFireCounter> activeFireCounters = new HashMap<>();
 
@@ -828,9 +828,12 @@ public class ScorchedHandler {
         ResourceKey<Level> dim = target.level().dimension();
         target.getPersistentData().putBoolean(NBT_FIRE_COUNTER_INVULN, true);
         if (target instanceof Mob mob) {
-            CompoundTag data = target.getPersistentData();
-            data.putBoolean(NBT_FIRE_COUNTER_SAVED_NOAI, mob.isNoAi());
-            mob.setNoAi(true);
+            mob.getNavigation().stop();
+            var attr = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+            if (attr != null) {
+                target.getPersistentData().putDouble(NBT_FIRE_COUNTER_SAVED_SPEED, attr.getBaseValue());
+                attr.setBaseValue(0);
+            }
         }
         if (target instanceof net.minecraft.server.level.ServerPlayer sp) {
             ElementalCraft.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp),
@@ -852,9 +855,12 @@ public class ScorchedHandler {
         Entity ownerEntity = sl.getEntity(fc.ownerUUID);
         if (ownerEntity == null || !(ownerEntity instanceof LivingEntity owner) || owner.isDeadOrDying()) {
             if (ownerEntity instanceof Mob mob) {
-                boolean savedNoAi = ownerEntity.getPersistentData().getBoolean(NBT_FIRE_COUNTER_SAVED_NOAI);
-                mob.setNoAi(savedNoAi);
-                ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_NOAI);
+                double savedSpeed = ownerEntity.getPersistentData().getDouble(NBT_FIRE_COUNTER_SAVED_SPEED);
+                if (savedSpeed > 0) {
+                    var attr = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+                    if (attr != null) attr.setBaseValue(savedSpeed);
+                }
+                ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_SPEED);
             }
             if (ownerEntity != null) {
                 ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
@@ -891,9 +897,12 @@ public class ScorchedHandler {
                             new FireCounterLockPacket(false));
                 }
                 if (owner instanceof Mob mob) {
-                    boolean savedNoAi = owner.getPersistentData().getBoolean(NBT_FIRE_COUNTER_SAVED_NOAI);
-                    mob.setNoAi(savedNoAi);
-                    owner.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_NOAI);
+                    double savedSpeed = owner.getPersistentData().getDouble(NBT_FIRE_COUNTER_SAVED_SPEED);
+                    if (savedSpeed > 0) {
+                        var attr = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+                        if (attr != null) attr.setBaseValue(savedSpeed);
+                    }
+                    owner.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_SPEED);
                 }
                 activeFireCounters.remove(dim);
                 break;
