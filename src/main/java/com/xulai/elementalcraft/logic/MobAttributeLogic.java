@@ -529,7 +529,8 @@ public class MobAttributeLogic {
     public static void onChangeTarget(LivingChangeTargetEvent event) {
         if (event.getEntity().level().isClientSide) return;
         if (event.getNewTarget() == null) return;
-        if (event.getEntity().getPersistentData().getInt(NBT_DISORIENTED) > 0) {
+        CompoundTag data = event.getEntity().getPersistentData();
+        if (data.getInt(NBT_DISORIENTED) > 0 || data.getBoolean("EC_FleeActive")) {
             event.setCanceled(true);
         }
     }
