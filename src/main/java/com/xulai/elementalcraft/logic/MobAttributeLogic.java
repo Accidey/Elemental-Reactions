@@ -395,7 +395,10 @@ public class MobAttributeLogic {
         if (data.getBoolean("EC_FleeActive")) return;
 
         int fleeDist = 10 + target.level().random.nextInt(11);
-        double[] path = findClearPath(target, source.getX(), source.getZ(), fleeDist);
+        float yawRad = (float) Math.toRadians(target.getYRot());
+        double fwdX = -net.minecraft.util.Mth.sin(yawRad);
+        double fwdZ = net.minecraft.util.Mth.cos(yawRad);
+        double[] path = findClearPath(target, target.getX() - fwdX * 10, target.getZ() - fwdZ * 10, fleeDist);
 
         data.putDouble(NBT_FLEE_TARGET_X, path[0]);
         data.putDouble(NBT_FLEE_TARGET_Z, path[1]);
@@ -491,14 +494,10 @@ public class MobAttributeLogic {
             }
             int fleeDist = 10 + entity.level().random.nextInt(11);
             double[] path;
-            if (source != null && source.isAlive()) {
-                path = findClearPath(entity, source.getX(), source.getZ(), fleeDist);
-            } else {
-                double angle = entity.level().random.nextDouble() * 2 * Math.PI;
-                double fakeSrcX = entity.getX() - Math.cos(angle) * 10;
-                double fakeSrcZ = entity.getZ() - Math.sin(angle) * 10;
-                path = findClearPath(entity, fakeSrcX, fakeSrcZ, fleeDist);
-            }
+            float yawRad = (float) Math.toRadians(entity.getYRot());
+            double fwdX = -net.minecraft.util.Mth.sin(yawRad);
+            double fwdZ = net.minecraft.util.Mth.cos(yawRad);
+            path = findClearPath(entity, entity.getX() - fwdX * 10, entity.getZ() - fwdZ * 10, fleeDist);
             data.putDouble(NBT_FLEE_TARGET_X, path[0]);
             data.putDouble(NBT_FLEE_TARGET_Z, path[1]);
             data.putInt(NBT_FLEE_TICKS, 0);
