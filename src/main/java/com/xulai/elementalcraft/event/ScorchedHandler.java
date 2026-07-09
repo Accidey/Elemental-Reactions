@@ -8,6 +8,7 @@ import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import com.xulai.elementalcraft.event.iss.ISSCore;
 import com.xulai.elementalcraft.init.ModDamageTypes;
 import com.xulai.elementalcraft.potion.ModMobEffects;
+import com.xulai.elementalcraft.event.ReactionHandler;
 import com.xulai.elementalcraft.event.SteamReactionHandler;
 import com.xulai.elementalcraft.util.ElementType;
 import com.xulai.elementalcraft.util.ElementUtils;
@@ -37,11 +38,13 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.resources.ResourceKey;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -737,8 +740,6 @@ public class ScorchedHandler {
         }
     }
 
-    // ============ Fire Counter (赤焰反制·无双波) ============
-
     public static final String NBT_FIRE_COUNTER_CD = "ec_fire_counter_cd";
     public static final String NBT_FIRE_COUNTER_INVULN = "ec_fire_counter_invuln";
 
@@ -774,6 +775,32 @@ public class ScorchedHandler {
             this.phaseTicks = 0;
             this.phase = FireCounterPhase.EXPAND;
         }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onTryFireCounter(LivingDamageEvent event) {
+        if (event.getEntity().level().isClientSide) return;
+        LivingEntity target = event.getEntity();
+        double bloodThreshold = ElementalFireNatureReactionsConfig.fireCounterBloodThreshold;
+        if (bloodThreshold <= 0) return;
+        float currentHP = target.getHealth() + target.getAbsorptionAmount();
+        if (currentHP - event.getAmount() >= target.getMaxHealth() * bloodThreshold) return;
+        if (ElementUtils.getConsistentAttackElement(target) != ElementType.FIRE) return;
+        double firePower = ElementUtils.getDisplayEnhancement(target, ElementType.FIRE);
+        double threshold = ElementalFireNatureReactionsConfig.fireCounterStrengthThreshold;
+        if (threshold <= 0 || firePower < threshold) {
+            if (threshold > 0) {
+                DebugCommand.sendReactionFailed(target, "fire_counter", "power_low",
+                        target.getDisplayName(),
+                        String.format("%.0f", firePower),
+                        String.valueOf((int) threshold));
+            }
+            return;
+        }
+        if (!ReactionHandler.checkHealthRecovery(target, NBT_FIRE_COUNTER_CD)) return;
+        triggerFireCounter(target);
+        ReactionHandler.setHealthRecoveryThreshold(target, NBT_FIRE_COUNTER_CD,
+                target.getMaxHealth(), ElementalFireNatureReactionsConfig.fireCounterHealthRecoveryThreshold);
     }
 
     public static void triggerFireCounter(LivingEntity target) {
@@ -897,10 +924,7 @@ public class ScorchedHandler {
                     15, 0.5, 0.5, 0.5, 0.1);
         }
 
-        // Explosion particle burst
         level.sendParticles(ParticleTypes.EXPLOSION, fc.x, fc.y + 1, fc.z, 1, 0, 0, 0, 0);
-
-        // Fire tornado after explosion (like nature's cherry blossom tornado, but fire)
         spawnFireTornado(level, new Vec3(fc.x, fc.y, fc.z), fc.maxRadius, 0);
     }
 
