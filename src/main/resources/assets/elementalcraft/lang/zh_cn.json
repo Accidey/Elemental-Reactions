@@ -348,6 +348,8 @@
   "debug.elementalcraft.reaction.thunder_counter.failed.power_low": "§e[雷霆反击] §f%s §7雷霆强度不足 (当前: %s, 需要≥: %s)",
   "debug.elementalcraft.reaction.frost_counter.failed.cooldown": "§b[冰霜反制] §7被阻止: 目标冷却中",
   "debug.elementalcraft.reaction.frost_counter.failed.power_low": "§b[冰霜反制] §f%s §7冰霜强度不足 (当前: %s, 需要≥: %s)",
+  "debug.elementalcraft.reaction.fire_counter.header": "[赤焰反制]",
+  "debug.elementalcraft.reaction.fire_counter.message": "%s 触发赤焰反制！范围: %s 格, 影响: %s 个目标, 伤害: %s, 击退: %s",
   "debug.elementalcraft.reaction.fire_counter.failed.power_low": "§c[赤焰反制] §f%s §7赤焰强度不足 (当前: %s, 需要≥: %s)",
 
   "debug.elementalcraft.reaction.freeze.failed.cooldown": "§b[冻结] §7被阻止: 冷却中",

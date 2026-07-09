@@ -761,7 +761,6 @@ public class ScorchedHandler {
         final double expansionSpeed;
         final double damage;
         final double knockback;
-        final int scorchDuration;
         final int fireStrength;
         final Set<UUID> affectedEntities;
         boolean collected;
@@ -778,7 +777,6 @@ public class ScorchedHandler {
             this.expansionSpeed = ElementalFireNatureReactionsConfig.fireCounterExpansionSpeed;
             this.damage = ElementalFireNatureReactionsConfig.fireCounterDamage;
             this.knockback = ElementalFireNatureReactionsConfig.fireCounterKnockback;
-            this.scorchDuration = ElementalFireNatureReactionsConfig.fireCounterScorchDuration;
             this.fireStrength = ElementUtils.getDisplayEnhancement(owner, ElementType.FIRE);
             this.affectedEntities = new HashSet<>();
             this.collected = false;
@@ -948,9 +946,9 @@ public class ScorchedHandler {
             ElementDamageHelper.applyDamage(entity, (float) fc.damage,
                     ModDamageTypes.source(level, ModDamageTypes.LAVA_MAGIC));
 
-            if (fc.scorchDuration > 0 && fc.fireStrength > 0) {
+            if (fc.fireStrength > 0) {
                 ScorchedHandler.applyScorched(entity, owner, fc.fireStrength,
-                        fc.scorchDuration, fc.fireStrength, 1.0f, true);
+                        ElementalFireNatureReactionsConfig.scorchedDuration, fc.fireStrength, 1.0f, true);
             }
 
             level.sendParticles(ISSCore.getFireParticle(),
@@ -959,6 +957,14 @@ public class ScorchedHandler {
         }
 
         spawnFireTornado(level, new Vec3(fc.x, fc.y, fc.z), fc.maxRadius, 0);
+
+        DebugCommand.FireCounterLogContext ctx = new DebugCommand.FireCounterLogContext();
+        ctx.owner = owner;
+        ctx.radius = fc.maxRadius;
+        ctx.affectedCount = fc.affectedEntities.size();
+        ctx.damage = fc.damage;
+        ctx.knockback = fc.knockback;
+        DebugCommand.sendFireCounterLog(ctx);
     }
 
     private static void spawnFireRingParticles(ServerLevel level, double cx, double cy, double cz, double radius) {
