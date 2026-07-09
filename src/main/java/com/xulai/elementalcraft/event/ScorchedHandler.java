@@ -797,7 +797,9 @@ public class ScorchedHandler {
         if (bloodThreshold <= 0) return;
         float currentHP = target.getHealth() + target.getAbsorptionAmount();
         if (currentHP - event.getAmount() >= target.getMaxHealth() * bloodThreshold) return;
-        if (ElementUtils.getConsistentAttackElement(target) != ElementType.FIRE) return;
+        if (ElementUtils.getConsistentAttackElement(target) != ElementType.FIRE) {
+            if (!(target instanceof Mob) || ElementUtils.getDisplayEnhancement(target, ElementType.FIRE) <= 0) return;
+        }
         double firePower = ElementUtils.getDisplayEnhancement(target, ElementType.FIRE);
         double threshold = ElementalFireNatureReactionsConfig.fireCounterStrengthThreshold;
         if (threshold <= 0 || firePower < threshold) {
@@ -841,6 +843,11 @@ public class ScorchedHandler {
 
         Entity ownerEntity = sl.getEntity(fc.ownerUUID);
         if (!(ownerEntity instanceof LivingEntity owner) || owner.isDeadOrDying()) {
+            if (ownerEntity instanceof Mob mob) {
+                boolean savedNoAi = ownerEntity.getPersistentData().getBoolean(NBT_FIRE_COUNTER_SAVED_NOAI);
+                mob.setNoAi(savedNoAi);
+                ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_NOAI);
+            }
             ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
             ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_LOCK);
             activeFireCounters.remove(dim);
