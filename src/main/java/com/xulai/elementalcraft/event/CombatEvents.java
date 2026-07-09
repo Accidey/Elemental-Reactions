@@ -65,8 +65,7 @@ public class CombatEvents {
 
         LivingEntity target = event.getEntity();
         if (target.getPersistentData().getBoolean(ScorchedHandler.NBT_FIRE_COUNTER_INVULN)) {
-            event.setCanceled(true);
-            return;
+            event.setAmount(event.getAmount() * 0.1f);
         }
 
         DamageSource source = event.getSource();
