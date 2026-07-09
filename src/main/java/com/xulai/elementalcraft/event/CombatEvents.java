@@ -129,6 +129,11 @@ public class CombatEvents {
                 attackElement = ElementType.NONE;
             }
         }
+        if (!weaponStack.isEmpty() && directEntity == attacker
+                && (weaponStack.getItem() instanceof net.minecraft.world.item.BowItem
+                 || weaponStack.getItem() instanceof net.minecraft.world.item.CrossbowItem)) {
+            return;
+        }
         if (attackElement == ElementType.NONE) {
             return;
         }
