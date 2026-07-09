@@ -415,11 +415,8 @@ public class MobAttributeLogic {
         double moveDz = path[1] - target.getZ();
         double moveDist = Math.sqrt(moveDx * moveDx + moveDz * moveDz);
         if (moveDist > 0.1) {
-            float yaw = (float) (Math.atan2(moveDz, moveDx) * (180.0 / Math.PI)) - 90.0f;
-            target.setYRot(yaw);
-            target.setYHeadRot(yaw);
             float speed = 0.30f;
-            float rad = (float) Math.toRadians(yaw);
+            float rad = (float) Math.toRadians(target.getYRot());
             float moveX = -net.minecraft.util.Mth.sin(rad) * speed;
             float moveZ = net.minecraft.util.Mth.cos(rad) * speed;
             target.setDeltaMovement(moveX, target.getDeltaMovement().y, moveZ);
@@ -510,11 +507,8 @@ public class MobAttributeLogic {
 
         if (dist < 0.5) return;
 
-        float yaw = (float) (Math.atan2(dz, dx) * (180.0 / Math.PI)) - 90.0f;
-        entity.setYRot(yaw);
-        entity.setYHeadRot(yaw);
         float speed = 0.30f;
-        float rad = (float) Math.toRadians(yaw);
+        float rad = (float) Math.toRadians(entity.getYRot());
         float moveX = -net.minecraft.util.Mth.sin(rad) * speed;
         float moveZ = net.minecraft.util.Mth.cos(rad) * speed;
         entity.setDeltaMovement(moveX, entity.getDeltaMovement().y, moveZ);
