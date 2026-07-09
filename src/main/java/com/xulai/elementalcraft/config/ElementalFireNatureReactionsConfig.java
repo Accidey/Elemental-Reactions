@@ -1149,7 +1149,7 @@ public class ElementalFireNatureReactionsConfig {
             .comment("赤焰反制的最大范围（格）。",
                      "Maximum radius (blocks) of the Fire Counter.",
                      "Default: 6.0 / 默认：6.0")
-            .defineInRange("fire_counter_radius", 6.0, 1.0, 32.0);
+            .defineInRange("fire_counter_radius", 8.0, 1.0, 32.0);
     BUILDER.comment(" ");
 
     FIRE_COUNTER_EXPANSION_SPEED = BUILDER

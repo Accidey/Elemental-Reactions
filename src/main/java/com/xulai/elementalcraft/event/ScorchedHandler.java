@@ -51,8 +51,10 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = ElementalCraft.MODID)
@@ -756,6 +758,7 @@ public class ScorchedHandler {
         final double knockback;
         final int scorchDuration;
         final int fireStrength;
+        final Set<UUID> affectedEntities;
         double currentRadius;
         int phaseTicks;
         FireCounterPhase phase;
@@ -771,6 +774,7 @@ public class ScorchedHandler {
             this.knockback = ElementalFireNatureReactionsConfig.fireCounterKnockback;
             this.scorchDuration = ElementalFireNatureReactionsConfig.fireCounterScorchDuration;
             this.fireStrength = ElementUtils.getDisplayEnhancement(owner, ElementType.FIRE);
+            this.affectedEntities = new HashSet<>();
             this.currentRadius = 0;
             this.phaseTicks = 0;
             this.phase = FireCounterPhase.EXPAND;
@@ -781,6 +785,8 @@ public class ScorchedHandler {
     public static void onTryFireCounter(LivingDamageEvent event) {
         if (event.getEntity().level().isClientSide) return;
         LivingEntity target = event.getEntity();
+        int fireResist = ElementUtils.getDisplayResistance(target, ElementType.FIRE);
+        if (fireResist >= ElementalFireNatureReactionsConfig.scorchedResistThreshold) return;
         double bloodThreshold = ElementalFireNatureReactionsConfig.fireCounterBloodThreshold;
         if (bloodThreshold <= 0) return;
         float currentHP = target.getHealth() + target.getAbsorptionAmount();
@@ -830,9 +836,6 @@ public class ScorchedHandler {
         }
 
         double expandRate = fc.expansionSpeed / 20.0;
-        double contractRate = fc.expansionSpeed / 20.0;
-        int expandTicks = (int) (fc.maxRadius / expandRate);
-        int contractTicks = (int) (fc.maxRadius / contractRate);
 
         fc.phaseTicks++;
 
@@ -840,6 +843,8 @@ public class ScorchedHandler {
             case EXPAND:
                 fc.currentRadius = Math.min(fc.maxRadius, fc.phaseTicks * expandRate);
                 spawnFireRingParticles(sl, fc.x, fc.y, fc.z, fc.currentRadius);
+                collectAndLock(sl, fc, owner);
+                owner.setDeltaMovement(0, 0, 0);
                 if (fc.currentRadius >= fc.maxRadius) {
                     fc.phase = FireCounterPhase.CONTRACT;
                     fc.phaseTicks = 0;
@@ -847,9 +852,10 @@ public class ScorchedHandler {
                 break;
 
             case CONTRACT:
-                fc.currentRadius = Math.max(0, fc.maxRadius - fc.phaseTicks * contractRate);
+                fc.currentRadius = Math.max(0, fc.maxRadius - fc.phaseTicks * expandRate);
                 spawnFireRingParticles(sl, fc.x, fc.y, fc.z, fc.currentRadius);
-                pullEntities(sl, fc, owner);
+                pullAndLock(sl, fc, owner);
+                owner.setDeltaMovement(0, 0, 0);
                 if (fc.currentRadius <= 0) {
                     fc.phase = FireCounterPhase.EXPLODE;
                     fc.phaseTicks = 0;
@@ -864,50 +870,46 @@ public class ScorchedHandler {
         }
     }
 
-    private static void spawnFireRingParticles(ServerLevel level, double cx, double cy, double cz, double radius) {
-        if (radius <= 0) return;
-        int count = Math.max(8, (int) (radius * 12));
-        double step = (Math.PI * 2) / count;
-        for (int i = 0; i < count; i += 2) {
-            double angle = step * i;
-            double px = cx + Math.cos(angle) * radius;
-            double pz = cz + Math.sin(angle) * radius;
-            level.sendParticles(ISSCore.getFireParticle(), px, cy + 0.1, pz, 1, 0, 0, 0, 0);
-            level.sendParticles(ParticleTypes.SMOKE, px, cy + 0.1, pz, 1, 0, 0, 0, 0);
-        }
-    }
-
-    private static void pullEntities(ServerLevel level, ActiveFireCounter fc, LivingEntity owner) {
+    private static void collectAndLock(ServerLevel level, ActiveFireCounter fc, LivingEntity owner) {
         AABB area = new AABB(
                 fc.x - fc.maxRadius, fc.y - fc.maxRadius, fc.z - fc.maxRadius,
                 fc.x + fc.maxRadius, fc.y + fc.maxRadius, fc.z + fc.maxRadius);
         for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, area)) {
             if (entity == owner) continue;
             if (entity instanceof Player p && p.isCreative()) continue;
+            double dist = entity.distanceToSqr(fc.x, entity.getY(), fc.z);
+            if (dist > fc.currentRadius * fc.currentRadius) continue;
+            fc.affectedEntities.add(entity.getUUID());
+            entity.setDeltaMovement(0, 0, 0);
+        }
+    }
+
+    private static void pullAndLock(ServerLevel level, ActiveFireCounter fc, LivingEntity owner) {
+        for (UUID uid : fc.affectedEntities) {
+            Entity e = level.getEntity(uid);
+            if (!(e instanceof LivingEntity entity) || entity.isDeadOrDying()) continue;
+            entity.setDeltaMovement(0, 0, 0);
             Vec3 toCenter = new Vec3(fc.x - entity.getX(), 0, fc.z - entity.getZ());
             double dist = toCenter.length();
             if (dist > fc.currentRadius) continue;
-            double pull = 0.3 * (1 - dist / Math.max(fc.currentRadius, 1));
-            entity.push(toCenter.normalize().scale(pull));
+            double pull = 0.5 * (1 - dist / Math.max(fc.currentRadius, 1));
+            Vec3 pullVec = toCenter.normalize().scale(pull);
+            entity.push(pullVec.x, pullVec.y, pullVec.z);
             entity.hurtMarked = true;
         }
     }
 
     private static void doExplosion(ServerLevel level, ActiveFireCounter fc, LivingEntity owner) {
-        level.playSound(null, fc.x, fc.y, fc.z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 2.0f, 1.0f);
+        level.explode(owner, fc.x, fc.y, fc.z, 0f, Level.ExplosionInteraction.NONE);
 
-        AABB area = new AABB(
-                fc.x - fc.maxRadius, fc.y - fc.maxRadius, fc.z - fc.maxRadius,
-                fc.x + fc.maxRadius, fc.y + fc.maxRadius, fc.z + fc.maxRadius);
-        for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, area)) {
-            if (entity == owner) continue;
-            if (entity instanceof Player p && p.isCreative()) continue;
+        for (UUID uid : fc.affectedEntities) {
+            Entity e = level.getEntity(uid);
+            if (!(e instanceof LivingEntity entity) || entity.isDeadOrDying()) continue;
             Vec3 delta = entity.position().subtract(owner.position());
             if (delta.lengthSqr() < 1e-7) {
                 delta = new Vec3(level.random.nextDouble() - 0.5, 0, level.random.nextDouble() - 0.5);
             }
             delta = delta.normalize();
-
             entity.push(delta.x * fc.knockback, 0.6, delta.z * fc.knockback);
             entity.hurtMarked = true;
 
@@ -924,8 +926,20 @@ public class ScorchedHandler {
                     15, 0.5, 0.5, 0.5, 0.1);
         }
 
-        level.sendParticles(ParticleTypes.EXPLOSION, fc.x, fc.y + 1, fc.z, 1, 0, 0, 0, 0);
         spawnFireTornado(level, new Vec3(fc.x, fc.y, fc.z), fc.maxRadius, 0);
+    }
+
+    private static void spawnFireRingParticles(ServerLevel level, double cx, double cy, double cz, double radius) {
+        if (radius <= 0) return;
+        int count = Math.max(8, (int) (radius * 12));
+        double step = (Math.PI * 2) / count;
+        for (int i = 0; i < count; i += 2) {
+            double angle = step * i;
+            double px = cx + Math.cos(angle) * radius;
+            double pz = cz + Math.sin(angle) * radius;
+            level.sendParticles(ISSCore.getFireParticle(), px, cy + 0.1, pz, 1, 0, 0, 0, 0);
+            level.sendParticles(ParticleTypes.SMOKE, px, cy + 0.1, pz, 1, 0, 0, 0, 0);
+        }
     }
 
     private static void spawnFireTornado(ServerLevel level, Vec3 pos, double radius, int tick) {
