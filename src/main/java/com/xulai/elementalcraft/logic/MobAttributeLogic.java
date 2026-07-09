@@ -172,7 +172,8 @@ public class MobAttributeLogic {
             }
         }
 
-        applyArmorAttributes(mob, enhanceType, enhanceTotalPoints, resistType, resistTotalPoints);
+        boolean forceGold = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString().equals("minecraft:piglin");
+        applyArmorAttributes(mob, enhanceType, enhanceTotalPoints, resistType, resistTotalPoints, forceGold);
 
         CompoundTag dropData = mob.getPersistentData();
         dropData.putString("EC_DropElementType", mainType.getId());
@@ -253,7 +254,8 @@ public class MobAttributeLogic {
                 }
             }
 
-            applyArmorAttributes(mob, enhanceType, enhancePoints, resistType, resistPoints);
+            boolean forceGold = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString().equals("minecraft:piglin");
+            applyArmorAttributes(mob, enhanceType, enhancePoints, resistType, resistPoints, forceGold);
 
             persistentData.putString("EC_DropElementType", enhanceType != null ? enhanceType.getId() : "");
             if (attackType != null && attackType != ElementType.NONE) {
@@ -273,6 +275,11 @@ public class MobAttributeLogic {
 
     private static void applyArmorAttributes(Mob mob, ElementType enhanceType, int enhanceTotalPoints,
                                              ElementType resistType, int resistTotalPoints) {
+        applyArmorAttributes(mob, enhanceType, enhanceTotalPoints, resistType, resistTotalPoints, false);
+    }
+
+    private static void applyArmorAttributes(Mob mob, ElementType enhanceType, int enhanceTotalPoints,
+                                             ElementType resistType, int resistTotalPoints, boolean forceGold) {
 
         int enhancePerLevel = ElementalConfig.getStrengthPerLevel();
         int resistPerLevel = ElementalConfig.getResistPerLevel();
@@ -289,7 +296,7 @@ public class MobAttributeLogic {
             ItemStack stack = mob.getItemBySlot(slot);
 
             if (stack.isEmpty()) {
-                stack = AttributeEquipUtils.createRandomArmor(i);
+                stack = AttributeEquipUtils.createRandomArmor(i, forceGold);
                 mob.setItemSlot(slot, stack);
                 mob.setDropChance(slot, 0.0F);
             }

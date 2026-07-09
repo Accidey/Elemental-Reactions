@@ -1,160 +1,165 @@
-// src/main/java/com/xulai/elementalcraft/util/AttributeEquipUtils.java
 package com.xulai.elementalcraft.util;
 
+import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.enchantment.ModEnchantments;
-import net.minecraft.nbt.ByteTag;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 
 import java.util.*;
 
-/**
- * AttributeEquipUtils
- *
- * 中文说明：
- * 提供装备、附魔和数值计算的静态工具方法。
- * 包含附魔获取、点数分配算法、隐形头盔创建等底层逻辑。
- *
- * English description:
- * Provides static utility methods for equipment, enchantments, and value calculations.
- * Includes enchantment retrieval, point distribution algorithms, invisible helmet creation, etc.
- */
 public class AttributeEquipUtils {
 
     private static final Random RANDOM = new Random();
 
-    /**
-     * 将总点数均匀分配到多个护甲部位并转换为附魔等级。
-     *
-     * Distributes total points evenly across armor pieces and converts to enchantment levels.
-     *
-     * @param totalPoints 总点数 / Total points
-     * @param pointsPerLevel 每级点数配置 / Configured points per level
-     * @param pieceCount 护甲件数 / Number of armor pieces
-     * @return 每个部位的等级数组 / Array of levels for each piece
-     */
     public static int[] distributePointsToLevels(int totalPoints, int pointsPerLevel, int pieceCount) {
-        // 防止除以零错误 / Prevent divide by zero error
         if (pointsPerLevel <= 0) pointsPerLevel = 1;
 
         int totalLevelsNeeded = totalPoints / pointsPerLevel;
         int[] levels = new int[pieceCount];
-        Arrays.fill(levels, 1);
-        
-        int remaining = totalLevelsNeeded - pieceCount;
-        if (remaining <= 0) return levels;
 
-        // 随机分配剩余等级 / Randomly distribute remaining levels
-        for (int i = 0; i < remaining; i++) {
-            List<Integer> candidates = new ArrayList<>();
-            for (int j = 0; j < pieceCount; j++) {
-                if (levels[j] < 5) candidates.add(j);
+        Arrays.fill(levels, 0);
+
+        if (totalLevelsNeeded <= 0) {
+            if (totalPoints > 0) {
+                levels[RANDOM.nextInt(pieceCount)] = 1;
             }
-            if (candidates.isEmpty()) break;
-            int chosen = candidates.get(RANDOM.nextInt(candidates.size()));
+            return levels;
+        }
+
+        int baseLevel = totalLevelsNeeded / pieceCount;
+        int remainingLevels = totalLevelsNeeded % pieceCount;
+
+        Arrays.fill(levels, baseLevel);
+
+        for (int i = 0; i < remainingLevels; i++) {
+            int chosen = RANDOM.nextInt(pieceCount);
             levels[chosen]++;
         }
+
+        int maxConfigLevel = ElementalConfig.getMaxStatCap() / pointsPerLevel;
+        if (maxConfigLevel <= 0) maxConfigLevel = 1;
+
+        for (int i = 0; i < pieceCount; i++) {
+            if (levels[i] > maxConfigLevel) levels[i] = maxConfigLevel;
+        }
+
         return levels;
     }
 
-    /**
-     * 为物品应用攻击附魔。
-     *
-     * Apply attack enchantment to an item.
-     */
     public static void applyAttackEnchant(ItemStack stack, ElementType type) {
         if (stack.isEmpty() || type == null || type == ElementType.NONE) return;
         Enchantment ench = getAttackEnchantment(type);
         if (ench != null) stack.enchant(ench, 1);
     }
 
-    /**
-     * 为护甲应用强化和抗性附魔（基于点数）。
-     *
-     * Apply enhancement and resistance enchantments to armor (based on points).
-     */
+    public static void applyUnbreaking(ItemStack stack, int level) {
+        if (stack.isEmpty()) return;
+        stack.enchant(Enchantments.UNBREAKING, level);
+    }
+
     public static void applyArmorEnchants(ItemStack stack, ElementType enhType, int enhPoints, ElementType resType, int resPoints, int pointsPerLevelDivider) {
         if (stack.isEmpty()) return;
-        
-        // 防止除以零 / Prevent divide by zero
+
         if (pointsPerLevelDivider <= 0) pointsPerLevelDivider = 1;
 
-        int enhLv = (enhPoints > 0) ? Math.max(1, Math.min(5, enhPoints / pointsPerLevelDivider)) : 0;
-        int resLv = (resPoints > 0) ? Math.max(1, Math.min(5, resPoints / pointsPerLevelDivider)) : 0;
-        
+        int maxConfigLevel = ElementalConfig.getMaxStatCap() / pointsPerLevelDivider;
+        if (maxConfigLevel <= 0) maxConfigLevel = 1;
+
+        int enhLv = (enhPoints > 0) ? Math.max(1, Math.min(maxConfigLevel, enhPoints / pointsPerLevelDivider)) : 0;
+        int resLv = (resPoints > 0) ? Math.max(1, Math.min(maxConfigLevel, resPoints / pointsPerLevelDivider)) : 0;
+
         applyArmorEnchantsLevel(stack, enhType, enhLv, resType, resLv);
     }
 
-    /**
-     * 为护甲应用强化和抗性附魔（基于等级）。
-     *
-     * Apply enhancement and resistance enchantments to armor (based on levels).
-     */
     public static void applyArmorEnchantsLevel(ItemStack stack, ElementType enhType, int enhLv, ElementType resType, int resLv) {
         if (stack.isEmpty()) return;
-        
-        Map<Enchantment, Integer> map = new HashMap<>();
-        
+
+        Map<Enchantment, Integer> existing = EnchantmentHelper.getEnchantments(stack);
+        Map<Enchantment, Integer> newMap = new HashMap<>(existing);
+
         if (enhType != null && enhType != ElementType.NONE && enhLv > 0) {
             Enchantment ench = getEnhancementEnchantment(enhType);
-            if (ench != null) map.put(ench, enhLv);
+            if (ench != null) {
+                newMap.put(ench, Math.max(enhLv, newMap.getOrDefault(ench, 0)));
+            }
         }
-        
+
         if (resType != null && resType != ElementType.NONE && resLv > 0) {
             Enchantment ench = getResistanceEnchantment(resType);
-            if (ench != null) map.put(ench, resLv);
+            if (ench != null) {
+                newMap.put(ench, Math.max(resLv, newMap.getOrDefault(ench, 0)));
+            }
         }
 
-        if (!map.isEmpty()) {
-            EnchantmentHelper.setEnchantments(map, stack);
-            stack.addTagElement("HideFlags", ByteTag.valueOf((byte)2));
+        if (!newMap.equals(existing)) {
+            EnchantmentHelper.setEnchantments(newMap, stack);
         }
     }
 
-    /**
-     * 创建用于存储属性的隐形皮革头盔。
-     *
-     * Creates an invisible leather helmet used to store attributes.
-     */
-    public static ItemStack createInvisibleHelmet() {
-        ItemStack helmet = new ItemStack(Items.LEATHER_HELMET);
-        CompoundTag tag = helmet.getOrCreateTag();
-        tag.putBoolean("Unbreakable", true);
-        tag.putInt("HideFlags", 127);
-        tag.putString("elementalcraft_marker", "invisible_resist");
-        CompoundTag display = new CompoundTag();
-        display.putInt("color", 0);
-        tag.put("display", display);
-        return helmet;
+    private static final Item[][] RANDOM_ARMOR_POOL = {
+            // HEAD: leather, chainmail, iron, gold, diamond, netherite
+            {Items.LEATHER_HELMET, Items.CHAINMAIL_HELMET, Items.IRON_HELMET, Items.GOLDEN_HELMET, Items.DIAMOND_HELMET, Items.NETHERITE_HELMET},
+            // CHEST
+            {Items.LEATHER_CHESTPLATE, Items.CHAINMAIL_CHESTPLATE, Items.IRON_CHESTPLATE, Items.GOLDEN_CHESTPLATE, Items.DIAMOND_CHESTPLATE, Items.NETHERITE_CHESTPLATE},
+            // LEGS
+            {Items.LEATHER_LEGGINGS, Items.CHAINMAIL_LEGGINGS, Items.IRON_LEGGINGS, Items.GOLDEN_LEGGINGS, Items.DIAMOND_LEGGINGS, Items.NETHERITE_LEGGINGS},
+            // FEET
+            {Items.LEATHER_BOOTS, Items.CHAINMAIL_BOOTS, Items.IRON_BOOTS, Items.GOLDEN_BOOTS, Items.DIAMOND_BOOTS, Items.NETHERITE_BOOTS}
+    };
+
+    private static final Item[] RANDOM_WEAPON_POOL = {
+            // Swords
+            Items.WOODEN_SWORD, Items.STONE_SWORD, Items.IRON_SWORD, Items.GOLDEN_SWORD, Items.DIAMOND_SWORD, Items.NETHERITE_SWORD,
+            // Axes
+            Items.WOODEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.GOLDEN_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE,
+            // Pickaxes
+            Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.IRON_PICKAXE, Items.GOLDEN_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE,
+            // Shovels
+            Items.WOODEN_SHOVEL, Items.STONE_SHOVEL, Items.IRON_SHOVEL, Items.GOLDEN_SHOVEL, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL,
+            // Hoes
+            Items.WOODEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.GOLDEN_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE
+    };
+
+    public static ItemStack createRandomArmor(int slotIndex) {
+        return createRandomArmor(slotIndex, false);
     }
 
-    /**
-     * 根据索引创建对应的铁甲部件。
-     *
-     * Creates iron armor piece based on slot index.
-     * @param slotIndex 0:Boots, 1:Leggings, 2:Chestplate, 3:Helmet
-     */
-    public static ItemStack createIronArmor(int slotIndex) {
-        return switch (slotIndex) {
-            case 0 -> new ItemStack(Items.IRON_BOOTS);
-            case 1 -> new ItemStack(Items.IRON_LEGGINGS);
-            case 2 -> new ItemStack(Items.IRON_CHESTPLATE);
-            case 3 -> new ItemStack(Items.IRON_HELMET);
-            default -> ItemStack.EMPTY;
-        };
+    private static final Item[] GOLD_ARMOR = { Items.GOLDEN_HELMET, Items.GOLDEN_CHESTPLATE, Items.GOLDEN_LEGGINGS, Items.GOLDEN_BOOTS };
+
+    public static ItemStack createRandomArmor(int slotIndex, boolean forceGold) {
+        if (slotIndex < 0 || slotIndex >= RANDOM_ARMOR_POOL.length) return ItemStack.EMPTY;
+        if (forceGold) return new ItemStack(GOLD_ARMOR[slotIndex]);
+        Item[] pool = RANDOM_ARMOR_POOL[slotIndex];
+        return new ItemStack(pool[RANDOM.nextInt(pool.length)]);
+    }
+
+    public static ItemStack createRandomWeapon() {
+        return new ItemStack(RANDOM_WEAPON_POOL[RANDOM.nextInt(RANDOM_WEAPON_POOL.length)]);
     }
 
     public static ElementType getCounterElement(ElementType type) {
-        return switch (type) {
-            case FIRE -> ElementType.FROST;
-            case FROST -> ElementType.NATURE;
-            case NATURE -> ElementType.THUNDER;
-            case THUNDER -> ElementType.FIRE;
-            default -> ElementType.NONE;
-        };
+        if (type == null || type == ElementType.NONE) return ElementType.NONE;
+
+        List<? extends String> restraints = ElementalConfig.cachedRestraints;
+        if (restraints == null || restraints.isEmpty()) return ElementType.NONE;
+
+        for (String relation : restraints) {
+            String[] split = relation.split("->");
+            if (split.length == 2) {
+                String attackerId = split[0].trim();
+                String victimId = split[1].trim();
+
+                if (victimId.equalsIgnoreCase(type.getId())) {
+                    return ElementType.fromId(attackerId);
+                }
+            }
+        }
+
+        return ElementType.NONE;
     }
 
     public static ElementType randomNonNoneElement() {
