@@ -1,68 +1,63 @@
-// src/main/java/com/xulai/elementalcraft/logic/MobAttributeLogic.java
 package com.xulai.elementalcraft.logic;
 
 import com.xulai.elementalcraft.config.ElementalConfig;
+import com.xulai.elementalcraft.event.FrostbiteHandler;
+import com.xulai.elementalcraft.event.ScorchedHandler;
+import com.xulai.elementalcraft.event.StaticShockHandler;
 import com.xulai.elementalcraft.util.*;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.NeutralMob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
-import java.util.*;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.registries.ForgeRegistries;
 
-/**
- * MobAttributeLogic
- *
- * 中文说明：
- * 包含生物属性生成的决策逻辑。
- * 处理黑名单检查、强制属性（配置/维度）、随机生成算法以及最终的属性应用流程。
- * 已对接热重载系统，并处理无护甲生物的属性承载问题。
- *
- * English description:
- * Contains the decision logic for mob attribute generation.
- * Handles blacklist checks, forced attributes (config/dimension), random generation algorithms, and the final attribute application flow.
- * Integrated with the hot-reload system and handles attribute holding for unarmored mobs.
- */
+import com.xulai.elementalcraft.config.ElementalISSIntegrationConfig;
+
+import java.util.concurrent.ThreadLocalRandom;
+
+@Mod.EventBusSubscriber(modid = com.xulai.elementalcraft.ElementalCraft.MODID)
 public class MobAttributeLogic {
 
-    private static final Random RANDOM = new Random();
     private static final EquipmentSlot[] ARMOR_SLOTS = {
-            EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD
+            EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
     };
 
-    /**
-     * 处理单个生物的属性赋予逻辑。
-     *
-     * Processes attribute assignment logic for a single mob.
-     *
-     * @param mob 目标生物 / Target mob
-     */
     public static void processMob(Mob mob) {
+        if (mob.getClass().getName().equals("io.redspace.ironsspellbooks.entity.mobs.SummonedPolarBear")) {
+            return;
+        }
         CompoundTag data = mob.getPersistentData();
         if (data.getBoolean("ElementalCraft_AttributesSet")) return;
 
         String entityId = net.minecraft.world.entity.EntityType.getKey(mob.getType()).toString();
 
-        // 黑名单检查（使用静态缓存）
-        // Blacklist check (using static cache)
         if (ElementalConfig.cachedBlacklist.contains(entityId)) {
             data.putBoolean("ElementalCraft_AttributesSet", true);
             return;
         }
 
-        // 1. 获取强制属性配置
-        // 1. Get forced attribute configuration
-        ForcedAttributeHelper.ForcedData forced = ForcedAttributeHelper.getForcedData(mob.getType());
-        boolean dimensionForced = false;
+        java.util.List<ForcedAttributeHelper.ForcedData> forcedList = ForcedAttributeHelper.getForcedDataList(mob.getType());
+        ForcedAttributeHelper.ForcedData forced = null;
+        if (!forcedList.isEmpty()) {
+            forced = forcedList.get(ThreadLocalRandom.current().nextInt(forcedList.size()));
+        }
 
-        // 2. 下界维度强制属性逻辑（使用静态缓存）
-        // 2. Nether dimension forced attribute logic (using static cache)
         if (forced == null && ElementalConfig.netherForcedFire
                 && mob.level().dimension() == Level.NETHER) {
             int points = ElementalConfig.netherFirePoints;
@@ -70,11 +65,8 @@ public class MobAttributeLogic {
                     ElementType.FIRE, ElementType.FIRE, points,
                     ElementType.FIRE, points
             );
-            dimensionForced = true;
         }
 
-        // 3. 末地维度强制属性逻辑（使用静态缓存）
-        // 3. End dimension forced attribute logic (using static cache)
         if (forced == null && ElementalConfig.endForcedThunder
                 && mob.level().dimension() == Level.END) {
             int points = ElementalConfig.endThunderPoints;
@@ -82,240 +74,480 @@ public class MobAttributeLogic {
                     ElementType.THUNDER, ElementType.THUNDER, points,
                     ElementType.THUNDER, points
             );
-            dimensionForced = true;
         }
 
-        // 应用强制属性
-        // Apply forced attributes
         if (forced != null) {
-            applyForcedAttributes(mob, forced, dimensionForced);
+            applyForcedAttributes(mob, data, forced);
+            return;
+        }
+
+        boolean isNeutral = (mob instanceof NeutralMob) || entityId.equals("minecraft:piglin");
+        boolean isMonster = (mob instanceof Monster);
+
+        if (!isMonster && !isNeutral) {
             data.putBoolean("ElementalCraft_AttributesSet", true);
             return;
         }
 
-        // 4. 非敌对且非强制生物跳过
-        // 4. Skip non-hostile and non-forced mobs
-        if (!(mob instanceof Monster)) {
+        double chance = isNeutral ? ElementalConfig.mobChanceNeutral : ElementalConfig.mobChanceHostile;
+        boolean willGenerate = ThreadLocalRandom.current().nextDouble() < chance;
+
+        if (!willGenerate) {
             data.putBoolean("ElementalCraft_AttributesSet", true);
             return;
         }
 
-        // 5. 全局生成概率检查（使用静态缓存）
-        // 5. Global generation chance check (using static cache)
-        double chance = (mob instanceof net.minecraft.world.entity.monster.Enemy) 
-                ? ElementalConfig.mobChanceHostile 
-                : ElementalConfig.mobChanceNeutral;
-        
-        if (RANDOM.nextDouble() >= chance) {
-            data.putBoolean("ElementalCraft_AttributesSet", true);
-            return;
-        }
-
-        // 6. 执行随机生成逻辑
-        // 6. Execute random generation logic
         applyRandomAttributes(mob);
         data.putBoolean("ElementalCraft_AttributesSet", true);
     }
 
-    /**
-     * 应用随机生成的属性。
-     *
-     * Applies randomly generated attributes.
-     */
     private static void applyRandomAttributes(Mob mob) {
         ItemStack mainHand = mob.getMainHandItem();
         ItemStack offHand = mob.getOffhandItem();
         boolean hasHandItem = !mainHand.isEmpty() || !offHand.isEmpty();
 
-        List<ItemStack> armorPieces = new ArrayList<>();
-        for (EquipmentSlot slot : ARMOR_SLOTS) {
-            ItemStack item = mob.getItemBySlot(slot);
-            if (!item.isEmpty()) armorPieces.add(item);
-        }
-        int pieceCount = armorPieces.isEmpty() ? 1 : armorPieces.size();
-
-        // 确定主元素
-        // Determine primary element
         ElementType mainType = BiomeAttributeBias.getBiasedElement((ServerLevel) mob.level(), mob.blockPosition());
 
         ElementType attackType = null;
-        // 攻击属性概率检查（使用静态缓存）
-        // Attack attribute chance check (using static cache)
-        if (hasHandItem && RANDOM.nextDouble() < ElementalConfig.attackChance) {
+        if (ThreadLocalRandom.current().nextDouble() < ElementalConfig.attackChance) {
             attackType = mainType;
         }
-        
-        ElementType enhanceType = mainType;
-        int enhanceTotalPoints = hasHandItem ? ElementalConfig.rollMonsterStrength() : 0;
 
-        // 确定抗性元素
-        // Determine resistance element
+        ElementType enhanceType = mainType;
+        int enhanceTotalPoints = (hasHandItem || attackType != null) ? ElementalConfig.rollMonsterStrength() : 0;
+
         ElementType resistType;
-        // 抗性反制概率检查（使用静态缓存）
-        // Counter resistance chance check (using static cache)
-        if (attackType != null && RANDOM.nextDouble() < ElementalConfig.counterResistChance) {
+        if (attackType != null && ThreadLocalRandom.current().nextDouble() < ElementalConfig.counterResistChance) {
             resistType = AttributeEquipUtils.getCounterElement(attackType);
         } else {
             resistType = AttributeEquipUtils.randomNonNoneElement();
         }
         int resistTotalPoints = ElementalConfig.rollMonsterResist();
 
-        // 检查武器是否在强制配置列表中
-        // Check if weapon is in the forced configuration list
-        if (hasHandItem) {
-            ItemStack weapon = !mainHand.isEmpty() ? mainHand : offHand;
-            ForcedItemHelper.WeaponData weaponData = ForcedItemHelper.getForcedWeapon(weapon.getItem());
-            if (weaponData != null && weaponData.attackType() != null) {
-                AttributeEquipUtils.applyAttackEnchant(weapon, weaponData.attackType());
-                attackType = null; 
-            }
-        }
-
-        // 检查护甲是否在强制配置列表中
-        // Check if armor is in the forced configuration list
-        boolean armorForced = false;
-        if (!armorPieces.isEmpty()) {
-            for (ItemStack armor : armorPieces) {
-                ForcedItemHelper.ArmorData armorData = ForcedItemHelper.getForcedArmor(armor.getItem());
-                if (armorData != null) {
-                    AttributeEquipUtils.applyArmorEnchants(armor, 
-                            armorData.enhanceType(), armorData.enhancePoints(),
-                            armorData.resistType(), armorData.resistPoints(), 
-                            1);
-                    armorForced = true;
+        if (attackType != null) {
+            String entityId = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString();
+            boolean isBlacklisted = ModList.get() != null && ModList.get().isLoaded("irons_spellbooks")
+                    && ElementalISSIntegrationConfig.cachedCasterBlacklist != null
+                    && ElementalISSIntegrationConfig.cachedCasterBlacklist.contains(entityId);
+            double casterChance = ModList.get() != null && ModList.get().isLoaded("irons_spellbooks")
+                    ? ElementalISSIntegrationConfig.casterMobChance : 0.0;
+            boolean issCaster = !isBlacklisted && attackType == ElementType.THUNDER && ThreadLocalRandom.current().nextDouble() < casterChance;
+            boolean natureCaster = !isBlacklisted && !issCaster && attackType == ElementType.NATURE && ThreadLocalRandom.current().nextDouble() < casterChance;
+            boolean frostCaster = !isBlacklisted && !issCaster && !natureCaster && attackType == ElementType.FROST && ThreadLocalRandom.current().nextDouble() < casterChance;
+            boolean fireCaster = !isBlacklisted && !issCaster && !natureCaster && !frostCaster && attackType == ElementType.FIRE && ThreadLocalRandom.current().nextDouble() < casterChance;
+            if (issCaster) {
+                mob.getPersistentData().putBoolean("EC_ISS_MobCaster", true);
+                mob.getPersistentData().putString("EC_ISS_MobElement", "thunder");
+            } else if (natureCaster) {
+                mob.getPersistentData().putBoolean("EC_ISS_MobCaster", true);
+                mob.getPersistentData().putString("EC_ISS_MobElement", "nature");
+                if (!hasHandItem) {
+                    ItemStack weapon = AttributeEquipUtils.createRandomWeapon();
+                    AttributeEquipUtils.applyAttackEnchant(weapon, attackType);
+                    AttributeEquipUtils.applyUnbreaking(weapon, 3);
+                    mob.setItemSlot(EquipmentSlot.MAINHAND, weapon);
+                    mob.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
                 }
-            }
-            if (armorForced) {
-                enhanceType = null;
-                resistType = null;
-                enhanceTotalPoints = 0;
-                resistTotalPoints = 0;
+            } else if (frostCaster) {
+                mob.getPersistentData().putBoolean("EC_ISS_MobCaster", true);
+                mob.getPersistentData().putString("EC_ISS_MobElement", "frost");
+            } else if (fireCaster) {
+                mob.getPersistentData().putBoolean("EC_ISS_MobCaster", true);
+                mob.getPersistentData().putString("EC_ISS_MobElement", "fire");
+            } else if (hasHandItem) {
+                if (!mainHand.isEmpty()) {
+                    AttributeEquipUtils.applyAttackEnchant(mainHand, attackType);
+                    AttributeEquipUtils.applyUnbreaking(mainHand, 3);
+                }
+                if (!offHand.isEmpty()) {
+                    AttributeEquipUtils.applyAttackEnchant(offHand, attackType);
+                    AttributeEquipUtils.applyUnbreaking(offHand, 3);
+                }
+            } else {
+                ItemStack weapon = AttributeEquipUtils.createRandomWeapon();
+                AttributeEquipUtils.applyAttackEnchant(weapon, attackType);
+                AttributeEquipUtils.applyUnbreaking(weapon, 3);
+                mob.setItemSlot(EquipmentSlot.MAINHAND, weapon);
+                mob.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
             }
         }
 
-        // 应用武器攻击附魔
-        // Apply weapon attack enchantment
-        if (hasHandItem && attackType != null) {
-            ItemStack weapon = !mainHand.isEmpty() ? mainHand : offHand;
-            AttributeEquipUtils.applyAttackEnchant(weapon, attackType);
+        applyArmorAttributes(mob, enhanceType, enhanceTotalPoints, resistType, resistTotalPoints);
+
+        CompoundTag dropData = mob.getPersistentData();
+        dropData.putString("EC_DropElementType", mainType.getId());
+        if (attackType != null) {
+            dropData.putString("EC_DropAttackType", attackType.getId());
         }
+        dropData.putInt("EC_DropEnhancePoints", enhanceTotalPoints);
+        dropData.putInt("EC_DropResistPoints", resistTotalPoints);
+        dropData.putString("EC_DropResistType", resistType.getId());
 
-        // 应用护甲附魔
-        // Apply armor enchantments
-        if (!armorPieces.isEmpty() && !armorForced) {
-            int[] resistLevels = AttributeEquipUtils.distributePointsToLevels(resistTotalPoints, ElementalConfig.getResistPerLevel(), pieceCount);
-            int[] enhanceLevels = enhanceTotalPoints > 0
-                    ? AttributeEquipUtils.distributePointsToLevels(enhanceTotalPoints, ElementalConfig.getStrengthPerLevel(), pieceCount)
-                    : new int[pieceCount];
-
-            for (int i = 0; i < armorPieces.size(); i++) {
-                AttributeEquipUtils.applyArmorEnchantsLevel(armorPieces.get(i),
-                        enhanceType, enhanceLevels[i],
-                        resistType, resistLevels[i]);
-            }
-        } else if (armorPieces.isEmpty() && !armorForced) {
-            // 无护甲：创建隐形头盔承载属性
-            // No armor: Create invisible helmet to hold attributes
-            ItemStack helmet = AttributeEquipUtils.createInvisibleHelmet();
-            
-            int resPerLv = ElementalConfig.getResistPerLevel();
-            int enhPerLv = ElementalConfig.getStrengthPerLevel();
-
-            int resistLv = Math.max(1, Math.min(10, resistTotalPoints / resPerLv));
-            int enhanceLv = 0;
-            if (enhanceTotalPoints > 0) {
-                enhanceLv = Math.max(1, Math.min(10, enhanceTotalPoints / enhPerLv));
-            }
-            
-            AttributeEquipUtils.applyArmorEnchantsLevel(helmet, enhanceType, enhanceLv, resistType, resistLv);
-            mob.setItemSlot(EquipmentSlot.HEAD, helmet);
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            mob.setDropChance(slot, 0.0F);
         }
     }
 
-    /**
-     * 应用强制属性（来自配置文件或维度规则）。
-     *
-     * Apply forced attributes (from config file or dimension rules).
-     */
-    private static void applyForcedAttributes(Mob mob, ForcedAttributeHelper.ForcedData data, boolean dimensionForced) {
-        ElementType attackType = data.attackType();
-        ElementType enhanceType = data.enhanceType();
-        int enhancePoints = data.enhancePoints();
-        ElementType resistType = data.resistType();
-        int resistPoints = data.resistPoints();
-
-        // 1. 武器逻辑处理
-        // 1. Weapon logic handling
-        ItemStack mainHand = mob.getMainHandItem();
-        ItemStack offHand = mob.getOffhandItem();
-        boolean hasWeapon = !mainHand.isEmpty() || !offHand.isEmpty();
-
-        if (attackType != null && attackType != ElementType.NONE) {
-            if (hasWeapon) {
-                if (!mainHand.isEmpty()) AttributeEquipUtils.applyAttackEnchant(mainHand, attackType);
-                if (!offHand.isEmpty()) AttributeEquipUtils.applyAttackEnchant(offHand, attackType);
-            } else {
-                ItemStack sword = new ItemStack(Items.IRON_SWORD);
-                AttributeEquipUtils.applyAttackEnchant(sword, attackType);
-                mob.setItemSlot(EquipmentSlot.MAINHAND, sword);
-            }
-        }
-
+    private static void applyForcedAttributes(Mob mob, CompoundTag persistentData, ForcedAttributeHelper.ForcedData data) {
         MinecraftServer server = mob.level().getServer();
         if (server == null) return;
 
-        ItemStack[] currentArmor = new ItemStack[4];
-        for (int i = 0; i < 4; i++) {
-            currentArmor[i] = mob.getItemBySlot(ARMOR_SLOTS[i]);
-        }
-        boolean hasAnyArmor = Arrays.stream(currentArmor).anyMatch(s -> !s.isEmpty());
+        server.tell(new TickTask(server.getTickCount() + 1, () -> {
+            if (!mob.isAlive()) return;
+
+            ElementType attackType = data.attackType();
+            ElementType enhanceType = data.enhanceType();
+            int enhancePoints = data.enhancePoints();
+            ElementType resistType = data.resistType();
+            int resistPoints = data.resistPoints();
+
+            ItemStack mainHand = mob.getMainHandItem();
+            ItemStack offHand = mob.getOffhandItem();
+            boolean hasWeapon = !mainHand.isEmpty() || !offHand.isEmpty();
+
+            if (attackType != null && attackType != ElementType.NONE) {
+                String entityId = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString();
+                boolean isBlacklisted = ModList.get() != null && ModList.get().isLoaded("irons_spellbooks")
+                        && ElementalISSIntegrationConfig.cachedCasterBlacklist != null
+                        && ElementalISSIntegrationConfig.cachedCasterBlacklist.contains(entityId);
+                double casterChance = ModList.get() != null && ModList.get().isLoaded("irons_spellbooks")
+                        ? ElementalISSIntegrationConfig.casterMobChance : 0.0;
+                boolean issCaster = !isBlacklisted && attackType == ElementType.THUNDER && ThreadLocalRandom.current().nextDouble() < casterChance;
+                boolean natureCaster = !isBlacklisted && !issCaster && attackType == ElementType.NATURE && ThreadLocalRandom.current().nextDouble() < casterChance;
+                boolean frostCaster = !isBlacklisted && !issCaster && !natureCaster && attackType == ElementType.FROST && ThreadLocalRandom.current().nextDouble() < casterChance;
+                boolean fireCaster = !isBlacklisted && !issCaster && !natureCaster && !frostCaster && attackType == ElementType.FIRE && ThreadLocalRandom.current().nextDouble() < casterChance;
+                if (issCaster) {
+                    persistentData.putBoolean("EC_ISS_MobCaster", true);
+                    persistentData.putString("EC_ISS_MobElement", "thunder");
+                } else if (natureCaster) {
+                    persistentData.putBoolean("EC_ISS_MobCaster", true);
+                    persistentData.putString("EC_ISS_MobElement", "nature");
+                    if (!hasWeapon) {
+                        ItemStack weapon = AttributeEquipUtils.createRandomWeapon();
+                        AttributeEquipUtils.applyAttackEnchant(weapon, attackType);
+                        AttributeEquipUtils.applyUnbreaking(weapon, 3);
+                        mob.setItemSlot(EquipmentSlot.MAINHAND, weapon);
+                        mob.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
+                    }
+                } else if (frostCaster) {
+                    persistentData.putBoolean("EC_ISS_MobCaster", true);
+                    persistentData.putString("EC_ISS_MobElement", "frost");
+                } else if (fireCaster) {
+                    persistentData.putBoolean("EC_ISS_MobCaster", true);
+                    persistentData.putString("EC_ISS_MobElement", "fire");
+                } else if (hasWeapon) {
+                    if (!mainHand.isEmpty()) {
+                        AttributeEquipUtils.applyAttackEnchant(mainHand, attackType);
+                        AttributeEquipUtils.applyUnbreaking(mainHand, 3);
+                    }
+                    if (!offHand.isEmpty()) {
+                        AttributeEquipUtils.applyAttackEnchant(offHand, attackType);
+                        AttributeEquipUtils.applyUnbreaking(offHand, 3);
+                    }
+                } else {
+                    ItemStack weapon = AttributeEquipUtils.createRandomWeapon();
+                    AttributeEquipUtils.applyAttackEnchant(weapon, attackType);
+                    AttributeEquipUtils.applyUnbreaking(weapon, 3);
+                    mob.setItemSlot(EquipmentSlot.MAINHAND, weapon);
+                    mob.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
+                }
+            }
+
+            applyArmorAttributes(mob, enhanceType, enhancePoints, resistType, resistPoints);
+
+            persistentData.putString("EC_DropElementType", enhanceType != null ? enhanceType.getId() : "");
+            if (attackType != null && attackType != ElementType.NONE) {
+                persistentData.putString("EC_DropAttackType", attackType.getId());
+            }
+            persistentData.putInt("EC_DropEnhancePoints", enhancePoints);
+            persistentData.putInt("EC_DropResistPoints", resistPoints);
+            persistentData.putString("EC_DropResistType", resistType != null ? resistType.getId() : "");
+
+            persistentData.putBoolean("ElementalCraft_AttributesSet", true);
+
+            for (EquipmentSlot slot : EquipmentSlot.values()) {
+                mob.setDropChance(slot, 0.0F);
+            }
+        }));
+    }
+
+    private static void applyArmorAttributes(Mob mob, ElementType enhanceType, int enhanceTotalPoints,
+                                             ElementType resistType, int resistTotalPoints) {
 
         int enhancePerLevel = ElementalConfig.getStrengthPerLevel();
         int resistPerLevel = ElementalConfig.getResistPerLevel();
 
-        if (hasAnyArmor) {
-            int[] enhanceLv = AttributeEquipUtils.distributePointsToLevels(enhancePoints, enhancePerLevel, 4);
-            int[] resistLv = AttributeEquipUtils.distributePointsToLevels(resistPoints, resistPerLevel, 4);
+        int[] enhanceLevels = AttributeEquipUtils.distributePointsToLevels(enhanceTotalPoints, enhancePerLevel, 4);
+        int[] resistLevels = AttributeEquipUtils.distributePointsToLevels(resistTotalPoints, resistPerLevel, 4);
 
-            for (int i = 0; i < 4; i++) {
-                if (!currentArmor[i].isEmpty()) {
-                    AttributeEquipUtils.applyArmorEnchantsLevel(currentArmor[i], enhanceType, enhanceLv[i], resistType, resistLv[i]);
-                }
+        for (int i = 0; i < 4; i++) {
+            if (enhanceLevels[i] <= 0 && resistLevels[i] <= 0 && mob.getItemBySlot(ARMOR_SLOTS[i]).isEmpty()) {
+                continue;
             }
 
-            if (dimensionForced) {
-                for (int i = 0; i < 4; i++) {
-                    if (currentArmor[i].isEmpty()) {
-                        final int slotIndex = i;
-                        ItemStack newArmor = AttributeEquipUtils.createIronArmor(i);
-                        AttributeEquipUtils.applyArmorEnchantsLevel(newArmor, enhanceType, enhanceLv[i], resistType, resistLv[i]);
-                        server.tell(new TickTask(server.getTickCount() + i, () -> {
-                            if (mob.isAlive()) mob.setItemSlot(ARMOR_SLOTS[slotIndex], newArmor);
-                        }));
-                    }
+            EquipmentSlot slot = ARMOR_SLOTS[i];
+            ItemStack stack = mob.getItemBySlot(slot);
+
+            if (stack.isEmpty()) {
+                stack = AttributeEquipUtils.createRandomArmor(i);
+                mob.setItemSlot(slot, stack);
+                mob.setDropChance(slot, 0.0F);
+            }
+
+            AttributeEquipUtils.applyArmorEnchantsLevel(stack, enhanceType, enhanceLevels[i], resistType, resistLevels[i]);
+            AttributeEquipUtils.applyUnbreaking(stack, 3);
+        }
+    }
+
+    public static void clearAggro(LivingEntity target) {
+        if (target instanceof Mob mob) {
+            mob.setTarget(null);
+            mob.getNavigation().stop();
+            target.getPersistentData().putInt(NBT_DISORIENTED, DISORIENTED_TICKS);
+        }
+    }
+
+    private static final String NBT_FLEE_TARGET_X = "EC_FleeTargetX";
+    private static final String NBT_FLEE_TARGET_Z = "EC_FleeTargetZ";
+    private static final String NBT_FLEE_SOURCE_UUID = "EC_FleeSourceUUID";
+    private static final String NBT_FLEE_SOURCE_RANGE = "EC_FleeSourceRange";
+    private static final String NBT_FLEE_TICKS = "EC_FleeTicks";
+    private static final String NBT_FLEE_STUCK_TICKS = "EC_FleeStuckTicks";
+    private static final String NBT_FLEE_LAST_X = "EC_FleeLastX";
+    private static final String NBT_FLEE_LAST_Z = "EC_FleeLastZ";
+    private static final int MAX_FLEE_TICKS = 200;
+    private static final String NBT_DISORIENTED = "ec_disoriented";
+    private static final int DISORIENTED_TICKS = 10;
+    private static final double FLEE_TRIGGER_DIST = 6.0;
+
+    private static boolean isPathClear(LivingEntity entity, double startX, double startZ, double dirX, double dirZ, int distance) {
+        for (int i = 1; i <= distance; i++) {
+            int bx = (int) Math.floor(startX + dirX * i);
+            int bz = (int) Math.floor(startZ + dirZ * i);
+            int by = entity.getBlockY();
+            BlockPos feet = new BlockPos(bx, by, bz);
+            BlockPos head = feet.above();
+            net.minecraft.world.level.block.state.BlockState feetState = entity.level().getBlockState(feet);
+            net.minecraft.world.level.block.state.BlockState headState = entity.level().getBlockState(head);
+            if (!feetState.getCollisionShape(entity.level(), feet).isEmpty()
+                    || !headState.getCollisionShape(entity.level(), head).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static double[] findClearPath(LivingEntity entity, double sourceX, double sourceZ, int fleeDist) {
+        double baseAngle = Math.atan2(entity.getZ() - sourceZ, entity.getX() - sourceX);
+        double bestAngle = baseAngle;
+        int bestClearance = -1;
+
+        for (int i = 0; i < 8; i++) {
+            double angle = baseAngle + (i - 3.5) * (Math.PI / 4.0);
+            double dirX = Math.cos(angle);
+            double dirZ = Math.sin(angle);
+            if (isPathClear(entity, entity.getX(), entity.getZ(), dirX, dirZ, fleeDist)) {
+                return new double[]{entity.getX() + dirX * fleeDist, entity.getZ() + dirZ * fleeDist};
+            }
+            int clearance = 0;
+            for (int d = 1; d <= fleeDist; d++) {
+                int bx = (int) Math.floor(entity.getX() + dirX * d);
+                int bz = (int) Math.floor(entity.getZ() + dirZ * d);
+                BlockPos feet = new BlockPos(bx, entity.getBlockY(), bz);
+                net.minecraft.world.level.block.state.BlockState fs = entity.level().getBlockState(feet);
+                net.minecraft.world.level.block.state.BlockState hs = entity.level().getBlockState(feet.above());
+                if (fs.getCollisionShape(entity.level(), feet).isEmpty()
+                        && hs.getCollisionShape(entity.level(), feet.above()).isEmpty()) {
+                    clearance++;
+                } else {
+                    break;
                 }
             }
-        } else {
-            if (dimensionForced) {
-                int[] enhanceLv = AttributeEquipUtils.distributePointsToLevels(enhancePoints, enhancePerLevel, 4);
-                int[] resistLv = AttributeEquipUtils.distributePointsToLevels(resistPoints, resistPerLevel, 4);
-                for (int i = 0; i < 4; i++) {
-                    final int slotIndex = i;
-                    ItemStack armor = AttributeEquipUtils.createIronArmor(i);
-                    AttributeEquipUtils.applyArmorEnchantsLevel(armor, enhanceType, enhanceLv[i], resistType, resistLv[i]);
-                    server.tell(new TickTask(server.getTickCount() + i, () -> {
-                        if (mob.isAlive()) mob.setItemSlot(ARMOR_SLOTS[slotIndex], armor);
-                    }));
-                }
+            if (clearance > bestClearance) {
+                bestClearance = clearance;
+                bestAngle = angle;
+            }
+        }
+
+        double dirX = Math.cos(bestAngle);
+        double dirZ = Math.sin(bestAngle);
+        int actualDist = Math.max(1, bestClearance);
+        return new double[]{entity.getX() + dirX * actualDist, entity.getZ() + dirZ * actualDist};
+    }
+
+    private static boolean isRootImmobilized(LivingEntity entity) {
+        Entity vehicle = entity.getVehicle();
+        if (vehicle == null) return false;
+        net.minecraft.resources.ResourceLocation key = net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getKey(vehicle.getType());
+        return key != null && "irons_spellbooks".equals(key.getNamespace()) && "root".equals(key.getPath());
+    }
+
+    public static void processFlee(LivingEntity target, LivingEntity source, double range) {
+        if (!ElementalConfig.mobFleeEnabled) return;
+        if (isRootImmobilized(target)) return;
+        if (isRootImmobilized(source)) return;
+        if (target.level().isClientSide) return;
+        CompoundTag data = target.getPersistentData();
+        double dx = target.getX() - source.getX();
+        double dz = target.getZ() - source.getZ();
+        double dist = Math.sqrt(dx * dx + dz * dz);
+        if (dist > FLEE_TRIGGER_DIST) return;
+        if (data.getBoolean("EC_FleeActive")) return;
+
+        int fleeDist = 10 + target.level().random.nextInt(11);
+        double[] path = findClearPath(target, source.getX(), source.getZ(), fleeDist);
+
+        data.putDouble(NBT_FLEE_TARGET_X, path[0]);
+        data.putDouble(NBT_FLEE_TARGET_Z, path[1]);
+        data.putString(NBT_FLEE_SOURCE_UUID, source.getStringUUID());
+        data.putDouble(NBT_FLEE_SOURCE_RANGE, range);
+        data.putInt(NBT_FLEE_TICKS, 0);
+        data.putBoolean("EC_FleeActive", true);
+        if (target instanceof Mob mob) {
+            mob.setTarget(null);
+            mob.setLastHurtByMob(null);
+            mob.getNavigation().moveTo(path[0], target.getY(), path[1], 1.5);
+        }
+    }
+
+    public static void processFlee(LivingEntity target, double fleeFromX, double fleeFromZ, double range) {
+        if (!ElementalConfig.mobFleeEnabled) return;
+        if (isRootImmobilized(target)) return;
+        if (!(target instanceof PathfinderMob pfMob)) return;
+        if (!pfMob.getNavigation().isDone()) return;
+        double margin = 4.0;
+        double dx = pfMob.getX() - fleeFromX;
+        double dz = pfMob.getZ() - fleeFromZ;
+        double dist = Math.sqrt(dx * dx + dz * dz);
+        if (dist < 0.01) {
+            dx = pfMob.level().random.nextFloat() - 0.5;
+            dz = pfMob.level().random.nextFloat() - 0.5;
+            dist = Math.sqrt(dx * dx + dz * dz);
+        }
+        double targetX = fleeFromX + (dx / dist) * (range + margin);
+        double targetZ = fleeFromZ + (dz / dist) * (range + margin);
+        pfMob.getNavigation().moveTo(targetX, pfMob.getY(), targetZ, 1.5);
+    }
+
+    private static boolean hasAuraEntityNearby(LivingEntity entity, double range) {
+        java.util.List<LivingEntity> nearby = entity.level().getEntitiesOfClass(
+                LivingEntity.class,
+                new net.minecraft.world.phys.AABB(
+                        entity.getX() - range, entity.getY() - range, entity.getZ() - range,
+                        entity.getX() + range, entity.getY() + range, entity.getZ() + range));
+        for (LivingEntity le : nearby) {
+            if (le == entity) continue;
+            if (ScorchedHandler.isScorched(le) || FrostbiteHandler.hasFrostbite(le)
+                    || le.getPersistentData().getInt(StaticShockHandler.NBT_STATIC_STACKS) > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void tickFlee(LivingEntity entity) {
+        if (entity.level().isClientSide) return;
+        CompoundTag data = entity.getPersistentData();
+        if (!data.getBoolean("EC_FleeActive")) return;
+        if (isRootImmobilized(entity)) { stopFlee(entity); return; }
+        int ticks = data.getInt(NBT_FLEE_TICKS) + 1;
+        data.putInt(NBT_FLEE_TICKS, ticks);
+        if (ticks >= MAX_FLEE_TICKS) {
+            stopFlee(entity);
+            return;
+        }
+        String sourceUUID = data.getString(NBT_FLEE_SOURCE_UUID);
+        double auraRange = data.getDouble(NBT_FLEE_SOURCE_RANGE);
+        LivingEntity source = findSourceEntity(entity, sourceUUID);
+
+        double targetX = data.getDouble(NBT_FLEE_TARGET_X);
+        double targetZ = data.getDouble(NBT_FLEE_TARGET_Z);
+        double dx = targetX - entity.getX();
+        double dz = targetZ - entity.getZ();
+        double dist = Math.sqrt(dx * dx + dz * dz);
+
+        if (dist < 1.0) {
+            if (!hasAuraEntityNearby(entity, FLEE_TRIGGER_DIST)) {
+                stopFlee(entity);
+                return;
+            }
+            int fleeDist = 10 + entity.level().random.nextInt(11);
+            double[] path;
+            if (source != null && source.isAlive()) {
+                path = findClearPath(entity, source.getX(), source.getZ(), fleeDist);
             } else {
-                //强制配置：使用隐形头盔
-                // Config Forced: Use Invisible Helmet
-                ItemStack helmet = AttributeEquipUtils.createInvisibleHelmet();
-                int resistLv = (resistPoints > 0) ? Math.max(1, resistPoints / resistPerLevel) : 0;
-                int enhanceLv = (enhancePoints > 0) ? Math.max(1, enhancePoints / enhancePerLevel) : 0;
-                AttributeEquipUtils.applyArmorEnchantsLevel(helmet, enhanceType, enhanceLv, resistType, resistLv);
-                mob.setItemSlot(EquipmentSlot.HEAD, helmet);
+                double angle = entity.level().random.nextDouble() * 2 * Math.PI;
+                double fakeSrcX = entity.getX() - Math.cos(angle) * 10;
+                double fakeSrcZ = entity.getZ() - Math.sin(angle) * 10;
+                path = findClearPath(entity, fakeSrcX, fakeSrcZ, fleeDist);
             }
+            data.putDouble(NBT_FLEE_TARGET_X, path[0]);
+            data.putDouble(NBT_FLEE_TARGET_Z, path[1]);
+            data.putInt(NBT_FLEE_TICKS, 0);
+            targetX = path[0];
+            targetZ = path[1];
+            dx = targetX - entity.getX();
+            dz = targetZ - entity.getZ();
+            dist = Math.sqrt(dx * dx + dz * dz);
+        }
+
+        if (dist < 0.5) return;
+        if (entity instanceof Mob mob && mob.getNavigation().isDone()) {
+            mob.getNavigation().moveTo(targetX, entity.getY(), targetZ, 1.5);
+        }
+        if (entity instanceof Mob mob) {
+            mob.setTarget(null);
+            mob.setLastHurtByMob(null);
+        }
+    }
+
+    public static void stopFlee(LivingEntity entity) {
+        CompoundTag data = entity.getPersistentData();
+        data.remove(NBT_FLEE_TARGET_X);
+        data.remove(NBT_FLEE_TARGET_Z);
+        data.remove(NBT_FLEE_SOURCE_UUID);
+        data.remove(NBT_FLEE_SOURCE_RANGE);
+        data.remove(NBT_FLEE_TICKS);
+        data.remove(NBT_FLEE_STUCK_TICKS);
+        data.remove(NBT_FLEE_LAST_X);
+        data.remove(NBT_FLEE_LAST_Z);
+        data.putBoolean("EC_FleeActive", false);
+    }
+
+    private static LivingEntity findSourceEntity(LivingEntity self, String uuid) {
+        if (uuid.isEmpty()) return null;
+        if (self.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+            java.util.UUID id;
+            try { id = java.util.UUID.fromString(uuid); } catch (IllegalArgumentException e) { return null; }
+            net.minecraft.world.entity.Entity e = serverLevel.getEntity(id);
+            return e instanceof LivingEntity le ? le : null;
+        }
+        return null;
+    }
+
+    @SubscribeEvent
+    public static void onChangeTarget(LivingChangeTargetEvent event) {
+        if (event.getEntity().level().isClientSide) return;
+        if (event.getNewTarget() == null) return;
+        if (event.getEntity().getPersistentData().getInt(NBT_DISORIENTED) > 0) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
+        if (event.getEntity().level().isClientSide) return;
+        CompoundTag data = event.getEntity().getPersistentData();
+        int disoriented = data.getInt(NBT_DISORIENTED);
+        if (disoriented > 0) {
+            data.putInt(NBT_DISORIENTED, disoriented - 1);
+            if (event.getEntity() instanceof Mob mob) {
+                mob.setTarget(null);
+                mob.getNavigation().stop();
+            }
+        }
+        if (!(event.getEntity() instanceof net.minecraft.world.entity.player.Player)) {
+            tickFlee(event.getEntity());
         }
     }
 }
