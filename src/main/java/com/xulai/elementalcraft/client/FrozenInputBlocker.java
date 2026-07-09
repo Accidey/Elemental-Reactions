@@ -15,6 +15,8 @@ import java.util.Set;
 @Mod.EventBusSubscriber(modid = ElementalCraft.MODID, value = Dist.CLIENT)
 public class FrozenInputBlocker {
 
+    public static volatile boolean fireCounterLocked;
+
     private static final Set<String> MOVEMENT_KEYS = Set.of(
             "key.forward", "key.left", "key.back", "key.right", "key.jump");
 
@@ -31,25 +33,19 @@ public class FrozenInputBlocker {
              || mc.player.hasEffect(ModMobEffects.PARALYSIS.get()));
     }
 
-    private static boolean hasFireCounterLock(Minecraft mc) {
-        return mc.player != null
-            && mc.player.getPersistentData().getBoolean("ec_fire_counter_lock");
-    }
-
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.START) return;
         Minecraft mc = Minecraft.getInstance();
         boolean isFullLock = isAffected(mc);
-        boolean isMoveLock = hasFireCounterLock(mc);
-        if (!isFullLock && !isMoveLock) return;
+        if (!isFullLock && !fireCounterLocked) return;
 
         for (var key : mc.options.keyMappings) {
             if (isAllowedKey(key.getKey().getValue())) continue;
             if (isFullLock) {
                 key.setDown(false);
                 while (key.consumeClick()) {}
-            } else if (isMoveLock && MOVEMENT_KEYS.contains(key.getName())) {
+            } else if (fireCounterLocked && MOVEMENT_KEYS.contains(key.getName())) {
                 key.setDown(false);
                 while (key.consumeClick()) {}
             }

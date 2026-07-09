@@ -3,6 +3,8 @@ package com.xulai.elementalcraft.event;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.command.DebugCommand;
 import com.xulai.elementalcraft.logic.MobAttributeLogic;
+import com.xulai.elementalcraft.network.FireCounterLockPacket;
+import net.minecraftforge.network.PacketDistributor;
 import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import com.xulai.elementalcraft.event.iss.ISSCore;
@@ -817,12 +819,13 @@ public class ScorchedHandler {
         if (!(target.level() instanceof ServerLevel)) return;
         ResourceKey<Level> dim = target.level().dimension();
         target.getPersistentData().putBoolean(NBT_FIRE_COUNTER_INVULN, true);
-        target.getPersistentData().putBoolean(NBT_FIRE_COUNTER_LOCK, true);
         if (target instanceof Mob mob) {
             CompoundTag data = target.getPersistentData();
             data.putBoolean(NBT_FIRE_COUNTER_SAVED_NOAI, mob.isNoAi());
             mob.setNoAi(true);
         }
+        ElementalCraft.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (net.minecraft.server.level.ServerPlayer) target),
+                new FireCounterLockPacket(true));
         activeFireCounters.put(dim, new ActiveFireCounter(target));
     }
 
@@ -866,7 +869,8 @@ public class ScorchedHandler {
             case EXPLODE:
                 doExplosion(sl, fc, owner);
                 owner.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
-                owner.getPersistentData().remove(NBT_FIRE_COUNTER_LOCK);
+                ElementalCraft.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (net.minecraft.server.level.ServerPlayer) owner),
+                        new FireCounterLockPacket(false));
                 if (owner instanceof Mob mob) {
                     boolean savedNoAi = owner.getPersistentData().getBoolean(NBT_FIRE_COUNTER_SAVED_NOAI);
                     mob.setNoAi(savedNoAi);
