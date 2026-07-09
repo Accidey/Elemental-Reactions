@@ -406,7 +406,22 @@ public class MobAttributeLogic {
         if (target instanceof Mob mob) {
             mob.setTarget(null);
             mob.setLastHurtByMob(null);
-            mob.getNavigation().moveTo(path[0], target.getY(), path[1], 1.5);
+            mob.setNoAi(true);
+        }
+        double moveDx = path[0] - target.getX();
+        double moveDz = path[1] - target.getZ();
+        double moveDist = Math.sqrt(moveDx * moveDx + moveDz * moveDz);
+        if (moveDist > 0.1) {
+            float yaw = (float) (Math.atan2(moveDz, moveDx) * (180.0 / Math.PI)) - 90.0f;
+            target.setYRot(yaw);
+            target.setYHeadRot(yaw);
+            float speed = 0.30f;
+            float rad = (float) Math.toRadians(yaw);
+            float moveX = -net.minecraft.util.Mth.sin(rad) * speed;
+            float moveZ = net.minecraft.util.Mth.cos(rad) * speed;
+            target.setDeltaMovement(moveX, target.getDeltaMovement().y, moveZ);
+            target.hurtMarked = true;
+            target.move(net.minecraft.world.entity.MoverType.SELF, target.getDeltaMovement());
         }
     }
 
@@ -492,9 +507,41 @@ public class MobAttributeLogic {
         }
 
         if (dist < 0.5) return;
-        if (entity instanceof Mob mob && mob.getNavigation().isDone()) {
-            mob.getNavigation().moveTo(targetX, entity.getY(), targetZ, 1.5);
+
+        float yaw = (float) (Math.atan2(dz, dx) * (180.0 / Math.PI)) - 90.0f;
+        entity.setYRot(yaw);
+        entity.setYHeadRot(yaw);
+        float speed = 0.30f;
+        float rad = (float) Math.toRadians(yaw);
+        float moveX = -net.minecraft.util.Mth.sin(rad) * speed;
+        float moveZ = net.minecraft.util.Mth.cos(rad) * speed;
+        entity.setDeltaMovement(moveX, entity.getDeltaMovement().y, moveZ);
+        entity.hurtMarked = true;
+        entity.move(net.minecraft.world.entity.MoverType.SELF, entity.getDeltaMovement());
+        double lastX = data.getDouble(NBT_FLEE_LAST_X);
+        double lastZ = data.getDouble(NBT_FLEE_LAST_Z);
+        double movedXZ = Math.abs(entity.getX() - lastX) + Math.abs(entity.getZ() - lastZ);
+        if (movedXZ < 0.05) {
+            int stuckTicks = data.getInt(NBT_FLEE_STUCK_TICKS) + 1;
+            data.putInt(NBT_FLEE_STUCK_TICKS, stuckTicks);
+            if (stuckTicks >= 5) {
+                int ax = entity.getBlockX() + (moveX > 0 ? 1 : moveX < 0 ? -1 : 0);
+                int az = entity.getBlockZ() + (moveZ > 0 ? 1 : moveZ < 0 ? -1 : 0);
+                BlockPos ahead = new BlockPos(ax, entity.getBlockY(), az);
+                if (!entity.level().getBlockState(ahead).isAir()) {
+                    BlockPos above = new BlockPos(ax, entity.getBlockY() + 1, az);
+                    BlockPos above2 = above.above();
+                    if (entity.level().getBlockState(above).isAir() && entity.level().getBlockState(above2).isAir()) {
+                        entity.setPos(ax + 0.5, entity.getY() + 1.0, az + 0.5);
+                        data.putInt(NBT_FLEE_STUCK_TICKS, 0);
+                    }
+                }
+            }
+        } else {
+            data.putInt(NBT_FLEE_STUCK_TICKS, 0);
         }
+        data.putDouble(NBT_FLEE_LAST_X, entity.getX());
+        data.putDouble(NBT_FLEE_LAST_Z, entity.getZ());
         if (entity instanceof Mob mob) {
             mob.setTarget(null);
             mob.setLastHurtByMob(null);
@@ -512,6 +559,9 @@ public class MobAttributeLogic {
         data.remove(NBT_FLEE_LAST_X);
         data.remove(NBT_FLEE_LAST_Z);
         data.putBoolean("EC_FleeActive", false);
+        if (entity instanceof Mob mob) {
+            mob.setNoAi(false);
+        }
     }
 
     private static LivingEntity findSourceEntity(LivingEntity self, String uuid) {
@@ -530,7 +580,7 @@ public class MobAttributeLogic {
         if (event.getEntity().level().isClientSide) return;
         if (event.getNewTarget() == null) return;
         CompoundTag data = event.getEntity().getPersistentData();
-        if (data.getInt(NBT_DISORIENTED) > 0 || data.getBoolean("EC_FleeActive")) {
+        if (data.getInt(NBT_DISORIENTED) > 0) {
             event.setCanceled(true);
         }
     }
