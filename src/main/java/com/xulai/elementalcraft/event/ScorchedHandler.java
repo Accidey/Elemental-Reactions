@@ -826,8 +826,10 @@ public class ScorchedHandler {
             data.putBoolean(NBT_FIRE_COUNTER_SAVED_NOAI, mob.isNoAi());
             mob.setNoAi(true);
         }
-        ElementalCraft.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (net.minecraft.server.level.ServerPlayer) target),
-                new FireCounterLockPacket(true));
+        if (target instanceof net.minecraft.server.level.ServerPlayer sp) {
+            ElementalCraft.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp),
+                    new FireCounterLockPacket(true));
+        }
         activeFireCounters.put(dim, new ActiveFireCounter(target));
     }
 
@@ -842,14 +844,16 @@ public class ScorchedHandler {
         if (fc == null) return;
 
         Entity ownerEntity = sl.getEntity(fc.ownerUUID);
-        if (!(ownerEntity instanceof LivingEntity owner) || owner.isDeadOrDying()) {
+        if (ownerEntity == null || !(ownerEntity instanceof LivingEntity owner) || owner.isDeadOrDying()) {
             if (ownerEntity instanceof Mob mob) {
                 boolean savedNoAi = ownerEntity.getPersistentData().getBoolean(NBT_FIRE_COUNTER_SAVED_NOAI);
                 mob.setNoAi(savedNoAi);
                 ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_NOAI);
             }
-            ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
-            ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_LOCK);
+            if (ownerEntity != null) {
+                ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
+                ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_LOCK);
+            }
             activeFireCounters.remove(dim);
             return;
         }
@@ -876,8 +880,10 @@ public class ScorchedHandler {
             case EXPLODE:
                 doExplosion(sl, fc, owner);
                 owner.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
-                ElementalCraft.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (net.minecraft.server.level.ServerPlayer) owner),
-                        new FireCounterLockPacket(false));
+                if (owner instanceof net.minecraft.server.level.ServerPlayer sp) {
+                    ElementalCraft.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp),
+                            new FireCounterLockPacket(false));
+                }
                 if (owner instanceof Mob mob) {
                     boolean savedNoAi = owner.getPersistentData().getBoolean(NBT_FIRE_COUNTER_SAVED_NOAI);
                     mob.setNoAi(savedNoAi);
