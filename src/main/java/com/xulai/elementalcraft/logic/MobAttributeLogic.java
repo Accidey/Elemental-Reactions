@@ -142,7 +142,8 @@ public class MobAttributeLogic {
                 mob.getPersistentData().putBoolean("EC_ISS_MobCaster", true);
                 mob.getPersistentData().putString("EC_ISS_MobElement", "nature");
                 if (!hasHandItem) {
-                    ItemStack weapon = AttributeEquipUtils.createRandomWeapon();
+                    boolean piglin = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString().equals("minecraft:piglin");
+                    ItemStack weapon = AttributeEquipUtils.createRandomWeapon(piglin);
                     AttributeEquipUtils.applyAttackEnchant(weapon, attackType);
                     AttributeEquipUtils.applyUnbreaking(weapon, 3);
                     mob.setItemSlot(EquipmentSlot.MAINHAND, weapon);
@@ -164,7 +165,8 @@ public class MobAttributeLogic {
                     AttributeEquipUtils.applyUnbreaking(offHand, 3);
                 }
             } else {
-                ItemStack weapon = AttributeEquipUtils.createRandomWeapon();
+                boolean piglin = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString().equals("minecraft:piglin");
+                ItemStack weapon = AttributeEquipUtils.createRandomWeapon(piglin);
                 AttributeEquipUtils.applyAttackEnchant(weapon, attackType);
                 AttributeEquipUtils.applyUnbreaking(weapon, 3);
                 mob.setItemSlot(EquipmentSlot.MAINHAND, weapon);
@@ -224,7 +226,8 @@ public class MobAttributeLogic {
                     persistentData.putBoolean("EC_ISS_MobCaster", true);
                     persistentData.putString("EC_ISS_MobElement", "nature");
                     if (!hasWeapon) {
-                        ItemStack weapon = AttributeEquipUtils.createRandomWeapon();
+                        boolean piglin = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString().equals("minecraft:piglin");
+                        ItemStack weapon = AttributeEquipUtils.createRandomWeapon(piglin);
                         AttributeEquipUtils.applyAttackEnchant(weapon, attackType);
                         AttributeEquipUtils.applyUnbreaking(weapon, 3);
                         mob.setItemSlot(EquipmentSlot.MAINHAND, weapon);
@@ -246,7 +249,8 @@ public class MobAttributeLogic {
                         AttributeEquipUtils.applyUnbreaking(offHand, 3);
                     }
                 } else {
-                    ItemStack weapon = AttributeEquipUtils.createRandomWeapon();
+                    boolean piglin = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString().equals("minecraft:piglin");
+                    ItemStack weapon = AttributeEquipUtils.createRandomWeapon(piglin);
                     AttributeEquipUtils.applyAttackEnchant(weapon, attackType);
                     AttributeEquipUtils.applyUnbreaking(weapon, 3);
                     mob.setItemSlot(EquipmentSlot.MAINHAND, weapon);

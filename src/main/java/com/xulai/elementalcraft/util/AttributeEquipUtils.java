@@ -138,6 +138,11 @@ public class AttributeEquipUtils {
     }
 
     public static ItemStack createRandomWeapon() {
+        return createRandomWeapon(false);
+    }
+
+    public static ItemStack createRandomWeapon(boolean forceGold) {
+        if (forceGold) return new ItemStack(Items.GOLDEN_SWORD);
         return new ItemStack(RANDOM_WEAPON_POOL[RANDOM.nextInt(RANDOM_WEAPON_POOL.length)]);
     }
 
