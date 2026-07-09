@@ -5,6 +5,7 @@ import com.xulai.elementalcraft.command.DebugCommand;
 import com.xulai.elementalcraft.logic.MobAttributeLogic;
 import com.xulai.elementalcraft.network.FireCounterLockPacket;
 import net.minecraftforge.network.PacketDistributor;
+import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import com.xulai.elementalcraft.event.iss.ISSCore;
@@ -801,6 +802,13 @@ public class ScorchedHandler {
             if (!(target instanceof Mob) || ElementUtils.getDisplayEnhancement(target, ElementType.FIRE) <= 0) return;
         }
         double firePower = ElementUtils.getDisplayEnhancement(target, ElementType.FIRE);
+        if (target instanceof Mob && firePower <= 0) {
+            int strikeLv = net.minecraft.world.item.enchantment.EnchantmentHelper.getTagEnchantmentLevel(
+                    com.xulai.elementalcraft.enchantment.ModEnchantments.FIRE_STRIKE.get(), target.getMainHandItem());
+            if (strikeLv > 0) {
+                firePower = strikeLv * ElementalConfig.getStrengthPerLevel();
+            }
+        }
         double threshold = ElementalFireNatureReactionsConfig.fireCounterStrengthThreshold;
         if (threshold <= 0 || firePower < threshold) {
             if (threshold > 0) {
