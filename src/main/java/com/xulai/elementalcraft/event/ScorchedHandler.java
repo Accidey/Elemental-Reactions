@@ -789,6 +789,7 @@ public class ScorchedHandler {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onTryFireCounter(LivingDamageEvent event) {
         if (event.getEntity().level().isClientSide) return;
+        if (event.getSource().is(ModDamageTypes.LAVA_MAGIC)) return;
         LivingEntity target = event.getEntity();
         int fireResist = ElementUtils.getDisplayResistance(target, ElementType.FIRE);
         if (fireResist >= ElementalFireNatureReactionsConfig.scorchedResistThreshold) return;
