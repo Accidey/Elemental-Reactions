@@ -531,16 +531,24 @@ public class MobAttributeLogic {
             int stuckTicks = data.getInt(NBT_FLEE_STUCK_TICKS) + 1;
             data.putInt(NBT_FLEE_STUCK_TICKS, stuckTicks);
             if (stuckTicks >= 5) {
-                int ax = entity.getBlockX() + (moveX > 0 ? 1 : moveX < 0 ? -1 : 0);
-                int az = entity.getBlockZ() + (moveZ > 0 ? 1 : moveZ < 0 ? -1 : 0);
-                BlockPos ahead = new BlockPos(ax, entity.getBlockY(), az);
-                if (!entity.level().getBlockState(ahead).isAir()) {
-                    BlockPos above = new BlockPos(ax, entity.getBlockY() + 1, az);
-                    BlockPos above2 = above.above();
-                    if (entity.level().getBlockState(above).isAir() && entity.level().getBlockState(above2).isAir()) {
-                        entity.setPos(ax + 0.5, entity.getY() + 1.0, az + 0.5);
-                        data.putInt(NBT_FLEE_STUCK_TICKS, 0);
+                int stepX = moveX > 0 ? 1 : moveX < 0 ? -1 : 0;
+                int stepZ = moveZ > 0 ? 1 : moveZ < 0 ? -1 : 0;
+                int ax = entity.getBlockX() + stepX;
+                int az = entity.getBlockZ() + stepZ;
+                int fromY = entity.getBlockY() + 1;
+                int landY = -1;
+                for (int y = fromY + 2; y >= fromY - 1; y--) {
+                    BlockPos feet = new BlockPos(ax, y, az);
+                    if (!entity.level().getBlockState(feet).getCollisionShape(entity.level(), feet).isEmpty()
+                            || !entity.level().getBlockState(feet.above()).getCollisionShape(entity.level(), feet.above()).isEmpty()) continue;
+                    if (!entity.level().getBlockState(feet.below()).getCollisionShape(entity.level(), feet.below()).isEmpty()) {
+                        landY = y;
+                        break;
                     }
+                }
+                if (landY >= 0) {
+                    entity.setPos(ax + 0.5, landY, az + 0.5);
+                    data.putInt(NBT_FLEE_STUCK_TICKS, 0);
                 }
             }
         } else {
