@@ -10,6 +10,7 @@ import com.xulai.elementalcraft.potion.ModMobEffects;
 import com.xulai.elementalcraft.util.EffectHelper;
 import com.xulai.elementalcraft.util.ElementType;
 import com.xulai.elementalcraft.util.ElementUtils;
+import com.xulai.elementalcraft.event.ScorchedHandler;
 import com.xulai.elementalcraft.event.SteamReactionHandler;
 import com.xulai.elementalcraft.util.DebugMode;
 import net.minecraft.ChatFormatting;
@@ -63,6 +64,11 @@ public class CombatEvents {
         if (event.getEntity().level().isClientSide) return;
 
         LivingEntity target = event.getEntity();
+        if (target.getPersistentData().getBoolean(ScorchedHandler.NBT_FIRE_COUNTER_INVULN)) {
+            event.setCanceled(true);
+            return;
+        }
+
         DamageSource source = event.getSource();
         float currentDamage = event.getAmount();
 

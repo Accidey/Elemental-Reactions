@@ -347,6 +347,7 @@
   "debug.elementalcraft.reaction.thunder_counter.failed.power_low": "§e[Thunder Counter] §f%s §7thunder power too low (current: %s, need≥: %s)",
   "debug.elementalcraft.reaction.frost_counter.failed.cooldown": "§b[Frost Counter] §7blocked: per-target cooldown active",
   "debug.elementalcraft.reaction.frost_counter.failed.power_low": "§b[Frost Counter] §f%s §7frost power too low (current: %s, need≥: %s)",
+  "debug.elementalcraft.reaction.fire_counter.failed.power_low": "§c[Fire Counter] §f%s §7fire power too low (current: %s, need≥: %s)",
 
   "debug.elementalcraft.reaction.freeze.failed.cooldown": "§b[Freeze] §7blocked: cooldown active",
   "debug.elementalcraft.reaction.freeze.failed.immune": "§7[Freeze] %s §7blocked: target immune",

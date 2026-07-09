@@ -64,6 +64,14 @@ public class ElementalFireNatureReactionsConfig {
     public static final ForgeConfigSpec.IntValue WILDFIRE_SPORE_AMOUNT;
     public static final ForgeConfigSpec.BooleanValue WILDFIRE_CLEAR_BURNING;
     public static final ForgeConfigSpec.DoubleValue WILDFIRE_BLOOD_THRESHOLD;
+    public static final ForgeConfigSpec.DoubleValue FIRE_COUNTER_BLOOD_THRESHOLD;
+    public static final ForgeConfigSpec.DoubleValue FIRE_COUNTER_STRENGTH_THRESHOLD;
+    public static final ForgeConfigSpec.DoubleValue FIRE_COUNTER_HEALTH_RECOVERY_THRESHOLD;
+    public static final ForgeConfigSpec.DoubleValue FIRE_COUNTER_RADIUS;
+    public static final ForgeConfigSpec.DoubleValue FIRE_COUNTER_EXPANSION_SPEED;
+    public static final ForgeConfigSpec.DoubleValue FIRE_COUNTER_DAMAGE;
+    public static final ForgeConfigSpec.DoubleValue FIRE_COUNTER_KNOCKBACK;
+    public static final ForgeConfigSpec.IntValue FIRE_COUNTER_SCORCH_DURATION;
     public static final ForgeConfigSpec.DoubleValue BLAST_WEAK_IGNITE_MULT;
     public static final ForgeConfigSpec.DoubleValue BLAST_BASE_DAMAGE;
     public static final ForgeConfigSpec.DoubleValue BLAST_GROWTH_DAMAGE;
@@ -1109,6 +1117,68 @@ public class ElementalFireNatureReactionsConfig {
                     "Default: true / 默认：true")
             .define("wildfire_clear_burning", true);
     BUILDER.pop();
+
+    BUILDER.push("fire_counter");
+    BUILDER.comment("赤焰反制·无双波 - Fire Counter",
+            "火焰属性生物在低血量时受到伤害触发的反击技：展开火焰环吸附敌人，随后爆炸击飞并施加灼烧。",
+            "A counter-attack triggered when a Fire entity takes damage at low health: expands a fire ring, pulls in enemies, then explodes to knock back and apply scorched.");
+    BUILDER.comment(" ");
+
+    FIRE_COUNTER_BLOOD_THRESHOLD = BUILDER
+            .comment("触发赤焰反制所需的血量阈值（百分比）。生物血量低于此比例时受伤才会触发。设为0则关闭。",
+                     "Health threshold to trigger Fire Counter. Entity must be below this health percentage when taking damage. Set to 0 to disable.",
+                     "Default: 0.5 / 默认：0.5")
+            .defineInRange("fire_counter_blood_threshold", 0.5, 0.0, 1.0);
+    BUILDER.comment(" ");
+
+    FIRE_COUNTER_STRENGTH_THRESHOLD = BUILDER
+            .comment("触发赤焰反制所需的最小赤焰属性强化点数。",
+                     "Minimum Fire enhancement points required to trigger Fire Counter.",
+                     "Default: 20.0 / 默认：20.0")
+            .defineInRange("fire_counter_strength_threshold", 20.0, 0.0, 10000.0);
+    BUILDER.comment(" ");
+
+    FIRE_COUNTER_HEALTH_RECOVERY_THRESHOLD = BUILDER
+            .comment("触发后，生命值需要恢复到多少比例才能再次触发。例如0.8表示恢复到80%后才可再次触发。",
+                     "Health recovery threshold to re-trigger Fire Counter. Entity must heal back to this percentage. E.g., 0.8 = 80%.",
+                     "Default: 0.8 / 默认：0.8")
+            .defineInRange("fire_counter_health_recovery_threshold", 0.8, 0.0, 1.0);
+    BUILDER.comment(" ");
+
+    FIRE_COUNTER_RADIUS = BUILDER
+            .comment("赤焰反制的最大范围（格）。",
+                     "Maximum radius (blocks) of the Fire Counter.",
+                     "Default: 6.0 / 默认：6.0")
+            .defineInRange("fire_counter_radius", 6.0, 1.0, 32.0);
+    BUILDER.comment(" ");
+
+    FIRE_COUNTER_EXPANSION_SPEED = BUILDER
+            .comment("火焰环扩散/收拢的速度（格/秒）。",
+                     "Fire ring expansion/contraction speed (blocks/second).",
+                     "Default: 2.0 / 默认：2.0")
+            .defineInRange("fire_counter_expansion_speed", 2.0, 0.5, 16.0);
+    BUILDER.comment(" ");
+
+    FIRE_COUNTER_DAMAGE = BUILDER
+            .comment("爆炸造成的赤焰伤害基础值。",
+                     "Base explosion damage.",
+                     "Default: 8.0 / 默认：8.0")
+            .defineInRange("fire_counter_damage", 8.0, 0.0, 100.0);
+    BUILDER.comment(" ");
+
+    FIRE_COUNTER_KNOCKBACK = BUILDER
+            .comment("爆炸时对敌人的击退力度。TNT的约为1.5，建议设为3倍以上以达到强力击退效果。",
+                     "Knockback strength. TNT is approx 1.5. Set 3x+ for violent knockback.",
+                     "Default: 4.0 / 默认：4.0")
+            .defineInRange("fire_counter_knockback", 4.0, 0.0, 20.0);
+    BUILDER.comment(" ");
+
+    FIRE_COUNTER_SCORCH_DURATION = BUILDER
+            .comment("爆炸后施加给敌人的灼烧基础时长（Tick）。",
+                     "Base scorch duration (ticks) applied to enemies after explosion.",
+                     "Default: 100 / 默认：100")
+            .defineInRange("fire_counter_scorch_duration", 100, 0, 72000);
+    BUILDER.pop();
     BUILDER.pop();
 
     SPEC = BUILDER.build();
@@ -1171,6 +1241,14 @@ public class ElementalFireNatureReactionsConfig {
     public static boolean wildfireClearBurning;
     public static double wildfireBloodThreshold;
     public static double wildfireHealthRecoveryThreshold;
+    public static double fireCounterBloodThreshold;
+    public static double fireCounterStrengthThreshold;
+    public static double fireCounterHealthRecoveryThreshold;
+    public static double fireCounterRadius;
+    public static double fireCounterExpansionSpeed;
+    public static double fireCounterDamage;
+    public static double fireCounterKnockback;
+    public static int fireCounterScorchDuration;
     public static double blastWeakIgniteMult;
     public static double blastBaseDamage;
     public static double blastGrowthDamage;
@@ -1293,6 +1371,14 @@ public class ElementalFireNatureReactionsConfig {
         wildfireClearBurning = WILDFIRE_CLEAR_BURNING.get();
         wildfireHealthRecoveryThreshold = WILDFIRE_HEALTH_RECOVERY_THRESHOLD.get();
         wildfireBloodThreshold = WILDFIRE_BLOOD_THRESHOLD.get();
+        fireCounterBloodThreshold = FIRE_COUNTER_BLOOD_THRESHOLD.get();
+        fireCounterStrengthThreshold = FIRE_COUNTER_STRENGTH_THRESHOLD.get();
+        fireCounterHealthRecoveryThreshold = FIRE_COUNTER_HEALTH_RECOVERY_THRESHOLD.get();
+        fireCounterRadius = FIRE_COUNTER_RADIUS.get();
+        fireCounterExpansionSpeed = FIRE_COUNTER_EXPANSION_SPEED.get();
+        fireCounterDamage = FIRE_COUNTER_DAMAGE.get();
+        fireCounterKnockback = FIRE_COUNTER_KNOCKBACK.get();
+        fireCounterScorchDuration = FIRE_COUNTER_SCORCH_DURATION.get();
         blastWeakIgniteMult = BLAST_WEAK_IGNITE_MULT.get();
         blastBaseDamage = BLAST_BASE_DAMAGE.get();
         blastGrowthDamage = BLAST_GROWTH_DAMAGE.get();

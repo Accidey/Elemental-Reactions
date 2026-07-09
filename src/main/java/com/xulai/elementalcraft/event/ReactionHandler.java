@@ -63,6 +63,7 @@ import java.util.UUID;
 public class ReactionHandler {
     private static final Random RANDOM = new Random();
     private static final String NBT_WILDFIRE_COOLDOWN = "ec_wildfire_cd";
+    private static final String NBT_FIRE_COUNTER_COOLDOWN = "ec_fire_counter_cd";
     private static final String NBT_WAS_ON_FIRE = "ec_was_on_fire";
     private static final String NBT_SPORE_APPLY_TICK = "EC_SporeApplyTick";
 
@@ -115,6 +116,7 @@ public class ReactionHandler {
     private static void handleCounterRecovery(LivingEntity entity) {
         CompoundTag data = entity.getPersistentData();
         clearHealthRecoveryIfHealed(entity, data, NBT_WILDFIRE_COOLDOWN, ElementalFireNatureReactionsConfig.wildfireHealthRecoveryThreshold);
+        clearHealthRecoveryIfHealed(entity, data, NBT_FIRE_COUNTER_COOLDOWN, ElementalFireNatureReactionsConfig.fireCounterHealthRecoveryThreshold);
         clearHealthRecoveryIfHealed(entity, data, StaticShockHandler.NBT_THUNDER_COUNTER_COOLDOWN, ElementalThunderFrostReactionsConfig.thunderCounterHealthRecoveryThreshold);
         clearHealthRecoveryIfHealed(entity, data, FrostbiteHandler.NBT_FROST_COUNTER_COOLDOWN, ElementalThunderFrostReactionsConfig.frostCounterHealthRecoveryThreshold);
     }
@@ -342,6 +344,31 @@ public class ReactionHandler {
         triggerWildfireEjection(target, attacker);
     }
 
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onTryFireCounter(LivingDamageEvent event) {
+        if (event.getEntity().level().isClientSide) return;
+        LivingEntity target = event.getEntity();
+        double bloodThreshold = ElementalFireNatureReactionsConfig.fireCounterBloodThreshold;
+        if (bloodThreshold <= 0) return;
+        float currentHP = target.getHealth() + target.getAbsorptionAmount();
+        if (currentHP - event.getAmount() >= target.getMaxHealth() * bloodThreshold) return;
+        if (ElementUtils.getConsistentAttackElement(target) != ElementType.FIRE) return;
+        double firePower = ElementUtils.getDisplayEnhancement(target, ElementType.FIRE);
+        double threshold = ElementalFireNatureReactionsConfig.fireCounterStrengthThreshold;
+        if (threshold <= 0 || firePower < threshold) {
+            if (threshold > 0) {
+                DebugCommand.sendReactionFailed(target, "fire_counter", "power_low",
+                        target.getDisplayName(),
+                        String.format("%.0f", firePower),
+                        String.valueOf((int) threshold));
+            }
+            return;
+        }
+        if (!checkHealthRecovery(target, NBT_FIRE_COUNTER_COOLDOWN)) return;
+        ScorchedHandler.triggerFireCounter(target);
+        setHealthRecoveryThreshold(target, NBT_FIRE_COUNTER_COOLDOWN,
+                target.getMaxHealth(), ElementalFireNatureReactionsConfig.fireCounterHealthRecoveryThreshold);
+    }
 
     public static boolean isSporeImmune(LivingEntity target) {
         var key = ForgeRegistries.ENTITY_TYPES.getKey(target.getType());

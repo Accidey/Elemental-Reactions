@@ -35,6 +35,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.resources.ResourceKey;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
@@ -45,7 +47,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = ElementalCraft.MODID)
@@ -731,5 +735,204 @@ public class ScorchedHandler {
                 data.putInt(NBT_SCORCHED_TICK_LOGGED, 1);
             }
         }
+    }
+
+    // ============ Fire Counter (赤焰反制·无双波) ============
+
+    public static final String NBT_FIRE_COUNTER_CD = "ec_fire_counter_cd";
+    public static final String NBT_FIRE_COUNTER_INVULN = "ec_fire_counter_invuln";
+
+    private static final Map<ResourceKey<Level>, ActiveFireCounter> activeFireCounters = new HashMap<>();
+
+    private enum FireCounterPhase { EXPAND, CONTRACT, EXPLODE }
+
+    private static class ActiveFireCounter {
+        final double x, y, z;
+        final UUID ownerUUID;
+        final double maxRadius;
+        final double expansionSpeed;
+        final double damage;
+        final double knockback;
+        final int scorchDuration;
+        final int fireStrength;
+        double currentRadius;
+        int phaseTicks;
+        FireCounterPhase phase;
+
+        ActiveFireCounter(LivingEntity owner) {
+            this.x = owner.getX();
+            this.y = owner.getY();
+            this.z = owner.getZ();
+            this.ownerUUID = owner.getUUID();
+            this.maxRadius = ElementalFireNatureReactionsConfig.fireCounterRadius;
+            this.expansionSpeed = ElementalFireNatureReactionsConfig.fireCounterExpansionSpeed;
+            this.damage = ElementalFireNatureReactionsConfig.fireCounterDamage;
+            this.knockback = ElementalFireNatureReactionsConfig.fireCounterKnockback;
+            this.scorchDuration = ElementalFireNatureReactionsConfig.fireCounterScorchDuration;
+            this.fireStrength = ElementUtils.getDisplayEnhancement(owner, ElementType.FIRE);
+            this.currentRadius = 0;
+            this.phaseTicks = 0;
+            this.phase = FireCounterPhase.EXPAND;
+        }
+    }
+
+    public static void triggerFireCounter(LivingEntity target) {
+        if (!(target.level() instanceof ServerLevel)) return;
+        ResourceKey<Level> dim = target.level().dimension();
+        target.getPersistentData().putBoolean(NBT_FIRE_COUNTER_INVULN, true);
+        activeFireCounters.put(dim, new ActiveFireCounter(target));
+    }
+
+    @SubscribeEvent
+    public static void onLevelTickFireCounter(TickEvent.LevelTickEvent event) {
+        if (event.level.isClientSide()) return;
+        if (event.phase != TickEvent.Phase.END) return;
+        if (!(event.level instanceof ServerLevel sl)) return;
+
+        ResourceKey<Level> dim = event.level.dimension();
+        ActiveFireCounter fc = activeFireCounters.get(dim);
+        if (fc == null) return;
+
+        Entity ownerEntity = sl.getEntity(fc.ownerUUID);
+        if (!(ownerEntity instanceof LivingEntity owner) || owner.isDeadOrDying()) {
+            if (ownerEntity instanceof LivingEntity) {
+                ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
+            }
+            activeFireCounters.remove(dim);
+            return;
+        }
+
+        double expandRate = fc.expansionSpeed / 20.0;
+        double contractRate = fc.expansionSpeed / 20.0;
+        int expandTicks = (int) (fc.maxRadius / expandRate);
+        int contractTicks = (int) (fc.maxRadius / contractRate);
+
+        fc.phaseTicks++;
+
+        switch (fc.phase) {
+            case EXPAND:
+                fc.currentRadius = Math.min(fc.maxRadius, fc.phaseTicks * expandRate);
+                spawnFireRingParticles(sl, fc.x, fc.y, fc.z, fc.currentRadius);
+                if (fc.currentRadius >= fc.maxRadius) {
+                    fc.phase = FireCounterPhase.CONTRACT;
+                    fc.phaseTicks = 0;
+                }
+                break;
+
+            case CONTRACT:
+                fc.currentRadius = Math.max(0, fc.maxRadius - fc.phaseTicks * contractRate);
+                spawnFireRingParticles(sl, fc.x, fc.y, fc.z, fc.currentRadius);
+                pullEntities(sl, fc, owner);
+                if (fc.currentRadius <= 0) {
+                    fc.phase = FireCounterPhase.EXPLODE;
+                    fc.phaseTicks = 0;
+                }
+                break;
+
+            case EXPLODE:
+                doExplosion(sl, fc, owner);
+                owner.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
+                activeFireCounters.remove(dim);
+                break;
+        }
+    }
+
+    private static void spawnFireRingParticles(ServerLevel level, double cx, double cy, double cz, double radius) {
+        if (radius <= 0) return;
+        int count = Math.max(8, (int) (radius * 12));
+        double step = (Math.PI * 2) / count;
+        for (int i = 0; i < count; i += 2) {
+            double angle = step * i;
+            double px = cx + Math.cos(angle) * radius;
+            double pz = cz + Math.sin(angle) * radius;
+            level.sendParticles(ISSCore.getFireParticle(), px, cy + 0.1, pz, 1, 0, 0, 0, 0);
+            level.sendParticles(ParticleTypes.SMOKE, px, cy + 0.1, pz, 1, 0, 0, 0, 0);
+        }
+    }
+
+    private static void pullEntities(ServerLevel level, ActiveFireCounter fc, LivingEntity owner) {
+        AABB area = new AABB(
+                fc.x - fc.maxRadius, fc.y - fc.maxRadius, fc.z - fc.maxRadius,
+                fc.x + fc.maxRadius, fc.y + fc.maxRadius, fc.z + fc.maxRadius);
+        for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, area)) {
+            if (entity == owner) continue;
+            if (entity instanceof Player p && p.isCreative()) continue;
+            Vec3 toCenter = new Vec3(fc.x - entity.getX(), 0, fc.z - entity.getZ());
+            double dist = toCenter.length();
+            if (dist > fc.currentRadius) continue;
+            double pull = 0.3 * (1 - dist / Math.max(fc.currentRadius, 1));
+            entity.push(toCenter.normalize().scale(pull));
+            entity.hurtMarked = true;
+        }
+    }
+
+    private static void doExplosion(ServerLevel level, ActiveFireCounter fc, LivingEntity owner) {
+        level.playSound(null, fc.x, fc.y, fc.z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 2.0f, 1.0f);
+
+        AABB area = new AABB(
+                fc.x - fc.maxRadius, fc.y - fc.maxRadius, fc.z - fc.maxRadius,
+                fc.x + fc.maxRadius, fc.y + fc.maxRadius, fc.z + fc.maxRadius);
+        for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, area)) {
+            if (entity == owner) continue;
+            if (entity instanceof Player p && p.isCreative()) continue;
+            Vec3 delta = entity.position().subtract(owner.position());
+            if (delta.lengthSqr() < 1e-7) {
+                delta = new Vec3(level.random.nextDouble() - 0.5, 0, level.random.nextDouble() - 0.5);
+            }
+            delta = delta.normalize();
+
+            entity.push(delta.x * fc.knockback, 0.6, delta.z * fc.knockback);
+            entity.hurtMarked = true;
+
+            ElementDamageHelper.applyDamage(entity, (float) fc.damage,
+                    ModDamageTypes.source(level, ModDamageTypes.LAVA_MAGIC));
+
+            if (fc.scorchDuration > 0 && fc.fireStrength > 0) {
+                ScorchedHandler.applyScorched(entity, owner, fc.fireStrength,
+                        fc.scorchDuration, fc.fireStrength, 1.0f, true);
+            }
+
+            level.sendParticles(ISSCore.getFireParticle(),
+                    entity.getX(), entity.getY() + entity.getBbHeight() * 0.5, entity.getZ(),
+                    15, 0.5, 0.5, 0.5, 0.1);
+        }
+
+        // Explosion particle burst
+        level.sendParticles(ParticleTypes.EXPLOSION, fc.x, fc.y + 1, fc.z, 1, 0, 0, 0, 0);
+
+        // Fire tornado after explosion (like nature's cherry blossom tornado, but fire)
+        spawnFireTornado(level, new Vec3(fc.x, fc.y, fc.z), fc.maxRadius, 0);
+    }
+
+    private static void spawnFireTornado(ServerLevel level, Vec3 pos, double radius, int tick) {
+        int expandTicks = 20;
+        int maxTick = expandTicks + 10;
+        if (tick > maxTick) return;
+        double progress = Math.min((double) tick / expandTicks, 1.0);
+        double currentR = 0.5 + (radius - 0.5) * progress;
+        int totalHelices = 6;
+        int layers = 6;
+        double baseAngle = tick * 0.3;
+        double coneH = Math.min(currentR * 1.5, 10.0);
+        for (int h = 0; h < totalHelices; h++) {
+            double helixAngle = baseAngle + (2 * Math.PI * h) / totalHelices;
+            for (int p = 0; p < layers; p++) {
+                double t = p / (double) (layers - 1);
+                double y = 0.1 + t * coneH;
+                double r = currentR * (0.3 + 1.78 * Math.pow(t - 0.556, 2));
+                double x = pos.x + Math.cos(helixAngle) * r;
+                double z = pos.z + Math.sin(helixAngle) * r;
+                double vx = -Math.sin(helixAngle) * (0.15 + 0.1 * level.random.nextDouble())
+                        + Math.cos(helixAngle) * (0.03 + 0.02 * level.random.nextDouble());
+                double vz = Math.cos(helixAngle) * (0.15 + 0.1 * level.random.nextDouble())
+                        + Math.sin(helixAngle) * (0.03 + 0.02 * level.random.nextDouble());
+                double vy = tick <= expandTicks ? 0.03 + 0.02 * level.random.nextDouble() : 0;
+                level.sendParticles(ISSCore.getFireParticle(), x, pos.y + y, z, 0, vx, vy, vz, 1.0);
+                if (level.random.nextFloat() < 0.3f) {
+                    level.sendParticles(ParticleTypes.SMOKE, x, pos.y + y, z, 0, vx * 0.5, vy, vz * 0.5, 1.0);
+                }
+            }
+        }
+        level.getServer().execute(() -> spawnFireTornado(level, pos, radius, tick + 1));
     }
 }
