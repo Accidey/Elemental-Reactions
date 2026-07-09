@@ -744,10 +744,12 @@ public class ScorchedHandler {
 
     public static final String NBT_FIRE_COUNTER_CD = "ec_fire_counter_cd";
     public static final String NBT_FIRE_COUNTER_INVULN = "ec_fire_counter_invuln";
+    private static final String NBT_FIRE_COUNTER_LOCK = "ec_fire_counter_lock";
+    private static final String NBT_FIRE_COUNTER_SAVED_NOAI = "ec_fire_counter_saved_noai";
 
     private static final Map<ResourceKey<Level>, ActiveFireCounter> activeFireCounters = new HashMap<>();
 
-    private enum FireCounterPhase { EXPAND, CONTRACT, EXPLODE }
+    private enum FireCounterPhase { CONTRACT, EXPLODE }
 
     private static class ActiveFireCounter {
         final double x, y, z;
@@ -759,6 +761,7 @@ public class ScorchedHandler {
         final int scorchDuration;
         final int fireStrength;
         final Set<UUID> affectedEntities;
+        boolean collected;
         double currentRadius;
         int phaseTicks;
         FireCounterPhase phase;
@@ -775,9 +778,10 @@ public class ScorchedHandler {
             this.scorchDuration = ElementalFireNatureReactionsConfig.fireCounterScorchDuration;
             this.fireStrength = ElementUtils.getDisplayEnhancement(owner, ElementType.FIRE);
             this.affectedEntities = new HashSet<>();
-            this.currentRadius = 0;
+            this.collected = false;
+            this.currentRadius = this.maxRadius;
             this.phaseTicks = 0;
-            this.phase = FireCounterPhase.EXPAND;
+            this.phase = FireCounterPhase.CONTRACT;
         }
     }
 
@@ -813,6 +817,12 @@ public class ScorchedHandler {
         if (!(target.level() instanceof ServerLevel)) return;
         ResourceKey<Level> dim = target.level().dimension();
         target.getPersistentData().putBoolean(NBT_FIRE_COUNTER_INVULN, true);
+        target.getPersistentData().putBoolean(NBT_FIRE_COUNTER_LOCK, true);
+        if (target instanceof Mob mob) {
+            CompoundTag data = target.getPersistentData();
+            data.putBoolean(NBT_FIRE_COUNTER_SAVED_NOAI, mob.isNoAi());
+            mob.setNoAi(true);
+        }
         activeFireCounters.put(dim, new ActiveFireCounter(target));
     }
 
@@ -828,31 +838,22 @@ public class ScorchedHandler {
 
         Entity ownerEntity = sl.getEntity(fc.ownerUUID);
         if (!(ownerEntity instanceof LivingEntity owner) || owner.isDeadOrDying()) {
-            if (ownerEntity instanceof LivingEntity) {
-                ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
-            }
+            ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
+            ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_LOCK);
             activeFireCounters.remove(dim);
             return;
         }
 
-        double expandRate = fc.expansionSpeed / 20.0;
-
+        double rate = fc.expansionSpeed / 20.0;
         fc.phaseTicks++;
 
         switch (fc.phase) {
-            case EXPAND:
-                fc.currentRadius = Math.min(fc.maxRadius, fc.phaseTicks * expandRate);
-                spawnFireRingParticles(sl, fc.x, fc.y, fc.z, fc.currentRadius);
-                collectAndLock(sl, fc, owner);
-                owner.setDeltaMovement(0, 0, 0);
-                if (fc.currentRadius >= fc.maxRadius) {
-                    fc.phase = FireCounterPhase.CONTRACT;
-                    fc.phaseTicks = 0;
-                }
-                break;
-
             case CONTRACT:
-                fc.currentRadius = Math.max(0, fc.maxRadius - fc.phaseTicks * expandRate);
+                if (!fc.collected) {
+                    collectAndLock(sl, fc, owner);
+                    fc.collected = true;
+                }
+                fc.currentRadius = Math.max(0, fc.maxRadius - fc.phaseTicks * rate);
                 spawnFireRingParticles(sl, fc.x, fc.y, fc.z, fc.currentRadius);
                 pullAndLock(sl, fc, owner);
                 owner.setDeltaMovement(0, 0, 0);
@@ -865,6 +866,12 @@ public class ScorchedHandler {
             case EXPLODE:
                 doExplosion(sl, fc, owner);
                 owner.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
+                owner.getPersistentData().remove(NBT_FIRE_COUNTER_LOCK);
+                if (owner instanceof Mob mob) {
+                    boolean savedNoAi = owner.getPersistentData().getBoolean(NBT_FIRE_COUNTER_SAVED_NOAI);
+                    mob.setNoAi(savedNoAi);
+                    owner.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_NOAI);
+                }
                 activeFireCounters.remove(dim);
                 break;
         }
@@ -878,7 +885,7 @@ public class ScorchedHandler {
             if (entity == owner) continue;
             if (entity instanceof Player p && p.isCreative()) continue;
             double dist = entity.distanceToSqr(fc.x, entity.getY(), fc.z);
-            if (dist > fc.currentRadius * fc.currentRadius) continue;
+            if (dist > fc.maxRadius * fc.maxRadius) continue;
             fc.affectedEntities.add(entity.getUUID());
             entity.setDeltaMovement(0, 0, 0);
         }

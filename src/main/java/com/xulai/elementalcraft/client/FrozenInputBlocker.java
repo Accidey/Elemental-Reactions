@@ -10,8 +10,13 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Set;
+
 @Mod.EventBusSubscriber(modid = ElementalCraft.MODID, value = Dist.CLIENT)
 public class FrozenInputBlocker {
+
+    private static final Set<String> MOVEMENT_KEYS = Set.of(
+            "key.forward", "key.left", "key.back", "key.right", "key.jump");
 
     private static boolean isAllowedKey(int keyCode) {
         return keyCode == GLFW.GLFW_KEY_ESCAPE
@@ -26,16 +31,28 @@ public class FrozenInputBlocker {
              || mc.player.hasEffect(ModMobEffects.PARALYSIS.get()));
     }
 
+    private static boolean hasFireCounterLock(Minecraft mc) {
+        return mc.player != null
+            && mc.player.getPersistentData().getBoolean("ec_fire_counter_lock");
+    }
+
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.START) return;
         Minecraft mc = Minecraft.getInstance();
-        if (!isAffected(mc)) return;
+        boolean isFullLock = isAffected(mc);
+        boolean isMoveLock = hasFireCounterLock(mc);
+        if (!isFullLock && !isMoveLock) return;
 
         for (var key : mc.options.keyMappings) {
             if (isAllowedKey(key.getKey().getValue())) continue;
-            key.setDown(false);
-            while (key.consumeClick()) {}
+            if (isFullLock) {
+                key.setDown(false);
+                while (key.consumeClick()) {}
+            } else if (isMoveLock && MOVEMENT_KEYS.contains(key.getName())) {
+                key.setDown(false);
+                while (key.consumeClick()) {}
+            }
         }
     }
 
