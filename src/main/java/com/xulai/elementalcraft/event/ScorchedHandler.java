@@ -347,6 +347,18 @@ public class ScorchedHandler {
             return;
         }
         handleRegularScorch(entity, data);
+        if (data.contains(NBT_FIRE_COUNTER_SAVED_SPEED) && data.contains(NBT_FIRE_COUNTER_SPEED_TIME)) {
+            long elapsed = entity.level().getGameTime() - data.getLong(NBT_FIRE_COUNTER_SPEED_TIME);
+            if (elapsed > 100 && entity instanceof net.minecraft.world.entity.Mob mob) {
+                double savedSpeed = data.getDouble(NBT_FIRE_COUNTER_SAVED_SPEED);
+                if (savedSpeed > 0) {
+                    var attr = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+                    if (attr != null) attr.setBaseValue(savedSpeed);
+                }
+                data.remove(NBT_FIRE_COUNTER_SAVED_SPEED);
+                data.remove(NBT_FIRE_COUNTER_SPEED_TIME);
+            }
+        }
     }
 
     private static void handleTempScorch(LivingEntity entity, CompoundTag data) {
@@ -749,6 +761,7 @@ public class ScorchedHandler {
     public static final String NBT_FIRE_COUNTER_INVULN = "ec_fire_counter_invuln";
     private static final String NBT_FIRE_COUNTER_LOCK = "ec_fire_counter_lock";
     private static final String NBT_FIRE_COUNTER_SAVED_SPEED = "ec_fire_counter_saved_speed";
+    private static final String NBT_FIRE_COUNTER_SPEED_TIME = "ec_fire_counter_speed_time";
 
     private static final Map<ResourceKey<Level>, ActiveFireCounter> activeFireCounters = new HashMap<>();
 
@@ -827,6 +840,7 @@ public class ScorchedHandler {
     public static void triggerFireCounter(LivingEntity target) {
         if (!(target.level() instanceof ServerLevel)) return;
         ResourceKey<Level> dim = target.level().dimension();
+        if (activeFireCounters.containsKey(dim)) return;
         target.getPersistentData().putBoolean(NBT_FIRE_COUNTER_INVULN, true);
         if (target instanceof Mob mob) {
             mob.getNavigation().stop();
@@ -834,6 +848,7 @@ public class ScorchedHandler {
             if (attr != null) {
                 target.getPersistentData().putDouble(NBT_FIRE_COUNTER_SAVED_SPEED, attr.getBaseValue());
                 attr.setBaseValue(0);
+                target.getPersistentData().putLong(NBT_FIRE_COUNTER_SPEED_TIME, target.level().getGameTime());
             }
         }
         if (target instanceof net.minecraft.server.level.ServerPlayer sp) {
@@ -862,6 +877,7 @@ public class ScorchedHandler {
                     if (attr != null) attr.setBaseValue(savedSpeed);
                 }
                 ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_SPEED);
+                ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_SPEED_TIME);
             }
             if (ownerEntity != null) {
                 ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
@@ -904,6 +920,7 @@ public class ScorchedHandler {
                         if (attr != null) attr.setBaseValue(savedSpeed);
                     }
                     owner.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_SPEED);
+                    owner.getPersistentData().remove(NBT_FIRE_COUNTER_SPEED_TIME);
                 }
                 activeFireCounters.remove(dim);
                 break;
