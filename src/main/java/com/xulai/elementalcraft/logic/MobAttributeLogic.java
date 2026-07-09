@@ -422,6 +422,9 @@ public class MobAttributeLogic {
             target.setDeltaMovement(moveX, target.getDeltaMovement().y, moveZ);
             target.hurtMarked = true;
             target.move(net.minecraft.world.entity.MoverType.SELF, target.getDeltaMovement());
+            if (!target.isNoGravity()) {
+                target.setDeltaMovement(target.getDeltaMovement().x, target.getDeltaMovement().y - 0.08, target.getDeltaMovement().z);
+            }
         }
     }
 
@@ -518,6 +521,9 @@ public class MobAttributeLogic {
         entity.setDeltaMovement(moveX, entity.getDeltaMovement().y, moveZ);
         entity.hurtMarked = true;
         entity.move(net.minecraft.world.entity.MoverType.SELF, entity.getDeltaMovement());
+        if (!entity.isNoGravity()) {
+            entity.setDeltaMovement(entity.getDeltaMovement().x, entity.getDeltaMovement().y - 0.08, entity.getDeltaMovement().z);
+        }
         double lastX = data.getDouble(NBT_FLEE_LAST_X);
         double lastZ = data.getDouble(NBT_FLEE_LAST_Z);
         double movedXZ = Math.abs(entity.getX() - lastX) + Math.abs(entity.getZ() - lastZ);
