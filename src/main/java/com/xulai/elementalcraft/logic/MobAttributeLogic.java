@@ -394,7 +394,7 @@ public class MobAttributeLogic {
         if (dist > FLEE_TRIGGER_DIST) return;
         if (data.getBoolean("EC_FleeActive")) return;
 
-        int fleeDist = 10 + target.level().random.nextInt(11);
+        int fleeDist = 12 + target.level().random.nextInt(9);
         float yawRad = (float) Math.toRadians(target.getYRot());
         double fwdX = -net.minecraft.util.Mth.sin(yawRad);
         double fwdZ = net.minecraft.util.Mth.cos(yawRad);
@@ -489,7 +489,7 @@ public class MobAttributeLogic {
                 stopFlee(entity);
                 return;
             }
-            int fleeDist = 10 + entity.level().random.nextInt(11);
+            int fleeDist = 12 + entity.level().random.nextInt(9);
             double[] path;
             float yawRad = (float) Math.toRadians(entity.getYRot());
             double fwdX = -net.minecraft.util.Mth.sin(yawRad);
@@ -507,8 +507,11 @@ public class MobAttributeLogic {
 
         if (dist < 0.5) return;
 
+        float yaw = (float) (Math.atan2(dz, dx) * (180.0 / Math.PI)) - 90.0f;
+        entity.setYRot(yaw);
+        entity.setYHeadRot(yaw);
         float speed = 0.30f;
-        float rad = (float) Math.toRadians(entity.getYRot());
+        float rad = (float) Math.toRadians(yaw);
         float moveX = -net.minecraft.util.Mth.sin(rad) * speed;
         float moveZ = net.minecraft.util.Mth.cos(rad) * speed;
         entity.setDeltaMovement(moveX, entity.getDeltaMovement().y, moveZ);
