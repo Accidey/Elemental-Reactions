@@ -879,6 +879,10 @@ public class ScorchedHandler {
                 ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_SPEED);
                 ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_SPEED_TIME);
             }
+            if (ownerEntity instanceof net.minecraft.server.level.ServerPlayer sp) {
+                ElementalCraft.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp),
+                        new FireCounterLockPacket(false));
+            }
             if (ownerEntity != null) {
                 ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
                 ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_LOCK);
