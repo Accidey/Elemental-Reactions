@@ -1164,14 +1164,14 @@ public class ElementalFireNatureReactionsConfig {
             .comment("反击造成的水平击退力度。",
                     "Horizontal knockback strength of the counter-attack.",
                     "Default: 1.5 / 默认：1.5")
-            .defineInRange("wildfire_knockback", 1.5, 0.0, 10.0);
+            .defineInRange("wildfire_knockback", 3.0, 0.0, 10.0);
     BUILDER.comment(" ");
 
     WILDFIRE_VERTICAL_KNOCKBACK = BUILDER
             .comment("反击造成的垂直击退力度。",
                     "Vertical knockback strength of the counter-attack.",
                     "Default: 0.5 / 默认：0.5")
-            .defineInRange("wildfire_vertical_knockback", 0.5, 0.0, 10.0);
+            .defineInRange("wildfire_vertical_knockback", 1.0, 0.0, 10.0);
     BUILDER.comment(" ");
 
     WILDFIRE_SPORE_AMOUNT = BUILDER
