@@ -344,7 +344,9 @@ public class CombatEvents {
 
         if (attackElement == ElementType.FIRE) {
             if (frozenMelted) {
-                applyFireFreezeMelt(target, attacker, enhancementPoints);
+                if (!selfDryingSpawnedSteam) {
+                    applyFireFreezeMelt(target, attacker, enhancementPoints);
+                }
             } else {
                 tryTriggerScorched(attacker, target, enhancementPoints, selfDryingSpawnedSteam);
             }
