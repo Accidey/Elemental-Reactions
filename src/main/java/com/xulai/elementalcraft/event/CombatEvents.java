@@ -413,6 +413,28 @@ public class CombatEvents {
         int threshold = ElementalFireNatureReactionsConfig.scorchedTriggerThreshold;
         double growth = Math.floor((firePower - threshold) / (double) pointsPerStep) * 0.05;
         double totalChance = Math.min(1.0, Math.max(0.0, baseChance + growth));
+
+        double biomeBonus = 0;
+        String biomeTag = "";
+        if (target.level().canSeeSky(target.blockPosition())) {
+            var biome = target.level().getBiome(target.blockPosition()).value();
+            double temp = biome.getBaseTemperature();
+            if (temp >= 2.0) {
+                biomeBonus = ElementalFireNatureReactionsConfig.scorchedHotBiomeChanceBonus;
+                biomeTag = Component.translatable("debug.elementalcraft.reaction.biome.hot").getString();
+            } else if (temp <= 0.3) {
+                biomeBonus = -ElementalFireNatureReactionsConfig.scorchedColdBiomeChancePenalty;
+                biomeTag = Component.translatable("debug.elementalcraft.reaction.biome.cold").getString();
+            }
+            totalChance += biomeBonus;
+            totalChance = Math.min(1.0, Math.max(0.0, totalChance));
+        }
+
+        String envInfo = "";
+        if (biomeBonus != 0) {
+            envInfo = String.format(" (%+.0f%% %s)", biomeBonus * 100, biomeTag);
+        }
+
         boolean triggered;
         if (hasPoison || hasSpores) {
             totalChance = 1.0;
@@ -443,15 +465,15 @@ public class CombatEvents {
                 if (hasPoison && hasSpores) {
                     chanceInfo = String.format("%.0f%%", totalChance * 100)
                             + "(" + Component.translatable("effect.minecraft.poison").getString()
-                            + "+" + Component.translatable("debug.elementalcraft.reaction.scorched.spore_label").getString() + ")";
+                            + "+" + Component.translatable("debug.elementalcraft.reaction.scorched.spore_label").getString() + ")" + envInfo;
                 } else if (hasPoison) {
                     chanceInfo = String.format("%.0f%%", totalChance * 100)
-                            + "(" + Component.translatable("effect.minecraft.poison").getString() + ")";
+                            + "(" + Component.translatable("effect.minecraft.poison").getString() + ")" + envInfo;
                 } else if (hasSpores) {
                     chanceInfo = String.format("%.0f%%", totalChance * 100)
-                            + "(" + Component.translatable("debug.elementalcraft.reaction.scorched.spore_label").getString() + ")";
+                            + "(" + Component.translatable("debug.elementalcraft.reaction.scorched.spore_label").getString() + ")" + envInfo;
                 } else {
-                    chanceInfo = String.format("%.0f%%", totalChance * 100);
+                    chanceInfo = String.format("%.0f%%", totalChance * 100) + envInfo;
                 }
                 if (hasPoison) {
                     double enhancedSec = (int)(duration * ElementalFireNatureReactionsConfig.poisonScorchDurationMultiplier) / 20.0;

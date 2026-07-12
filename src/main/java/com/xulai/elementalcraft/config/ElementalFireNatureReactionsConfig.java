@@ -128,6 +128,8 @@ public class ElementalFireNatureReactionsConfig {
     public static final ForgeConfigSpec.DoubleValue POISON_SCORCH_DURATION_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue POISON_SCORCH_DAMAGE_MULTIPLIER;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> SCORCHED_ENTITY_BLACKLIST;
+    public static final ForgeConfigSpec.DoubleValue SCORCHED_HOT_BIOME_CHANCE_BONUS;
+    public static final ForgeConfigSpec.DoubleValue SCORCHED_COLD_BIOME_CHANCE_PENALTY;
     public static final ForgeConfigSpec.IntValue SCORCHED_AURA_FIRE_POWER_THRESHOLD;
     public static final ForgeConfigSpec.DoubleValue SCORCHED_AURA_RADIUS;
     public static final ForgeConfigSpec.BooleanValue SCORCHED_AURA_STEAM_ENABLED;
@@ -675,6 +677,20 @@ public class ElementalFireNatureReactionsConfig {
                     "Scorched effect immunity blacklist.",
                     "Default: [] / 默认：[]")
             .defineListAllowEmpty("scorched_entity_blacklist", List.of(), o -> o instanceof String);
+    BUILDER.comment(" ");
+
+    SCORCHED_HOT_BIOME_CHANCE_BONUS = BUILDER
+            .comment("露天炎热群系下灼烧触发概率的额外加成（0.3 = +30%）。仅在露天环境有效（头顶无遮挡）。",
+                     "Bonus Scorched trigger chance in hot biomes under open sky. (0.3 = +30% chance)",
+                     "Default: 0.3 / 默认：0.3")
+            .defineInRange("scorched_hot_biome_chance_bonus", 0.3, 0.0, 1.0);
+    BUILDER.comment(" ");
+
+    SCORCHED_COLD_BIOME_CHANCE_PENALTY = BUILDER
+            .comment("露天寒冷群系下灼烧触发概率的减少值（0.3 = -30%）。仅在露天环境有效（头顶无遮挡）。",
+                     "Scorched trigger chance penalty in cold biomes under open sky. (0.3 = -30% chance)",
+                     "Default: 0.3 / 默认：0.3")
+            .defineInRange("scorched_cold_biome_chance_penalty", 0.3, 0.0, 1.0);
 
     BUILDER.push("scorched_aura");
     BUILDER.comment("灼烧光环 - Scorched Aura",
@@ -1286,6 +1302,8 @@ public class ElementalFireNatureReactionsConfig {
     public static int scorchedDamageScalingStep;
     public static int scorchedResistThreshold;
     public static double scorchedImmuneModifier;
+    public static double scorchedHotBiomeChanceBonus;
+    public static double scorchedColdBiomeChancePenalty;
     public static double scorchedFireProtReduction;
     public static double scorchedShockDamageRatio;
     public static double scorchedGenProtReduction;
@@ -1425,6 +1443,8 @@ public class ElementalFireNatureReactionsConfig {
         poisonScorchDurationMultiplier = POISON_SCORCH_DURATION_MULTIPLIER.get();
         poisonScorchDamageMultiplier = POISON_SCORCH_DAMAGE_MULTIPLIER.get();
         cachedScorchedBlacklist = SCORCHED_ENTITY_BLACKLIST.get();
+        scorchedHotBiomeChanceBonus = SCORCHED_HOT_BIOME_CHANCE_BONUS.get();
+        scorchedColdBiomeChancePenalty = SCORCHED_COLD_BIOME_CHANCE_PENALTY.get();
         scorchedAuraFirePowerThreshold = SCORCHED_AURA_FIRE_POWER_THRESHOLD.get();
         scorchedAuraRadius = SCORCHED_AURA_RADIUS.get();
         scorchedAuraSteamEnabled = SCORCHED_AURA_STEAM_ENABLED.get();

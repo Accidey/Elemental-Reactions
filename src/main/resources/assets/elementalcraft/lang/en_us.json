@@ -278,6 +278,8 @@
   "debug.elementalcraft.reaction.scorched.failed.blacklist": "§7[Scorched] §f%s §7→ §f%s §7blocked: target in scorched blacklist",
   "debug.elementalcraft.reaction.scorched.failed.frozen": "§7[Scorched] §f%s §7→ §f%s §7blocked: target frozen",
   "debug.elementalcraft.reaction.scorched.failed.resistance": "§7[Scorched] §f%s §7Fire Resistance(%s ≥ %s), immune to scorched",
+  "debug.elementalcraft.reaction.biome.hot": "Hot",
+  "debug.elementalcraft.reaction.biome.cold": "Cold",
   "debug.elementalcraft.reaction.scorched.spore_label": "Flammable Spores",
   "debug.elementalcraft.reaction.scorched.weak_blast_label": "Weak Blast",
   "debug.elementalcraft.reaction.scorched.damage_mult_label": "Damage Mult",

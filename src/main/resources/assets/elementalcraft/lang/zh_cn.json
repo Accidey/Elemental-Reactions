@@ -279,6 +279,8 @@
   "debug.elementalcraft.reaction.scorched.failed.blacklist": "§7[灼烧] §f%s §7→ §f%s §7被阻止: 目标在灼烧黑名单中",
   "debug.elementalcraft.reaction.scorched.failed.frozen": "§7[灼烧] §f%s §7→ §f%s §7被阻止: 目标被冻结",
   "debug.elementalcraft.reaction.scorched.failed.resistance": "§7[灼烧] §f%s §7赤焰抗性(%s ≥ %s)，免疫灼烧",
+  "debug.elementalcraft.reaction.biome.hot": "炎热",
+  "debug.elementalcraft.reaction.biome.cold": "寒冷",
   "debug.elementalcraft.reaction.scorched.spore_label": "易燃孢子",
   "debug.elementalcraft.reaction.scorched.weak_blast_label": "弱效爆燃",
   "debug.elementalcraft.reaction.scorched.damage_mult_label": "伤害倍率",
