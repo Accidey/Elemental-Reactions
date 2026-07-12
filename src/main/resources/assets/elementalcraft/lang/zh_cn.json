@@ -118,6 +118,13 @@
   "command.elementalcraft.steam.blacklist.not_found": "§e%s §7不在蒸汽免疫黑名单中。",
   "command.elementalcraft.steam.blacklist.removed": "§a成功将 §e%s §a从蒸汽免疫黑名单移除。",
 
+  "command.elementalcraft.entity.blacklist.added": "§a成功将 §e%s §a加入属性生物黑名单。",
+  "command.elementalcraft.entity.blacklist.already_exists": "§e%s §7已在属性生物黑名单中。",
+  "command.elementalcraft.entity.blacklist.empty": "§e属性生物黑名单为空。",
+  "command.elementalcraft.entity.blacklist.header": "§e当前属性生物黑名单 (%s):",
+  "command.elementalcraft.entity.blacklist.not_found": "§e%s §7不在属性生物黑名单中。",
+  "command.elementalcraft.entity.blacklist.removed": "§a成功将 §e%s §a从属性生物黑名单移除。",
+
   "command.elementalcraft.wetness.blacklist.added": "§a成功将 §e%s §a加入潮湿黑名单。",
   "command.elementalcraft.wetness.blacklist.already_exists": "§e%s §7已在潮湿黑名单中。",
   "command.elementalcraft.wetness.blacklist.empty": "§e潮湿黑名单为空。",

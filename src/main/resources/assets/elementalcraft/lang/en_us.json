@@ -118,6 +118,13 @@
   "command.elementalcraft.steam.blacklist.not_found": "§e%s §7is not in the Steam immunity blacklist.",
   "command.elementalcraft.steam.blacklist.removed": "§aSuccessfully removed §e%s §afrom Steam immunity blacklist.",
 
+  "command.elementalcraft.entity.blacklist.added": "§aSuccessfully added §e%s §ato entity attribute blacklist.",
+  "command.elementalcraft.entity.blacklist.already_exists": "§e%s §7is already in the entity attribute blacklist.",
+  "command.elementalcraft.entity.blacklist.empty": "§eEntity attribute blacklist is empty.",
+  "command.elementalcraft.entity.blacklist.header": "§eCurrent entity attribute blacklist (%s):",
+  "command.elementalcraft.entity.blacklist.not_found": "§e%s §7is not in the entity attribute blacklist.",
+  "command.elementalcraft.entity.blacklist.removed": "§aSuccessfully removed §e%s §afrom entity attribute blacklist.",
+
   "command.elementalcraft.wetness.blacklist.added": "§aSuccessfully added §e%s §ato Wetness blacklist.",
   "command.elementalcraft.wetness.blacklist.already_exists": "§e%s §7is already in the Wetness blacklist.",
   "command.elementalcraft.wetness.blacklist.empty": "§eWetness blacklist is empty.",

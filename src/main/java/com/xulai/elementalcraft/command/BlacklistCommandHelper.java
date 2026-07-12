@@ -2,6 +2,7 @@ package com.xulai.elementalcraft.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalISSIntegrationConfig;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
@@ -83,6 +84,12 @@ public class BlacklistCommandHelper {
                         () -> ElementalFireNatureReactionsConfig.cachedSteamBlacklist,
                         ElementalFireNatureReactionsConfig::refreshCache,
                         "command.elementalcraft.steam.blacklist"),
+                new BlacklistEntry("entity",
+                        ElementalConfig.BLACKLISTED_ENTITIES,
+                        ElementalConfig.SPEC,
+                        () -> ElementalConfig.cachedBlacklist,
+                        ElementalConfig::refreshCache,
+                        "command.elementalcraft.entity.blacklist"),
                 new BlacklistEntry("wetness",
                         ElementalFireNatureReactionsConfig.WETNESS_ENTITY_BLACKLIST,
                         ElementalFireNatureReactionsConfig.SPEC,
