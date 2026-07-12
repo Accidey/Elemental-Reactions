@@ -24,6 +24,13 @@
   "command.elementalcraft.biomebias.saved": "§7Configuration file saved, cache refreshed, effective immediately",
   "command.elementalcraft.biomebias.use_remove_first": "§cBiome ID already exists in bias configuration.",
 
+  "command.elementalcraft.entity.blacklist.added": "§aSuccessfully added §e%s §ato entity attribute blacklist.",
+  "command.elementalcraft.entity.blacklist.already_exists": "§e%s §7is already in the entity attribute blacklist.",
+  "command.elementalcraft.entity.blacklist.empty": "§eEntity attribute blacklist is empty.",
+  "command.elementalcraft.entity.blacklist.header": "§eCurrent entity attribute blacklist (%s):",
+  "command.elementalcraft.entity.blacklist.not_found": "§e%s §7is not in the entity attribute blacklist.",
+  "command.elementalcraft.entity.blacklist.removed": "§aSuccessfully removed §e%s §afrom entity attribute blacklist.",
+
   "command.elementalcraft.blacklist.added_all": "§aSuccessfully disabled §lall §aelemental attributes for entity §f%s",
   "command.elementalcraft.blacklist.added_single": "§aSuccessfully disabled attribute §r%s §afor entity §f%s",
   "command.elementalcraft.blacklist.already_exists": "§e%s §7already has a blacklist entry for attribute §r%s",
@@ -117,13 +124,6 @@
   "command.elementalcraft.steam.blacklist.header": "§eCurrent Steam immunity blacklist (%s):",
   "command.elementalcraft.steam.blacklist.not_found": "§e%s §7is not in the Steam immunity blacklist.",
   "command.elementalcraft.steam.blacklist.removed": "§aSuccessfully removed §e%s §afrom Steam immunity blacklist.",
-
-  "command.elementalcraft.entity.blacklist.added": "§aSuccessfully added §e%s §ato entity attribute blacklist.",
-  "command.elementalcraft.entity.blacklist.already_exists": "§e%s §7is already in the entity attribute blacklist.",
-  "command.elementalcraft.entity.blacklist.empty": "§eEntity attribute blacklist is empty.",
-  "command.elementalcraft.entity.blacklist.header": "§eCurrent entity attribute blacklist (%s):",
-  "command.elementalcraft.entity.blacklist.not_found": "§e%s §7is not in the entity attribute blacklist.",
-  "command.elementalcraft.entity.blacklist.removed": "§aSuccessfully removed §e%s §afrom entity attribute blacklist.",
 
   "command.elementalcraft.wetness.blacklist.added": "§aSuccessfully added §e%s §ato Wetness blacklist.",
   "command.elementalcraft.wetness.blacklist.already_exists": "§e%s §7is already in the Wetness blacklist.",

@@ -24,6 +24,13 @@
   "command.elementalcraft.biomebias.saved": "§7配置文件已保存，缓存已刷新，立即生效",
   "command.elementalcraft.biomebias.use_remove_first": "§c群系ID已在偏向配置中。",
 
+  "command.elementalcraft.entity.blacklist.added": "§a成功将 §e%s §a加入属性生物黑名单。",
+  "command.elementalcraft.entity.blacklist.already_exists": "§e%s §7已在属性生物黑名单中。",
+  "command.elementalcraft.entity.blacklist.empty": "§e属性生物黑名单为空。",
+  "command.elementalcraft.entity.blacklist.header": "§e当前属性生物黑名单 (%s):",
+  "command.elementalcraft.entity.blacklist.not_found": "§e%s §7不在属性生物黑名单中。",
+  "command.elementalcraft.entity.blacklist.removed": "§a成功将 §e%s §a从属性生物黑名单移除。",
+
   "command.elementalcraft.blacklist.added_all": "§a已为实体 §f%s §a成功禁用 §l全部 §a元素属性",
   "command.elementalcraft.blacklist.added_single": "§a已为实体 §f%s §a成功禁用属性 §r%s",
   "command.elementalcraft.blacklist.already_exists": "§e%s §7已为属性 §r%s §7设置黑名单",
@@ -117,13 +124,6 @@
   "command.elementalcraft.steam.blacklist.header": "§e当前蒸汽免疫黑名单 (%s):",
   "command.elementalcraft.steam.blacklist.not_found": "§e%s §7不在蒸汽免疫黑名单中。",
   "command.elementalcraft.steam.blacklist.removed": "§a成功将 §e%s §a从蒸汽免疫黑名单移除。",
-
-  "command.elementalcraft.entity.blacklist.added": "§a成功将 §e%s §a加入属性生物黑名单。",
-  "command.elementalcraft.entity.blacklist.already_exists": "§e%s §7已在属性生物黑名单中。",
-  "command.elementalcraft.entity.blacklist.empty": "§e属性生物黑名单为空。",
-  "command.elementalcraft.entity.blacklist.header": "§e当前属性生物黑名单 (%s):",
-  "command.elementalcraft.entity.blacklist.not_found": "§e%s §7不在属性生物黑名单中。",
-  "command.elementalcraft.entity.blacklist.removed": "§a成功将 §e%s §a从属性生物黑名单移除。",
 
   "command.elementalcraft.wetness.blacklist.added": "§a成功将 §e%s §a加入潮湿黑名单。",
   "command.elementalcraft.wetness.blacklist.already_exists": "§e%s §7已在潮湿黑名单中。",
