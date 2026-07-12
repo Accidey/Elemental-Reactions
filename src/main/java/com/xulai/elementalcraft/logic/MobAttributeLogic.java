@@ -47,7 +47,7 @@ public class MobAttributeLogic {
 
         String entityId = net.minecraft.world.entity.EntityType.getKey(mob.getType()).toString();
 
-        if (ElementalConfig.cachedBlacklist.contains(entityId)) {
+        if (ElementalConfig.cachedBlacklist.stream().anyMatch(entry -> entry.equals(entityId) || entry.startsWith(entityId + ":"))) {
             data.putBoolean("ElementalCraft_AttributesSet", true);
             return;
         }
