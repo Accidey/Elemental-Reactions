@@ -197,7 +197,7 @@ public class FrostbiteHandler {
             }
         }
 
-        EffectHelper.playFrostBurstRing(sl, burst.x, burst.y, burst.z, burst.currentRadius, burst.tickCount);
+        EffectHelper.playFrostBurstRing(sl, burst.x, burst.y, burst.z, burst.currentRadius);
 
         AABB box = new AABB(
             burst.x - burst.currentRadius, burst.y - burst.heightCeiling, burst.z - burst.currentRadius,
