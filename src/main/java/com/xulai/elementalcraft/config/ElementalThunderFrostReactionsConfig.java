@@ -109,10 +109,12 @@ public final class ElementalThunderFrostReactionsConfig {
     public static final ForgeConfigSpec.IntValue SCORCHED_FROSTBITE_TO_WETNESS_RATIO;
 
     public static final ForgeConfigSpec.BooleanValue FROSTBITE_CLEAR_BY_HEAT_ENABLED;
-    public static final ForgeConfigSpec.BooleanValue FROSTBITE_NETHER_CLEAR_ENABLED;
     public static final ForgeConfigSpec.DoubleValue FROSTBITE_NETHER_DECAY_SPEED;
     public static final ForgeConfigSpec.DoubleValue FROSTBITE_HEAT_SEARCH_RADIUS;
     public static final ForgeConfigSpec.IntValue FROSTBITE_FIRE_STAND_CLEARING_TIME;
+
+    public static final ForgeConfigSpec.DoubleValue FROSTBITE_HEAT_ACCELERATE_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue FROSTBITE_HEAT_ACCELERATE_RADIUS;
 
     public static final ForgeConfigSpec.IntValue FROSTBITE_AURA_THRESHOLD;
     public static final ForgeConfigSpec.DoubleValue FROSTBITE_AURA_BASE_RANGE;
@@ -863,13 +865,6 @@ public final class ElementalThunderFrostReactionsConfig {
 
         BUILDER.comment(" ");
 
-        FROSTBITE_NETHER_CLEAR_ENABLED = BUILDER
-                .comment("启用后，进入下界维度时霜冻效果会被立即清除。",
-                         "When enabled, Frostbite is cleared immediately upon entering the Nether dimension.",
-                         "Default: true / 默认：true")
-                .define("frostbite_nether_clear_enabled", true);
-
-        BUILDER.comment(" ");
         FROSTBITE_NETHER_DECAY_SPEED = BUILDER
                 .comment("下界维度中霜冻倒计时的加速倍率。2.0 = 2倍速流逝，10.0 = 10倍速流逝。",
                          "Frostbite countdown speed multiplier in the Nether dimension. 2.0 = 2x faster, 10.0 = 10x faster.",
@@ -891,6 +886,24 @@ public final class ElementalThunderFrostReactionsConfig {
                          "Seconds required to stand on a fire block (Fire or Soul Fire) to clear all Frostbite.",
                          "Default: 2 / 默认：2")
                 .defineInRange("frostbite_fire_stand_clearing_time", 2, 1, 600);
+
+        BUILDER.comment(" ");
+
+        FROSTBITE_HEAT_ACCELERATE_MULTIPLIER = BUILDER
+                .comment("营火/点燃的熔炉/高炉/烟熏炉旁边，霜冻倒计时加速倍率。1.0 = 不加速。",
+                         "Frostbite decay multiplier near campfire/lit furnace/blast furnace/smoker.",
+                         "Default: 2.0 / 默认：2.0",
+                         "Range: 1.0 ~ 10.0")
+                .defineInRange("frostbite_heat_accelerate_multiplier", 2.0, 1.0, 10.0);
+
+        BUILDER.comment(" ");
+
+        FROSTBITE_HEAT_ACCELERATE_RADIUS = BUILDER
+                .comment("检测营火/熔炉等热源的范围（格）。设为0则关闭此功能。",
+                         "Radius (blocks) to search for campfire/furnace heat sources. Set to 0 to disable.",
+                         "Default: 2.0 / 默认：2.0",
+                         "Range: 0.0 ~ 16.0")
+                .defineInRange("frostbite_heat_accelerate_radius", 2.0, 0.0, 16.0);
 
         BUILDER.comment(" ");
 
@@ -1194,10 +1207,12 @@ public final class ElementalThunderFrostReactionsConfig {
     public static boolean freezeClearSporesEnabled;
     public static int scorchedFrostbiteToWetnessRatio;
     public static boolean frostbiteClearByHeatEnabled;
-    public static boolean frostbiteNetherClearEnabled;
     public static double frostbiteNetherDecaySpeed;
     public static double frostbiteHeatSearchRadius;
     public static int frostbiteFireStandClearingTime;
+
+    public static double frostbiteHeatAccelerateMultiplier;
+    public static double frostbiteHeatAccelerateRadius;
 
     public static int staticSteamCloudTriggerStacks;
 
@@ -1309,10 +1324,12 @@ public final class ElementalThunderFrostReactionsConfig {
         freezeClearSporesEnabled = FREEZE_CLEAR_SPORES_ENABLED.get();
         scorchedFrostbiteToWetnessRatio = SCORCHED_FROSTBITE_TO_WETNESS_RATIO.get();
         frostbiteClearByHeatEnabled = FROSTBITE_CLEAR_BY_HEAT_ENABLED.get();
-        frostbiteNetherClearEnabled = FROSTBITE_NETHER_CLEAR_ENABLED.get();
         frostbiteNetherDecaySpeed = FROSTBITE_NETHER_DECAY_SPEED.get();
         frostbiteHeatSearchRadius = FROSTBITE_HEAT_SEARCH_RADIUS.get();
         frostbiteFireStandClearingTime = FROSTBITE_FIRE_STAND_CLEARING_TIME.get();
+
+        frostbiteHeatAccelerateMultiplier = FROSTBITE_HEAT_ACCELERATE_MULTIPLIER.get();
+        frostbiteHeatAccelerateRadius = FROSTBITE_HEAT_ACCELERATE_RADIUS.get();
 
         staticSteamCloudTriggerStacks = STATIC_STEAM_CLOUD_TRIGGER_STACKS.get();
 

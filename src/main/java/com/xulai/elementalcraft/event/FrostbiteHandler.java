@@ -39,7 +39,9 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -60,7 +62,6 @@ import java.util.UUID;
 @Mod.EventBusSubscriber(modid = ElementalCraft.MODID)
 public class FrostbiteHandler {
     private static final Random RANDOM = new Random();
-    private static boolean intentionalClear = false;
 
     public static final String NBT_FROST_COUNTER_COOLDOWN = "ec_frost_counter_cd";
     public static final String NBT_FROSTBITE_STACKS = "EC_FrostbiteStacks";
@@ -571,11 +572,6 @@ public class FrostbiteHandler {
         }
 
         if (data.contains(NBT_FROSTBITE_STACKS) && !entity.hasEffect(ModMobEffects.FROSTBITE.get()) && !isFrozen(entity)) {
-            if (!ElementalThunderFrostReactionsConfig.frostbiteNetherClearEnabled
-                    && entity.level().dimension() == Level.NETHER) {
-                syncFrostbiteEffect(entity, data.getInt(NBT_FROSTBITE_STACKS), data.getInt(NBT_FROSTBITE_DURATION));
-                return;
-            }
             clearFrostbite(entity);
             return;
         }
@@ -659,16 +655,6 @@ public class FrostbiteHandler {
             applyFrostbiteAuraEffects(entity, stacks);
         }
 
-        if (ElementalThunderFrostReactionsConfig.frostbiteNetherClearEnabled
-                && entity.level().dimension() == Level.NETHER) {
-            if (auraActive) {
-                clearFrostbiteAuraEffects(entity, stacks);
-            }
-            clearFrostbite(entity);
-            entity.playSound(SoundEvents.FIRE_EXTINGUISH, 1.0f, 1.0f);
-            return;
-        }
-
         if (ElementalThunderFrostReactionsConfig.frostbiteClearByHeatEnabled) {
             if (entity.isOnFire()) {
                 if (auraActive) {
@@ -711,6 +697,10 @@ public class FrostbiteHandler {
         if (entity.level().dimension() == Level.NETHER) {
             decay = (int) ElementalThunderFrostReactionsConfig.frostbiteNetherDecaySpeed;
             if (decay < 1) decay = 1;
+        }
+        double heatMult = checkFrostbiteHeatAccelerator(entity, entity.level(), entity.blockPosition());
+        if (heatMult > 1.0) {
+            decay = (int) Math.max(decay, decay * heatMult);
         }
         data.putInt(NBT_FROSTBITE_DURATION, duration - decay);
 
@@ -787,12 +777,7 @@ public class FrostbiteHandler {
         cleanupFrostbitePersistentData(entity);
 
         if (entity.hasEffect(ModMobEffects.FROSTBITE.get())) {
-            intentionalClear = true;
-            try {
-                entity.removeEffect(ModMobEffects.FROSTBITE.get());
-            } finally {
-                intentionalClear = false;
-            }
+            entity.removeEffect(ModMobEffects.FROSTBITE.get());
         }
 
         if (entity instanceof ServerPlayer sp) {
@@ -808,9 +793,6 @@ public class FrostbiteHandler {
         if (entity.level().isClientSide) return;
         CompoundTag data = entity.getPersistentData();
         if (!data.contains(NBT_FROSTBITE_STACKS) && !data.contains(NBT_FROSTBITE_DURATION)) return;
-        if (!intentionalClear
-                && !ElementalThunderFrostReactionsConfig.frostbiteNetherClearEnabled
-                && entity.level().dimension() == Level.NETHER) return;
         cleanupFrostbitePersistentData(entity);
         removedByClear.add(entity.getUUID());
     }
@@ -842,8 +824,6 @@ public class FrostbiteHandler {
         if (entity.level().isClientSide) return;
         CompoundTag data = entity.getPersistentData();
         if (!data.contains(NBT_FROSTBITE_STACKS) && !data.contains(NBT_FROSTBITE_DURATION)) return;
-        if (!ElementalThunderFrostReactionsConfig.frostbiteNetherClearEnabled
-                && entity.level().dimension() == Level.NETHER) return;
         clearFrostbite(entity);
     }
 
@@ -1012,6 +992,35 @@ public class FrostbiteHandler {
         if (target instanceof Player player && player.isCreative()) return true;
         if (target.isDeadOrDying()) return true;
         return false;
+    }
+
+    private static double checkFrostbiteHeatAccelerator(LivingEntity entity, Level level, BlockPos center) {
+        double mult = ElementalThunderFrostReactionsConfig.frostbiteHeatAccelerateMultiplier;
+        if (mult <= 1.0) return 1.0;
+        double radius = ElementalThunderFrostReactionsConfig.frostbiteHeatAccelerateRadius;
+        if (radius <= 0) return 1.0;
+        if (entity.isInWater() || level.isRainingAt(center)) return 1.0;
+        int range = (int)Math.ceil(radius);
+        BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
+        for (int x = -range; x <= range; x++) {
+            for (int y = -range; y <= range; y++) {
+                for (int z = -range; z <= range; z++) {
+                    mutablePos.set(center.getX() + x, center.getY() + y, center.getZ() + z);
+                    BlockState state = level.getBlockState(mutablePos);
+                    if (state.is(Blocks.CAMPFIRE) || state.is(Blocks.SOUL_CAMPFIRE)) {
+                        if (state.getValue(CampfireBlock.LIT)) {
+                            return ElementalThunderFrostReactionsConfig.frostbiteHeatAccelerateMultiplier;
+                        }
+                    }
+                    if (state.getBlock() instanceof AbstractFurnaceBlock) {
+                        if (state.getValue(AbstractFurnaceBlock.LIT)) {
+                            return ElementalThunderFrostReactionsConfig.frostbiteHeatAccelerateMultiplier;
+                        }
+                    }
+                }
+            }
+        }
+        return 1.0;
     }
 
     private static void decaySpores(LivingEntity entity) {
