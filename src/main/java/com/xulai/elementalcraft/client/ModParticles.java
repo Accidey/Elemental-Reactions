@@ -86,5 +86,10 @@ public class ModParticles {
                 CHERRY_BLOSSOM.get(),
                 CherryBlossomParticle.Factory::new
         );
+
+        event.registerSpriteSet(
+                FROST_ICE_RUNE.get(),
+                FrostIceRuneParticle.Factory::new
+        );
     }
 }

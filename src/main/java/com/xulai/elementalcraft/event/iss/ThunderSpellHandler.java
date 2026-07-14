@@ -1,6 +1,7 @@
 package com.xulai.elementalcraft.event.iss;
 
 import com.xulai.elementalcraft.ElementalCraft;
+import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalISSIntegrationConfig;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
@@ -619,7 +620,7 @@ public class ThunderSpellHandler {
         if (ElementalThunderFrostReactionsConfig.paralysisMaxStacks <= 0) return;
 
         String entityId = net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getKey(target.getType()).toString();
-        if (ElementalThunderFrostReactionsConfig.cachedParalysisImmunityBlacklist.contains(entityId)) return;
+        if (ElementalConfig.matchesBlacklist(ElementalThunderFrostReactionsConfig.cachedParalysisImmunityBlacklist, entityId)) return;
 
         double searchRadius = ElementalFireNatureReactionsConfig.steamCloudRadius * 3.0;
         AABB box = target.getBoundingBox().inflate(searchRadius);

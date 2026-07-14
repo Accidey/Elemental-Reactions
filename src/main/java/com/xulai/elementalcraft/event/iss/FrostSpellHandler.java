@@ -111,7 +111,7 @@ public class FrostSpellHandler {
                 if (target == livingOwner) continue;
                 if (ISSCore.RANDOM.nextDouble() < chance) {
                     FrostbiteHandler.applyFrostbite(target, livingOwner, stacksToAdd, chance, frostPower,
-                            baseChance, scalingSteps, scalingChance, 0, 0);
+                            baseChance, scalingSteps, scalingChance, 0, 0, 0, "");
                 }
             }
         }
@@ -200,7 +200,7 @@ public class FrostSpellHandler {
             int eStacks = 1 + (frostPower - (int) threshold) / step;
             int stacksToAdd = spellStacks > 0 ? Math.min(spellStacks, eStacks) : eStacks;
             FrostbiteHandler.applyFrostbite(target, attacker, stacksToAdd, chance, frostPower,
-                    baseChance, scalingSteps, scalingChance, 0, 0);
+                    baseChance, scalingSteps, scalingChance, 0, 0, 0, "");
         } else {
             com.xulai.elementalcraft.command.DebugCommand.sendReactionFailed(attacker, "frostbite", "chance",
                     attacker.getDisplayName(), target.getDisplayName(),

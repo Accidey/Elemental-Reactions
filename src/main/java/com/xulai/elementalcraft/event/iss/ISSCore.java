@@ -568,8 +568,8 @@ public class ISSCore {
     static boolean isImmuneToParalysis(LivingEntity entity) {
         var entityId = ForgeRegistries.ENTITY_TYPES
                 .getKey(entity.getType()).toString();
-        return com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig.cachedParalysisImmunityBlacklist
-                .contains(entityId);
+        return com.xulai.elementalcraft.config.ElementalConfig.matchesBlacklist(
+                com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig.cachedParalysisImmunityBlacklist, entityId);
     }
 
     static int tryGetStacksFromItem(LivingEntity attacker) {

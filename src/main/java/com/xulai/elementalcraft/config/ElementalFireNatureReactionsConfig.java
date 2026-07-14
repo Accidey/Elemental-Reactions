@@ -283,8 +283,9 @@ public class ElementalFireNatureReactionsConfig {
 
     WETNESS_ENTITY_BLACKLIST = BUILDER
             .comment("潮湿效果免疫黑名单（填入实体ID，如 \"minecraft:blaze\"）。",
-                    "Wetness immunity blacklist (Entity IDs, e.g. \"minecraft:blaze\").",
-                    "Default: [] / 默认：[]")
+                     "Wetness immunity blacklist (Entity IDs, e.g. \"minecraft:blaze\").",
+                     "也支持模组命名空间格式：[\"iceandfire\"] 会屏蔽该模组全部实体。 / Also supports mod namespace format: [\"iceandfire\"] to blacklist all entities from that mod.",
+                     "Default: [] / 默认：[]")
             .defineListAllowEmpty("wetness_entity_blacklist", List.of(), o -> o instanceof String);
     BUILDER.pop();
     BUILDER.pop();
@@ -482,8 +483,9 @@ public class ElementalFireNatureReactionsConfig {
 
     STEAM_IMMUNITY_BLACKLIST = BUILDER
             .comment("蒸汽烫伤免疫黑名单（填入实体ID）。",
-                    "Steam scalding immunity blacklist (Entity IDs).",
-                    "Default: [] / 默认：[]")
+                     "Steam scalding immunity blacklist (Entity IDs).",
+                     "也支持模组命名空间格式：[\"iceandfire\"] 会屏蔽该模组全部实体。 / Also supports mod namespace format: [\"iceandfire\"] to blacklist all entities from that mod.",
+                     "Default: [] / 默认：[]")
             .defineListAllowEmpty("steam_immunity_blacklist", List.of(), o -> o instanceof String);
     BUILDER.pop();
 
@@ -662,8 +664,9 @@ public class ElementalFireNatureReactionsConfig {
 
     SCORCHED_ENTITY_BLACKLIST = BUILDER
             .comment("灼烧效果免疫黑名单。",
-                    "Scorched effect immunity blacklist.",
-                    "Default: [] / 默认：[]")
+                     "Scorched effect immunity blacklist.",
+                     "也支持模组命名空间格式：[\"iceandfire\"] 会屏蔽该模组全部实体。 / Also supports mod namespace format: [\"iceandfire\"] to blacklist all entities from that mod.",
+                     "Default: [] / 默认：[]")
             .defineListAllowEmpty("scorched_entity_blacklist", List.of(), o -> o instanceof String);
     BUILDER.comment(" ");
 
@@ -955,8 +958,9 @@ public class ElementalFireNatureReactionsConfig {
 
     SPORE_ENTITY_BLACKLIST = BUILDER
             .comment("易燃孢子效果免疫黑名单（填入实体ID，例如：minecraft:creeper）。",
-                    "Flammable Spore immunity blacklist (Entity IDs, e.g., minecraft:creeper).",
-                    "Default: [] / 默认：[]")
+                     "Flammable Spore immunity blacklist (Entity IDs, e.g., minecraft:creeper).",
+                     "也支持模组命名空间格式：[\"iceandfire\"] 会屏蔽该模组全部实体。 / Also supports mod namespace format: [\"iceandfire\"] to blacklist all entities from that mod.",
+                     "Default: [] / 默认：[]")
             .defineListAllowEmpty("spore_entity_blacklist", List.of(), o -> o instanceof String);
     BUILDER.comment(" ");
 

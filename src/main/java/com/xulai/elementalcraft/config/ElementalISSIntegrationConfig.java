@@ -117,6 +117,8 @@ public final class ElementalISSIntegrationConfig {
                          "在此列表中的实体不能被选为施法生物。",
                          "格式：实体注册ID列表，例如 [\"minecraft:wither\", \"minecraft:warden\"]",
                          "",
+                         "也支持模组命名空间格式：[\"iceandfire\"] 会屏蔽该模组全部实体。 / Also supports mod namespace format: [\"iceandfire\"] to blacklist all entities from that mod.",
+                         "",
                          "Default: [wither, warden, ender_dragon] / 默认：[凋零，坚守者，末影龙]")
                 .defineListAllowEmpty("caster_mob_blacklist",
                         List.of("minecraft:wither", "minecraft:warden", "minecraft:ender_dragon"),

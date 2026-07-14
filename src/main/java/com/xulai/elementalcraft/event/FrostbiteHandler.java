@@ -2,6 +2,7 @@ package com.xulai.elementalcraft.event;
 
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.command.DebugCommand;
+import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.logic.MobAttributeLogic;
 import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
 import com.xulai.elementalcraft.sound.ModSounds;
@@ -17,6 +18,7 @@ import com.xulai.elementalcraft.util.ElementUtils;
 import com.xulai.elementalcraft.util.ElementDamageHelper;
 import com.xulai.elementalcraft.util.EffectHelper;
 import com.xulai.elementalcraft.event.SteamReactionHandler;
+import com.xulai.elementalcraft.event.WetnessHandler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -195,7 +197,7 @@ public class FrostbiteHandler {
             }
         }
 
-        EffectHelper.playFrostBurstRing(sl, burst.x, burst.y, burst.z, burst.currentRadius);
+        EffectHelper.playFrostBurstRing(sl, burst.x, burst.y, burst.z, burst.currentRadius, burst.tickCount);
 
         AABB box = new AABB(
             burst.x - burst.currentRadius, burst.y - burst.heightCeiling, burst.z - burst.currentRadius,
@@ -292,16 +294,32 @@ public class FrostbiteHandler {
             chance = Math.min(1.0, chance);
         }
 
+        double biomeBonus = 0;
+        String biomeTag = "";
+        if (target.level().canSeeSky(target.blockPosition())) {
+            var biome = target.level().getBiome(target.blockPosition()).value();
+            double temp = biome.getBaseTemperature();
+            if (temp >= 2.0) {
+                biomeBonus = -ElementalThunderFrostReactionsConfig.frostbiteHotBiomeChancePenalty;
+                biomeTag = Component.translatable("debug.elementalcraft.reaction.biome.hot").getString();
+            } else if (temp <= 0.3) {
+                biomeBonus = ElementalThunderFrostReactionsConfig.frostbiteColdBiomeChanceBonus;
+                biomeTag = Component.translatable("debug.elementalcraft.reaction.biome.cold").getString();
+            }
+            chance += biomeBonus;
+            chance = Math.min(1.0, Math.max(0.0, chance));
+        }
+
         if (RANDOM.nextDouble() >= chance) {
-            DebugCommand.sendFrostbiteChanceFailed(attacker, target, frostPower, baseChance, scalingSteps, scalingChance, appliedStackingBonus, wetBonus);
+            DebugCommand.sendFrostbiteChanceFailed(attacker, target, frostPower, baseChance, scalingSteps, scalingChance, appliedStackingBonus, wetBonus, biomeBonus, biomeTag);
             return;
         }
 
         int stacksToApply = ElementalThunderFrostReactionsConfig.frostbiteMaxStacksPerAttack;
-        applyFrostbite(target, attacker, stacksToApply, chance, frostPower, baseChance, scalingSteps, scalingChance, appliedStackingBonus, wetBonus);
+        applyFrostbite(target, attacker, stacksToApply, chance, frostPower, baseChance, scalingSteps, scalingChance, appliedStackingBonus, wetBonus, biomeBonus, biomeTag);
     }
 
-    public static boolean applyFrostbite(LivingEntity target, LivingEntity attacker, int layersToAdd, double chance, double frostPower, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, double wetBonus) {
+    public static boolean applyFrostbite(LivingEntity target, LivingEntity attacker, int layersToAdd, double chance, double frostPower, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, double wetBonus, double biomeBonus, String biomeTag) {
         if (target.level().isClientSide) return false;
         if (target instanceof Player player && player.isCreative()) return false;
 
@@ -359,21 +377,7 @@ public class FrostbiteHandler {
         int baseDuration = ElementalThunderFrostReactionsConfig.frostbiteBaseDurationTicks;
         int perExtraStack = ElementalThunderFrostReactionsConfig.frostbiteDurationPerExtraStackTicks;
         int durationTicks = baseDuration + (newStacks - 1) * perExtraStack;
-
-        BlockPos pos = target.blockPosition();
-        Biome biome = target.level().getBiome(pos).value();
-        if (biome != null) {
-            double temp = biome.getBaseTemperature();
-            double hotMult = ElementalThunderFrostReactionsConfig.frostbiteHotBiomeDurationMultiplier;
-            if (hotMult < 1.0 && temp >= 2.0) {
-                durationTicks = (int) (durationTicks * hotMult);
-            }
-            double coldMult = ElementalThunderFrostReactionsConfig.frostbiteColdBiomeDurationMultiplier;
-            if (coldMult > 1.0 && temp <= 0.3) {
-                durationTicks = (int) (durationTicks * coldMult);
-            }
-        }
-        if (durationTicks < 1) durationTicks = 1;
+        durationTicks = Math.max(1, durationTicks);
 
         double speedReduction = ElementalThunderFrostReactionsConfig.frostbiteSpeedReductionPerStack;
 
@@ -384,11 +388,11 @@ public class FrostbiteHandler {
         data.putInt(NBT_FROSTBITE_PERIODIC_LOGGED, 0);
 
         target.level().playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 0.5f, 1.5f);
-        DebugCommand.sendFrostbiteLog(attacker, target, layersToAdd, chance, durationTicks, speedReduction * newStacks, frostPower, baseChance, scalingSteps, scalingChance, stackingBonus, wetBonus);
+        DebugCommand.sendFrostbiteLog(attacker, target, layersToAdd, chance, durationTicks, speedReduction * newStacks, frostPower, baseChance, scalingSteps, scalingChance, stackingBonus, wetBonus, biomeBonus, biomeTag);
 
         syncFrostbiteEffect(target, newStacks, durationTicks);
 
-        checkFreezeFromWetness(target, attacker, (int) frostPower);
+        target.getPersistentData().remove(WetnessHandler.NBT_REACTION_RESOLVED);
 
         return true;
     }
@@ -620,7 +624,7 @@ public class FrostbiteHandler {
                         clearTempFrostbite(entity);
                         WetnessHandler.clearWetnessData(entity);
                     } else {
-                        checkFreezeFromWetness(entity, null, 0);
+                        WetnessHandler.resolveElementReactionConflict(entity, null);
                     }
                 }
 
@@ -742,8 +746,7 @@ public class FrostbiteHandler {
                 clearFrostbite(entity);
                 WetnessHandler.clearWetnessData(entity);
             } else {
-                int storedFrostPower = data.getInt(NBT_FROSTBITE_SOURCE_FROST_POWER);
-                triggerFreeze(entity, null, storedFrostPower);
+                WetnessHandler.resolveElementReactionConflict(entity, null);
             }
         }
 
@@ -852,7 +855,7 @@ public class FrostbiteHandler {
 
     public static boolean isFrostbiteImmune(LivingEntity target) {
         String entityId = ForgeRegistries.ENTITY_TYPES.getKey(target.getType()).toString();
-        if (ElementalThunderFrostReactionsConfig.cachedFrostbiteImmunityBlacklist != null && ElementalThunderFrostReactionsConfig.cachedFrostbiteImmunityBlacklist.contains(entityId)) {
+        if (ElementalConfig.matchesBlacklist(ElementalThunderFrostReactionsConfig.cachedFrostbiteImmunityBlacklist, entityId)) {
             return true;
         }
         double frostResistance = ElementUtils.getDisplayResistance(target, ElementType.FROST);
@@ -865,7 +868,7 @@ public class FrostbiteHandler {
 
     public static boolean isFreezeImmune(LivingEntity target) {
         String entityId = ForgeRegistries.ENTITY_TYPES.getKey(target.getType()).toString();
-        if (ElementalThunderFrostReactionsConfig.cachedFreezeImmunityBlacklist != null && ElementalThunderFrostReactionsConfig.cachedFreezeImmunityBlacklist.contains(entityId)) {
+        if (ElementalConfig.matchesBlacklist(ElementalThunderFrostReactionsConfig.cachedFreezeImmunityBlacklist, entityId)) {
             return true;
         }
         return false;
@@ -970,7 +973,7 @@ public class FrostbiteHandler {
         if (isNew) data.putInt(NBT_FROSTBITE_AURA_LOGGED, 0);
         applyTempFrostbiteSlowness(target, stacks);
         if (WetnessHandler.getWetnessLevel(target) > 0 && !isFrostbiteImmune(target) && !isFreezeImmune(target)) {
-            checkFreezeFromWetness(target, null, 0);
+            target.getPersistentData().remove(WetnessHandler.NBT_REACTION_RESOLVED);
         }
     }
 

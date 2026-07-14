@@ -514,7 +514,7 @@ public class EffectHelper {
         }
     }
 
-    public static void playFrostBurstRing(ServerLevel level, double x, double y, double z, double radius) {
+    public static void playFrostBurstRing(ServerLevel level, double x, double y, double z, double radius, int tickCount) {
         int points = (int) Math.max(8, radius * 12);
         double step = (Math.PI * 2) / points;
         for (int i = 0; i < points; i++) {
@@ -523,7 +523,7 @@ public class EffectHelper {
             double pz = z + Math.sin(angle) * radius;
             double py = y + 0.1;
             level.sendParticles(ParticleTypes.SNOWFLAKE, px, py, pz, 1, 0, 0.02, 0, 0.01);
-            if (RANDOM.nextFloat() < 0.3f) {
+            if (tickCount % 20 == 0) {
                 level.sendParticles(ModParticles.FROST_ICE_RUNE.get(), px, py, pz, 1, 0, 0.01, 0, 0);
             }
             if (RANDOM.nextFloat() < 0.2f) {

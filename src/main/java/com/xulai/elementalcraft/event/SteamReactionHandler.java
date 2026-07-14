@@ -3,6 +3,7 @@ package com.xulai.elementalcraft.event;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.command.DebugCommand;
 import com.xulai.elementalcraft.logic.MobAttributeLogic;
+import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import com.xulai.elementalcraft.init.ModDamageTypes;
@@ -511,7 +512,7 @@ public class SteamReactionHandler {
                             reason = "fire_resistance";
                         } else {
                             var key = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
-                            if (key != null && ElementalFireNatureReactionsConfig.cachedSteamBlacklist.contains(key.toString())) {
+                            if (key != null && ElementalConfig.matchesBlacklist(ElementalFireNatureReactionsConfig.cachedSteamBlacklist, key.toString())) {
                                 reason = "blacklist";
                             } else {
                                 reason = "resistance";
@@ -868,7 +869,7 @@ public class SteamReactionHandler {
     private static boolean checkImmunity(LivingEntity entity) {
         if (entity.hasEffect(MobEffects.FIRE_RESISTANCE)) return true;
         var key = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
-        if (key != null && ElementalFireNatureReactionsConfig.cachedSteamBlacklist.contains(key.toString())) return true;
+        if (key != null && ElementalConfig.matchesBlacklist(ElementalFireNatureReactionsConfig.cachedSteamBlacklist, key.toString())) return true;
         int resist = ElementUtils.getDisplayResistance(entity, ElementType.FIRE);
         int threshold = ElementalFireNatureReactionsConfig.steamImmunityThreshold;
         return resist >= threshold;
@@ -876,7 +877,7 @@ public class SteamReactionHandler {
 
     private static boolean isImmuneToThunderResist(LivingEntity entity) {
         var key = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
-        if (key != null && ElementalThunderFrostReactionsConfig.cachedStaticImmunityBlacklist.contains(key.toString())) {
+        if (key != null && ElementalConfig.matchesBlacklist(ElementalThunderFrostReactionsConfig.cachedStaticImmunityBlacklist, key.toString())) {
             return true;
         }
         int resist = ElementUtils.getDisplayResistance(entity, ElementType.THUNDER);
@@ -885,7 +886,7 @@ public class SteamReactionHandler {
 
     private static boolean isImmuneToParalysis(LivingEntity entity) {
         var key = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
-        return key != null && ElementalThunderFrostReactionsConfig.cachedParalysisImmunityBlacklist.contains(key.toString());
+        return key != null && ElementalConfig.matchesBlacklist(ElementalThunderFrostReactionsConfig.cachedParalysisImmunityBlacklist, key.toString());
     }
 
     public static void discardFrostedCloudsNear(LivingEntity target) {

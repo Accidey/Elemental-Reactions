@@ -558,7 +558,63 @@ public class DebugCommand {
         sendDebugMessage(target, msg);
     }
 
-    private static MutableComponent buildFrostbiteChanceBreakdown(double frostPower, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, double wetBonus, ChatFormatting color) {
+    private static MutableComponent buildScorchedChanceBreakdown(int firePower, double baseChance, int scalingSteps, double scalingChance, double biomeBonus, String biomeTag, ChatFormatting color) {
+        double scaledChance = Math.min(1.0, baseChance + scalingSteps * scalingChance);
+        MutableComponent comp = Component.translatable("debug.elementalcraft.breakdown.header",
+                ElementType.FIRE.getDisplayName(),
+                Component.literal(String.valueOf(firePower)).withStyle(color),
+                Component.literal(String.format("%.0f", baseChance * 100)).withStyle(color));
+        if (scalingSteps > 0) {
+            double finalChance = scaledChance;
+            comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.step",
+                    Component.translatable("debug.elementalcraft.breakdown.label.enhance"),
+                    Component.literal(String.valueOf(scalingSteps)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format("%.0f", scalingChance * 100)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
+        }
+        if (biomeBonus != 0) {
+            scaledChance = Math.min(1.0, scaledChance + biomeBonus);
+            double finalChance = scaledChance;
+            MutableComponent label = Component.translatable("debug.elementalcraft.breakdown.label.biome");
+            if (!biomeTag.isEmpty()) {
+                label = label.append(Component.literal("(" + biomeTag + ")"));
+            }
+            comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.bonus",
+                    label,
+                    Component.literal(String.format("%+.0f", biomeBonus * 100)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
+        }
+        comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.footer"));
+        return comp;
+    }
+
+    public static void sendScorchedSuccess(LivingEntity target, LivingEntity attacker, int firePower, double baseChance, int scalingSteps, double scalingChance, double biomeBonus, String biomeTag, int chancePercent, String durationInfo, String baseDamage) {
+        if (!DebugMode.hasAnyDebugEnabled()) return;
+        MutableComponent breakdown = buildScorchedChanceBreakdown(firePower, baseChance, scalingSteps, scalingChance, biomeBonus, biomeTag, ChatFormatting.GREEN);
+        MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.scorched.success",
+                attacker.getDisplayName(),
+                target.getDisplayName(),
+                breakdown,
+                String.valueOf(chancePercent),
+                durationInfo,
+                baseDamage
+        ).withStyle(ChatFormatting.RED);
+        sendDebugMessage(target, msg);
+    }
+
+    public static void sendScorchedChanceFailed(LivingEntity attacker, LivingEntity target, int firePower, double baseChance, int scalingSteps, double scalingChance, double biomeBonus, String biomeTag, int chancePercent) {
+        if (!DebugMode.hasAnyDebugEnabled()) return;
+        MutableComponent breakdown = buildScorchedChanceBreakdown(firePower, baseChance, scalingSteps, scalingChance, biomeBonus, biomeTag, ChatFormatting.YELLOW);
+        MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.scorched.failed.chance",
+                attacker.getDisplayName(),
+                target.getDisplayName(),
+                breakdown,
+                String.valueOf(chancePercent)
+        ).withStyle(ChatFormatting.GRAY);
+        sendDebugMessage(target, msg);
+    }
+
+    private static MutableComponent buildFrostbiteChanceBreakdown(double frostPower, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, double wetBonus, double biomeBonus, String biomeTag, ChatFormatting color) {
         double scaledChance = Math.min(1.0, baseChance + scalingSteps * scalingChance);
         MutableComponent comp = Component.translatable("debug.elementalcraft.breakdown.header",
                 ElementType.FROST.getDisplayName(),
@@ -588,15 +644,27 @@ public class DebugCommand {
                     Component.literal(String.format("%.0f", wetBonus * 100)).withStyle(ChatFormatting.AQUA),
                     Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
         }
+        if (biomeBonus != 0) {
+            scaledChance = Math.min(1.0, scaledChance + biomeBonus);
+            double finalChance = scaledChance;
+            MutableComponent label = Component.translatable("debug.elementalcraft.breakdown.label.biome");
+            if (!biomeTag.isEmpty()) {
+                label = label.append(Component.literal("(" + biomeTag + ")"));
+            }
+            comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.bonus",
+                    label,
+                    Component.literal(String.format("%+.0f", biomeBonus * 100)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
+        }
         comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.footer"));
         return comp;
     }
 
-    public static void sendFrostbiteLog(LivingEntity attacker, LivingEntity target, int stacksApplied, double chance, int durationTicks, double speedReduction, double frostPower, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, double wetBonus) {
+    public static void sendFrostbiteLog(LivingEntity attacker, LivingEntity target, int stacksApplied, double chance, int durationTicks, double speedReduction, double frostPower, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, double wetBonus, double biomeBonus, String biomeTag) {
         if (!DebugMode.hasAnyDebugEnabled()) return;
         LivingEntity context = attacker != null ? attacker : target;
         Component attackerName = attacker != null ? attacker.getDisplayName() : Component.literal("IceBurst");
-        MutableComponent breakdown = buildFrostbiteChanceBreakdown(frostPower, baseChance, scalingSteps, scalingChance, stackingBonus, wetBonus, ChatFormatting.GREEN);
+        MutableComponent breakdown = buildFrostbiteChanceBreakdown(frostPower, baseChance, scalingSteps, scalingChance, stackingBonus, wetBonus, biomeBonus, biomeTag, ChatFormatting.GREEN);
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.frostbite.header").withStyle(ChatFormatting.AQUA);
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.frostbite.message",
                 attackerName,
@@ -643,9 +711,9 @@ public class DebugCommand {
         sendDebugMessage(target, msg);
     }
 
-    public static void sendFrostbiteChanceFailed(LivingEntity attacker, LivingEntity target, double frostPower, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, double wetBonus) {
+    public static void sendFrostbiteChanceFailed(LivingEntity attacker, LivingEntity target, double frostPower, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, double wetBonus, double biomeBonus, String biomeTag) {
         if (!DebugMode.hasAnyDebugEnabled()) return;
-        MutableComponent breakdown = buildFrostbiteChanceBreakdown(frostPower, baseChance, scalingSteps, scalingChance, stackingBonus, wetBonus, ChatFormatting.YELLOW);
+        MutableComponent breakdown = buildFrostbiteChanceBreakdown(frostPower, baseChance, scalingSteps, scalingChance, stackingBonus, wetBonus, biomeBonus, biomeTag, ChatFormatting.YELLOW);
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.frostbite.failed.chance",
                 attacker.getDisplayName(),
                 target.getDisplayName(),

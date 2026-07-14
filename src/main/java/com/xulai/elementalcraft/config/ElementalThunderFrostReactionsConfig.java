@@ -69,12 +69,12 @@ public final class ElementalThunderFrostReactionsConfig {
     public static final ForgeConfigSpec.DoubleValue FROSTBITE_SCALING_CHANCE;
     public static final ForgeConfigSpec.DoubleValue FROSTBITE_WETNESS_BONUS_CHANCE;
     public static final ForgeConfigSpec.DoubleValue FROSTBITE_STACKING_BONUS_CHANCE;
+    public static final ForgeConfigSpec.DoubleValue FROSTBITE_HOT_BIOME_CHANCE_PENALTY;
+    public static final ForgeConfigSpec.DoubleValue FROSTBITE_COLD_BIOME_CHANCE_BONUS;
     public static final ForgeConfigSpec.IntValue FROSTBITE_MAX_STACKS_PER_ATTACK;
     public static final ForgeConfigSpec.IntValue FROSTBITE_MAX_TOTAL_STACKS;
     public static final ForgeConfigSpec.IntValue FROSTBITE_BASE_DURATION_TICKS;
     public static final ForgeConfigSpec.IntValue FROSTBITE_DURATION_PER_EXTRA_STACK_TICKS;
-    public static final ForgeConfigSpec.DoubleValue FROSTBITE_HOT_BIOME_DURATION_MULTIPLIER;
-    public static final ForgeConfigSpec.DoubleValue FROSTBITE_COLD_BIOME_DURATION_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue FROSTBITE_SPEED_REDUCTION_PER_STACK;
     public static final ForgeConfigSpec.DoubleValue FROSTBITE_PERIODIC_DAMAGE;
     public static final ForgeConfigSpec.IntValue FROSTBITE_DAMAGE_INTERVAL_TICKS;
@@ -234,7 +234,8 @@ public final class ElementalThunderFrostReactionsConfig {
         STATIC_IMMUNITY_BLACKLIST = BUILDER
                 .comment("处于此黑名单中的实体完全免疫静电效果（无法被施加）。",
                          "Entities in this blacklist are completely immune to Static Shock effect (cannot be applied).",
-                         "Example: [\"minecraft:creeper\", \"minecraft:skeleton\"]")
+                         "Example: [\"minecraft:creeper\", \"minecraft:skeleton\"]",
+                         "也支持模组命名空间格式：[\"iceandfire\"] 会屏蔽该模组全部实体。 / Also supports mod namespace format: [\"iceandfire\"] to blacklist all entities from that mod.")
                 .defineListAllowEmpty("static_immunity_blacklist", List.of(), o -> o instanceof String);
 
         BUILDER.pop();
@@ -453,8 +454,8 @@ public final class ElementalThunderFrostReactionsConfig {
         COUNTER_LIGHTNING_DAMAGE = BUILDER
                 .comment("雷霆反制召唤的闪电造成的伤害。",
                          "Damage dealt by the lightning bolt summoned by Thunder Counter.",
-                         "Default: 10.0 / 默认：10.0")
-                .defineInRange("lightning_damage", 10.0, 0.0, 100.0);
+                         "Default: 2.0 / 默认：2.0")
+                .defineInRange("lightning_damage", 2.0, 0.0, 100.0);
 
         BUILDER.comment(" ");
 
@@ -526,7 +527,8 @@ public final class ElementalThunderFrostReactionsConfig {
         PARALYSIS_IMMUNITY_BLACKLIST = BUILDER
                 .comment("处于此黑名单中的实体完全免疫麻痹效果（无法被施加）。",
                          "Entities in this blacklist are completely immune to Paralysis effect (cannot be applied).",
-                         "Example: [\"minecraft:iron_golem\", \"minecraft:wither\"]")
+                         "Example: [\"minecraft:iron_golem\", \"minecraft:wither\"]",
+                         "也支持模组命名空间格式：[\"iceandfire\"] 会屏蔽该模组全部实体。 / Also supports mod namespace format: [\"iceandfire\"] to blacklist all entities from that mod.")
                 .defineListAllowEmpty("paralysis_immunity_blacklist", List.of(), o -> o instanceof String);
 
         BUILDER.comment("静电蒸汽云反应 - Static Steam Cloud Reaction",
@@ -645,6 +647,22 @@ public final class ElementalThunderFrostReactionsConfig {
 
         BUILDER.comment(" ");
 
+        FROSTBITE_HOT_BIOME_CHANCE_PENALTY = BUILDER
+                .comment("炎热生物群系（温度 ≥ 2.0）中霜冻触发概率减少。0.3 = 减少30%。",
+                         "Frostbite trigger chance penalty in hot biomes (temperature ≥ 2.0). 0.3 = 30% reduction.",
+                         "Default: 0.3 / 默认：0.3")
+                .defineInRange("frostbite_hot_biome_chance_penalty", 0.3, 0.0, 1.0);
+
+        BUILDER.comment(" ");
+
+        FROSTBITE_COLD_BIOME_CHANCE_BONUS = BUILDER
+                .comment("寒冷生物群系（温度 ≤ 0.3）中霜冻触发概率增加。0.3 = 增加30%。",
+                         "Frostbite trigger chance bonus in cold biomes (temperature ≤ 0.3). 0.3 = 30% increase.",
+                         "Default: 0.3 / 默认：0.3")
+                .defineInRange("frostbite_cold_biome_chance_bonus", 0.3, 0.0, 1.0);
+
+        BUILDER.comment(" ");
+
         FROSTBITE_MAX_STACKS_PER_ATTACK = BUILDER
                 .comment("单次攻击最多可施加的霜冻层数。",
                          "Maximum number of Frostbite stacks that can be applied in a single attack.",
@@ -674,22 +692,6 @@ public final class ElementalThunderFrostReactionsConfig {
                          "Additional duration (in ticks) per extra Frostbite stack beyond the first. 20 ticks = 1 second.",
                          "Default: 100 (5 seconds) / 默认：100（5秒）")
                 .defineInRange("frostbite_duration_per_extra_stack_ticks", 100, 1, 72000);
-
-        BUILDER.comment(" ");
-
-        FROSTBITE_HOT_BIOME_DURATION_MULTIPLIER = BUILDER
-                .comment("炎热生物群系（温度 ≥ 2.0）中霜冻持续时间倍率。0.5 = 时间减半。",
-                         "Frostbite duration multiplier in hot biomes (temperature ≥ 2.0). 0.5 = Halved duration.",
-                         "Default: 0.5 / 默认：0.5")
-                .defineInRange("frostbite_hot_biome_duration_multiplier", 0.5, 0.01, 1.0);
-
-        BUILDER.comment(" ");
-
-        FROSTBITE_COLD_BIOME_DURATION_MULTIPLIER = BUILDER
-                .comment("寒冷生物群系（温度 ≤ 0.3）中霜冻持续时间倍率。1.5 = 延长一半。",
-                         "Frostbite duration multiplier in cold biomes (temperature ≤ 0.3). 1.5 = 50% longer duration.",
-                         "Default: 1.5 / 默认：1.5")
-                .defineInRange("frostbite_cold_biome_duration_multiplier", 1.5, 0.01, 10.0);
 
         BUILDER.comment(" ");
 
@@ -728,7 +730,8 @@ public final class ElementalThunderFrostReactionsConfig {
         FROSTBITE_IMMUNITY_BLACKLIST = BUILDER
                 .comment("处于此黑名单中的实体完全免疫霜冻效果。",
                          "Entities in this blacklist are completely immune to Frostbite effect.",
-                         "Example: [\"minecraft:blaze\", \"minecraft:magma_cube\"]")
+                         "Example: [\"minecraft:blaze\", \"minecraft:magma_cube\"]",
+                         "也支持模组命名空间格式：[\"iceandfire\"] 会屏蔽该模组全部实体。 / Also supports mod namespace format: [\"iceandfire\"] to blacklist all entities from that mod.")
                 .defineListAllowEmpty("frostbite_immunity_blacklist", List.of(), o -> o instanceof String);
 
         BUILDER.comment(" ");
@@ -1013,7 +1016,8 @@ public final class ElementalThunderFrostReactionsConfig {
         FREEZE_IMMUNITY_BLACKLIST = BUILDER
                 .comment("处于此黑名单中的实体免疫冻结（但不免疫霜冻减速）。",
                          "Entities in this blacklist are immune to Freeze (but not Frostbite slow).",
-                         "Example: [\"minecraft:ender_dragon\", \"minecraft:wither\"]")
+                         "Example: [\"minecraft:ender_dragon\", \"minecraft:wither\"]",
+                         "也支持模组命名空间格式：[\"iceandfire\"] 会屏蔽该模组全部实体。 / Also supports mod namespace format: [\"iceandfire\"] to blacklist all entities from that mod.")
                 .defineListAllowEmpty("freeze_immunity_blacklist", List.of(), o -> o instanceof String);
 
         BUILDER.comment(" ");
@@ -1152,8 +1156,8 @@ public final class ElementalThunderFrostReactionsConfig {
     public static int frostbiteMaxTotalStacks;
     public static int frostbiteBaseDurationTicks;
     public static int frostbiteDurationPerExtraStackTicks;
-    public static double frostbiteHotBiomeDurationMultiplier;
-    public static double frostbiteColdBiomeDurationMultiplier;
+    public static double frostbiteHotBiomeChancePenalty;
+    public static double frostbiteColdBiomeChanceBonus;
     public static double frostbiteSpeedReductionPerStack;
     public static double frostbitePeriodicDamage;
     public static int frostbiteDamageIntervalTicks;
@@ -1267,12 +1271,12 @@ public final class ElementalThunderFrostReactionsConfig {
         frostbiteScalingChance = FROSTBITE_SCALING_CHANCE.get();
         frostbiteWetnessBonusChance = FROSTBITE_WETNESS_BONUS_CHANCE.get();
         frostbiteStackingBonusChance = FROSTBITE_STACKING_BONUS_CHANCE.get();
+        frostbiteHotBiomeChancePenalty = FROSTBITE_HOT_BIOME_CHANCE_PENALTY.get();
+        frostbiteColdBiomeChanceBonus = FROSTBITE_COLD_BIOME_CHANCE_BONUS.get();
         frostbiteMaxStacksPerAttack = FROSTBITE_MAX_STACKS_PER_ATTACK.get();
         frostbiteMaxTotalStacks = FROSTBITE_MAX_TOTAL_STACKS.get();
         frostbiteBaseDurationTicks = FROSTBITE_BASE_DURATION_TICKS.get();
         frostbiteDurationPerExtraStackTicks = FROSTBITE_DURATION_PER_EXTRA_STACK_TICKS.get();
-        frostbiteHotBiomeDurationMultiplier = FROSTBITE_HOT_BIOME_DURATION_MULTIPLIER.get();
-        frostbiteColdBiomeDurationMultiplier = FROSTBITE_COLD_BIOME_DURATION_MULTIPLIER.get();
         frostbiteSpeedReductionPerStack = FROSTBITE_SPEED_REDUCTION_PER_STACK.get();
         frostbitePeriodicDamage = FROSTBITE_PERIODIC_DAMAGE.get();
         frostbiteDamageIntervalTicks = FROSTBITE_DAMAGE_INTERVAL_TICKS.get();

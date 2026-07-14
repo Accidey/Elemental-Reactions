@@ -3,6 +3,7 @@ package com.xulai.elementalcraft.event;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.command.DebugCommand;
 import com.xulai.elementalcraft.util.DebugMode;
+import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import com.xulai.elementalcraft.init.ModDamageTypes;
@@ -347,7 +348,7 @@ public class ReactionHandler {
         var key = ForgeRegistries.ENTITY_TYPES.getKey(target.getType());
         if (key == null) return true;
         String entityId = key.toString();
-        if (ElementalFireNatureReactionsConfig.cachedSporeBlacklist != null && ElementalFireNatureReactionsConfig.cachedSporeBlacklist.contains(entityId)) {
+        if (ElementalConfig.matchesBlacklist(ElementalFireNatureReactionsConfig.cachedSporeBlacklist, entityId)) {
             return true;
         }
         double natureResistance = ElementUtils.getDisplayResistance(target, ElementType.NATURE);
@@ -369,7 +370,7 @@ public class ReactionHandler {
         var key = ForgeRegistries.ENTITY_TYPES.getKey(target.getType());
         if (key == null) return SporeApplyResult.BLACKLISTED;
         String entityId = key.toString();
-        if (ElementalFireNatureReactionsConfig.cachedSporeBlacklist != null && ElementalFireNatureReactionsConfig.cachedSporeBlacklist.contains(entityId)) {
+        if (ElementalConfig.matchesBlacklist(ElementalFireNatureReactionsConfig.cachedSporeBlacklist, entityId)) {
             return SporeApplyResult.BLACKLISTED;
         }
 
@@ -499,8 +500,7 @@ public class ReactionHandler {
             var entityKey = ForgeRegistries.ENTITY_TYPES.getKey(target.getType());
             if (entityKey == null) continue;
             String entityId = entityKey.toString();
-            if (ElementalFireNatureReactionsConfig.cachedSporeBlacklist != null
-                    && ElementalFireNatureReactionsConfig.cachedSporeBlacklist.contains(entityId)) {
+            if (ElementalConfig.matchesBlacklist(ElementalFireNatureReactionsConfig.cachedSporeBlacklist, entityId)) {
                 continue;
             }
             double natureResistance = ElementUtils.getDisplayResistance(target, ElementType.NATURE);

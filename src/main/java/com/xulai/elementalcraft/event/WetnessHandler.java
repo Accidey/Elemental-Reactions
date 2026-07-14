@@ -2,6 +2,7 @@ package com.xulai.elementalcraft.event;
 
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.command.DebugCommand;
+import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import com.xulai.elementalcraft.util.DebugMode;
@@ -436,7 +437,7 @@ public class WetnessHandler {
         }
         if (!ElementalFireNatureReactionsConfig.cachedWetnessBlacklist.isEmpty()) {
             var key = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
-            if (key != null && ElementalFireNatureReactionsConfig.cachedWetnessBlacklist.contains(key.toString())) {
+            if (key != null && ElementalConfig.matchesBlacklist(ElementalFireNatureReactionsConfig.cachedWetnessBlacklist, key.toString())) {
                 return true;
             }
         }

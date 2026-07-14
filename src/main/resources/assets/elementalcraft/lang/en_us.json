@@ -223,6 +223,7 @@
   "debug.elementalcraft.breakdown.label.enhance": "enhance",
   "debug.elementalcraft.breakdown.label.stacking": "stacking",
   "debug.elementalcraft.breakdown.label.wetness": "wetness",
+  "debug.elementalcraft.breakdown.label.biome": "biome",
   "debug.elementalcraft.reaction.frostbite.failed.high_heat_cloud": "§7[Frostbite] §f%s §7→ §f%s §7blocked: target in high-heat steam cloud",
   "debug.elementalcraft.reaction.frostbite.failed.freeze": "§7[Frostbite] §f%s §7→ §f%s §7blocked: target is frozen",
   "debug.elementalcraft.reaction.frostbite_aura.header": "[Frostbite Aura]",
@@ -276,8 +277,8 @@
   "debug.elementalcraft.reaction.wildfire.failed.cooldown": "§6[Nature Counter] §7blocked: cooldown active",
   "debug.elementalcraft.reaction.wildfire.failed.power_low": "§6[Nature Counter] §f%s §7blocked: nature §e%s §7< threshold §c%s",
 
-  "debug.elementalcraft.reaction.scorched.success": "§c[Scorched] §f%s §7→ §f%s §7applied §cScorched §7(fire power %s, chance §a%s, duration %s, base DMG: %s)",
-  "debug.elementalcraft.reaction.scorched.failed.chance": "§7[Scorched] §f%s §7→ §f%s §7failed (chance §e%s%%)",
+  "debug.elementalcraft.reaction.scorched.success": "§c[Scorched] §f%s §7→ §f%s §7applied §cScorched %s chance §a%s%% (duration %s, base DMG: %s)",
+  "debug.elementalcraft.reaction.scorched.failed.chance": "§7[Scorched] §f%s §7→ §f%s §7not triggered%s chance §e%s%%",
   "debug.elementalcraft.reaction.scorched.failed.power_low": "§7[Scorched] §f%s §7→ §f%s §7Fire power too low (current: %s, need ≥: %s)",
   "debug.elementalcraft.reaction.scorched.failed.wet": "§7[Scorched] §f%s §7→ §f%s §7blocked: target wet",
   "debug.elementalcraft.reaction.scorched.failed.already": "§7[Scorched] §f%s §7→ §f%s §7blocked: already scorched",

@@ -223,7 +223,9 @@ public class FireSpellHandler {
 
         double baseChance = ElementalFireNatureReactionsConfig.scorchedBaseChance;
         int pointsPerStep = ElementalFireNatureReactionsConfig.scorchedChancePerPoint;
-        double growth = Math.floor((firePower - threshold) / (double) pointsPerStep) * 0.05;
+        int scalingSteps = Math.max(0, (int)Math.floor((firePower - threshold) / (double) pointsPerStep));
+        double scalingChance = 0.05;
+        double growth = scalingSteps * scalingChance;
         double totalChance = Math.min(1.0, Math.max(0.0, baseChance + growth));
         boolean triggered;
         if (hasPoison || hasSpores) {
@@ -256,21 +258,6 @@ public class FireSpellHandler {
                         String.format("%.1f", adjustedSec)).getString();
             }
 
-            String chanceInfo;
-            if (hasPoison && hasSpores) {
-                chanceInfo = String.format("%.0f%%", totalChance * 100)
-                        + "(" + Component.translatable("effect.minecraft.poison").getString()
-                        + "+" + Component.translatable("debug.elementalcraft.reaction.scorched.spore_label").getString() + ")";
-            } else if (hasPoison) {
-                chanceInfo = String.format("%.0f%%", totalChance * 100)
-                        + "(" + Component.translatable("effect.minecraft.poison").getString() + ")";
-            } else if (hasSpores) {
-                chanceInfo = String.format("%.0f%%", totalChance * 100)
-                        + "(" + Component.translatable("debug.elementalcraft.reaction.scorched.spore_label").getString() + ")";
-            } else {
-                chanceInfo = String.format("%.0f%%", totalChance * 100);
-            }
-
             String poisonDurationInfo = null;
             if (hasPoison) {
                 double enhancedSec = (int) (duration * ElementalFireNatureReactionsConfig.poisonScorchDurationMultiplier) / 20.0;
@@ -280,17 +267,9 @@ public class FireSpellHandler {
             }
 
             float baseDamage = ScorchedHandler.calculateScorchedDamage(firePower, target);
-            DebugCommand.sendReactionSuccess(target, "scorched",
-                    attacker.getDisplayName(),
-                    target.getDisplayName(),
-                    Component.literal(String.valueOf(firePower)).withStyle(ChatFormatting.RED),
-                    chanceInfo,
-                    poisonDurationInfo != null ? poisonDurationInfo : durationInfo,
-                    String.format("%.1f", baseDamage));
+            DebugCommand.sendScorchedSuccess(target, attacker, firePower, baseChance, scalingSteps, scalingChance, 0, "", (int)(totalChance * 100), poisonDurationInfo != null ? poisonDurationInfo : durationInfo, String.format("%.1f", baseDamage));
         } else if (totalChance > 0.01) {
-            DebugCommand.sendReactionFailed(target, "scorched", "chance",
-                    attacker.getDisplayName(), target.getDisplayName(),
-                    String.format("%.0f", totalChance * 100));
+            DebugCommand.sendScorchedChanceFailed(attacker, target, firePower, baseChance, scalingSteps, scalingChance, 0, "", (int)(totalChance * 100));
         }
     }
 

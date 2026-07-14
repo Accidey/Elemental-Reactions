@@ -47,7 +47,7 @@ public class MobAttributeLogic {
 
         String entityId = net.minecraft.world.entity.EntityType.getKey(mob.getType()).toString();
 
-        if (ElementalConfig.cachedBlacklist.stream().anyMatch(entry -> entry.equals(entityId) || entry.startsWith(entityId + ":"))) {
+        if (ElementalConfig.matchesBlacklist(ElementalConfig.cachedBlacklist, entityId)) {
             data.putBoolean("ElementalCraft_AttributesSet", true);
             return;
         }
@@ -127,8 +127,7 @@ public class MobAttributeLogic {
         if (attackType != null) {
             String entityId = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString();
             boolean isBlacklisted = ModList.get() != null && ModList.get().isLoaded("irons_spellbooks")
-                    && ElementalISSIntegrationConfig.cachedCasterBlacklist != null
-                    && ElementalISSIntegrationConfig.cachedCasterBlacklist.contains(entityId);
+                    && ElementalConfig.matchesBlacklist(ElementalISSIntegrationConfig.cachedCasterBlacklist, entityId);
             double casterChance = ModList.get() != null && ModList.get().isLoaded("irons_spellbooks")
                     ? ElementalISSIntegrationConfig.casterMobChance : 0.0;
             boolean issCaster = !isBlacklisted && attackType == ElementType.THUNDER && ThreadLocalRandom.current().nextDouble() < casterChance;
@@ -211,8 +210,7 @@ public class MobAttributeLogic {
             if (attackType != null && attackType != ElementType.NONE) {
                 String entityId = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString();
                 boolean isBlacklisted = ModList.get() != null && ModList.get().isLoaded("irons_spellbooks")
-                        && ElementalISSIntegrationConfig.cachedCasterBlacklist != null
-                        && ElementalISSIntegrationConfig.cachedCasterBlacklist.contains(entityId);
+                        && ElementalConfig.matchesBlacklist(ElementalISSIntegrationConfig.cachedCasterBlacklist, entityId);
                 double casterChance = ModList.get() != null && ModList.get().isLoaded("irons_spellbooks")
                         ? ElementalISSIntegrationConfig.casterMobChance : 0.0;
                 boolean issCaster = !isBlacklisted && attackType == ElementType.THUNDER && ThreadLocalRandom.current().nextDouble() < casterChance;

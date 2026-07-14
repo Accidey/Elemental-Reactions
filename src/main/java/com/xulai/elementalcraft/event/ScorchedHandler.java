@@ -122,7 +122,7 @@ public class ScorchedHandler {
         if (key == null) return ScorchedApplyResult.FAILED;
         String entityId = key.toString();
         var blacklist = ElementalFireNatureReactionsConfig.cachedScorchedBlacklist;
-        if (blacklist != null && blacklist.contains(entityId)) {
+        if (ElementalConfig.matchesBlacklist(blacklist, entityId)) {
             if (attacker != null) {
                 DebugCommand.sendReactionFailed(target, "scorched", "blacklist", attacker.getDisplayName(), target.getDisplayName());
             }

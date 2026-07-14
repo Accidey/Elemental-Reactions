@@ -6,6 +6,7 @@ import com.xulai.elementalcraft.logic.MobAttributeLogic;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LightningBolt;
+import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import com.xulai.elementalcraft.init.ModDamageTypes;
@@ -135,7 +136,7 @@ public class StaticShockHandler {
 
     private static boolean isImmuneToStatic(LivingEntity entity) {
         String entityId = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType()).toString();
-        if (ElementalThunderFrostReactionsConfig.cachedStaticImmunityBlacklist.contains(entityId)) {
+        if (ElementalConfig.matchesBlacklist(ElementalThunderFrostReactionsConfig.cachedStaticImmunityBlacklist, entityId)) {
             return true;
         }
         int resist = ElementUtils.getDisplayResistance(entity, ElementType.THUNDER);
@@ -144,7 +145,7 @@ public class StaticShockHandler {
 
     private static boolean isImmuneToParalysis(LivingEntity entity) {
         String entityId = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType()).toString();
-        return ElementalThunderFrostReactionsConfig.cachedParalysisImmunityBlacklist.contains(entityId);
+        return ElementalConfig.matchesBlacklist(ElementalThunderFrostReactionsConfig.cachedParalysisImmunityBlacklist, entityId);
     }
 
     public static boolean blockStaticIfParalyzed(LivingEntity entity) {
@@ -286,7 +287,7 @@ public class StaticShockHandler {
             double wetnessBonus = ElementalThunderFrostReactionsConfig.staticWetnessBonusChancePerLevel;
             DebugCommand.sendStaticShockSuccess(attacker, target, actualAdded, ElementType.THUNDER, thunderStrength, baseChance, scalingSteps, scalingChance, stackingBonus, wetnessLevel, wetnessBonus, chance);
             if (!target.isInWater() || ElementalThunderFrostReactionsConfig.waterElectrificationRangeBase <= 0) {
-                WetnessHandler.resolveElementReactionConflict(target, attacker);
+                target.getPersistentData().remove(WetnessHandler.NBT_REACTION_RESOLVED);
             }
             if (target.hasEffect(ModMobEffects.SPORES.get())) {
                 tryTriggerSporeBlast(target);
@@ -416,7 +417,7 @@ public class StaticShockHandler {
                 if (cd > 0) {
                     DebugCommand.sendReactionCooldownBlock(entity, "water_electrification", cd);
                 }
-                triggerParalysisReaction(null, entity);
+                WetnessHandler.resolveElementReactionConflict(entity, null);
                 return;
             }
         }
