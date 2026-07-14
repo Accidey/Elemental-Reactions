@@ -395,7 +395,7 @@ public class WetnessHandler {
     }
 
     static void tryColdBiomeFreeze(LivingEntity entity, Level level, BlockPos pos) {
-        double chance = ElementalFireNatureReactionsConfig.wetnessColdBiomeFreezeChance;
+        double chance = ElementalThunderFrostReactionsConfig.wetnessColdBiomeFreezeChance;
         if (chance <= 0) return;
         var biome = level.getBiome(pos).value();
         if (biome == null || biome.getBaseTemperature() > 0.3) return;
@@ -405,7 +405,7 @@ public class WetnessHandler {
         if (level.getGameTime() < cooldownEnd) return;
         int wetnessLevel = getWetnessLevel(entity);
         if (wetnessLevel <= 0) return;
-        double effectiveChance = chance + (wetnessLevel - 1) * ElementalFireNatureReactionsConfig.wetnessColdBiomeFreezeLevelBonus;
+        double effectiveChance = chance + (wetnessLevel - 1) * ElementalThunderFrostReactionsConfig.wetnessColdBiomeFreezeLevelBonus;
         float roll = RANDOM.nextFloat();
         if (roll < effectiveChance) {
             int freezeDuration = ElementalThunderFrostReactionsConfig.freezeDurationPerStackTicks * wetnessLevel;

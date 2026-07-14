@@ -23,8 +23,7 @@ public class ElementalFireNatureReactionsConfig {
     public static final ForgeConfigSpec.DoubleValue WETNESS_HEAT_ACCELERATE_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue WETNESS_BIOME_ACCELERATE_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue WETNESS_COLD_BIOME_DECAY_SLOWDOWN;
-    public static final ForgeConfigSpec.DoubleValue WETNESS_COLD_BIOME_FREEZE_CHANCE;
-    public static final ForgeConfigSpec.DoubleValue WETNESS_COLD_BIOME_FREEZE_LEVEL_BONUS;
+
     public static final ForgeConfigSpec.BooleanValue WETNESS_WATER_ANIMAL_IMMUNE;
     public static final ForgeConfigSpec.BooleanValue WETNESS_NETHER_DIMENSION_IMMUNE;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> WETNESS_ENTITY_BLACKLIST;
@@ -262,18 +261,7 @@ public class ElementalFireNatureReactionsConfig {
             .defineInRange("wetness_cold_biome_decay_slowdown", 0.5, 0.01, 1.0);
     BUILDER.comment(" ");
 
-    WETNESS_COLD_BIOME_FREEZE_CHANCE = BUILDER
-            .comment("寒冷群系中（温度 ≤ 0.3），如果生物有潮湿效果且头顶无遮挡（露天），雨雪天气时每 20 tick 触发冻结的概率。",
-                    "If entity has Wetness + open sky. In cold biome (temperature ≤ 0.3) + rain/snow, per-check freeze chance.",
-                    "Default: 0.3 / 默认：0.3")
-            .defineInRange("wetness_cold_biome_freeze_chance", 0.3, 0.0, 1.0);
-    BUILDER.comment(" ");
 
-    WETNESS_COLD_BIOME_FREEZE_LEVEL_BONUS = BUILDER
-            .comment("每层潮湿额外增加的冻结触发概率。最终概率 = wetness_cold_biome_freeze_chance + (潮湿层数 - 1) × 此值。",
-                    "Additional freeze trigger chance per wetness level. Final chance = wetness_cold_biome_freeze_chance + (wetnessLevel - 1) × this.",
-                    "Default: 0.1 / 默认：0.1")
-            .defineInRange("wetness_cold_biome_freeze_level_bonus", 0.1, 0.0, 1.0);
 
     BUILDER.push("immunity");
     BUILDER.comment("潮湿免疫 - Wetness Immunity",
@@ -1208,8 +1196,7 @@ public class ElementalFireNatureReactionsConfig {
     public static double wetnessHeatAccelerateMultiplier;
     public static double wetnessBiomeAccelerateMultiplier;
     public static double wetnessColdBiomeDecaySlowdown;
-    public static double wetnessColdBiomeFreezeChance;
-    public static double wetnessColdBiomeFreezeLevelBonus;
+
     public static boolean wetnessWaterAnimalImmune;
     public static boolean wetnessNetherDimensionImmune;
     public static List<? extends String> cachedWetnessBlacklist;
@@ -1339,8 +1326,7 @@ public class ElementalFireNatureReactionsConfig {
         wetnessHeatAccelerateMultiplier = WETNESS_HEAT_ACCELERATE_MULTIPLIER.get();
         wetnessBiomeAccelerateMultiplier = WETNESS_BIOME_ACCELERATE_MULTIPLIER.get();
         wetnessColdBiomeDecaySlowdown = WETNESS_COLD_BIOME_DECAY_SLOWDOWN.get();
-        wetnessColdBiomeFreezeChance = WETNESS_COLD_BIOME_FREEZE_CHANCE.get();
-        wetnessColdBiomeFreezeLevelBonus = WETNESS_COLD_BIOME_FREEZE_LEVEL_BONUS.get();
+
         wetnessWaterAnimalImmune = WETNESS_WATER_ANIMAL_IMMUNE.get();
         wetnessNetherDimensionImmune = WETNESS_NETHER_DIMENSION_IMMUNE.get();
         cachedWetnessBlacklist = WETNESS_ENTITY_BLACKLIST.get();

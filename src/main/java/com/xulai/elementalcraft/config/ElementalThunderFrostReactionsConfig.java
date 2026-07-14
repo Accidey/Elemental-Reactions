@@ -92,6 +92,8 @@ public final class ElementalThunderFrostReactionsConfig {
     public static final ForgeConfigSpec.DoubleValue FREEZE_SETTLEMENT_DAMAGE_PER_STACK;
     public static final ForgeConfigSpec.IntValue FREEZE_COOLDOWN_TICKS;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> FREEZE_IMMUNITY_BLACKLIST;
+    public static final ForgeConfigSpec.DoubleValue WETNESS_COLD_BIOME_FREEZE_CHANCE;
+    public static final ForgeConfigSpec.DoubleValue WETNESS_COLD_BIOME_FREEZE_LEVEL_BONUS;
 
     public static final ForgeConfigSpec.DoubleValue THUNDER_BREAK_FREEZE_CHANCE;
     public static final ForgeConfigSpec.IntValue THUNDER_BREAK_FREEZE_TO_WETNESS_RATIO;
@@ -1053,7 +1055,21 @@ public final class ElementalThunderFrostReactionsConfig {
                 .comment("赤焰融冰后每层冻结转化为潮湿的倍率。0 = 关闭此功能。",
                          "Ratio per freeze stack to convert to wetness layers after Fire Freeze Melt. 0 = disabled.",
                          "Default: 1 (1:1) / 默认：1（1：1）")
-                .defineInRange("fire_frost_melt_wetness_ratio", 1, 0, 10);
+                 .defineInRange("fire_frost_melt_wetness_ratio", 1, 0, 10);
+    BUILDER.comment(" ");
+
+    WETNESS_COLD_BIOME_FREEZE_CHANCE = BUILDER
+            .comment("寒冷群系中（温度 ≤ 0.3），如果生物有潮湿效果且头顶无遮挡（露天），雨雪天气时每 20 tick 触发冻结的概率。",
+                    "If entity has Wetness + open sky. In cold biome (temperature ≤ 0.3) + rain/snow, per-check freeze chance.",
+                    "Default: 0.3 / 默认：0.3")
+            .defineInRange("wetness_cold_biome_freeze_chance", 0.3, 0.0, 1.0);
+    BUILDER.comment(" ");
+
+    WETNESS_COLD_BIOME_FREEZE_LEVEL_BONUS = BUILDER
+            .comment("每层潮湿额外增加的冻结触发概率。最终概率 = wetness_cold_biome_freeze_chance + (潮湿层数 - 1) × 此值。",
+                    "Additional freeze trigger chance per wetness level. Final chance = wetness_cold_biome_freeze_chance + (wetnessLevel - 1) × this.",
+                    "Default: 0.1 / 默认：0.1")
+            .defineInRange("wetness_cold_biome_freeze_level_bonus", 0.1, 0.0, 1.0);
 
         BUILDER.pop();
 
@@ -1160,6 +1176,8 @@ public final class ElementalThunderFrostReactionsConfig {
     public static double freezeSettlementDamagePerStack;
     public static int freezeCooldownTicks;
     public static List<? extends String> cachedFreezeImmunityBlacklist;
+    public static double wetnessColdBiomeFreezeChance;
+    public static double wetnessColdBiomeFreezeLevelBonus;
 
     public static double thunderBreakFreezeChance;
     public static int thunderBreakFreezeToWetnessRatio;
@@ -1277,6 +1295,8 @@ public final class ElementalThunderFrostReactionsConfig {
         freezeSettlementDamagePerStack = FREEZE_SETTLEMENT_DAMAGE_PER_STACK.get();
         freezeCooldownTicks = FREEZE_COOLDOWN_TICKS.get();
         cachedFreezeImmunityBlacklist = FREEZE_IMMUNITY_BLACKLIST.get();
+        wetnessColdBiomeFreezeChance = WETNESS_COLD_BIOME_FREEZE_CHANCE.get();
+        wetnessColdBiomeFreezeLevelBonus = WETNESS_COLD_BIOME_FREEZE_LEVEL_BONUS.get();
 
         thunderBreakFreezeChance = THUNDER_BREAK_FREEZE_CHANCE.get();
         thunderBreakFreezeToWetnessRatio = THUNDER_BREAK_FREEZE_TO_WETNESS_RATIO.get();
