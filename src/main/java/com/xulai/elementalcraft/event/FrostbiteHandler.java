@@ -4,7 +4,6 @@ import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.command.DebugCommand;
 import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.logic.MobAttributeLogic;
-import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
 import com.xulai.elementalcraft.sound.ModSounds;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import com.xulai.elementalcraft.init.ModDamageTypes;
@@ -66,6 +65,8 @@ public class FrostbiteHandler {
     public static final String NBT_FROST_COUNTER_COOLDOWN = "ec_frost_counter_cd";
     public static final String NBT_FROSTBITE_STACKS = "EC_FrostbiteStacks";
     public static final String NBT_FROSTBITE_DURATION = "EC_FrostbiteDuration";
+    public static final String NBT_FROST_HEAT_ACCEL = "EC_FrostbiteHeatAccel";
+    public static final String NBT_FROST_HEAT_MULT = "EC_FrostbiteHeatMult";
     public static final String NBT_FROSTBITE_APPLY_TICK = "EC_FrostbiteApplyTick";
     public static final String NBT_FREEZE_COOLDOWN = "EC_FreezeCooldown";
 
@@ -324,6 +325,15 @@ public class FrostbiteHandler {
         if (target.level().isClientSide) return false;
         if (target instanceof Player player && player.isCreative()) return false;
 
+        if (ElementalThunderFrostReactionsConfig.frostbiteClearByHeatEnabled
+                && target.level().dimension() == Level.NETHER) {
+            if (attacker != null) {
+                DebugCommand.sendReactionFailed(target, "frostbite", "nether_heat",
+                        attacker.getDisplayName(), target.getDisplayName());
+            }
+            return false;
+        }
+
         if (SteamReactionHandler.isInHighHeatCloud(target)) {
             if (attacker != null) {
                 DebugCommand.sendReactionFailed(target, "frostbite", "high_heat_cloud",
@@ -382,6 +392,9 @@ public class FrostbiteHandler {
 
         double speedReduction = ElementalThunderFrostReactionsConfig.frostbiteSpeedReductionPerStack;
 
+        data.putBoolean(NBT_FROST_HEAT_ACCEL, false);
+        data.remove(NBT_FROST_HEAT_MULT);
+        data.remove(NBT_FROSTBITE_FIRE_STAND_TIMER);
         data.putInt(NBT_FROSTBITE_STACKS, newStacks);
         data.putInt(NBT_FROSTBITE_DURATION, durationTicks);
         data.putLong(NBT_FROSTBITE_APPLY_TICK, gameTime);
@@ -518,16 +531,8 @@ public class FrostbiteHandler {
         if (entity.level().isClientSide) {
             if (entity.hasEffect(ModMobEffects.FREEZE.get())) {
                 entity.setTicksFrozen(300);
-            } else if (entity.hasEffect(ModMobEffects.FROSTBITE.get())) {
-                MobEffectInstance effect = entity.getEffect(ModMobEffects.FROSTBITE.get());
-                if (effect != null) {
-                    int stacks = effect.getAmplifier() + 1;
-                    int maxStacks = ElementalThunderFrostReactionsConfig.frostbiteMaxTotalStacks;
-                    int ticksFrozen = Math.max(1, stacks * 300 / maxStacks);
-                    entity.setTicksFrozen(ticksFrozen);
-                }
             } else {
-                if (entity.getTicksFrozen() > 0) {
+                if (entity.getTicksFrozen() > 0 && !entity.isInPowderSnow) {
                     entity.setTicksFrozen(0);
                 }
             }
@@ -538,14 +543,6 @@ public class FrostbiteHandler {
 
         if (entity.hasEffect(ModMobEffects.FREEZE.get())) {
             entity.setTicksFrozen(300);
-        } else if (entity.hasEffect(ModMobEffects.FROSTBITE.get())) {
-            MobEffectInstance effect = entity.getEffect(ModMobEffects.FROSTBITE.get());
-            if (effect != null) {
-                int stacks = effect.getAmplifier() + 1;
-                int maxStacks = ElementalThunderFrostReactionsConfig.frostbiteMaxTotalStacks;
-                int ticksFrozen = Math.max(1, stacks * 300 / maxStacks);
-                entity.setTicksFrozen(ticksFrozen);
-            }
         } else {
             if (entity.getTicksFrozen() > 0 && !entity.isInPowderSnow) {
                 entity.setTicksFrozen(0);
@@ -634,6 +631,7 @@ public class FrostbiteHandler {
                     int effectDuration = effectInstance.getDuration();
                     data.putInt(NBT_FROSTBITE_STACKS, effectStacks);
                     data.putInt(NBT_FROSTBITE_DURATION, effectDuration);
+                    data.putBoolean(NBT_FROST_HEAT_ACCEL, false);
                     data.putLong(NBT_FROSTBITE_APPLY_TICK, gameTime);
                     return;
                 }
@@ -656,27 +654,9 @@ public class FrostbiteHandler {
         }
 
         if (ElementalThunderFrostReactionsConfig.frostbiteClearByHeatEnabled) {
-            if (entity.isOnFire()) {
-                if (auraActive) {
-                    clearFrostbiteAuraEffects(entity, stacks);
-                }
-                clearFrostbite(entity);
-                entity.playSound(SoundEvents.FIRE_EXTINGUISH, 1.0f, 1.0f);
-                return;
-            }
-
-            if (WetnessHandler.checkHeatSource(entity.level(), entity.blockPosition())) {
-                if (auraActive) {
-                    clearFrostbiteAuraEffects(entity, stacks);
-                }
-                clearFrostbite(entity);
-                entity.playSound(SoundEvents.FIRE_EXTINGUISH, 1.0f, 1.0f);
-                return;
-            }
-
-            BlockPos pos = entity.blockPosition();
-            BlockState state = entity.level().getBlockState(pos);
-            if (state.is(Blocks.FIRE) || state.is(Blocks.SOUL_FIRE)) {
+            BlockPos firePos = entity.blockPosition();
+            BlockState fireState = entity.level().getBlockState(firePos);
+            if (fireState.is(Blocks.FIRE) || fireState.is(Blocks.SOUL_FIRE)) {
                 int timer = data.getInt(NBT_FROSTBITE_FIRE_STAND_TIMER) + 1;
                 int threshold = ElementalThunderFrostReactionsConfig.frostbiteFireStandClearingTime * 20;
                 if (timer >= threshold) {
@@ -688,41 +668,57 @@ public class FrostbiteHandler {
                     return;
                 }
                 data.putInt(NBT_FROSTBITE_FIRE_STAND_TIMER, timer);
-            } else {
-                data.remove(NBT_FROSTBITE_FIRE_STAND_TIMER);
+            } else if (!data.contains(NBT_FROSTBITE_FIRE_STAND_TIMER) && entity.isOnFire()) {
+                if (auraActive) {
+                    clearFrostbiteAuraEffects(entity, stacks);
+                }
+                clearFrostbite(entity);
+                entity.playSound(SoundEvents.FIRE_EXTINGUISH, 1.0f, 1.0f);
+                return;
+            }
+
+            if (WetnessHandler.checkHeatSource(entity.level(), entity.blockPosition(),
+                    ElementalThunderFrostReactionsConfig.frostbiteHeatSearchRadius)) {
+                if (auraActive) {
+                    clearFrostbiteAuraEffects(entity, stacks);
+                }
+                clearFrostbite(entity);
+                entity.playSound(SoundEvents.FIRE_EXTINGUISH, 1.0f, 1.0f);
+                return;
             }
         }
 
-        int decay = 1;
-        if (entity.level().dimension() == Level.NETHER) {
-            decay = (int) ElementalThunderFrostReactionsConfig.frostbiteNetherDecaySpeed;
-            if (decay < 1) decay = 1;
-        }
+
+        // Heat source snap
         double heatMult = checkFrostbiteHeatAccelerator(entity, entity.level(), entity.blockPosition());
-        if (heatMult > 1.0) {
-            decay = (int) Math.max(decay, decay * heatMult);
-        }
-        data.putInt(NBT_FROSTBITE_DURATION, duration - decay);
-
-        if (decay > 1) {
-            MobEffectInstance effect = entity.getEffect(ModMobEffects.FROSTBITE.get());
-            if (effect != null) {
-                int newEffectDuration = effect.getDuration() - (decay - 1);
-                if (newEffectDuration <= 0) {
-                    clearFrostbite(entity);
-                    return;
-                }
-                suppressRemoveCleanup = true;
-                try {
-                    entity.removeEffect(ModMobEffects.FROSTBITE.get());
-                    entity.addEffect(new MobEffectInstance(ModMobEffects.FROSTBITE.get(),
-                            newEffectDuration, effect.getAmplifier(),
-                            effect.isAmbient(), effect.isVisible(), effect.showIcon()));
-                } finally {
-                    suppressRemoveCleanup = false;
+        boolean hasHeat = heatMult > 1.0;
+        boolean hadHeat = data.getBoolean(NBT_FROST_HEAT_ACCEL);
+        if (hasHeat != hadHeat) {
+            data.putBoolean(NBT_FROST_HEAT_ACCEL, hasHeat);
+            if (hasHeat) {
+                data.putDouble(NBT_FROST_HEAT_MULT, heatMult);
+                duration = Math.max(1, (int)(duration / heatMult));
+            } else {
+                double storedMult = data.getDouble(NBT_FROST_HEAT_MULT);
+                data.remove(NBT_FROST_HEAT_MULT);
+                if (storedMult > 1.0) {
+                    duration = Math.max(1, (int)(duration * storedMult));
                 }
             }
+            data.putInt(NBT_FROSTBITE_DURATION, duration);
+            suppressRemoveCleanup = true;
+            try {
+                entity.removeEffect(ModMobEffects.FROSTBITE.get());
+                entity.addEffect(new MobEffectInstance(ModMobEffects.FROSTBITE.get(),
+                        duration, stacks - 1, false, false, true));
+            } finally {
+                suppressRemoveCleanup = false;
+            }
         }
+
+        // Normal per-tick decay
+        duration--;
+        data.putInt(NBT_FROSTBITE_DURATION, duration);
 
         boolean hasWetness = WetnessHandler.getWetnessLevel(entity) > 0;
         if (hasWetness) {
@@ -751,6 +747,8 @@ public class FrostbiteHandler {
 
         data.remove(NBT_FROSTBITE_STACKS);
         data.remove(NBT_FROSTBITE_DURATION);
+        data.remove(NBT_FROST_HEAT_ACCEL);
+        data.remove(NBT_FROST_HEAT_MULT);
         data.remove(NBT_FROSTBITE_APPLY_TICK);
         data.remove(NBT_FROSTBITE_FIRE_STAND_TIMER);
         data.remove(NBT_FROSTBITE_SOURCE_FROST_POWER);
@@ -999,7 +997,8 @@ public class FrostbiteHandler {
         if (mult <= 1.0) return 1.0;
         double radius = ElementalThunderFrostReactionsConfig.frostbiteHeatAccelerateRadius;
         if (radius <= 0) return 1.0;
-        if (entity.isInWater() || level.isRainingAt(center)) return 1.0;
+        if (entity.isInWater()) return 1.0;
+        if (level.getBiome(center).value().getPrecipitationAt(center) != Biome.Precipitation.NONE) return 1.0;
         int range = (int)Math.ceil(radius);
         BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
         for (int x = -range; x <= range; x++) {
@@ -1025,9 +1024,6 @@ public class FrostbiteHandler {
 
     private static void decaySpores(LivingEntity entity) {
         double speed = ElementalThunderFrostReactionsConfig.frostbiteSporeDecaySpeed;
-        if (entity.level().dimension() == Level.NETHER) {
-            speed *= ElementalThunderFrostReactionsConfig.frostbiteNetherDecaySpeed;
-        }
         if (speed <= 1) return;
         MobEffectInstance sporeInstance = entity.getEffect(ModMobEffects.SPORES.get());
         if (sporeInstance == null) return;

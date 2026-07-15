@@ -54,39 +54,24 @@ public class FrozenIceLayer {
         LivingEntity entity = event.getEntity();
 
         boolean hasFreezeEffect = freezeCache.containsKey(entity.getUUID());
-        boolean hasFrozenTicks = entity.getTicksFrozen() > 5 && entity.hasEffect(ModMobEffects.FROSTBITE.get());
+        boolean hasFrozenTicks = false;
 
-        if (!hasFreezeEffect && hasFrozenTicks && (entity.getTicksFrozen() >= 300 || entity.isInPowderSnow)) {
-            hasFrozenTicks = false;
-        }
+        if (!hasFreezeEffect) return;
 
-        if (!hasFreezeEffect && !hasFrozenTicks) return;
-
-        float alpha = calcAlpha(entity, hasFreezeEffect, hasFrozenTicks);
+        float alpha = calcAlpha(entity);
         if (alpha <= 0.01f) return;
 
         renderIceBox(event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), entity, alpha);
     }
 
-    private static float calcAlpha(LivingEntity entity, boolean hasFreezeEffect, boolean hasFrozenTicks) {
-        float fullAlpha = 1.0f;
-
-        if (hasFreezeEffect) {
-            MobEffectInstance effect = entity.getEffect(ModMobEffects.FREEZE.get());
-            if (effect != null) {
-                int dur = effect.getDuration();
-                if (dur < 20) return fullAlpha * (dur / 20.0f);
-            }
-            return fullAlpha;
+    private static float calcAlpha(LivingEntity entity) {
+        if (!freezeCache.containsKey(entity.getUUID())) return 0;
+        MobEffectInstance effect = entity.getEffect(ModMobEffects.FREEZE.get());
+        if (effect != null) {
+            int dur = effect.getDuration();
+            if (dur < 20) return 1.0f * (dur / 20.0f);
         }
-
-        if (hasFrozenTicks) {
-            int ticks = entity.getTicksFrozen();
-            if (ticks < 20) return fullAlpha * (ticks / 20.0f);
-            return fullAlpha;
-        }
-
-        return 0;
+        return 1.0f;
     }
 
     private static void renderIceBox(PoseStack poseStack, MultiBufferSource buffer, int packedLight,

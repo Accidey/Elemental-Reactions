@@ -61,6 +61,7 @@ public class WetnessHandler {
     private static int lastHeatCheckY = Integer.MIN_VALUE;
     private static int lastHeatCheckZ = Integer.MIN_VALUE;
     private static boolean lastHeatResult = false;
+    private static double lastHeatCheckRadius = 0;
 
     public static int getWetnessLevel(LivingEntity entity) {
         CompoundTag data = entity.getPersistentData();
@@ -170,6 +171,12 @@ public class WetnessHandler {
             }
             return;
         }
+        if (ElementalFireNatureReactionsConfig.wetnessNetherDimensionImmune
+                && entity.level().dimension() == Level.NETHER
+                && !entity.getPersistentData().getBoolean("EC_WetnessNetherLogged")) {
+            entity.getPersistentData().putBoolean("EC_WetnessNetherLogged", true);
+            DebugCommand.sendWetnessReactionFailed(entity, "nether", entity.getDisplayName());
+        }
         if (isImmune(entity)) {
             clearWetnessData(entity);
             return;
@@ -278,19 +285,24 @@ public class WetnessHandler {
     }
 
     static boolean checkHeatSource(Level level, BlockPos center) {
+        return checkHeatSource(level, center, ElementalFireNatureReactionsConfig.wetnessHeatSearchRadius);
+    }
+
+    static boolean checkHeatSource(Level level, BlockPos center, double configRadius) {
         long gt = level.getGameTime();
         int cx = center.getX();
         int cy = center.getY();
         int cz = center.getZ();
         if (gt - lastHeatCheckGameTime < 20
-                && cx == lastHeatCheckX && cy == lastHeatCheckY && cz == lastHeatCheckZ) {
+                && cx == lastHeatCheckX && cy == lastHeatCheckY && cz == lastHeatCheckZ
+                && configRadius == lastHeatCheckRadius) {
             return lastHeatResult;
         }
         lastHeatCheckGameTime = gt;
         lastHeatCheckX = cx;
         lastHeatCheckY = cy;
         lastHeatCheckZ = cz;
-        double configRadius = ElementalFireNatureReactionsConfig.wetnessHeatSearchRadius;
+        lastHeatCheckRadius = configRadius;
         int lavaRange = (int) Math.ceil(configRadius);
         int magmaRange = Math.max(1, lavaRange - 1);
 
@@ -336,8 +348,8 @@ public class WetnessHandler {
         if (mult <= 1.0) return 1.0;
         double radius = ElementalFireNatureReactionsConfig.wetnessHeatAccelerateRadius;
         if (radius <= 0) return 1.0;
-        if (entity.isInWater() || level.isRainingAt(center)) return 1.0;
-        if (radius <= 0) return 1.0;
+        if (entity.isInWater()) return 1.0;
+        if (level.getBiome(center).value().getPrecipitationAt(center) != Biome.Precipitation.NONE) return 1.0;
         int range = (int)Math.ceil(radius);
         BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
         for (int x = -range; x <= range; x++) {
@@ -710,7 +722,8 @@ public class WetnessHandler {
             data.remove(NBT_LAST_EXHAUSTION);
             data.remove(NBT_REACTION_RESOLVED);
             data.remove("EC_WetnessParalysisLogged");
-            data.remove("EC_WetnessFrozenLogged");
+        data.remove("EC_WetnessFrozenLogged");
+        data.remove("EC_WetnessNetherLogged");
         }
     }
 

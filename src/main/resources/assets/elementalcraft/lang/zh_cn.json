@@ -226,6 +226,7 @@
   "debug.elementalcraft.breakdown.label.biome": "环境",
   "debug.elementalcraft.reaction.frostbite.failed.high_heat_cloud": "§7[霜冻] §f%s §7→ §f%s §7被阻止: 目标在高温蒸汽云中",
   "debug.elementalcraft.reaction.frostbite.failed.freeze": "§7[霜冻] §f%s §7→ §f%s §7被阻止: 目标处于冻结状态",
+  "debug.elementalcraft.reaction.frostbite.failed.nether_heat": "§7[霜冻] §f%s §7→ §f%s §7被阻止: 目标在下界维度",
   "debug.elementalcraft.reaction.frostbite_aura.header": "[霜冻光环]",
   "debug.elementalcraft.reaction.frostbite_aura.base": "基础: %s",
   "debug.elementalcraft.reaction.frostbite_aura.final": "最终: %s",
@@ -351,6 +352,7 @@
   "debug.elementalcraft.reaction.wetness.failed.paralysis": "§7[潮湿] §f%s §7被阻止: 目标处于麻痹状态 (剩余 %s tick / %s秒)",
   "debug.elementalcraft.reaction.wetness.failed.steam_cloud": "§7[潮湿] §f%s §7被阻止: 目标在低温蒸汽云中",
   "debug.elementalcraft.reaction.wetness.failed.freeze": "§7[潮湿] §f%s §7被阻止: 目标处于冻结状态",
+  "debug.elementalcraft.reaction.wetness.failed.nether": "§7[潮湿] §f%s §7被阻止: 目标在下界维度",
 
   "debug.elementalcraft.reaction.cold_freeze.frozen": "§b[寒冷冻结] 温度: %s | 潮湿: %s | 雨雪: %s| 概率 §a%s%%",
 

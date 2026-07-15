@@ -226,6 +226,7 @@
   "debug.elementalcraft.breakdown.label.biome": "biome",
   "debug.elementalcraft.reaction.frostbite.failed.high_heat_cloud": "§7[Frostbite] §f%s §7→ §f%s §7blocked: target in high-heat steam cloud",
   "debug.elementalcraft.reaction.frostbite.failed.freeze": "§7[Frostbite] §f%s §7→ §f%s §7blocked: target is frozen",
+  "debug.elementalcraft.reaction.frostbite.failed.nether_heat": "§7[Frostbite] §f%s §7→ §f%s §7blocked: target in Nether dimension",
   "debug.elementalcraft.reaction.frostbite_aura.header": "[Frostbite Aura]",
   "debug.elementalcraft.reaction.frostbite_aura.base": "Base: %s",
   "debug.elementalcraft.reaction.frostbite_aura.final": "Final: %s",
@@ -350,6 +351,7 @@
   "debug.elementalcraft.reaction.wetness.failed.paralysis": "§7[Wetness] §f%s §7blocked: target is paralyzed (%s ticks / %ss remaining)",
   "debug.elementalcraft.reaction.wetness.failed.steam_cloud": "§7[Wetness] §f%s §7blocked: target in condensing steam cloud",
   "debug.elementalcraft.reaction.wetness.failed.freeze": "§7[Wetness] §f%s §7blocked: target is frozen",
+  "debug.elementalcraft.reaction.wetness.failed.nether": "§7[Wetness] §f%s §7blocked: target in Nether dimension",
 
   "debug.elementalcraft.reaction.cold_freeze.frozen": "§b[Cold Freeze] temp: %s | wetness: %s | rain: %s| chance §a%s%%",
 

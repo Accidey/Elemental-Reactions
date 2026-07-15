@@ -109,7 +109,6 @@ public final class ElementalThunderFrostReactionsConfig {
     public static final ForgeConfigSpec.IntValue SCORCHED_FROSTBITE_TO_WETNESS_RATIO;
 
     public static final ForgeConfigSpec.BooleanValue FROSTBITE_CLEAR_BY_HEAT_ENABLED;
-    public static final ForgeConfigSpec.DoubleValue FROSTBITE_NETHER_DECAY_SPEED;
     public static final ForgeConfigSpec.DoubleValue FROSTBITE_HEAT_SEARCH_RADIUS;
     public static final ForgeConfigSpec.IntValue FROSTBITE_FIRE_STAND_CLEARING_TIME;
 
@@ -865,14 +864,6 @@ public final class ElementalThunderFrostReactionsConfig {
 
         BUILDER.comment(" ");
 
-        FROSTBITE_NETHER_DECAY_SPEED = BUILDER
-                .comment("下界维度中霜冻倒计时的加速倍率。2.0 = 2倍速流逝，10.0 = 10倍速流逝。",
-                         "Frostbite countdown speed multiplier in the Nether dimension. 2.0 = 2x faster, 10.0 = 10x faster.",
-                         "Default: 2.0 / 默认：2.0")
-                .defineInRange("frostbite_nether_decay_speed", 2.0, 1.0, 100.0);
-
-        BUILDER.comment(" ");
-
         FROSTBITE_HEAT_SEARCH_RADIUS = BUILDER
                 .comment("检测周围热源（熔岩/岩浆块）清除霜冻的半径范围（格）。岩浆块的检测半径会减少1格。",
                          "Radius (blocks) to search for nearby heat sources (Lava/Magma) that clear Frostbite. Magma Block detection radius is reduced by 1.",
@@ -892,8 +883,7 @@ public final class ElementalThunderFrostReactionsConfig {
         FROSTBITE_HEAT_ACCELERATE_MULTIPLIER = BUILDER
                 .comment("营火/点燃的熔炉/高炉/烟熏炉旁边，霜冻倒计时加速倍率。1.0 = 不加速。",
                          "Frostbite decay multiplier near campfire/lit furnace/blast furnace/smoker.",
-                         "Default: 2.0 / 默认：2.0",
-                         "Range: 1.0 ~ 10.0")
+                         "Default: 2.0 / 默认：2.0")
                 .defineInRange("frostbite_heat_accelerate_multiplier", 2.0, 1.0, 10.0);
 
         BUILDER.comment(" ");
@@ -901,8 +891,7 @@ public final class ElementalThunderFrostReactionsConfig {
         FROSTBITE_HEAT_ACCELERATE_RADIUS = BUILDER
                 .comment("检测营火/熔炉等热源的范围（格）。设为0则关闭此功能。",
                          "Radius (blocks) to search for campfire/furnace heat sources. Set to 0 to disable.",
-                         "Default: 2.0 / 默认：2.0",
-                         "Range: 0.0 ~ 16.0")
+                         "Default: 2.0 / 默认：2.0")
                 .defineInRange("frostbite_heat_accelerate_radius", 2.0, 0.0, 16.0);
 
         BUILDER.comment(" ");
@@ -1207,7 +1196,6 @@ public final class ElementalThunderFrostReactionsConfig {
     public static boolean freezeClearSporesEnabled;
     public static int scorchedFrostbiteToWetnessRatio;
     public static boolean frostbiteClearByHeatEnabled;
-    public static double frostbiteNetherDecaySpeed;
     public static double frostbiteHeatSearchRadius;
     public static int frostbiteFireStandClearingTime;
 
@@ -1324,7 +1312,6 @@ public final class ElementalThunderFrostReactionsConfig {
         freezeClearSporesEnabled = FREEZE_CLEAR_SPORES_ENABLED.get();
         scorchedFrostbiteToWetnessRatio = SCORCHED_FROSTBITE_TO_WETNESS_RATIO.get();
         frostbiteClearByHeatEnabled = FROSTBITE_CLEAR_BY_HEAT_ENABLED.get();
-        frostbiteNetherDecaySpeed = FROSTBITE_NETHER_DECAY_SPEED.get();
         frostbiteHeatSearchRadius = FROSTBITE_HEAT_SEARCH_RADIUS.get();
         frostbiteFireStandClearingTime = FROSTBITE_FIRE_STAND_CLEARING_TIME.get();
 
