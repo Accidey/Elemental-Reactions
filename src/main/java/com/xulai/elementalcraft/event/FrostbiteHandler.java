@@ -914,7 +914,7 @@ public class FrostbiteHandler {
 
         if (isFrozen(target)) {
             DamageSource source = event.getSource();
-            boolean isElemental = source.is(DamageTypeTags.IS_FIRE) || source.is(ModDamageTypes.FROSTBITE_THERMAL_SHOCK) || source.is(ModDamageTypes.LAVA_MAGIC) || source.is(ModDamageTypes.STATIC_SHOCK) || source.is(ModDamageTypes.SPORES) || source.is(ModDamageTypes.STEAM_SCALDING) || (ISSCore.ISS_LOADED && source.is(ISSCore.ISS_FIRE_MAGIC));
+            boolean isElemental = source.is(DamageTypeTags.IS_FIRE) || source.is(ModDamageTypes.FROSTBITE_THERMAL_SHOCK) || source.is(ModDamageTypes.LAVA_MAGIC) || source.is(ModDamageTypes.STATIC_SHOCK) || source.is(ModDamageTypes.SPORES) || source.is(ModDamageTypes.STEAM_SCALDING) || ISSCore.isISSMagicDamage(source);
 
             if (source.getEntity() instanceof LivingEntity attacker) {
                 ElementType attackElement = ElementUtils.getConsistentAttackElement(attacker);

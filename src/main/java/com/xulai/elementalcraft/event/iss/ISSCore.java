@@ -155,14 +155,24 @@ public class ISSCore {
         return FIRE_PARTICLE;
     }
 
-    static final ResourceKey<DamageType> ISS_LIGHTNING_MAGIC = ResourceKey.create(
-            Registries.DAMAGE_TYPE, new ResourceLocation("irons_spellbooks", "lightning_magic"));
-    static final ResourceKey<DamageType> ISS_ICE_MAGIC = ResourceKey.create(
-            Registries.DAMAGE_TYPE, new ResourceLocation("irons_spellbooks", "ice_magic"));
-    static final ResourceKey<DamageType> ISS_NATURE_MAGIC = ResourceKey.create(
-            Registries.DAMAGE_TYPE, new ResourceLocation("irons_spellbooks", "nature_magic"));
     public static final ResourceKey<DamageType> ISS_FIRE_MAGIC = ResourceKey.create(
             Registries.DAMAGE_TYPE, new ResourceLocation("irons_spellbooks", "fire_magic"));
+    public static final ResourceKey<DamageType> ISS_ICE_MAGIC = ResourceKey.create(
+            Registries.DAMAGE_TYPE, new ResourceLocation("irons_spellbooks", "ice_magic"));
+    public static final ResourceKey<DamageType> ISS_LIGHTNING_MAGIC = ResourceKey.create(
+            Registries.DAMAGE_TYPE, new ResourceLocation("irons_spellbooks", "lightning_magic"));
+    public static final ResourceKey<DamageType> ISS_NATURE_MAGIC = ResourceKey.create(
+            Registries.DAMAGE_TYPE, new ResourceLocation("irons_spellbooks", "nature_magic"));
+    public static final ResourceKey<DamageType> ISS_HOLY_MAGIC = ResourceKey.create(
+            Registries.DAMAGE_TYPE, new ResourceLocation("irons_spellbooks", "holy_magic"));
+    public static final ResourceKey<DamageType> ISS_ENDER_MAGIC = ResourceKey.create(
+            Registries.DAMAGE_TYPE, new ResourceLocation("irons_spellbooks", "ender_magic"));
+    public static final ResourceKey<DamageType> ISS_BLOOD_MAGIC = ResourceKey.create(
+            Registries.DAMAGE_TYPE, new ResourceLocation("irons_spellbooks", "blood_magic"));
+    public static final ResourceKey<DamageType> ISS_EVOCATION_MAGIC = ResourceKey.create(
+            Registries.DAMAGE_TYPE, new ResourceLocation("irons_spellbooks", "evocation_magic"));
+    public static final ResourceKey<DamageType> ISS_ELDRITCH_MAGIC = ResourceKey.create(
+            Registries.DAMAGE_TYPE, new ResourceLocation("irons_spellbooks", "eldritch_magic"));
 
     static final String NBT_ISS_REFRESH_CD = "EC_ISS_RefreshCD";
 
@@ -630,5 +640,14 @@ public class ISSCore {
             Object rarity = spell.getClass().getMethod("getRarity", int.class).invoke(spell, level);
             return (int) rarity.getClass().getMethod("getValue").invoke(rarity) + 1;
         } catch (Exception e) { return 0; }
+    }
+
+    public static boolean isISSMagicDamage(DamageSource source) {
+        if (!ISS_LOADED) return false;
+        return source.is(ISS_FIRE_MAGIC) || source.is(ISS_ICE_MAGIC)
+                || source.is(ISS_LIGHTNING_MAGIC) || source.is(ISS_NATURE_MAGIC)
+                || source.is(ISS_HOLY_MAGIC) || source.is(ISS_ENDER_MAGIC)
+                || source.is(ISS_BLOOD_MAGIC) || source.is(ISS_EVOCATION_MAGIC)
+                || source.is(ISS_ELDRITCH_MAGIC);
     }
 }
