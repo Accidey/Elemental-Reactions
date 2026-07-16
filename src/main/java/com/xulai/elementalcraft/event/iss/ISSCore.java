@@ -48,8 +48,8 @@ import java.util.*;
 @Mod.EventBusSubscriber(modid = ElementalCraft.MODID)
 public class ISSCore {
 
-    static final Random RANDOM = new Random();
-    static final boolean ISS_LOADED;
+    public static final Random RANDOM = new Random();
+    public static final boolean ISS_LOADED;
 
     static final List<String> THUNDER_SPELL_IDS = List.of(
             "irons_spellbooks:lightning_lance",
@@ -161,7 +161,7 @@ public class ISSCore {
             Registries.DAMAGE_TYPE, new ResourceLocation("irons_spellbooks", "ice_magic"));
     static final ResourceKey<DamageType> ISS_NATURE_MAGIC = ResourceKey.create(
             Registries.DAMAGE_TYPE, new ResourceLocation("irons_spellbooks", "nature_magic"));
-    static final ResourceKey<DamageType> ISS_FIRE_MAGIC = ResourceKey.create(
+    public static final ResourceKey<DamageType> ISS_FIRE_MAGIC = ResourceKey.create(
             Registries.DAMAGE_TYPE, new ResourceLocation("irons_spellbooks", "fire_magic"));
 
     static final String NBT_ISS_REFRESH_CD = "EC_ISS_RefreshCD";
