@@ -109,6 +109,7 @@ public class ISSCore {
             "irons_spellbooks:scorch",
             "irons_spellbooks:heat_surge",
             "irons_spellbooks:blaze_storm",
+            "irons_spellbooks:raise_hell",
             "irons_spellbooks:fire_breath",
             "irons_spellbooks:fire_arrow"
         );

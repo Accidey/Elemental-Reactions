@@ -102,6 +102,26 @@ public class FireSpellHandler {
         }
     }
 
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public static void onRaiseHellHit(LivingDamageEvent event) {
+        if (event.getEntity().level().isClientSide) return;
+        if (!ISSCore.ISS_LOADED) return;
+        if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
+        String lastSpell = attacker.getPersistentData().getString("EC_LastSpellId");
+        if (!"irons_spellbooks:raise_hell".equals(lastSpell)) return;
+        handleReaction(event.getEntity(), attacker, event.getSource(), 0);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public static void onFlamingStrikeHit(LivingDamageEvent event) {
+        if (event.getEntity().level().isClientSide) return;
+        if (!ISSCore.ISS_LOADED) return;
+        if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
+        String lastSpell = attacker.getPersistentData().getString("EC_LastSpellId");
+        if (!"irons_spellbooks:flaming_strike".equals(lastSpell)) return;
+        handleReaction(event.getEntity(), attacker, event.getSource(), 0);
+    }
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onFireFieldHit(LivingDamageEvent event) {
         if (event.getEntity().level().isClientSide) return;
