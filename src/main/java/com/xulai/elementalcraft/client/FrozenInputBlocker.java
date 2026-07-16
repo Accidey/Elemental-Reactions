@@ -21,11 +21,18 @@ public class FrozenInputBlocker {
     private static final Set<String> MOVEMENT_KEYS = Set.of(
             "key.forward", "key.left", "key.back", "key.right", "key.jump");
 
+    private static final Set<String> ALLOWED_KEYS = Set.of(
+            "key.chat", "key.command");
+
     private static boolean isAllowedKey(int keyCode) {
         return keyCode == GLFW.GLFW_KEY_ESCAPE
             || keyCode == GLFW.GLFW_KEY_F2
             || keyCode == GLFW.GLFW_KEY_F3
             || keyCode == GLFW.GLFW_KEY_F5;
+    }
+
+    private static boolean isAllowedKeyName(String name) {
+        return ALLOWED_KEYS.contains(name);
     }
 
     private static boolean isAffected(Minecraft mc) {
@@ -43,6 +50,7 @@ public class FrozenInputBlocker {
 
         for (var key : mc.options.keyMappings) {
             if (isAllowedKey(key.getKey().getValue())) continue;
+            if (isAllowedKeyName(key.getName())) continue;
             if (isFullLock) {
                 key.setDown(false);
                 while (key.consumeClick()) {}

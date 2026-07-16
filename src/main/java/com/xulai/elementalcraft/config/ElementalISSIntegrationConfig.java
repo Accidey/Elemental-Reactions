@@ -27,8 +27,8 @@ public final class ElementalISSIntegrationConfig {
                         "Iron's Spellbooks 联动配置（仅安装ISS时加载，支持热重载）")
                 .push("iss_integration");
 
-        BUILDER.comment("Mob Casting AI (Thunder/Nature caster mobs with spell scrolls)",
-                        "Mob施法AI（持有雷霆/自然卷轴的施法生物）")
+        BUILDER.comment("Mob Casting AI (elemental creatures with spell scrolls)",
+                        "Mob施法AI（持有法术卷轴的属性生物）")
                 .push("mob_casting_ai");
 
         MOB_LOW_HEALTH_THRESHOLD = BUILDER

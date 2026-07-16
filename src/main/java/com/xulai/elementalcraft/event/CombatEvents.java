@@ -12,6 +12,7 @@ import com.xulai.elementalcraft.util.ElementType;
 import com.xulai.elementalcraft.util.ElementUtils;
 import com.xulai.elementalcraft.event.ScorchedHandler;
 import com.xulai.elementalcraft.event.SteamReactionHandler;
+import com.xulai.elementalcraft.event.WetnessHandler;
 import com.xulai.elementalcraft.util.DebugMode;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
@@ -493,6 +494,8 @@ public class CombatEvents {
         if (newWetness > 0) {
             WetnessHandler.updateWetnessLevel(target, newWetness);
             data.putFloat(WetnessHandler.NBT_DECAY_PROGRESS, 0);
+            SteamReactionHandler.spawnSteamCloud(target, true, newWetness);
+            WetnessHandler.clearWetnessData(target);
         }
 
         if (target.level() instanceof ServerLevel serverLevel) {
