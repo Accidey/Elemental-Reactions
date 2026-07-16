@@ -15,6 +15,7 @@ public final class ElementalThunderFrostReactionsConfig {
     public static final ForgeConfigSpec.DoubleValue STATIC_SCALING_CHANCE;
     public static final ForgeConfigSpec.DoubleValue STATIC_WETNESS_BONUS_CHANCE_PER_LEVEL;
     public static final ForgeConfigSpec.DoubleValue STATIC_STACKING_BONUS_CHANCE;
+    public static final ForgeConfigSpec.DoubleValue STATIC_THUNDERSTORM_BONUS_CHANCE;
     public static final ForgeConfigSpec.IntValue STATIC_MAX_STACKS_PER_ATTACK;
     public static final ForgeConfigSpec.IntValue STATIC_MAX_TOTAL_STACKS;
     public static final ForgeConfigSpec.IntValue STATIC_DURATION_PER_STACK_TICKS;
@@ -121,7 +122,6 @@ public final class ElementalThunderFrostReactionsConfig {
 
     public static final ForgeConfigSpec.IntValue FROSTED_STEAM_CLOUD_TRIGGER_STACKS;
 
-    public static final ForgeConfigSpec.BooleanValue FROST_COUNTER_ENABLED;
     public static final ForgeConfigSpec.DoubleValue FROST_COUNTER_BLOOD_THRESHOLD;
     public static final ForgeConfigSpec.IntValue FROST_COUNTER_STRENGTH_THRESHOLD;
     public static final ForgeConfigSpec.DoubleValue FROST_COUNTER_HEALTH_RECOVERY_THRESHOLD;
@@ -192,6 +192,14 @@ public final class ElementalThunderFrostReactionsConfig {
                          "Additional chance when target already has Static Shock effect.",
                          "Default: 0.05 (5%) / 默认：0.05（5%）")
                 .defineInRange("static_stacking_bonus_chance", 0.05, 0.0, 1.0);
+
+        BUILDER.comment(" ");
+
+        STATIC_THUNDERSTORM_BONUS_CHANCE = BUILDER
+                .comment("雷雨天气中静电效果的额外触发概率。仅在露天（能看到天空）时生效。",
+                         "Additional Static Shock trigger chance during thunderstorms. Only applies when target can see the sky.",
+                         "Default: 0.3 / 默认：0.3")
+                .defineInRange("static_thunderstorm_bonus_chance", 0.3, 0.0, 1.0);
 
         BUILDER.comment(" ");
 
@@ -918,12 +926,6 @@ public final class ElementalThunderFrostReactionsConfig {
                         "A counter-attack triggered when a Frost entity takes damage at low health: releases an Ice Burst frost ring that freezes enemies in range.")
                 .push("frost_counter");
 
-        FROST_COUNTER_ENABLED = BUILDER
-                .comment("是否启用冰霜反制。设为 false 则完全关闭此反应。",
-                         "Whether to enable Frost Counter. Set to false to disable completely.",
-                         "Default: true / 默认：true")
-                .define("enabled", true);
-
         BUILDER.comment(" ");
 
         FROST_COUNTER_BLOOD_THRESHOLD = BUILDER
@@ -937,8 +939,8 @@ public final class ElementalThunderFrostReactionsConfig {
         FROST_COUNTER_STRENGTH_THRESHOLD = BUILDER
                 .comment("触发冰霜反制所需的最小冰霜属性强化点数。",
                          "Minimum Frost points required to trigger Frost Counter.",
-                         "Default: 10 / 默认：10")
-                .defineInRange("strength_threshold", 10, 0, 10000);
+                         "Default: 50 / 默认：50")
+                .defineInRange("strength_threshold", 50, 0, 10000);
 
         BUILDER.comment(" ");
 
@@ -1106,6 +1108,7 @@ public final class ElementalThunderFrostReactionsConfig {
     public static double staticScalingChance;
     public static double staticWetnessBonusChancePerLevel;
     public static double staticStackingBonusChance;
+    public static double staticThunderstormBonusChance;
     public static int staticMaxStacksPerAttack;
     public static int staticMaxTotalStacks;
     public static int staticDurationPerStackTicks;
@@ -1210,7 +1213,6 @@ public final class ElementalThunderFrostReactionsConfig {
 
     public static int frostedSteamCloudTriggerStacks;
 
-    public static boolean frostCounterEnabled;
     public static double frostCounterBloodThreshold;
     public static int frostCounterStrengthThreshold;
     public static double frostCounterHealthRecoveryThreshold;
@@ -1229,6 +1231,7 @@ public final class ElementalThunderFrostReactionsConfig {
         staticScalingChance = STATIC_SCALING_CHANCE.get();
         staticWetnessBonusChancePerLevel = STATIC_WETNESS_BONUS_CHANCE_PER_LEVEL.get();
         staticStackingBonusChance = STATIC_STACKING_BONUS_CHANCE.get();
+        staticThunderstormBonusChance = STATIC_THUNDERSTORM_BONUS_CHANCE.get();
         staticMaxStacksPerAttack = STATIC_MAX_STACKS_PER_ATTACK.get();
         staticMaxTotalStacks = STATIC_MAX_TOTAL_STACKS.get();
         staticDurationPerStackTicks = STATIC_DURATION_PER_STACK_TICKS.get();
@@ -1330,7 +1333,6 @@ public final class ElementalThunderFrostReactionsConfig {
         fireFrostMeltDamageMult = FIRE_FROST_MELT_DAMAGE_MULT.get();
         fireFrostMeltWetnessRatio = FIRE_FROST_MELT_WETNESS_RATIO.get();
 
-        frostCounterEnabled = FROST_COUNTER_ENABLED.get();
         frostCounterBloodThreshold = FROST_COUNTER_BLOOD_THRESHOLD.get();
         frostCounterStrengthThreshold = FROST_COUNTER_STRENGTH_THRESHOLD.get();
         frostCounterHealthRecoveryThreshold = FROST_COUNTER_HEALTH_RECOVERY_THRESHOLD.get();

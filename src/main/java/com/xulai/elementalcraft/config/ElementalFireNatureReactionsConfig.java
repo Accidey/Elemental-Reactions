@@ -38,6 +38,7 @@ public class ElementalFireNatureReactionsConfig {
     public static final ForgeConfigSpec.DoubleValue SPORE_THUNDER_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue SPORE_FROST_DURATION_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue SPORE_COLD_BIOME_DURATION_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue SPORE_COLD_BIOME_CHANCE_MULTIPLIER;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> SPORE_ENTITY_BLACKLIST;
     public static final ForgeConfigSpec.IntValue SPORE_DURABILITY_DAMAGE;
     public static final int CONTAGION_CHECK_INTERVAL = 20;
@@ -956,6 +957,15 @@ public class ElementalFireNatureReactionsConfig {
             .defineInRange("spore_cold_biome_duration_multiplier", 0.5, 0.01, 100.0);
     BUILDER.comment(" ");
 
+    SPORE_COLD_BIOME_CHANCE_MULTIPLIER = BUILDER
+            .comment("寒冷生物群系（温度 ≤ 0.3）中孢子触发概率倍率。0.5 = 概率减半。",
+                     "Spore trigger chance multiplier in cold biomes (temperature ≤ 0.3). 0.5 = Halved chance.",
+                     "Default: 0.5 / 默认：0.5",
+                     "Range: 0.0 ~ 1.0")
+            .defineInRange("spore_cold_biome_chance_multiplier", 0.5, 0.0, 1.0);
+
+    BUILDER.comment(" ");
+
     SPORE_ENTITY_BLACKLIST = BUILDER
             .comment("易燃孢子效果免疫黑名单（填入实体ID，例如：minecraft:creeper）。",
                      "Flammable Spore immunity blacklist (Entity IDs, e.g., minecraft:creeper).",
@@ -1217,6 +1227,7 @@ public class ElementalFireNatureReactionsConfig {
     public static double sporeNatureDurationMultiplier;
     public static double sporeFrostDurationMultiplier;
     public static double sporeColdBiomeDurationMultiplier;
+    public static double sporeColdBiomeChanceMultiplier;
     public static List<? extends String> cachedSporeBlacklist;
     public static int sporeDurabilityDamage;
     public static int contagionTransferBase;
@@ -1347,6 +1358,7 @@ public class ElementalFireNatureReactionsConfig {
         sporeThunderMultiplier = SPORE_THUNDER_MULTIPLIER.get();
         sporeFrostDurationMultiplier = SPORE_FROST_DURATION_MULTIPLIER.get();
         sporeColdBiomeDurationMultiplier = SPORE_COLD_BIOME_DURATION_MULTIPLIER.get();
+        sporeColdBiomeChanceMultiplier = SPORE_COLD_BIOME_CHANCE_MULTIPLIER.get();
         cachedSporeBlacklist = SPORE_ENTITY_BLACKLIST.get();
         sporeDurabilityDamage = SPORE_DURABILITY_DAMAGE.get();
         contagionTransferBase = CONTAGION_TRANSFER_BASE.get();

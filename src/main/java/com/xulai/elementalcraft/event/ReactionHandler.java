@@ -17,6 +17,8 @@ import com.xulai.elementalcraft.event.WetnessHandler;
 import com.xulai.elementalcraft.util.ElementDamageHelper;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.TickTask;
@@ -788,6 +790,29 @@ public class ReactionHandler {
         scorchedCtx.applier = killCredit;
         scorchedCtx.stacks = stacks;
         DebugCommand.sendScorchedSporeReactionLog(scorchedCtx);
+    }
+
+    public static double applySporeBiomeModifier(LivingEntity target, double chance) {
+        double result = Math.min(1.0, chance);
+        double coldMult = ElementalFireNatureReactionsConfig.sporeColdBiomeChanceMultiplier;
+        boolean modified = false;
+        CompoundTag data = target.getPersistentData();
+        if (coldMult < 1.0 && !data.getBoolean("EC_SporeBiomeColdLogged")) {
+            Biome biome = target.level().getBiome(target.blockPosition()).value();
+            if (biome.getBaseTemperature() <= 0.3) {
+                result *= coldMult;
+                data.putBoolean("EC_SporeBiomeColdLogged", true);
+                modified = true;
+            }
+        }
+        result = Math.min(1.0, result);
+        if (modified && DebugMode.hasAnyDebugEnabled()) {
+            MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.static_spore_blast.biome",
+                    Component.literal(String.format("%.0f", Math.min(1.0, chance) * 100)).withStyle(ChatFormatting.GRAY),
+                    Component.literal(String.format("%.0f", result * 100)).withStyle(ChatFormatting.GOLD));
+            DebugCommand.sendDebugMessage(target, msg);
+        }
+        return result;
     }
 
     public static void triggerStaticSporeBlast(LivingEntity target, double firePower) {

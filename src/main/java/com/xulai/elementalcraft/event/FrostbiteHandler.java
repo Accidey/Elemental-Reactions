@@ -140,7 +140,6 @@ public class FrostbiteHandler {
     public static void onTryFrostCounter(LivingDamageEvent event) {
         if (event.getEntity().level().isClientSide) return;
         LivingEntity target = event.getEntity();
-        if (!ElementalThunderFrostReactionsConfig.frostCounterEnabled) return;
         double bloodThreshold = ElementalThunderFrostReactionsConfig.frostCounterBloodThreshold;
         if (bloodThreshold <= 0) return;
         float currentHP = target.getHealth() + target.getAbsorptionAmount();
@@ -485,8 +484,6 @@ public class FrostbiteHandler {
 
         data.putInt(NBT_FROZEN_FROSTBITE_STACKS, frostbiteStacks);
 
-        boolean fromWetness = WetnessHandler.getWetnessLevel(target) > 0;
-
         int freezeDuration = freezeStacks * ElementalThunderFrostReactionsConfig.freezeDurationPerStackTicks;
         if (freezeDuration < 20) {
             freezeDuration = 20;
@@ -497,7 +494,7 @@ public class FrostbiteHandler {
         freezeCtx.frostbiteStacks = frostbiteStacks;
         freezeCtx.freezeStacks = freezeStacks;
         freezeCtx.damage = settlementDamage;
-        freezeCtx.fromWetness = fromWetness;
+        freezeCtx.wetnessLevel = wetnessLevel;
         freezeCtx.freezeDuration = freezeDuration;
         DebugCommand.sendFreezeLog(freezeCtx);
 
@@ -511,6 +508,10 @@ public class FrostbiteHandler {
 
         if (target.level() instanceof ServerLevel serverLevel) {
             serverLevel.sendParticles(ParticleTypes.SNOWFLAKE, target.getX(), target.getY() + target.getBbHeight() * 0.5, target.getZ(), 30, 0.3, 0.3, 0.3, 0.05);
+        }
+
+        if (settlementDamage > 0) {
+            ElementDamageHelper.applyDamage(target, settlementDamage, ModDamageTypes.source(target.level(), ModDamageTypes.FROSTBITE));
         }
 
         if (hasFrostbite(target) && ElementalThunderFrostReactionsConfig.frostbiteAuraThreshold > 0 && frostbiteStacks >= ElementalThunderFrostReactionsConfig.frostbiteAuraThreshold) {

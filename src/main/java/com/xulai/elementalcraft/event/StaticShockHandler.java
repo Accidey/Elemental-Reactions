@@ -253,13 +253,16 @@ public class StaticShockHandler {
                 ? ElementalThunderFrostReactionsConfig.staticStackingBonusChance : 0.0;
         double chance = calculateTriggerChance(thunderStrength, wetnessLevel, target, stackingBonus);
         boolean triggered = RANDOM.nextDouble() < chance;
+        boolean thunderstorm = ElementalThunderFrostReactionsConfig.staticThunderstormBonusChance > 0
+                && target.level().isThundering()
+                && target.level().canSeeSky(target.blockPosition());
 
         if (!triggered) {
             double baseChance = ElementalThunderFrostReactionsConfig.staticBaseChance;
             double scalingChance = ElementalThunderFrostReactionsConfig.staticScalingChance;
             int scalingSteps = getScalingSteps(thunderStrength);
             double wetnessBonus = ElementalThunderFrostReactionsConfig.staticWetnessBonusChancePerLevel;
-            DebugCommand.sendStaticShockChanceFailed(attacker, target, ElementType.THUNDER, thunderStrength, baseChance, scalingSteps, scalingChance, stackingBonus, wetnessLevel, wetnessBonus, chance);
+            DebugCommand.sendStaticShockChanceFailed(attacker, target, ElementType.THUNDER, thunderStrength, baseChance, scalingSteps, scalingChance, stackingBonus, wetnessLevel, wetnessBonus, chance, thunderstorm);
             return;
         }
 
@@ -285,9 +288,9 @@ public class StaticShockHandler {
             double scalingChance = ElementalThunderFrostReactionsConfig.staticScalingChance;
             int scalingSteps = getScalingSteps(thunderStrength);
             double wetnessBonus = ElementalThunderFrostReactionsConfig.staticWetnessBonusChancePerLevel;
-            DebugCommand.sendStaticShockSuccess(attacker, target, actualAdded, ElementType.THUNDER, thunderStrength, baseChance, scalingSteps, scalingChance, stackingBonus, wetnessLevel, wetnessBonus, chance);
+            DebugCommand.sendStaticShockSuccess(attacker, target, actualAdded, ElementType.THUNDER, thunderStrength, baseChance, scalingSteps, scalingChance, stackingBonus, wetnessLevel, wetnessBonus, chance, thunderstorm);
             if (!target.isInWater() || ElementalThunderFrostReactionsConfig.waterElectrificationRangeBase <= 0) {
-                target.getPersistentData().remove(WetnessHandler.NBT_REACTION_RESOLVED);
+                WetnessHandler.resolveElementReactionConflict(target, attacker);
             }
             if (target.hasEffect(ModMobEffects.SPORES.get())) {
                 tryTriggerSporeBlast(target);
@@ -318,7 +321,7 @@ public class StaticShockHandler {
         double baseChance = ElementalThunderFrostReactionsConfig.staticBaseChance;
         double scalingChance = ElementalThunderFrostReactionsConfig.staticScalingChance;
         int scalingSteps = getScalingSteps(thunderStrength);
-        DebugCommand.sendStaticShockSuccess(attacker, target, actualAdded, ElementType.THUNDER, thunderStrength, baseChance, scalingSteps, scalingChance, stackingBonus, 0, 0, chance);
+        DebugCommand.sendStaticShockSuccess(attacker, target, actualAdded, ElementType.THUNDER, thunderStrength, baseChance, scalingSteps, scalingChance, stackingBonus, 0, 0, chance, thunderstorm);
         if (target.hasEffect(ModMobEffects.SPORES.get())) {
             tryTriggerSporeBlast(target);
         }
@@ -1285,7 +1288,7 @@ public class StaticShockHandler {
         double baseChance = ElementalThunderFrostReactionsConfig.staticSporeBlastBaseChance;
         double perStatic = ElementalThunderFrostReactionsConfig.staticSporeBlastPerStaticStack;
         double perSpore = ElementalThunderFrostReactionsConfig.staticSporeBlastPerSporeStack;
-        double totalChance = Math.min(1.0, baseChance + staticStacks * perStatic + sporeStacks * perSpore);
+        double totalChance = ReactionHandler.applySporeBiomeModifier(target, baseChance + staticStacks * perStatic + sporeStacks * perSpore);
         boolean triggered = RANDOM.nextDouble() < totalChance;
         DebugCommand.sendStaticSporeBlastLog(target, staticStacks, sporeStacks, baseChance, perStatic, perSpore, totalChance, triggered);
         if (!triggered) return;
@@ -1341,6 +1344,12 @@ public class StaticShockHandler {
             totalChance += wetnessLevel * wetnessBonusChance;
         }
         totalChance += stackingBonus;
+
+        double thunderstormBonus = ElementalThunderFrostReactionsConfig.staticThunderstormBonusChance;
+        if (thunderstormBonus > 0 && target.level().isThundering() && target.level().canSeeSky(target.blockPosition())) {
+            totalChance += thunderstormBonus;
+        }
+
         return Math.min(totalChance, 1.0);
     }
 
@@ -1571,11 +1580,11 @@ public class StaticShockHandler {
         }
 
         DebugCommand.ParalysisLogContext pCtx = new DebugCommand.ParalysisLogContext();
-        pCtx.attacker = attacker;
         pCtx.target = entity;
+        pCtx.staticStacks = staticStacks;
         pCtx.paralysisStacks = paralysisStacks;
-        pCtx.remainingHits = remainingHits;
-        pCtx.baseDamage = baseDamage;
+        pCtx.paralysisDuration = paralysisDuration;
+        pCtx.wetnessLevel = wetnessLevel;
         pCtx.enchReduction = enchReduction;
         pCtx.totalDamage = finalDamage;
         DebugCommand.sendParalysisLog(pCtx);

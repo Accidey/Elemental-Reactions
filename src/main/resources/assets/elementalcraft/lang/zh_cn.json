@@ -161,7 +161,9 @@
   "debug.elementalcraft.formula.wetness_none": "潮湿%s(无修正)",
   "debug.elementalcraft.formula.self_drying": "自我干燥(x%s)",
   "debug.elementalcraft.reaction.paralysis.header": "[麻痹]",
-  "debug.elementalcraft.reaction.paralysis.message": "%s → %s %s层 | %s×%s%%-附魔%s%% = %s (%shit)",
+  "debug.elementalcraft.reaction.paralysis.message": "%s 被麻痹！静电%s%s → 麻痹%s，持续%s tick，结算伤害%s%s",
+  "debug.elementalcraft.reaction.paralysis.wetness": " + 潮湿%s",
+  "debug.elementalcraft.reaction.paralysis.enchant": "（保护附魔 - %s%%）",
 
   "debug.elementalcraft.reaction.water_electrification.header": "[感电水域]",
   "debug.elementalcraft.reaction.water_electrification.message": "%s 使感电水域 (层数 %s)：范围 %s 格，影响 %s 个目标，结算伤害 %s，麻痹持续 %s tick",
@@ -218,12 +220,15 @@
   "debug.elementalcraft.breakdown.header": "§7(%s %s §7基础 %s%%",
   "debug.elementalcraft.breakdown.step": " §7+ %s %s§7×%s%% §7→ %s%%",
   "debug.elementalcraft.breakdown.bonus": " §7+ %s %s%% §7→ %s%%",
+  "debug.elementalcraft.breakdown.multiply": " §7- %s %s%% §7→ %s%%",
   "debug.elementalcraft.breakdown.footer": "§7)",
   "debug.elementalcraft.breakdown.label.growth": "成长",
   "debug.elementalcraft.breakdown.label.enhance": "强化",
   "debug.elementalcraft.breakdown.label.stacking": "叠层",
   "debug.elementalcraft.breakdown.label.wetness": "潮湿",
   "debug.elementalcraft.breakdown.label.biome": "环境",
+  "debug.elementalcraft.breakdown.label.thunderstorm": "雷雨",
+  "debug.elementalcraft.breakdown.label.cold": "寒冷",
   "debug.elementalcraft.reaction.frostbite.failed.high_heat_cloud": "§7[霜冻] §f%s §7→ §f%s §7被阻止: 目标在高温蒸汽云中",
   "debug.elementalcraft.reaction.frostbite.failed.freeze": "§7[霜冻] §f%s §7→ §f%s §7被阻止: 目标处于冻结状态",
   "debug.elementalcraft.reaction.frostbite.failed.nether_heat": "§7[霜冻] §f%s §7→ §f%s §7被阻止: 目标在下界维度",
@@ -238,9 +243,8 @@
   "debug.elementalcraft.reaction.frostbite_periodic.final": "最终: %s",
   "debug.elementalcraft.reaction.frostbite_periodic.element_mult": " (%s × %s)",
   "debug.elementalcraft.reaction.freeze.header": "[冻结]",
-  "debug.elementalcraft.reaction.freeze.message": "%s 被冻结！霜冻层数 %s，冻结层数 %s，持续 %s tick %s，结算伤害 %s",
-  "debug.elementalcraft.reaction.freeze.normal": "(正常冻结)",
-  "debug.elementalcraft.reaction.freeze.with_wetness": "(潮湿加成)",
+  "debug.elementalcraft.reaction.freeze.message": "%s 被冻结！霜冻%s%s → 冻结%s，持续%s tick，结算伤害%s",
+  "debug.elementalcraft.reaction.freeze.wetness": " + 潮湿%s",
 
   "debug.elementalcraft.reaction.fire_freeze_melt.header": "[赤焰融冰]",
   "debug.elementalcraft.reaction.fire_freeze_melt.message": "%s 用赤焰融化 %s 身上的 %s 层冻结，施加 §b%s§7 层潮湿（需求 %s 点强化，持有 %s 点）",
@@ -277,7 +281,7 @@
   "debug.elementalcraft.reaction.nature_parasite.failed.max_stacks": "§7[自然寄生] §f%s §7→ §f%s §7被阻止: 易燃孢子层数已达最大值",
 
   "debug.elementalcraft.reaction.wildfire.failed.cooldown": "§6[自然反击] §7被阻止: 冷却中",
-  "debug.elementalcraft.reaction.wildfire.failed.power_low": "§6[自然反击] §f%s §7被阻止: 自然强化 §e%s §7< 阈值 §c%s",
+  "debug.elementalcraft.reaction.wildfire.failed.power_low": "§6[自然反击] §f%s §7被阻止: 自然属性强化 §e%s §7< 阈值 §c%s",
 
   "debug.elementalcraft.reaction.scorched.success": "§c[灼烧] §f%s §7→ §f%s §7施加了 §c灼烧 %s 概率 §a%s%% (时长 %s, 基础伤害: %s)",
   "debug.elementalcraft.reaction.scorched.failed.chance": "§7[灼烧] §f%s §7→ §f%s §7未触发%s 概率 §e%s%%",
@@ -304,6 +308,7 @@
   "debug.elementalcraft.reaction.static_spore_blast.message": "%s 静电%s层 × 孢子%s层 (基础%s%% + 静电%s×%s%% + 孢子%s×%s%% = %s%% → %s)",
   "debug.elementalcraft.reaction.static_spore_blast.hit": "命中",
   "debug.elementalcraft.reaction.static_spore_blast.miss": "未命中",
+  "debug.elementalcraft.reaction.static_spore_blast.biome": " §7[生物群系修正: %s%% → %s%%]",
 
   "debug.elementalcraft.reaction.spore_stacks.success": "§a[孢子] §f%s §7叠加 %s层 → %s层%s | 持续: %s秒",
 
@@ -352,17 +357,16 @@
   "debug.elementalcraft.reaction.wetness.failed.paralysis": "§7[潮湿] §f%s §7被阻止: 目标处于麻痹状态 (剩余 %s tick / %s秒)",
   "debug.elementalcraft.reaction.wetness.failed.steam_cloud": "§7[潮湿] §f%s §7被阻止: 目标在低温蒸汽云中",
   "debug.elementalcraft.reaction.wetness.failed.freeze": "§7[潮湿] §f%s §7被阻止: 目标处于冻结状态",
-  "debug.elementalcraft.reaction.wetness.failed.nether": "§7[潮湿] §f%s §7被阻止: 目标在下界维度",
 
   "debug.elementalcraft.reaction.cold_freeze.frozen": "§b[寒冷冻结] 温度: %s | 潮湿: %s | 雨雪: %s| 概率 §a%s%%",
 
   "debug.elementalcraft.reaction.thunder_counter.failed.cooldown": "§e[雷霆反击] §7被阻止: 目标冷却中",
-  "debug.elementalcraft.reaction.thunder_counter.failed.power_low": "§e[雷霆反击] §f%s §7雷霆强度不足 (当前: %s, 需要≥: %s)",
+  "debug.elementalcraft.reaction.thunder_counter.failed.power_low": "§e[雷霆反击] §f%s §7雷霆属性强化不足 (当前: %s, 需要≥: %s)",
   "debug.elementalcraft.reaction.frost_counter.failed.cooldown": "§b[冰霜反制] §7被阻止: 目标冷却中",
-  "debug.elementalcraft.reaction.frost_counter.failed.power_low": "§b[冰霜反制] §f%s §7冰霜强度不足 (当前: %s, 需要≥: %s)",
+  "debug.elementalcraft.reaction.frost_counter.failed.power_low": "§b[冰霜反制] §f%s §7冰霜属性强化不足 (当前: %s, 需要≥: %s)",
   "debug.elementalcraft.reaction.fire_counter.header": "[赤焰反制]",
   "debug.elementalcraft.reaction.fire_counter.message": "%s 触发赤焰反制！范围: %s 格, 影响: %s 个目标, 伤害: %s, 击退: %s",
-  "debug.elementalcraft.reaction.fire_counter.failed.power_low": "§c[赤焰反制] §f%s §7赤焰强度不足 (当前: %s, 需要≥: %s)",
+  "debug.elementalcraft.reaction.fire_counter.failed.power_low": "§c[赤焰反制] §f%s §7赤焰属性强化不足 (当前: %s, 需要≥: %s)",
 
   "debug.elementalcraft.reaction.freeze.failed.cooldown": "§b[冻结] §7被阻止: 冷却中",
   "debug.elementalcraft.reaction.freeze.failed.immune": "§7[冻结] %s §7被阻止: 目标免疫",

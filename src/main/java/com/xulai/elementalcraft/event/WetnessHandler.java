@@ -171,12 +171,6 @@ public class WetnessHandler {
             }
             return;
         }
-        if (ElementalFireNatureReactionsConfig.wetnessNetherDimensionImmune
-                && entity.level().dimension() == Level.NETHER
-                && !entity.getPersistentData().getBoolean("EC_WetnessNetherLogged")) {
-            entity.getPersistentData().putBoolean("EC_WetnessNetherLogged", true);
-            DebugCommand.sendWetnessReactionFailed(entity, "nether", entity.getDisplayName());
-        }
         if (isImmune(entity)) {
             clearWetnessData(entity);
             return;
@@ -723,7 +717,6 @@ public class WetnessHandler {
             data.remove(NBT_REACTION_RESOLVED);
             data.remove("EC_WetnessParalysisLogged");
         data.remove("EC_WetnessFrozenLogged");
-        data.remove("EC_WetnessNetherLogged");
         }
     }
 

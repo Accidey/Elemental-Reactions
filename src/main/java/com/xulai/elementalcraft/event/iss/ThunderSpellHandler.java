@@ -325,7 +325,7 @@ public class ThunderSpellHandler {
             target.addEffect(new MobEffectInstance(
                     ModMobEffects.STATIC_SHOCK.get(), duration, newStacks - 1, false, false, true));
             com.xulai.elementalcraft.command.DebugCommand.sendStaticShockSuccess(attacker, target, stacksToAdd,
-                    ElementType.THUNDER, thunderPower, baseChance, scalingSteps, scalingChance, 0, 0, 0, chance);
+                    ElementType.THUNDER, thunderPower, baseChance, scalingSteps, scalingChance, 0, 0, 0, chance, false);
             if (ISSCore.isInOrOnWater(target)
                     && ElementalThunderFrostReactionsConfig.waterElectrificationRangeBase > 0
                     && !(attacker instanceof Mob mobCaster && mobCaster.getPersistentData().getBoolean(ISSCore.NBT_MOB_CASTER))) {
@@ -552,6 +552,7 @@ public class ThunderSpellHandler {
                 ElementalThunderFrostReactionsConfig.staticSporeBlastBaseChance
                         + staticStacks * ElementalThunderFrostReactionsConfig.staticSporeBlastPerStaticStack
                         + sporeStacks * ElementalThunderFrostReactionsConfig.staticSporeBlastPerSporeStack);
+        chance = ReactionHandler.applySporeBiomeModifier(target, chance);
         if (ISSCore.RANDOM.nextDouble() >= chance) return;
 
         ReactionHandler.triggerStaticSporeBlast(target,

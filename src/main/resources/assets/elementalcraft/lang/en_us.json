@@ -161,9 +161,9 @@
   "debug.elementalcraft.formula.wetness_none": "Wetness %s(No Modifier)",
   "debug.elementalcraft.formula.self_drying": "Self-Drying (x%s)",
   "debug.elementalcraft.reaction.paralysis.header": "[Paralysis]",
-  "debug.elementalcraft.reaction.paralysis.message": "%s → %s %s stacks | %s×%s%%-ench%s%% = %s (%shit)",
-  "debug.elementalcraft.reaction.paralysis.environment": "Environment",
-  "debug.elementalcraft.reaction.paralysis.entity": "Entity",
+  "debug.elementalcraft.reaction.paralysis.message": "%s paralyzed! Static%s%s → Paralyze%s, %s ticks, damage%s%s",
+  "debug.elementalcraft.reaction.paralysis.wetness": " + Wet%s",
+  "debug.elementalcraft.reaction.paralysis.enchant": " (Protect - %s%%)",
 
   "debug.elementalcraft.reaction.water_electrification.header": "[Water Electrification]",
   "debug.elementalcraft.reaction.water_electrification.message": "%s electrifies water (Stacks %s): Range %s blocks, affected %s target(s), Settlement Damage %s, Paralysis %s ticks",
@@ -224,6 +224,9 @@
   "debug.elementalcraft.breakdown.label.stacking": "stacking",
   "debug.elementalcraft.breakdown.label.wetness": "wetness",
   "debug.elementalcraft.breakdown.label.biome": "biome",
+  "debug.elementalcraft.breakdown.label.thunderstorm": "thunderstorm",
+  "debug.elementalcraft.breakdown.label.cold": "cold",
+  "debug.elementalcraft.breakdown.multiply": " §7- %s %s%% §7→ %s%%",
   "debug.elementalcraft.reaction.frostbite.failed.high_heat_cloud": "§7[Frostbite] §f%s §7→ §f%s §7blocked: target in high-heat steam cloud",
   "debug.elementalcraft.reaction.frostbite.failed.freeze": "§7[Frostbite] §f%s §7→ §f%s §7blocked: target is frozen",
   "debug.elementalcraft.reaction.frostbite.failed.nether_heat": "§7[Frostbite] §f%s §7→ §f%s §7blocked: target in Nether dimension",
@@ -238,9 +241,8 @@
   "debug.elementalcraft.reaction.frostbite_periodic.final": "Final: %s",
   "debug.elementalcraft.reaction.frostbite_periodic.element_mult": " (%s × %s)",
   "debug.elementalcraft.reaction.freeze.header": "[Freeze]",
-  "debug.elementalcraft.reaction.freeze.message": "%s is frozen! Frostbite stacks %s, freeze stacks %s, duration %s ticks %s, settlement damage %s",
-  "debug.elementalcraft.reaction.freeze.normal": "(Normal Freeze)",
-  "debug.elementalcraft.reaction.freeze.with_wetness": "(Wetness Bonus)",
+  "debug.elementalcraft.reaction.freeze.message": "%s frozen! Frost%s%s → Freeze%s, %s ticks, damage%s",
+  "debug.elementalcraft.reaction.freeze.wetness": " + Wet%s",
 
   "debug.elementalcraft.reaction.fire_freeze_melt.header": "[Fire Freeze Melt]",
   "debug.elementalcraft.reaction.fire_freeze_melt.message": "%s melted %s's %s Freeze stacks, applied §b%s§7 wetness (required %s enhancement, has %s)",
@@ -303,6 +305,7 @@
   "debug.elementalcraft.reaction.static_spore_blast.message": "%s Static %s × Spore %s (base %s%% + static %s×%s%% + spore %s×%s%% = %s%% → %s)",
   "debug.elementalcraft.reaction.static_spore_blast.hit": "Hit",
   "debug.elementalcraft.reaction.static_spore_blast.miss": "Miss",
+  "debug.elementalcraft.reaction.static_spore_blast.biome": " §7[biome: %s%% → %s%%]",
 
   "debug.elementalcraft.reaction.spore_stacks.success": "§a[Spores] §f%s §7stacked %s → %s layers%s | Duration: %ss",
 
@@ -351,7 +354,6 @@
   "debug.elementalcraft.reaction.wetness.failed.paralysis": "§7[Wetness] §f%s §7blocked: target is paralyzed (%s ticks / %ss remaining)",
   "debug.elementalcraft.reaction.wetness.failed.steam_cloud": "§7[Wetness] §f%s §7blocked: target in condensing steam cloud",
   "debug.elementalcraft.reaction.wetness.failed.freeze": "§7[Wetness] §f%s §7blocked: target is frozen",
-  "debug.elementalcraft.reaction.wetness.failed.nether": "§7[Wetness] §f%s §7blocked: target in Nether dimension",
 
   "debug.elementalcraft.reaction.cold_freeze.frozen": "§b[Cold Freeze] temp: %s | wetness: %s | rain: %s| chance §a%s%%",
 

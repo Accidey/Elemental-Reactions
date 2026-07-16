@@ -3,6 +3,7 @@ package com.xulai.elementalcraft.command;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
+import net.minecraft.ChatFormatting;
 import com.mojang.brigadier.CommandDispatcher;
 import com.xulai.elementalcraft.util.ConfigAutoSync;
 import com.xulai.elementalcraft.util.DebugMode;
@@ -223,11 +224,11 @@ public class DebugCommand {
     }
 
     public static class ParalysisLogContext {
-        public LivingEntity attacker;
         public LivingEntity target;
+        public int staticStacks;
         public int paralysisStacks;
-        public int remainingHits;
-        public float baseDamage;
+        public int paralysisDuration;
+        public int wetnessLevel;
         public float enchReduction;
         public float totalDamage;
     }
@@ -255,7 +256,7 @@ public class DebugCommand {
         public int freezeDuration;
         public int frostbiteStacks;
         public int freezeStacks;
-        public boolean fromWetness;
+        public int wetnessLevel;
         public float damage;
     }
 
@@ -445,16 +446,22 @@ public class DebugCommand {
     public static void sendParalysisLog(ParalysisLogContext ctx) {
         if (!DebugMode.hasAnyDebugEnabled()) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.paralysis.header").withStyle(ChatFormatting.DARK_PURPLE);
-        Component attackerName = ctx.attacker != null ? ctx.attacker.getDisplayName() : Component.translatable("debug.elementalcraft.reaction.paralysis.environment");
+        Component wetnessText = ctx.wetnessLevel > 0
+                ? Component.translatable("debug.elementalcraft.reaction.paralysis.wetness",
+                        Component.literal(String.valueOf(ctx.wetnessLevel)).withStyle(ChatFormatting.AQUA))
+                : Component.literal("");
+        Component enchText = ctx.enchReduction > 0
+                ? Component.translatable("debug.elementalcraft.reaction.paralysis.enchant",
+                        Component.literal(String.format("%.0f", ctx.enchReduction * 100)).withStyle(ChatFormatting.AQUA))
+                : Component.literal("");
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.paralysis.message",
-                attackerName,
                 ctx.target.getDisplayName(),
+                Component.literal(String.valueOf(ctx.staticStacks)).withStyle(ChatFormatting.LIGHT_PURPLE),
+                wetnessText,
                 Component.literal(String.valueOf(ctx.paralysisStacks)).withStyle(ChatFormatting.LIGHT_PURPLE),
-                Component.literal(String.format("%.2f", ctx.baseDamage)).withStyle(ChatFormatting.GOLD),
-                Component.literal(String.format("%.0f", ElementalThunderFrostReactionsConfig.paralysisDamagePercentage * 100)).withStyle(ChatFormatting.YELLOW),
-                Component.literal(String.format("%.0f", ctx.enchReduction * 100)).withStyle(ChatFormatting.AQUA),
-                Component.literal(String.format("%.2f", ctx.totalDamage)).withStyle(ChatFormatting.RED),
-                Component.literal(String.valueOf(ctx.remainingHits)).withStyle(ChatFormatting.AQUA)
+                Component.literal(String.valueOf(ctx.paralysisDuration)).withStyle(ChatFormatting.WHITE),
+                Component.literal(String.format("%.1f", ctx.totalDamage)).withStyle(ChatFormatting.RED),
+                enchText
         ).withStyle(ChatFormatting.WHITE);
         sendDebugMessage(ctx.target, prefix.append(Component.literal(" ")).append(content));
     }
@@ -473,7 +480,7 @@ public class DebugCommand {
         sendDebugMessage(ctx.source, prefix.append(Component.literal(" ")).append(content));
     }
 
-    private static MutableComponent buildStaticChanceBreakdown(ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, double wetBonus, int wetnessLevel, double wetnessBonusPerLevel, ChatFormatting color) {
+    private static MutableComponent buildStaticChanceBreakdown(ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, double wetBonus, int wetnessLevel, double wetnessBonusPerLevel, ChatFormatting color, boolean thunderstorm, double coldBiomeMult) {
         double scaledChance = Math.min(1.0, baseChance + scalingSteps * scalingChance);
         MutableComponent comp = Component.translatable("debug.elementalcraft.breakdown.header",
                 type.getDisplayName(),
@@ -504,13 +511,39 @@ public class DebugCommand {
                     Component.literal(String.format("%.0f", wetAmount * 100)).withStyle(ChatFormatting.AQUA),
                     Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
         }
+        if (thunderstorm) {
+            double stormAmount = ElementalThunderFrostReactionsConfig.staticThunderstormBonusChance;
+            scaledChance = Math.min(1.0, scaledChance + stormAmount);
+            double finalChance = scaledChance;
+            comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.bonus",
+                    Component.translatable("debug.elementalcraft.breakdown.label.thunderstorm"),
+                    Component.literal(String.format("%.0f", stormAmount * 100)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
+        }
+        if (coldBiomeMult < 1.0) {
+            double before = scaledChance;
+            scaledChance = Math.min(1.0, scaledChance * coldBiomeMult);
+            double finalChance = scaledChance;
+            comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.multiply",
+                    Component.translatable("debug.elementalcraft.breakdown.label.cold"),
+                    Component.literal(String.format("%.0f", (1.0 - coldBiomeMult) * 100)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
+        }
         comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.footer"));
         return comp;
     }
 
-    public static void sendStaticShockSuccess(LivingEntity attacker, LivingEntity target, int stacksApplied, ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, int wetnessLevel, double wetnessBonusPerLevel, double chance) {
+    private static double getSporeColdBiomeMult(LivingEntity target) {
+        double mult = ElementalFireNatureReactionsConfig.sporeColdBiomeChanceMultiplier;
+        if (mult < 1.0 && target.level().getBiome(target.blockPosition()).value().getBaseTemperature() <= 0.3) {
+            return mult;
+        }
+        return 1.0;
+    }
+
+    public static void sendStaticShockSuccess(LivingEntity attacker, LivingEntity target, int stacksApplied, ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, int wetnessLevel, double wetnessBonusPerLevel, double chance, boolean thunderstorm) {
         if (!DebugMode.hasAnyDebugEnabled()) return;
-        MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, 0, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.GREEN);
+        MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, 0, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.GREEN, thunderstorm, getSporeColdBiomeMult(target));
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.static_shock.success",
                 attacker.getDisplayName(),
                 target.getDisplayName(),
@@ -521,9 +554,9 @@ public class DebugCommand {
         sendDebugMessage(target, msg);
     }
 
-    public static void sendStaticShockChanceFailed(LivingEntity attacker, LivingEntity target, ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, int wetnessLevel, double wetnessBonusPerLevel, double chance) {
+    public static void sendStaticShockChanceFailed(LivingEntity attacker, LivingEntity target, ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, int wetnessLevel, double wetnessBonusPerLevel, double chance, boolean thunderstorm) {
         if (!DebugMode.hasAnyDebugEnabled()) return;
-        MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, 0, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.YELLOW);
+        MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, 0, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.YELLOW, thunderstorm, getSporeColdBiomeMult(target));
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.static_shock.failed.chance",
                 attacker.getDisplayName(),
                 target.getDisplayName(),
@@ -535,7 +568,7 @@ public class DebugCommand {
 
     public static void sendNatureParasiteSuccess(LivingEntity attacker, LivingEntity target, int stacksApplied, ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, int wetnessLevel, double wetnessBonusPerLevel, double chance) {
         if (!DebugMode.hasAnyDebugEnabled()) return;
-        MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, 0, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.GREEN);
+        MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, 0, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.GREEN, false, getSporeColdBiomeMult(target));
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.nature_parasite.success",
                 attacker.getDisplayName(),
                 target.getDisplayName(),
@@ -548,7 +581,7 @@ public class DebugCommand {
 
     public static void sendNatureParasiteChanceFailed(LivingEntity attacker, LivingEntity target, ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, int wetnessLevel, double wetnessBonusPerLevel, double chance) {
         if (!DebugMode.hasAnyDebugEnabled()) return;
-        MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, 0, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.YELLOW);
+        MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, 0, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.YELLOW, false, getSporeColdBiomeMult(target));
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.nature_parasite.failed.chance",
                 attacker.getDisplayName(),
                 target.getDisplayName(),
@@ -747,13 +780,16 @@ public class DebugCommand {
     public static void sendFreezeLog(FreezeLogContext ctx) {
         if (!DebugMode.hasAnyDebugEnabled()) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.freeze.header").withStyle(ChatFormatting.BLUE);
-        String wetnessKey = ctx.fromWetness ? "debug.elementalcraft.reaction.freeze.with_wetness" : "debug.elementalcraft.reaction.freeze.normal";
+        Component wetnessText = ctx.wetnessLevel > 0
+                ? Component.translatable("debug.elementalcraft.reaction.freeze.wetness",
+                        Component.literal(String.valueOf(ctx.wetnessLevel)).withStyle(ChatFormatting.AQUA))
+                : Component.literal("");
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.freeze.message",
                 ctx.target.getDisplayName(),
                 Component.literal(String.valueOf(ctx.frostbiteStacks)).withStyle(ChatFormatting.AQUA),
+                wetnessText,
                 Component.literal(String.valueOf(ctx.freezeStacks)).withStyle(ChatFormatting.AQUA),
                 Component.literal(String.valueOf(ctx.freezeDuration)).withStyle(ChatFormatting.WHITE),
-                Component.translatable(wetnessKey).withStyle(ctx.fromWetness ? ChatFormatting.AQUA : ChatFormatting.GRAY),
                 Component.literal(String.format("%.1f", ctx.damage)).withStyle(ChatFormatting.RED)
         ).withStyle(ChatFormatting.WHITE);
         sendDebugMessage(ctx.target, prefix.append(Component.literal(" ")).append(content));
