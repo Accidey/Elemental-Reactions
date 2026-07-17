@@ -67,11 +67,11 @@ public final class ElementalISSIntegrationConfig {
         MOB_MAX_MISS_COUNT = BUILDER
                 .comment("法术未命中目标时，生物会在每次未命中后立即重新施法。",
                          "此值控制允许连续补刀的次数，达到上限后生物进入较长冷却。",
-                         "雷电/冰霜生物：目标已潮湿时生效。自然/赤焰生物：延迟施法判定后生效。",
+                         "所有属性施法生物均为延迟施法判定（等待法术弹道到达目标）后生效。",
                          "",
                          "When the spell misses the target, the mob will immediately recast on each miss.",
                          "This value controls how many consecutive misses are allowed before the mob enters a long cooldown.",
-                         "For Thunder/Frost mobs: applies when target is already wet. For Nature/Fire mobs: applies after pending cast delay.",
+                         "All element caster mobs: applies after pending cast delay (waiting for spell projectile to reach target).",
                          "",
                          "Default: 2 / 默认：2")
                 .defineInRange("mob_max_miss_count", 2, 1, 100);
