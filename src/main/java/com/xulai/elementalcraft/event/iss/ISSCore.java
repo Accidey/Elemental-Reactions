@@ -117,7 +117,10 @@ public class ISSCore {
     static final Set<String> NON_AGGRESSIVE_SPELLS = Set.of(
             "irons_spellbooks:heat_surge",
             "irons_spellbooks:acid_orb",
-            "irons_spellbooks:oakskin"
+            "irons_spellbooks:oakskin",
+            "irons_spellbooks:fire_breath",
+            "irons_spellbooks:cone_of_cold",
+            "irons_spellbooks:electrocute"
         );
 
     static final String NBT_MOB_CASTER = "EC_ISS_MobCaster";
@@ -130,7 +133,10 @@ public class ISSCore {
     static final Set<String> NO_AGGRESSIVE_SPELLS = Set.of(
             "irons_spellbooks:heat_surge",
             "irons_spellbooks:acid_orb",
-            "irons_spellbooks:oakskin"
+            "irons_spellbooks:oakskin",
+            "irons_spellbooks:fire_breath",
+            "irons_spellbooks:cone_of_cold",
+            "irons_spellbooks:electrocute"
     );
 
     private static Object spellRegistryGetSpell;
