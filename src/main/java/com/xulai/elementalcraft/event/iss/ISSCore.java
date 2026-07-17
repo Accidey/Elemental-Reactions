@@ -509,7 +509,7 @@ public class ISSCore {
             data.remove("EC_ISS_PendingCast");
             if (wetness == null || !target.hasEffect(wetness)) {
                 int miss = data.getInt("EC_ISS_MissCount") + 1;
-                if (miss >= 3) {
+                if (miss >= ElementalISSIntegrationConfig.mobMaxMissCount) {
                     data.putLong("EC_ISS_BottleCd", gameTime + 200);
                     data.remove("EC_ISS_MissCount");
                     return true;
@@ -539,7 +539,7 @@ public class ISSCore {
             data.remove("EC_ISS_PendingCast");
             if (!target.hasEffect(net.minecraft.world.effect.MobEffects.POISON)) {
                 int miss = data.getInt("EC_ISS_MissCount") + 1;
-                if (miss >= 3) {
+                if (miss >= ElementalISSIntegrationConfig.mobMaxMissCount) {
                     data.putLong("EC_ISS_BottleCd", gameTime + 200);
                     data.remove("EC_ISS_MissCount");
                     return true;

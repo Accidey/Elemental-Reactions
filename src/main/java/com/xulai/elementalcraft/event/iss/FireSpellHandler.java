@@ -327,6 +327,7 @@ public class FireSpellHandler {
             ISSCore.castSpell(mob, target, false);
             data.putLong("EC_ISS_PendingCast", gameTime + 20);
             data.putLong(ISSCore.NBT_MOB_CAST_CD, gameTime + ElementalISSIntegrationConfig.mobNormalCastCooldown);
+            data.putInt("EC_ISS_MissCount", 0);
         }
     }
 

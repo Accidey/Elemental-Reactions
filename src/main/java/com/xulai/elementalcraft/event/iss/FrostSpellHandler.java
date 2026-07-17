@@ -45,6 +45,24 @@ public class FrostSpellHandler {
         return ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("irons_spellbooks", "chilled"));
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onIceSpellHit(LivingDamageEvent event) {
+        if (event.getEntity().level().isClientSide) return;
+        if (!ISSCore.ISS_LOADED) return;
+        if (!isIceSpellDamage(event.getSource())) return;
+        if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
+
+        if (attacker instanceof Mob mob && mob.getPersistentData().getBoolean(ISSCore.NBT_MOB_CASTER)) {
+            CompoundTag mobData = mob.getPersistentData();
+            mobData.remove("EC_ISS_MissCount");
+            mobData.remove("EC_ISS_PendingCast");
+            int cd = mob.getHealth() / mob.getMaxHealth() < ElementalISSIntegrationConfig.mobLowHealthThreshold
+                    ? ElementalISSIntegrationConfig.mobAggressiveCastCooldown
+                    : ElementalISSIntegrationConfig.mobNormalCastCooldown;
+            mobData.putLong(ISSCore.NBT_MOB_CAST_CD, mob.level().getGameTime() + cd);
+        }
+    }
+
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onIceSpellRefreshFreeze(LivingDamageEvent event) {
         if (event.getEntity().level().isClientSide) return;
@@ -267,6 +285,7 @@ public class FrostSpellHandler {
                 ISSCore.castSpell(mob, target, false);
                 data.putLong("EC_ISS_PendingCast", gameTime + 20);
                 data.putLong(ISSCore.NBT_MOB_CAST_CD, gameTime + ElementalISSIntegrationConfig.mobNormalCastCooldown);
+                data.putInt("EC_ISS_MissCount", 0);
             }
             return;
         }
@@ -278,6 +297,7 @@ public class FrostSpellHandler {
                 ISSCore.castSpell(mob, target, false);
                 data.putLong("EC_ISS_PendingCast", gameTime + 20);
                 data.putLong(ISSCore.NBT_MOB_CAST_CD, gameTime + ElementalISSIntegrationConfig.mobNormalCastCooldown);
+                data.putInt("EC_ISS_MissCount", 0);
             }
         }
     }
