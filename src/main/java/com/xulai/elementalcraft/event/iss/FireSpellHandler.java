@@ -51,13 +51,7 @@ public class FireSpellHandler {
         if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
 
         if (attacker instanceof Mob mob && mob.getPersistentData().getBoolean(ISSCore.NBT_MOB_CASTER)) {
-            CompoundTag mobData = mob.getPersistentData();
-            mobData.remove("EC_ISS_MissCount");
-            mobData.remove("EC_ISS_PendingCast");
-            int cd = mob.getHealth() / mob.getMaxHealth() < ElementalISSIntegrationConfig.mobLowHealthThreshold
-                    ? ElementalISSIntegrationConfig.mobAggressiveCastCooldown
-                    : ElementalISSIntegrationConfig.mobNormalCastCooldown;
-            mobData.putLong(ISSCore.NBT_MOB_CAST_CD, mob.level().getGameTime() + cd);
+            mob.getPersistentData().putBoolean("EC_ISS_SpellHit", true);
         }
     }
 
@@ -325,6 +319,7 @@ public class FireSpellHandler {
 
         if (gameTime >= data.getLong(ISSCore.NBT_MOB_CAST_CD)) {
             ISSCore.castSpell(mob, target, false);
+            data.putBoolean("EC_ISS_PendingIsSpell", true);
             data.putLong("EC_ISS_PendingCast", gameTime + 40);
             data.putLong(ISSCore.NBT_MOB_CAST_CD, gameTime + ElementalISSIntegrationConfig.mobNormalCastCooldown);
             data.putInt("EC_ISS_MissCount", 0);

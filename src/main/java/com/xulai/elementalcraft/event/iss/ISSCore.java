@@ -512,7 +512,20 @@ public class ISSCore {
         long pendingCast = data.getLong("EC_ISS_PendingCast");
         if (pendingCast > 0 && gameTime >= pendingCast) {
             data.remove("EC_ISS_PendingCast");
-            if (wetness == null || !target.hasEffect(wetness)) {
+            if (data.contains("EC_ISS_SpellHit")) {
+                data.remove("EC_ISS_SpellHit");
+                data.remove("EC_ISS_PendingIsSpell");
+            } else if (data.contains("EC_ISS_PendingIsSpell")) {
+                data.remove("EC_ISS_PendingIsSpell");
+                int miss = data.getInt("EC_ISS_MissCount") + 1;
+                if (miss >= ElementalISSIntegrationConfig.mobMaxMissCount) {
+                    data.putLong("EC_ISS_BottleCd", gameTime + 200);
+                    data.remove("EC_ISS_MissCount");
+                    return true;
+                }
+                data.putInt("EC_ISS_MissCount", miss);
+                data.putLong(NBT_MOB_CAST_CD, 0);
+            } else if (wetness == null || !target.hasEffect(wetness)) {
                 int miss = data.getInt("EC_ISS_MissCount") + 1;
                 if (miss >= ElementalISSIntegrationConfig.mobMaxMissCount) {
                     data.putLong("EC_ISS_BottleCd", gameTime + 200);
@@ -529,6 +542,7 @@ public class ISSCore {
 
         if (gameTime >= data.getLong(NBT_MOB_NEXT_WET)) {
             throwSplashWaterBottle(mob, target);
+            data.remove("EC_ISS_PendingIsSpell");
             data.putLong("EC_ISS_PendingCast", gameTime + 40);
             data.putLong(NBT_MOB_NEXT_WET, gameTime + 40);
         }
@@ -543,7 +557,20 @@ public class ISSCore {
         long pendingCast = data.getLong("EC_ISS_PendingCast");
         if (pendingCast > 0 && gameTime >= pendingCast) {
             data.remove("EC_ISS_PendingCast");
-            if (!target.hasEffect(net.minecraft.world.effect.MobEffects.POISON)) {
+            if (data.contains("EC_ISS_SpellHit")) {
+                data.remove("EC_ISS_SpellHit");
+                data.remove("EC_ISS_PendingIsSpell");
+            } else if (data.contains("EC_ISS_PendingIsSpell")) {
+                data.remove("EC_ISS_PendingIsSpell");
+                int miss = data.getInt("EC_ISS_MissCount") + 1;
+                if (miss >= ElementalISSIntegrationConfig.mobMaxMissCount) {
+                    data.putLong("EC_ISS_BottleCd", gameTime + 200);
+                    data.remove("EC_ISS_MissCount");
+                    return true;
+                }
+                data.putInt("EC_ISS_MissCount", miss);
+                data.putLong(NBT_MOB_CAST_CD, 0);
+            } else if (!target.hasEffect(net.minecraft.world.effect.MobEffects.POISON)) {
                 int miss = data.getInt("EC_ISS_MissCount") + 1;
                 if (miss >= ElementalISSIntegrationConfig.mobMaxMissCount) {
                     data.putLong("EC_ISS_BottleCd", gameTime + 200);
@@ -574,6 +601,7 @@ public class ISSCore {
             mob.level().playSound(null, mob, SoundEvents.WITCH_THROW, mob.getSoundSource(), 1.0F, 0.8F);
             data.putLong("EC_ISS_PendingCast", gameTime + 40);
             data.putLong(NBT_MOB_NEXT_WET, gameTime + 40);
+            data.remove("EC_ISS_PendingIsSpell");
         }
         return false;
     }

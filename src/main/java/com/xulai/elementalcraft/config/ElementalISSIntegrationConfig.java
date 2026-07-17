@@ -25,6 +25,8 @@ public final class ElementalISSIntegrationConfig {
         BUILDER.comment("Iron's Spellbooks 联动配置（仅安装ISS时加载，支持热重载）",
                         "Iron's Spellbooks Integration Configuration (Only loaded when ISS is installed, supports hot reload)")
                 .push("iss_integration");
+        
+        BUILDER.comment(" ");        
 
         BUILDER.comment("施法生物概率（所有属性共用）",
                         "Caster Mob Chance (Shared across all elements)")

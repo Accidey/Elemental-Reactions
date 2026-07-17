@@ -50,7 +50,7 @@ public class NatureSpellHandler {
             int cd = mob.getHealth() / mob.getMaxHealth() < ElementalISSIntegrationConfig.mobLowHealthThreshold
                     ? ElementalISSIntegrationConfig.mobAggressiveCastCooldown
                     : ElementalISSIntegrationConfig.mobNormalCastCooldown;
-            mobData.putLong(ISSCore.NBT_MOB_CAST_CD, mob.level().getGameTime() + cd);
+            mob.getPersistentData().putBoolean("EC_ISS_SpellHit", true);
         }
     }
 
@@ -159,12 +159,21 @@ public class NatureSpellHandler {
         long pendingCast = data.getLong("EC_ISS_PendingCast");
         if (pendingCast > 0 && gameTime >= pendingCast) {
             data.remove("EC_ISS_PendingCast");
-            int missCount = data.getInt("EC_ISS_MissCount");
             boolean aggressive = mob.getHealth() / mob.getMaxHealth() < ElementalISSIntegrationConfig.mobLowHealthThreshold;
             int cooldown = aggressive ? ElementalISSIntegrationConfig.mobAggressiveCastCooldown : ElementalISSIntegrationConfig.mobNormalCastCooldown;
-            if (missCount >= ElementalISSIntegrationConfig.mobMaxMissCount) {
-                data.remove("EC_ISS_MissCount");
-                cooldown = ElementalISSIntegrationConfig.mobNormalCastCooldown;
+            if (data.contains("EC_ISS_SpellHit")) {
+                data.remove("EC_ISS_SpellHit");
+                data.remove("EC_ISS_PendingIsSpell");
+            } else if (data.contains("EC_ISS_PendingIsSpell")) {
+                data.remove("EC_ISS_PendingIsSpell");
+                int missCount = data.getInt("EC_ISS_MissCount") + 1;
+                if (missCount >= ElementalISSIntegrationConfig.mobMaxMissCount) {
+                    data.remove("EC_ISS_MissCount");
+                    cooldown = ElementalISSIntegrationConfig.mobNormalCastCooldown;
+                } else {
+                    data.putInt("EC_ISS_MissCount", missCount);
+                    cooldown = 0;
+                }
             }
             data.putLong(ISSCore.NBT_MOB_CAST_CD, gameTime + cooldown);
             return;
@@ -233,6 +242,7 @@ public class NatureSpellHandler {
 
         if (gameTime >= data.getLong(ISSCore.NBT_MOB_CAST_CD)) {
             ISSCore.castSpell(mob, target, false);
+            data.putBoolean("EC_ISS_PendingIsSpell", true);
             data.putLong("EC_ISS_PendingCast", gameTime + 40);
             data.putLong(ISSCore.NBT_MOB_CAST_CD, gameTime + ElementalISSIntegrationConfig.mobNormalCastCooldown);
             data.putInt("EC_ISS_MissCount", 0);
