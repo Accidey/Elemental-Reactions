@@ -265,6 +265,7 @@ public class FrostSpellHandler {
         if (netherImmune) {
             if (gameTime >= data.getLong(ISSCore.NBT_MOB_CAST_CD)) {
                 ISSCore.castSpell(mob, target, false);
+                data.putLong("EC_ISS_PendingCast", gameTime + ElementalISSIntegrationConfig.mobWaterBottleInterval);
                 data.putLong(ISSCore.NBT_MOB_CAST_CD, gameTime + ElementalISSIntegrationConfig.mobNormalCastCooldown);
             }
             return;
@@ -275,6 +276,7 @@ public class FrostSpellHandler {
         if (target.hasEffect(ModMobEffects.WETNESS.get())) {
             if (gameTime >= data.getLong(ISSCore.NBT_MOB_CAST_CD)) {
                 ISSCore.castSpell(mob, target, false);
+                data.putLong("EC_ISS_PendingCast", gameTime + ElementalISSIntegrationConfig.mobWaterBottleInterval);
                 data.putLong(ISSCore.NBT_MOB_CAST_CD, gameTime + ElementalISSIntegrationConfig.mobNormalCastCooldown);
             }
         }

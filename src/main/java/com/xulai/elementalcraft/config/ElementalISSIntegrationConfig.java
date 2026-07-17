@@ -59,10 +59,10 @@ public final class ElementalISSIntegrationConfig {
 
         MOB_WATER_BOTTLE_INTERVAL = BUILDER
                 .comment("Interval (in ticks) between splash water bottle throws at the target. 20 ticks = 1 second.",
-                        "For Nature caster mobs, this value is reused as the pending cast delay (waiting for spell projectile to reach target).",
+                        "For Nature/Thunder/Fire/Frost caster mobs, this value is reused as the pending cast delay (waiting for spell projectile to reach target).",
                         "",
                         "向目标投掷喷溅水瓶的间隔时间（刻）。20刻 = 1秒。",
-                        "自然施法生物复用此值作为延迟施法判定时间（等待法术弹道到达目标）。",
+                        "自然/雷电/赤焰/冰霜施法生物复用此值作为延迟施法判定时间（等待法术弹道到达目标）。",
                         "",
                         "Default: 40 (2 seconds) / 默认：40（2秒）")
                 .defineInRange("mob_water_bottle_interval", 40, 1, 72000);
@@ -70,11 +70,11 @@ public final class ElementalISSIntegrationConfig {
         MOB_MAX_MISS_COUNT = BUILDER
                 .comment("When the spell misses the target, the mob will immediately recast on each miss.",
                         "This value controls how many consecutive misses are allowed before the mob enters a long cooldown.",
-                        "For Thunder mobs: applies when target is already wet. For Nature mobs: applies after pending cast delay.",
+                        "For Thunder/Frost mobs: applies when target is already wet. For Nature/Fire mobs: applies after pending cast delay.",
                         "",
                         "法术未命中目标时，生物会在每次未命中后立即重新施法。",
                         "此值控制允许连续补刀的次数，达到上限后生物进入较长冷却。",
-                        "雷霆生物：目标已潮湿时生效。自然生物：延迟施法判定后生效。",
+                        "雷电/冰霜生物：目标已潮湿时生效。自然/赤焰生物：延迟施法判定后生效。",
                         "",
                         "Default: 2 / 默认：2")
                 .defineInRange("mob_max_miss_count", 2, 1, 100);
