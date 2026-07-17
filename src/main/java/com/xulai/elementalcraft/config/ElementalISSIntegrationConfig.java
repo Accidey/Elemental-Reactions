@@ -12,7 +12,6 @@ public final class ElementalISSIntegrationConfig {
     public static final ForgeConfigSpec.DoubleValue MOB_LOW_HEALTH_THRESHOLD;
     public static final ForgeConfigSpec.IntValue MOB_AGGRESSIVE_CAST_COOLDOWN;
     public static final ForgeConfigSpec.IntValue MOB_NORMAL_CAST_COOLDOWN;
-    public static final ForgeConfigSpec.IntValue MOB_WATER_BOTTLE_INTERVAL;
     public static final ForgeConfigSpec.IntValue MOB_MAX_MISS_COUNT;
 
     public static final ForgeConfigSpec.DoubleValue SCROLL_DROP_CHANCE;
@@ -62,18 +61,6 @@ public final class ElementalISSIntegrationConfig {
                          "",
                          "Default: 200 (10 seconds) / 默认：200（10秒）")
                 .defineInRange("mob_normal_cast_cooldown", 200, 1, 72000);
-
-        BUILDER.comment(" ");
-
-        MOB_WATER_BOTTLE_INTERVAL = BUILDER
-                .comment("向目标投掷喷溅水瓶的间隔时间（刻）。20刻 = 1秒。",
-                         "自然/雷电/赤焰/冰霜施法生物复用此值作为延迟施法判定时间（等待法术弹道到达目标）。",
-                         "",
-                         "Interval (in ticks) between splash water bottle throws at the target. 20 ticks = 1 second.",
-                         "For Nature/Thunder/Fire/Frost caster mobs, this value is reused as the pending cast delay (waiting for spell projectile to reach target).",
-                         "",
-                         "Default: 40 (2 seconds) / 默认：40（2秒）")
-                .defineInRange("mob_water_bottle_interval", 40, 1, 72000);
 
         BUILDER.comment(" ");
 
@@ -153,7 +140,6 @@ public final class ElementalISSIntegrationConfig {
     public static double mobLowHealthThreshold = 0.5;
     public static int mobAggressiveCastCooldown = 100;
     public static int mobNormalCastCooldown = 200;
-    public static int mobWaterBottleInterval = 40;
     public static int mobMaxMissCount = 2;
 
     public static float scrollDropChance = 1.0F;
@@ -165,7 +151,6 @@ public final class ElementalISSIntegrationConfig {
         mobLowHealthThreshold = MOB_LOW_HEALTH_THRESHOLD.get();
         mobAggressiveCastCooldown = MOB_AGGRESSIVE_CAST_COOLDOWN.get();
         mobNormalCastCooldown = MOB_NORMAL_CAST_COOLDOWN.get();
-        mobWaterBottleInterval = MOB_WATER_BOTTLE_INTERVAL.get();
         mobMaxMissCount = MOB_MAX_MISS_COUNT.get();
 
         scrollDropChance = SCROLL_DROP_CHANCE.get().floatValue();

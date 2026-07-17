@@ -523,8 +523,8 @@ public class ISSCore {
 
         if (gameTime >= data.getLong(NBT_MOB_NEXT_WET)) {
             throwSplashWaterBottle(mob, target);
-            data.putLong("EC_ISS_PendingCast", gameTime + ElementalISSIntegrationConfig.mobWaterBottleInterval);
-            data.putLong(NBT_MOB_NEXT_WET, gameTime + ElementalISSIntegrationConfig.mobWaterBottleInterval);
+            data.putLong("EC_ISS_PendingCast", gameTime + 20);
+            data.putLong(NBT_MOB_NEXT_WET, gameTime + 20);
         }
         return false;
     }
@@ -565,8 +565,8 @@ public class ISSCore {
             thrown.shoot(d0, d1 + d3 * 0.2, d2, 0.75F, 8.0F);
             mob.level().addFreshEntity(thrown);
             mob.level().playSound(null, mob, SoundEvents.WITCH_THROW, mob.getSoundSource(), 1.0F, 0.8F);
-            data.putLong("EC_ISS_PendingCast", gameTime + ElementalISSIntegrationConfig.mobWaterBottleInterval);
-            data.putLong(NBT_MOB_NEXT_WET, gameTime + ElementalISSIntegrationConfig.mobWaterBottleInterval);
+            data.putLong("EC_ISS_PendingCast", gameTime + 20);
+            data.putLong(NBT_MOB_NEXT_WET, gameTime + 20);
         }
         return false;
     }
