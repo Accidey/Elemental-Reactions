@@ -382,7 +382,7 @@ public class ThunderSpellHandler {
             } else if (data.contains("EC_ISS_PendingIsSpell")) {
                 data.remove("EC_ISS_PendingIsSpell");
                 int missCount = data.getInt("EC_ISS_MissCount") + 1;
-                if (missCount >= ElementalISSIntegrationConfig.mobMaxMissCount) {
+                if (missCount >= 2) {
                     data.remove("EC_ISS_MissCount");
                     data.putLong(ISSCore.NBT_MOB_CAST_CD, gameTime + ElementalISSIntegrationConfig.mobNormalCastCooldown);
                 } else {
@@ -392,7 +392,7 @@ public class ThunderSpellHandler {
             } else {
                 if (netherImmune || target.hasEffect(ModMobEffects.WETNESS.get())) {
                     int missCount = data.getInt("EC_ISS_MissCount");
-                    if (missCount >= ElementalISSIntegrationConfig.mobMaxMissCount) {
+                    if (missCount >= 2) {
                         data.remove("EC_ISS_MissCount");
                         data.putLong(ISSCore.NBT_MOB_CAST_CD, gameTime + ElementalISSIntegrationConfig.mobNormalCastCooldown);
                     } else {

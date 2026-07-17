@@ -518,7 +518,7 @@ public class ISSCore {
             } else if (data.contains("EC_ISS_PendingIsSpell")) {
                 data.remove("EC_ISS_PendingIsSpell");
                 int miss = data.getInt("EC_ISS_MissCount") + 1;
-                if (miss >= ElementalISSIntegrationConfig.mobMaxMissCount) {
+                if (miss >= 2) {
                     data.putLong("EC_ISS_BottleCd", gameTime + 200);
                     data.remove("EC_ISS_MissCount");
                     return true;
@@ -527,7 +527,7 @@ public class ISSCore {
                 data.putLong(NBT_MOB_CAST_CD, 0);
             } else if (wetness == null || !target.hasEffect(wetness)) {
                 int miss = data.getInt("EC_ISS_MissCount") + 1;
-                if (miss >= ElementalISSIntegrationConfig.mobMaxMissCount) {
+                if (miss >= 2) {
                     data.putLong("EC_ISS_BottleCd", gameTime + 200);
                     data.remove("EC_ISS_MissCount");
                     return true;
@@ -563,7 +563,7 @@ public class ISSCore {
             } else if (data.contains("EC_ISS_PendingIsSpell")) {
                 data.remove("EC_ISS_PendingIsSpell");
                 int miss = data.getInt("EC_ISS_MissCount") + 1;
-                if (miss >= ElementalISSIntegrationConfig.mobMaxMissCount) {
+                if (miss >= 2) {
                     data.putLong("EC_ISS_BottleCd", gameTime + 200);
                     data.remove("EC_ISS_MissCount");
                     return true;
@@ -572,7 +572,7 @@ public class ISSCore {
                 data.putLong(NBT_MOB_CAST_CD, 0);
             } else if (!target.hasEffect(net.minecraft.world.effect.MobEffects.POISON)) {
                 int miss = data.getInt("EC_ISS_MissCount") + 1;
-                if (miss >= ElementalISSIntegrationConfig.mobMaxMissCount) {
+                if (miss >= 2) {
                     data.putLong("EC_ISS_BottleCd", gameTime + 200);
                     data.remove("EC_ISS_MissCount");
                     return true;

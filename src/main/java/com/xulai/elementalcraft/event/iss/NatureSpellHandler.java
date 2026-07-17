@@ -167,7 +167,7 @@ public class NatureSpellHandler {
             } else if (data.contains("EC_ISS_PendingIsSpell")) {
                 data.remove("EC_ISS_PendingIsSpell");
                 int missCount = data.getInt("EC_ISS_MissCount") + 1;
-                if (missCount >= ElementalISSIntegrationConfig.mobMaxMissCount) {
+                if (missCount >= 2) {
                     data.remove("EC_ISS_MissCount");
                     cooldown = ElementalISSIntegrationConfig.mobNormalCastCooldown;
                 } else {

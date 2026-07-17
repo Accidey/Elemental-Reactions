@@ -12,8 +12,6 @@ public final class ElementalISSIntegrationConfig {
     public static final ForgeConfigSpec.DoubleValue MOB_LOW_HEALTH_THRESHOLD;
     public static final ForgeConfigSpec.IntValue MOB_AGGRESSIVE_CAST_COOLDOWN;
     public static final ForgeConfigSpec.IntValue MOB_NORMAL_CAST_COOLDOWN;
-    public static final ForgeConfigSpec.IntValue MOB_MAX_MISS_COUNT;
-
     public static final ForgeConfigSpec.DoubleValue SCROLL_DROP_CHANCE;
 
     public static final ForgeConfigSpec.DoubleValue CASTER_MOB_CHANCE;
@@ -80,20 +78,6 @@ public final class ElementalISSIntegrationConfig {
                          "Default: 200 (10 seconds) / 默认：200（10秒）")
                 .defineInRange("mob_normal_cast_cooldown", 200, 1, 72000);
 
-        BUILDER.comment(" ");
-
-        MOB_MAX_MISS_COUNT = BUILDER
-                .comment("法术未命中目标时，生物会在每次未命中后立即重新施法。",
-                         "此值控制允许连续补刀的次数，达到上限后生物进入较长冷却。",
-                         "所有属性施法生物均为延迟施法判定（等待法术弹道到达目标）后生效。",
-                         "",
-                         "When the spell misses the target, the mob will immediately recast on each miss.",
-                         "This value controls how many consecutive misses are allowed before the mob enters a long cooldown.",
-                         "All element caster mobs: applies after pending cast delay (waiting for spell projectile to reach target).",
-                         "",
-                         "Default: 2 / 默认：2")
-                .defineInRange("mob_max_miss_count", 2, 1, 100);
-
         BUILDER.pop();
 
         BUILDER.comment("卷轴掉落",
@@ -142,8 +126,6 @@ public final class ElementalISSIntegrationConfig {
     public static double mobLowHealthThreshold = 0.5;
     public static int mobAggressiveCastCooldown = 100;
     public static int mobNormalCastCooldown = 200;
-    public static int mobMaxMissCount = 2;
-
     public static float scrollDropChance = 1.0F;
 
     public static double casterMobChance = 0.5;
@@ -153,8 +135,6 @@ public final class ElementalISSIntegrationConfig {
         mobLowHealthThreshold = MOB_LOW_HEALTH_THRESHOLD.get();
         mobAggressiveCastCooldown = MOB_AGGRESSIVE_CAST_COOLDOWN.get();
         mobNormalCastCooldown = MOB_NORMAL_CAST_COOLDOWN.get();
-        mobMaxMissCount = MOB_MAX_MISS_COUNT.get();
-
         scrollDropChance = SCROLL_DROP_CHANCE.get().floatValue();
 
         casterMobChance = CASTER_MOB_CHANCE.get();
