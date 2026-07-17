@@ -283,7 +283,7 @@ public class FrostSpellHandler {
         if (netherImmune) {
             if (gameTime >= data.getLong(ISSCore.NBT_MOB_CAST_CD)) {
                 ISSCore.castSpell(mob, target, false);
-                data.putLong("EC_ISS_PendingCast", gameTime + 20);
+                data.putLong("EC_ISS_PendingCast", gameTime + 40);
                 data.putLong(ISSCore.NBT_MOB_CAST_CD, gameTime + ElementalISSIntegrationConfig.mobNormalCastCooldown);
                 data.putInt("EC_ISS_MissCount", 0);
             }
@@ -294,7 +294,7 @@ public class FrostSpellHandler {
 
         if (gameTime >= data.getLong(ISSCore.NBT_MOB_CAST_CD)) {
             ISSCore.castSpell(mob, target, false);
-            data.putLong("EC_ISS_PendingCast", gameTime + 20);
+            data.putLong("EC_ISS_PendingCast", gameTime + 40);
             data.putLong(ISSCore.NBT_MOB_CAST_CD, gameTime + ElementalISSIntegrationConfig.mobNormalCastCooldown);
             data.putInt("EC_ISS_MissCount", 0);
         }

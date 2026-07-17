@@ -397,7 +397,7 @@ public class ThunderSpellHandler {
         if (netherImmune || target.hasEffect(ModMobEffects.WETNESS.get())) {
             if (data.getLong(ISSCore.NBT_MOB_CAST_CD) == 0 || gameTime >= data.getLong(ISSCore.NBT_MOB_CAST_CD)) {
                 ISSCore.castSpell(mob, target, false);
-                data.putLong("EC_ISS_PendingCast", gameTime + 20);
+                data.putLong("EC_ISS_PendingCast", gameTime + 40);
                 data.putLong(ISSCore.NBT_MOB_CAST_CD, gameTime + ElementalISSIntegrationConfig.mobNormalCastCooldown);
             }
             return;
@@ -405,7 +405,7 @@ public class ThunderSpellHandler {
 
         if (!ISSCore.tryThrowWaterBottle(mob, data, target, gameTime)) return;
         ISSCore.castSpell(mob, target, false);
-        data.putLong("EC_ISS_PendingCast", gameTime + 20);
+        data.putLong("EC_ISS_PendingCast", gameTime + 40);
         data.putLong(ISSCore.NBT_MOB_CAST_CD, gameTime + ElementalISSIntegrationConfig.mobNormalCastCooldown);
         data.putInt("EC_ISS_MissCount", 0);
     }
