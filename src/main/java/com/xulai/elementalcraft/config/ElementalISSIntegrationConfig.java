@@ -23,101 +23,120 @@ public final class ElementalISSIntegrationConfig {
     static {
         ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
-        BUILDER.comment("Iron's Spellbooks Integration Configuration (Only loaded when ISS is installed, supports hot reload)",
-                        "Iron's Spellbooks 联动配置（仅安装ISS时加载，支持热重载）")
+        BUILDER.comment("Iron's Spellbooks 联动配置（仅安装ISS时加载，支持热重载）",
+                        "Iron's Spellbooks Integration Configuration (Only loaded when ISS is installed, supports hot reload)")
                 .push("iss_integration");
 
-        BUILDER.comment("Mob Casting AI (elemental creatures with spell scrolls)",
-                        "Mob施法AI（持有法术卷轴的属性生物）")
+        BUILDER.comment("Mob施法AI（持有法术卷轴的属性生物）",
+                        "Mob Casting AI (elemental creatures with spell scrolls)")
                 .push("mob_casting_ai");
 
+        BUILDER.comment(" ");
+
         MOB_LOW_HEALTH_THRESHOLD = BUILDER
-                .comment("Health ratio below which the mob enters aggressive casting mode (casts more frequently).",
-                        "For Nature caster mobs, only mobs holding damage spells enter aggressive mode.",
-                        "",
-                        "生命值比例低于此值时，生物进入激进施法模式（施法更频繁）。",
-                        "自然施法生物中，仅持有伤害法术的生物才会进入激进模式。",
-                        "",
-                        "Default: 0.5 (50%) / 默认：0.5（50%）")
+                .comment("生命值比例低于此值时，生物进入激进施法模式（施法更频繁）。",
+                         "自然施法生物中，仅持有伤害法术的生物才会进入激进模式。",
+                         "",
+                         "Health ratio below which the mob enters aggressive casting mode (casts more frequently).",
+                         "For Nature caster mobs, only mobs holding damage spells enter aggressive mode.",
+                         "",
+                         "Default: 0.5 (50%) / 默认：0.5（50%）")
                 .defineInRange("mob_low_health_threshold", 0.5, 0.0, 1.0);
 
+        BUILDER.comment(" ");
+
         MOB_AGGRESSIVE_CAST_COOLDOWN = BUILDER
-                .comment("Cooldown (in ticks) between spell casts when mob is in aggressive mode (low health). 20 ticks = 1 second.",
-                        "",
-                        "激进模式（低血量）下施法冷却时间（刻）。20刻 = 1秒。",
-                        "",
-                        "Default: 100 (5 seconds) / 默认：100（5秒）")
+                .comment("激进模式（低血量）下施法冷却时间（刻）。20刻 = 1秒。",
+                         "",
+                         "Cooldown (in ticks) between spell casts when mob is in aggressive mode (low health). 20 ticks = 1 second.",
+                         "",
+                         "Default: 100 (5 seconds) / 默认：100（5秒）")
                 .defineInRange("mob_aggressive_cast_cooldown", 100, 1, 72000);
 
+        BUILDER.comment(" ");
+
         MOB_NORMAL_CAST_COOLDOWN = BUILDER
-                .comment("Cooldown (in ticks) between spell casts in normal mode. 20 ticks = 1 second.",
-                        "",
-                        "正常模式下施法冷却时间（刻）。20刻 = 1秒。",
-                        "",
-                        "Default: 200 (10 seconds) / 默认：200（10秒）")
+                .comment("正常模式下施法冷却时间（刻）。20刻 = 1秒。",
+                         "",
+                         "Cooldown (in ticks) between spell casts in normal mode. 20 ticks = 1 second.",
+                         "",
+                         "Default: 200 (10 seconds) / 默认：200（10秒）")
                 .defineInRange("mob_normal_cast_cooldown", 200, 1, 72000);
 
+        BUILDER.comment(" ");
+
         MOB_WATER_BOTTLE_INTERVAL = BUILDER
-                .comment("Interval (in ticks) between splash water bottle throws at the target. 20 ticks = 1 second.",
-                        "For Nature/Thunder/Fire/Frost caster mobs, this value is reused as the pending cast delay (waiting for spell projectile to reach target).",
-                        "",
-                        "向目标投掷喷溅水瓶的间隔时间（刻）。20刻 = 1秒。",
-                        "自然/雷电/赤焰/冰霜施法生物复用此值作为延迟施法判定时间（等待法术弹道到达目标）。",
-                        "",
-                        "Default: 40 (2 seconds) / 默认：40（2秒）")
+                .comment("向目标投掷喷溅水瓶的间隔时间（刻）。20刻 = 1秒。",
+                         "自然/雷电/赤焰/冰霜施法生物复用此值作为延迟施法判定时间（等待法术弹道到达目标）。",
+                         "",
+                         "Interval (in ticks) between splash water bottle throws at the target. 20 ticks = 1 second.",
+                         "For Nature/Thunder/Fire/Frost caster mobs, this value is reused as the pending cast delay (waiting for spell projectile to reach target).",
+                         "",
+                         "Default: 40 (2 seconds) / 默认：40（2秒）")
                 .defineInRange("mob_water_bottle_interval", 40, 1, 72000);
 
+        BUILDER.comment(" ");
+
         MOB_MAX_MISS_COUNT = BUILDER
-                .comment("When the spell misses the target, the mob will immediately recast on each miss.",
-                        "This value controls how many consecutive misses are allowed before the mob enters a long cooldown.",
-                        "For Thunder/Frost mobs: applies when target is already wet. For Nature/Fire mobs: applies after pending cast delay.",
-                        "",
-                        "法术未命中目标时，生物会在每次未命中后立即重新施法。",
-                        "此值控制允许连续补刀的次数，达到上限后生物进入较长冷却。",
-                        "雷电/冰霜生物：目标已潮湿时生效。自然/赤焰生物：延迟施法判定后生效。",
-                        "",
-                        "Default: 2 / 默认：2")
+                .comment("法术未命中目标时，生物会在每次未命中后立即重新施法。",
+                         "此值控制允许连续补刀的次数，达到上限后生物进入较长冷却。",
+                         "雷电/冰霜生物：目标已潮湿时生效。自然/赤焰生物：延迟施法判定后生效。",
+                         "",
+                         "When the spell misses the target, the mob will immediately recast on each miss.",
+                         "This value controls how many consecutive misses are allowed before the mob enters a long cooldown.",
+                         "For Thunder/Frost mobs: applies when target is already wet. For Nature/Fire mobs: applies after pending cast delay.",
+                         "",
+                         "Default: 2 / 默认：2")
                 .defineInRange("mob_max_miss_count", 2, 1, 100);
 
         BUILDER.pop();
 
-        BUILDER.comment("Scroll Drop", "卷轴掉落")
+        BUILDER.comment("卷轴掉落",
+                        "Scroll Drop")
                 .push("scroll_drop");
 
+        BUILDER.comment(" ");
+
         SCROLL_DROP_CHANCE = BUILDER
-                .comment("Drop chance for the spell scroll held by caster mobs. 1.0 = 100%, 0.0 = never drops.",
-                        "",
-                        "施法生物持有的法术卷轴掉落概率。1.0 = 100%，0.0 = 不掉落。",
-                        "",
-                        "Default: 1.0 (100%) / 默认：1.0（100%）")
+                .comment("施法生物持有的法术卷轴掉落概率。1.0 = 100%，0.0 = 不掉落。",
+                         "",
+                         "Drop chance for the spell scroll held by caster mobs. 1.0 = 100%, 0.0 = never drops.",
+                         "",
+                         "Default: 1.0 (100%) / 默认：1.0（100%）")
                 .defineInRange("scroll_drop_chance", 1.0, 0.0, 1.0);
 
         BUILDER.pop();
 
-        BUILDER.comment("Caster Mob Chance (Shared across all elements)", "施法生物概率（所有属性共用）")
+        BUILDER.comment("施法生物概率（所有属性共用）",
+                        "Caster Mob Chance (Shared across all elements)")
                 .push("caster_mob_chance");
 
+        BUILDER.comment(" ");
+
         CASTER_MOB_CHANCE = BUILDER
-                .comment("Chance for an elemental-attributed mob to become a caster.",
+                .comment("属性生物成为施法者的概率。",
                          "",
-                         "属性生物成为施法者的概率。",
+                         "Chance for an elemental-attributed mob to become a caster.",
                          "",
                          "Default: 0.5 (50%) / 默认：0.5（50%）")
                 .defineInRange("caster_mob_chance", 0.5, 0.0, 1.0);
 
         BUILDER.pop();
 
-        BUILDER.comment("Caster Mob Blacklist", "施法生物黑名单")
+        BUILDER.comment("施法生物黑名单",
+                        "Caster Mob Blacklist")
                 .push("caster_blacklist");
 
+        BUILDER.comment(" ");
+
         CASTER_MOB_BLACKLIST = BUILDER
-                .comment("Entities in this list cannot be selected as caster mobs.",
-                         "Format: list of entity registry IDs, e.g., [\"minecraft:wither\", \"minecraft:warden\"]",
-                         "",
-                         "在此列表中的实体不能被选为施法生物。",
+                .comment("在此列表中的实体不能被选为施法生物。",
                          "格式：实体注册ID列表，例如 [\"minecraft:wither\", \"minecraft:warden\"]",
+                         "也支持模组命名空间格式：[\"iceandfire\"] 会屏蔽该模组全部实体。",
                          "",
-                         "也支持模组命名空间格式：[\"iceandfire\"] 会屏蔽该模组全部实体。 / Also supports mod namespace format: [\"iceandfire\"] to blacklist all entities from that mod.",
+                         "Entities in this list cannot be selected as caster mobs.",
+                         "Format: list of entity registry IDs, e.g., [\"minecraft:wither\", \"minecraft:warden\"]",
+                         "Also supports mod namespace format: [\"iceandfire\"] to blacklist all entities from that mod.",
                          "",
                          "Default: [wither, warden, ender_dragon] / 默认：[凋零，坚守者，末影龙]")
                 .defineListAllowEmpty("caster_mob_blacklist",
