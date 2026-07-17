@@ -521,6 +521,7 @@ public class ISSCore {
                     return true;
                 }
                 data.putInt("EC_ISS_MissCount", miss);
+                data.putLong(NBT_MOB_CAST_CD, 0);
             } else {
                 data.remove("EC_ISS_MissCount");
             }
@@ -551,6 +552,7 @@ public class ISSCore {
                     return true;
                 }
                 data.putInt("EC_ISS_MissCount", miss);
+                data.putLong(NBT_MOB_CAST_CD, 0);
             } else {
                 data.remove("EC_ISS_MissCount");
             }
