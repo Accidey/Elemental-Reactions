@@ -26,6 +26,22 @@ public final class ElementalISSIntegrationConfig {
                         "Iron's Spellbooks Integration Configuration (Only loaded when ISS is installed, supports hot reload)")
                 .push("iss_integration");
 
+        BUILDER.comment("施法生物概率（所有属性共用）",
+                        "Caster Mob Chance (Shared across all elements)")
+                .push("caster_mob_chance");
+
+        BUILDER.comment(" ");
+
+        CASTER_MOB_CHANCE = BUILDER
+                .comment("属性生物成为施法者的概率。",
+                         "",
+                         "Chance for an elemental-attributed mob to become a caster.",
+                         "",
+                         "Default: 0.5 (50%) / 默认：0.5（50%）")
+                .defineInRange("caster_mob_chance", 0.5, 0.0, 1.0);
+
+        BUILDER.pop();
+
         BUILDER.comment("Mob施法AI（持有法术卷轴的属性生物）",
                         "Mob Casting AI (elemental creatures with spell scrolls)")
                 .push("mob_casting_ai");
@@ -91,22 +107,6 @@ public final class ElementalISSIntegrationConfig {
                          "",
                          "Default: 1.0 (100%) / 默认：1.0（100%）")
                 .defineInRange("scroll_drop_chance", 1.0, 0.0, 1.0);
-
-        BUILDER.pop();
-
-        BUILDER.comment("施法生物概率（所有属性共用）",
-                        "Caster Mob Chance (Shared across all elements)")
-                .push("caster_mob_chance");
-
-        BUILDER.comment(" ");
-
-        CASTER_MOB_CHANCE = BUILDER
-                .comment("属性生物成为施法者的概率。",
-                         "",
-                         "Chance for an elemental-attributed mob to become a caster.",
-                         "",
-                         "Default: 0.5 (50%) / 默认：0.5（50%）")
-                .defineInRange("caster_mob_chance", 0.5, 0.0, 1.0);
 
         BUILDER.pop();
 
