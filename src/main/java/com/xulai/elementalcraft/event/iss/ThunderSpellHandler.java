@@ -375,24 +375,6 @@ public class ThunderSpellHandler {
         boolean netherImmune = ElementalFireNatureReactionsConfig.wetnessNetherDimensionImmune
                 && mob.level().dimension() == Level.NETHER;
 
-        CompoundTag td = target.getPersistentData();
-        boolean onCooldown = gameTime < td.getLong(NBT_ISS_PARALYSIS_CD)
-                || gameTime < td.getLong("ec_paralysis_cooldown_timer");
-
-        if (onCooldown) {
-            if (netherImmune) return;
-            int wetnessLevel = WetnessHandler.getWetnessLevel(target);
-            int maxWetness = ElementalFireNatureReactionsConfig.wetnessMaxLevel;
-
-            if (wetnessLevel >= maxWetness) return;
-
-            if (gameTime >= data.getLong(ISSCore.NBT_MOB_NEXT_WET)) {
-                ISSCore.throwSplashWaterBottle(mob, target);
-                data.putLong(ISSCore.NBT_MOB_NEXT_WET, gameTime + 20);
-            }
-            return;
-        }
-
         long pendingCast = data.getLong("EC_ISS_PendingCast");
         if (pendingCast > 0 && gameTime >= pendingCast) {
             data.remove("EC_ISS_PendingCast");
