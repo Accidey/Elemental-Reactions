@@ -443,14 +443,5 @@
   "effect.elementalcraft.frostbite": "霜冻",
   "effect.elementalcraft.frostbite.description": "你被冰霜侵蚀，每5秒受到一次冰冻伤害，移动速度和攻击速度降低。与潮湿效果接触时会被冻结！",
   "effect.elementalcraft.freeze": "冻结",
-  "effect.elementalcraft.freeze.description": "你被完全冻结！无法移动和攻击，受到的元素伤害增加，但物理伤害被冰壳格挡。赤焰属性攻击会立即解除冻结并转化为潮湿（伤害降低50%）。",
-
-  "update.elementalcraft.header": "ElementalCraft : Reactions ",
-  "update.elementalcraft.available": "有可用更新",
-  "update.elementalcraft.modrinth": "Modrinth下载链接",
-  "update.elementalcraft.modrinth.hover": "点击前往 Modrinth",
-  "update.elementalcraft.curseforge": "CurseForge下载链接",
-  "update.elementalcraft.curseforge.hover": "点击前往 CurseForge",
-
-  "subtitles.elementalcraft.freezing": "冻结"
+  "effect.elementalcraft.freeze.description": "你被完全冻结！无法移动和攻击，受到的元素伤害增加，但物理伤害被冰壳格挡。赤焰属性攻击会立即解除冻结并转化为潮湿（伤害降低50%）。"
 }

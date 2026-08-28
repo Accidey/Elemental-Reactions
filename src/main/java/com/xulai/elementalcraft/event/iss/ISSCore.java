@@ -125,6 +125,7 @@ public class ISSCore {
     static final String NBT_MOB_CASTER = "EC_ISS_MobCaster";
     static final String NBT_MOB_ELEMENT = "EC_ISS_MobElement";
     static final String NBT_MOB_NEXT_WET = "EC_ISS_NextWet";
+    static final String NBT_MOB_BOTTLE_ROUND = "EC_ISS_BottleRound";
     static final String NBT_MOB_CAST_CD = "EC_ISS_CastCD";
     static final String NBT_POLAR_BEAR_CAST = "EC_ISS_PolarBearCast";
     static final String NBT_POLAR_BEAR_COUNT = "EC_ISS_PolarBearCount";
@@ -484,7 +485,7 @@ public class ISSCore {
         }
     }
 
-    static void throwSplashWaterBottle(Mob mob, LivingEntity target) {
+    public static void throwSplashWaterBottle(Mob mob, LivingEntity target) {
         ItemStack waterBottle = new ItemStack(Items.SPLASH_POTION);
         PotionUtils.setPotion(waterBottle, Potions.WATER);
 
@@ -503,9 +504,30 @@ public class ISSCore {
         mob.level().playSound(null, mob, SoundEvents.WITCH_THROW, mob.getSoundSource(), 1.0F, 0.8F);
     }
 
+    public static void throwSplashPoisonBottle(Mob mob, LivingEntity target) {
+        ItemStack poisonBottle = new ItemStack(Items.SPLASH_POTION);
+        PotionUtils.setPotion(poisonBottle, Potions.POISON);
+
+        ThrownPotion potion = new ThrownPotion(mob.level(), mob);
+        potion.setItem(poisonBottle);
+        potion.setXRot(potion.getXRot() - -20.0F);
+
+        Vec3 vel = target.getDeltaMovement();
+        double d0 = target.getX() + vel.x - mob.getX();
+        double d1 = target.getEyeY() - 1.1 - mob.getEyeY();
+        double d2 = target.getZ() + vel.z - mob.getZ();
+        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+        potion.shoot(d0, d1 + d3 * 0.2, d2, 0.75F, 8.0F);
+
+        mob.level().addFreshEntity(potion);
+        mob.level().playSound(null, mob, SoundEvents.WITCH_THROW, mob.getSoundSource(), 1.0F, 0.8F);
+    }
+
     static boolean tryThrowWaterBottle(Mob mob, CompoundTag data, LivingEntity target, long gameTime) {
-        var wetness = com.xulai.elementalcraft.potion.ModMobEffects.WETNESS.get();
-        if (wetness != null && target.hasEffect(wetness)) return true;
+        int wetnessMax = ElementalFireNatureReactionsConfig.wetnessMaxLevel;
+        if (wetnessMax <= 0) return true;
+        int wetness = WetnessHandler.getWetnessLevel(target);
+        if (wetness >= wetnessMax) return true;
 
         if (gameTime < data.getLong("EC_ISS_BottleCd")) return true;
 
@@ -525,7 +547,7 @@ public class ISSCore {
                 }
                 data.putInt("EC_ISS_MissCount", miss);
                 data.putLong(NBT_MOB_CAST_CD, 0);
-            } else if (wetness == null || !target.hasEffect(wetness)) {
+            } else if (WetnessHandler.getWetnessLevel(target) <= 0) {
                 int miss = data.getInt("EC_ISS_MissCount") + 1;
                 if (miss >= 2) {
                     data.putLong("EC_ISS_BottleCd", gameTime + 200);
@@ -540,11 +562,15 @@ public class ISSCore {
         }
         if (pendingCast > 0) return false;
 
+        if (wetness == 0) data.putInt(NBT_MOB_BOTTLE_ROUND, 0);
+        if (data.getInt(NBT_MOB_BOTTLE_ROUND) >= 3) return true;
+
         if (gameTime >= data.getLong(NBT_MOB_NEXT_WET)) {
             throwSplashWaterBottle(mob, target);
             data.remove("EC_ISS_PendingIsSpell");
             data.putLong("EC_ISS_PendingCast", gameTime + 40);
             data.putLong(NBT_MOB_NEXT_WET, gameTime + 40);
+            data.putInt(NBT_MOB_BOTTLE_ROUND, data.getInt(NBT_MOB_BOTTLE_ROUND) + 1);
         }
         return false;
     }
@@ -585,23 +611,18 @@ public class ISSCore {
         }
         if (pendingCast > 0) return false;
 
+        int wetnessMax = ElementalFireNatureReactionsConfig.wetnessMaxLevel;
+        int wetness = WetnessHandler.getWetnessLevel(target);
+        if (wetnessMax > 0 && wetness >= wetnessMax) return true;
+        if (wetness == 0) data.putInt(NBT_MOB_BOTTLE_ROUND, 0);
+        if (data.getInt(NBT_MOB_BOTTLE_ROUND) >= 3) return true;
+
         if (gameTime >= data.getLong(NBT_MOB_NEXT_WET)) {
-            ItemStack potion = new ItemStack(Items.SPLASH_POTION);
-            net.minecraft.world.item.alchemy.PotionUtils.setPotion(potion, net.minecraft.world.item.alchemy.Potions.POISON);
-            ThrownPotion thrown = new ThrownPotion(mob.level(), mob);
-            thrown.setItem(potion);
-            thrown.setXRot(thrown.getXRot() - -20.0F);
-            Vec3 vel = target.getDeltaMovement();
-            double d0 = target.getX() + vel.x - mob.getX();
-            double d1 = target.getEyeY() - 1.1 - mob.getEyeY();
-            double d2 = target.getZ() + vel.z - mob.getZ();
-            double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-            thrown.shoot(d0, d1 + d3 * 0.2, d2, 0.75F, 8.0F);
-            mob.level().addFreshEntity(thrown);
-            mob.level().playSound(null, mob, SoundEvents.WITCH_THROW, mob.getSoundSource(), 1.0F, 0.8F);
+            throwSplashPoisonBottle(mob, target);
             data.putLong("EC_ISS_PendingCast", gameTime + 40);
             data.putLong(NBT_MOB_NEXT_WET, gameTime + 40);
             data.remove("EC_ISS_PendingIsSpell");
+            data.putInt(NBT_MOB_BOTTLE_ROUND, data.getInt(NBT_MOB_BOTTLE_ROUND) + 1);
         }
         return false;
     }

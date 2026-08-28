@@ -22,6 +22,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -81,16 +82,19 @@ public class ScorchedHandler {
     private static final Field SWELL_DIR_FIELD;
 
     static {
-        Field f1 = null;
-        Field f2 = null;
-        try {
-            f1 = Creeper.class.getDeclaredField("maxSwell");
-            f1.setAccessible(true);
-            f2 = Creeper.class.getDeclaredField("swellDir");
-            f2.setAccessible(true);
-        } catch (Exception ignored) {}
-        MAX_SWELL_FIELD = f1;
-        SWELL_DIR_FIELD = f2;
+        MAX_SWELL_FIELD = findCreeperField("maxSwell", "f_32271_");
+        SWELL_DIR_FIELD = findCreeperField("DATA_SWELL_DIR", "f_32268_");
+    }
+
+    private static Field findCreeperField(String mojangName, String srgName) {
+        for (String name : new String[]{mojangName, srgName}) {
+            try {
+                Field f = Creeper.class.getDeclaredField(name);
+                f.setAccessible(true);
+                return f;
+            } catch (NoSuchFieldException ignored) {}
+        }
+        return null;
     }
     public static final String NBT_TEMP_SCORCH_TTL = "ec_temp_scorch_ttl";
     public static final String NBT_FLEE_ACTIVE = "EC_FleeActive";
@@ -204,7 +208,7 @@ public class ScorchedHandler {
         creeper.ignite();
         if (MAX_SWELL_FIELD != null && SWELL_DIR_FIELD != null) {
             try {
-                int swellDir = SWELL_DIR_FIELD.getInt(creeper);
+                int swellDir = creeper.getEntityData().get((EntityDataAccessor<Integer>) SWELL_DIR_FIELD.get(null));
                 if (swellDir == 1) {
                     int originalMax = MAX_SWELL_FIELD.getInt(creeper);
                     creeper.getPersistentData().putInt(NBT_CREEPER_ORIGINAL_MAX_SWELL, originalMax);

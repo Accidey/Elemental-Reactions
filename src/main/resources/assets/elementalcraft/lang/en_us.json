@@ -441,14 +441,5 @@
   "effect.elementalcraft.frostbite": "Frostbite",
   "effect.elementalcraft.frostbite.description": "You are being encased in frost, taking ice damage every 5 seconds. Your movement speed and attack speed are reduced. Contact with Wetness will freeze you solid!",
   "effect.elementalcraft.freeze": "Freeze",
-  "effect.elementalcraft.freeze.description": "You are completely frozen! Unable to move or attack, taking increased elemental damage but physical damage is blocked by the ice shell. Fire attacks will immediately break the freeze and convert it to Wetness (damage reduced by 50%).",
-
-  "update.elementalcraft.header": "ElementalCraft : Reactions ",
-  "update.elementalcraft.available": "Update Available",
-  "update.elementalcraft.modrinth": "Modrinth Download",
-  "update.elementalcraft.modrinth.hover": "Click to go to Modrinth",
-  "update.elementalcraft.curseforge": "CurseForge Download",
-  "update.elementalcraft.curseforge.hover": "Click to go to CurseForge",
-
-  "subtitles.elementalcraft.freezing": "Freezing"
+  "effect.elementalcraft.freeze.description": "You are completely frozen! Unable to move or attack, taking increased elemental damage but physical damage is blocked by the ice shell. Fire attacks will immediately break the freeze and convert it to Wetness (damage reduced by 50%)."
 }

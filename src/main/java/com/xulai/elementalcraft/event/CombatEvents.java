@@ -51,13 +51,25 @@ public class CombatEvents {
     private static final Field TRIDENT_ITEM_FIELD;
     static {
         Field field = null;
-        try {
-            field = ThrownTrident.class.getDeclaredField("tridentItem");
-            field.setAccessible(true);
-        } catch (NoSuchFieldException e) {
-            ElementalCraft.LOGGER.error("Failed to find ThrownTrident.tridentItem field", e);
+        for (String name : new String[]{"tridentItem", "f_37555_"}) {
+            try {
+                field = ThrownTrident.class.getDeclaredField(name);
+                field.setAccessible(true);
+                break;
+            } catch (NoSuchFieldException ignored) {}
+        }
+        if (field == null) {
+            ElementalCraft.LOGGER.error("Failed to find ThrownTrident.tridentItem field");
         }
         TRIDENT_ITEM_FIELD = field;
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onLivingDamageFireCounterReduction(LivingDamageEvent event) {
+        if (event.getEntity().level().isClientSide) return;
+        if (event.getEntity().getPersistentData().getBoolean(ScorchedHandler.NBT_FIRE_COUNTER_INVULN)) {
+            event.setAmount(event.getAmount() * 0.1f);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
@@ -65,9 +77,6 @@ public class CombatEvents {
         if (event.getEntity().level().isClientSide) return;
 
         LivingEntity target = event.getEntity();
-        if (target.getPersistentData().getBoolean(ScorchedHandler.NBT_FIRE_COUNTER_INVULN)) {
-            event.setAmount(event.getAmount() * 0.1f);
-        }
 
         DamageSource source = event.getSource();
         float currentDamage = event.getAmount();

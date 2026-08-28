@@ -407,7 +407,8 @@ public class ThunderSpellHandler {
         }
         if (pendingCast > 0) return;
 
-        if (netherImmune || target.hasEffect(ModMobEffects.WETNESS.get())) {
+        if (netherImmune || (ElementalFireNatureReactionsConfig.wetnessMaxLevel > 0
+                && WetnessHandler.getWetnessLevel(target) >= ElementalFireNatureReactionsConfig.wetnessMaxLevel)) {
             if (data.getLong(ISSCore.NBT_MOB_CAST_CD) == 0 || gameTime >= data.getLong(ISSCore.NBT_MOB_CAST_CD)) {
                 ISSCore.castSpell(mob, target, false);
                 data.putBoolean("EC_ISS_PendingIsSpell", true);
