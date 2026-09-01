@@ -71,6 +71,7 @@ public class ElementalFireNatureReactionsConfig {
     public static final ForgeConfigSpec.DoubleValue FIRE_COUNTER_EXPANSION_SPEED;
     public static final ForgeConfigSpec.DoubleValue FIRE_COUNTER_DAMAGE;
     public static final ForgeConfigSpec.DoubleValue FIRE_COUNTER_KNOCKBACK;
+    public static final ForgeConfigSpec.DoubleValue FIRE_COUNTER_DAMAGE_REDUCTION;
     public static final ForgeConfigSpec.DoubleValue BLAST_WEAK_IGNITE_MULT;
     public static final ForgeConfigSpec.DoubleValue BLAST_BASE_DAMAGE;
     public static final ForgeConfigSpec.DoubleValue BLAST_GROWTH_DAMAGE;
@@ -812,6 +813,17 @@ public class ElementalFireNatureReactionsConfig {
                      "Knockback strength. TNT is approx 1.5. Set 3x+ for violent knockback.",
                      "Default: 4.0 / 默认：4.0")
             .defineInRange("fire_counter_knockback", 4.0, 0.0, 20.0);
+    BUILDER.comment(" ");
+
+    FIRE_COUNTER_DAMAGE_REDUCTION = BUILDER
+            .comment("赤焰反制期间减免的伤害比例（0.0 = 不减免，1.0 = 完全免疫）。",
+                     "减免作用于所有类型的伤害，包括属性伤害。",
+                     "",
+                     "Damage reduction ratio during Fire Counter (0.0 = no reduction, 1.0 = immune).",
+                     "Applies to all damage types, including elemental damage.",
+                     "",
+                     "Default: 0.9 (90%) / 默认：0.9（90%）")
+            .defineInRange("fire_counter_damage_reduction", 0.9, 0.0, 1.0);
     BUILDER.pop();
 
     BUILDER.push("nature_reaction");
@@ -1259,6 +1271,7 @@ public class ElementalFireNatureReactionsConfig {
     public static double fireCounterExpansionSpeed;
     public static double fireCounterDamage;
     public static double fireCounterKnockback;
+    public static double fireCounterDamageReduction = 0.9;
     public static double blastWeakIgniteMult;
     public static double blastBaseDamage;
     public static double blastGrowthDamage;
@@ -1390,6 +1403,7 @@ public class ElementalFireNatureReactionsConfig {
         fireCounterExpansionSpeed = FIRE_COUNTER_EXPANSION_SPEED.get();
         fireCounterDamage = FIRE_COUNTER_DAMAGE.get();
         fireCounterKnockback = FIRE_COUNTER_KNOCKBACK.get();
+        fireCounterDamageReduction = FIRE_COUNTER_DAMAGE_REDUCTION.get();
         blastWeakIgniteMult = BLAST_WEAK_IGNITE_MULT.get();
         blastBaseDamage = BLAST_BASE_DAMAGE.get();
         blastGrowthDamage = BLAST_GROWTH_DAMAGE.get();

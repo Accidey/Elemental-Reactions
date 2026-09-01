@@ -1,5 +1,15 @@
 # Changelog / 更新日志
 
+## [1.7.4] - 2026-09-01
+
+### Changed
+- Flammable Spore contagion is no longer limited to a single spread: a source entity now spreads spores repeatedly while its spore effect lasts. Each entity can only be infected once per spore effect.
+  易燃孢子传染不再限定为一次：携带孢子的实体在效果持续期间可持续传染；每个实体在持有孢子效果期间只会被传染一次。
+
+### Fixed
+- Fixed Thunder caster mobs' inconsistent bottle hit/miss detection by unifying them with the shared throw logic used by other elements.
+  修复雷霆施法生物投掷药水瓶命中/未命中判定与其他元素不一致的问题，统一使用共享投掷判定逻辑。
+
 ## [1.7.3] - 2026-08-28
 
 ### Added
