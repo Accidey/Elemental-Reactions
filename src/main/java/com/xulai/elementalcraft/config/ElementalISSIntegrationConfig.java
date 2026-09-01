@@ -12,6 +12,7 @@ public final class ElementalISSIntegrationConfig {
     public static final ForgeConfigSpec.DoubleValue MOB_LOW_HEALTH_THRESHOLD;
     public static final ForgeConfigSpec.IntValue MOB_AGGRESSIVE_CAST_COOLDOWN;
     public static final ForgeConfigSpec.IntValue MOB_NORMAL_CAST_COOLDOWN;
+    public static final ForgeConfigSpec.IntValue MOB_BOTTLE_THROW_COOLDOWN;
     public static final ForgeConfigSpec.DoubleValue SCROLL_DROP_CHANCE;
 
     public static final ForgeConfigSpec.DoubleValue CASTER_MOB_CHANCE;
@@ -78,6 +79,18 @@ public final class ElementalISSIntegrationConfig {
                          "Default: 200 (10 seconds) / 默认：200（10秒）")
                 .defineInRange("mob_normal_cast_cooldown", 200, 1, 72000);
 
+        BUILDER.comment(" ");
+
+        MOB_BOTTLE_THROW_COOLDOWN = BUILDER
+                .comment("施法生物每轮投掷药水瓶（3次）结束后的冷却时间（刻）。20刻 = 1秒。",
+                         "连续3次未命中也会触发此冷却。",
+                         "",
+                         "Cooldown (in ticks) after a caster mob finishes a bottle throwing round (3 throws).",
+                         "Also triggered after 3 consecutive missed throws.",
+                         "",
+                         "Default: 200 (10 seconds) / 默认：200（10秒）")
+                .defineInRange("mob_bottle_throw_cooldown", 200, 10, 72000);
+
         BUILDER.pop();
 
         BUILDER.comment("卷轴掉落",
@@ -126,6 +139,7 @@ public final class ElementalISSIntegrationConfig {
     public static double mobLowHealthThreshold = 0.5;
     public static int mobAggressiveCastCooldown = 100;
     public static int mobNormalCastCooldown = 200;
+    public static int mobBottleThrowCooldown = 200;
     public static float scrollDropChance = 1.0F;
 
     public static double casterMobChance = 0.5;
@@ -135,6 +149,7 @@ public final class ElementalISSIntegrationConfig {
         mobLowHealthThreshold = MOB_LOW_HEALTH_THRESHOLD.get();
         mobAggressiveCastCooldown = MOB_AGGRESSIVE_CAST_COOLDOWN.get();
         mobNormalCastCooldown = MOB_NORMAL_CAST_COOLDOWN.get();
+        mobBottleThrowCooldown = MOB_BOTTLE_THROW_COOLDOWN.get();
         scrollDropChance = SCROLL_DROP_CHANCE.get().floatValue();
 
         casterMobChance = CASTER_MOB_CHANCE.get();

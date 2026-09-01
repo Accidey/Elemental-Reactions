@@ -72,7 +72,6 @@ public class ReactionHandler {
     public enum SporeApplyResult {
         SUCCESS, BLACKLISTED, IMMUNE, FROZEN, MAX_STACKS, NOT_REGISTERED
     }
-    private static final String NBT_SPREADED = "ec_spreaded";
     private static final String NBT_CONTAGION_SOURCE = "ec_contagion_source";
 
     public static final String NBT_INFECTED = "ec_infected";
@@ -106,9 +105,6 @@ public class ReactionHandler {
         if (hasSpores) return;
         if (data.getBoolean(NBT_INFECTED)) {
             data.putBoolean(NBT_INFECTED, false);
-        }
-        if (data.getBoolean(NBT_SPREADED)) {
-            data.putBoolean(NBT_SPREADED, false);
         }
         if (data.contains(NBT_CONTAGION_SOURCE)) {
             data.remove(NBT_CONTAGION_SOURCE);
@@ -457,11 +453,10 @@ public class ReactionHandler {
 
     private static void processContagion(LivingEntity source, int stacks) {
         CompoundTag data = source.getPersistentData();
-        boolean isSpreaded = data.getBoolean(NBT_SPREADED);
         boolean isInfected = data.getBoolean(NBT_INFECTED);
 
         boolean blockByInfected = isInfected && !ElementalFireNatureReactionsConfig.contagionAllowInfectedSpread;
-        if (isSpreaded || blockByInfected) {
+        if (blockByInfected) {
             return;
         }
 
@@ -516,7 +511,6 @@ public class ReactionHandler {
         if (validTargets.isEmpty()) {
             return;
         }
-        data.putBoolean(NBT_SPREADED, true);
 
         List<LivingEntity> infectedTargets = new ArrayList<>();
         for (LivingEntity target : validTargets) {

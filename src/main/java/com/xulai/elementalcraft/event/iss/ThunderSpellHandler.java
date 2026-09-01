@@ -375,11 +375,14 @@ public class ThunderSpellHandler {
 
         long pendingCast = data.getLong("EC_ISS_PendingCast");
         if (pendingCast > 0 && gameTime >= pendingCast) {
-            data.remove("EC_ISS_PendingCast");
             if (data.contains("EC_ISS_SpellHit")) {
+                data.remove("EC_ISS_PendingCast");
                 data.remove("EC_ISS_SpellHit");
                 data.remove("EC_ISS_PendingIsSpell");
-            } else if (data.contains("EC_ISS_PendingIsSpell")) {
+                return;
+            }
+            if (data.contains("EC_ISS_PendingIsSpell")) {
+                data.remove("EC_ISS_PendingCast");
                 data.remove("EC_ISS_PendingIsSpell");
                 int missCount = data.getInt("EC_ISS_MissCount") + 1;
                 if (missCount >= 2) {
@@ -389,20 +392,14 @@ public class ThunderSpellHandler {
                     data.putInt("EC_ISS_MissCount", missCount);
                     data.putLong(ISSCore.NBT_MOB_CAST_CD, 0);
                 }
-            } else {
-                if (netherImmune || target.hasEffect(ModMobEffects.WETNESS.get())) {
-                    int missCount = data.getInt("EC_ISS_MissCount");
-                    if (missCount >= 2) {
-                        data.remove("EC_ISS_MissCount");
-                        data.putLong(ISSCore.NBT_MOB_CAST_CD, gameTime + ElementalISSIntegrationConfig.mobNormalCastCooldown);
-                    } else {
-                        data.putLong(ISSCore.NBT_MOB_CAST_CD, 0);
-                    }
-                } else {
-                    data.remove("EC_ISS_MissCount");
-                    data.putLong(ISSCore.NBT_MOB_CAST_CD, 0);
-                }
+                return;
             }
+            if (!ISSCore.tryThrowWaterBottle(mob, data, target, gameTime)) return;
+            ISSCore.castSpell(mob, target, false);
+            data.putBoolean("EC_ISS_PendingIsSpell", true);
+            data.putLong("EC_ISS_PendingCast", gameTime + 40);
+            data.putLong(ISSCore.NBT_MOB_CAST_CD, gameTime + ElementalISSIntegrationConfig.mobNormalCastCooldown);
+            data.putInt("EC_ISS_MissCount", 0);
             return;
         }
         if (pendingCast > 0) return;

@@ -37,6 +37,7 @@ public class MobPotionThrowLogic {
     private static final String NBT_BOTTLE_MISS = "EC_BottleMiss";
     private static final String NBT_BOTTLE_VERDICT = "EC_BottleVerdict";
     private static final String NBT_BOTTLE_ROUND = "EC_BottleRound";
+    private static final String NBT_BOTTLE_WAIT = "EC_BottleWait";
 
     @SubscribeEvent
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
@@ -113,12 +114,22 @@ public class MobPotionThrowLogic {
         if (!mob.getSensing().hasLineOfSight(target)) return;
 
         if (isFire) {
-            if (target.hasEffect(MobEffects.POISON)) return;
             int wetnessMax = ElementalFireNatureReactionsConfig.wetnessMaxLevel;
             int wetness = WetnessHandler.getWetnessLevel(target);
-            if (wetnessMax > 0 && wetness >= wetnessMax) return;
-            if (wetness == 0) data.putInt(NBT_BOTTLE_ROUND, 0);
-            if (data.getInt(NBT_BOTTLE_ROUND) >= ROUND_THROWS) return;
+            if (wetnessMax > 0 && wetness >= wetnessMax) {
+                data.putInt(NBT_BOTTLE_ROUND, 0);
+                data.putBoolean(NBT_BOTTLE_WAIT, true);
+                return;
+            }
+            if (data.getBoolean(NBT_BOTTLE_WAIT)) {
+                if (wetness > 0) return;
+                data.remove(NBT_BOTTLE_WAIT);
+            }
+            if (data.getInt(NBT_BOTTLE_ROUND) >= ROUND_THROWS) {
+                data.putLong(NBT_BOTTLE_CD, gameTime + ElementalConfig.mobBottleThrowCooldown);
+                data.putInt(NBT_BOTTLE_ROUND, 0);
+                return;
+            }
             ISSCore.throwSplashPoisonBottle(mob, target);
         } else {
             if (ScorchedHandler.isScorched(target)) return;
@@ -126,9 +137,20 @@ public class MobPotionThrowLogic {
             if (ElementalFireNatureReactionsConfig.wetnessNetherDimensionImmune
                     && target.level().dimension() == Level.NETHER) return;
             int wetnessLevel = WetnessHandler.getWetnessLevel(target);
-            if (wetnessLevel >= ElementalFireNatureReactionsConfig.wetnessMaxLevel) return;
-            if (wetnessLevel == 0) data.putInt(NBT_BOTTLE_ROUND, 0);
-            if (data.getInt(NBT_BOTTLE_ROUND) >= ROUND_THROWS) return;
+            if (wetnessLevel >= ElementalFireNatureReactionsConfig.wetnessMaxLevel) {
+                data.putInt(NBT_BOTTLE_ROUND, 0);
+                data.putBoolean(NBT_BOTTLE_WAIT, true);
+                return;
+            }
+            if (data.getBoolean(NBT_BOTTLE_WAIT)) {
+                if (wetnessLevel > 0) return;
+                data.remove(NBT_BOTTLE_WAIT);
+            }
+            if (data.getInt(NBT_BOTTLE_ROUND) >= ROUND_THROWS) {
+                data.putLong(NBT_BOTTLE_CD, gameTime + ElementalConfig.mobBottleThrowCooldown);
+                data.putInt(NBT_BOTTLE_ROUND, 0);
+                return;
+            }
             ISSCore.throwSplashWaterBottle(mob, target);
         }
         data.putLong(NBT_BOTTLE_VERDICT, gameTime + ATTEMPT_INTERVAL);

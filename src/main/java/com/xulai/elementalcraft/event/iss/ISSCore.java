@@ -126,6 +126,7 @@ public class ISSCore {
     static final String NBT_MOB_ELEMENT = "EC_ISS_MobElement";
     static final String NBT_MOB_NEXT_WET = "EC_ISS_NextWet";
     static final String NBT_MOB_BOTTLE_ROUND = "EC_ISS_BottleRound";
+    static final String NBT_MOB_BOTTLE_WAIT = "EC_ISS_BottleWait";
     static final String NBT_MOB_CAST_CD = "EC_ISS_CastCD";
     static final String NBT_POLAR_BEAR_CAST = "EC_ISS_PolarBearCast";
     static final String NBT_POLAR_BEAR_COUNT = "EC_ISS_PolarBearCount";
@@ -524,13 +525,6 @@ public class ISSCore {
     }
 
     static boolean tryThrowWaterBottle(Mob mob, CompoundTag data, LivingEntity target, long gameTime) {
-        int wetnessMax = ElementalFireNatureReactionsConfig.wetnessMaxLevel;
-        if (wetnessMax <= 0) return true;
-        int wetness = WetnessHandler.getWetnessLevel(target);
-        if (wetness >= wetnessMax) return true;
-
-        if (gameTime < data.getLong("EC_ISS_BottleCd")) return true;
-
         long pendingCast = data.getLong("EC_ISS_PendingCast");
         if (pendingCast > 0 && gameTime >= pendingCast) {
             data.remove("EC_ISS_PendingCast");
@@ -540,8 +534,8 @@ public class ISSCore {
             } else if (data.contains("EC_ISS_PendingIsSpell")) {
                 data.remove("EC_ISS_PendingIsSpell");
                 int miss = data.getInt("EC_ISS_MissCount") + 1;
-                if (miss >= 2) {
-                    data.putLong("EC_ISS_BottleCd", gameTime + 200);
+                if (miss >= 3) {
+                    data.putLong("EC_ISS_BottleCd", gameTime + ElementalISSIntegrationConfig.mobBottleThrowCooldown);
                     data.remove("EC_ISS_MissCount");
                     return true;
                 }
@@ -549,8 +543,8 @@ public class ISSCore {
                 data.putLong(NBT_MOB_CAST_CD, 0);
             } else if (WetnessHandler.getWetnessLevel(target) <= 0) {
                 int miss = data.getInt("EC_ISS_MissCount") + 1;
-                if (miss >= 2) {
-                    data.putLong("EC_ISS_BottleCd", gameTime + 200);
+                if (miss >= 3) {
+                    data.putLong("EC_ISS_BottleCd", gameTime + ElementalISSIntegrationConfig.mobBottleThrowCooldown);
                     data.remove("EC_ISS_MissCount");
                     return true;
                 }
@@ -559,11 +553,30 @@ public class ISSCore {
             } else {
                 data.remove("EC_ISS_MissCount");
             }
+            return false;
         }
         if (pendingCast > 0) return false;
 
-        if (wetness == 0) data.putInt(NBT_MOB_BOTTLE_ROUND, 0);
-        if (data.getInt(NBT_MOB_BOTTLE_ROUND) >= 3) return true;
+        int wetnessMax = ElementalFireNatureReactionsConfig.wetnessMaxLevel;
+        if (wetnessMax <= 0) return true;
+        int wetness = WetnessHandler.getWetnessLevel(target);
+        if (wetness >= wetnessMax) {
+            data.putInt(NBT_MOB_BOTTLE_ROUND, 0);
+            data.putBoolean(NBT_MOB_BOTTLE_WAIT, true);
+            return true;
+        }
+        if (data.getBoolean(NBT_MOB_BOTTLE_WAIT)) {
+            if (wetness > 0) return true;
+            data.remove(NBT_MOB_BOTTLE_WAIT);
+        }
+
+        if (gameTime < data.getLong("EC_ISS_BottleCd")) return true;
+
+        if (data.getInt(NBT_MOB_BOTTLE_ROUND) >= 3) {
+            data.putLong("EC_ISS_BottleCd", gameTime + ElementalISSIntegrationConfig.mobBottleThrowCooldown);
+            data.putInt(NBT_MOB_BOTTLE_ROUND, 0);
+            return true;
+        }
 
         if (gameTime >= data.getLong(NBT_MOB_NEXT_WET)) {
             throwSplashWaterBottle(mob, target);
@@ -576,10 +589,6 @@ public class ISSCore {
     }
 
     static boolean tryThrowPoisonBottle(Mob mob, CompoundTag data, LivingEntity target, long gameTime) {
-        if (target.hasEffect(net.minecraft.world.effect.MobEffects.POISON)) return true;
-
-        if (gameTime < data.getLong("EC_ISS_BottleCd")) return true;
-
         long pendingCast = data.getLong("EC_ISS_PendingCast");
         if (pendingCast > 0 && gameTime >= pendingCast) {
             data.remove("EC_ISS_PendingCast");
@@ -589,8 +598,8 @@ public class ISSCore {
             } else if (data.contains("EC_ISS_PendingIsSpell")) {
                 data.remove("EC_ISS_PendingIsSpell");
                 int miss = data.getInt("EC_ISS_MissCount") + 1;
-                if (miss >= 2) {
-                    data.putLong("EC_ISS_BottleCd", gameTime + 200);
+                if (miss >= 3) {
+                    data.putLong("EC_ISS_BottleCd", gameTime + ElementalISSIntegrationConfig.mobBottleThrowCooldown);
                     data.remove("EC_ISS_MissCount");
                     return true;
                 }
@@ -598,8 +607,8 @@ public class ISSCore {
                 data.putLong(NBT_MOB_CAST_CD, 0);
             } else if (!target.hasEffect(net.minecraft.world.effect.MobEffects.POISON)) {
                 int miss = data.getInt("EC_ISS_MissCount") + 1;
-                if (miss >= 2) {
-                    data.putLong("EC_ISS_BottleCd", gameTime + 200);
+                if (miss >= 3) {
+                    data.putLong("EC_ISS_BottleCd", gameTime + ElementalISSIntegrationConfig.mobBottleThrowCooldown);
                     data.remove("EC_ISS_MissCount");
                     return true;
                 }
@@ -608,14 +617,28 @@ public class ISSCore {
             } else {
                 data.remove("EC_ISS_MissCount");
             }
+            return false;
         }
         if (pendingCast > 0) return false;
 
         int wetnessMax = ElementalFireNatureReactionsConfig.wetnessMaxLevel;
         int wetness = WetnessHandler.getWetnessLevel(target);
-        if (wetnessMax > 0 && wetness >= wetnessMax) return true;
-        if (wetness == 0) data.putInt(NBT_MOB_BOTTLE_ROUND, 0);
-        if (data.getInt(NBT_MOB_BOTTLE_ROUND) >= 3) return true;
+        if (wetnessMax > 0 && wetness >= wetnessMax) {
+            data.putInt(NBT_MOB_BOTTLE_ROUND, 0);
+            data.putBoolean(NBT_MOB_BOTTLE_WAIT, true);
+            return true;
+        }
+        if (data.getBoolean(NBT_MOB_BOTTLE_WAIT)) {
+            if (wetness > 0) return true;
+            data.remove(NBT_MOB_BOTTLE_WAIT);
+        }
+        if (gameTime < data.getLong("EC_ISS_BottleCd")) return true;
+
+        if (data.getInt(NBT_MOB_BOTTLE_ROUND) >= 3) {
+            data.putLong("EC_ISS_BottleCd", gameTime + ElementalISSIntegrationConfig.mobBottleThrowCooldown);
+            data.putInt(NBT_MOB_BOTTLE_ROUND, 0);
+            return true;
+        }
 
         if (gameTime >= data.getLong(NBT_MOB_NEXT_WET)) {
             throwSplashPoisonBottle(mob, target);
