@@ -47,8 +47,8 @@ public class FlammableSporesEffect extends MobEffect {
             }
 
             if (entity.tickCount % 20 == 0) {
-                int durabilityDamage = ElementalFireNatureReactionsConfig.sporeDurabilityDamage;
-                if (durabilityDamage > 0) {
+                double durabilityPercent = ElementalFireNatureReactionsConfig.sporeDurabilityPercent;
+                if (durabilityPercent > 0) {
                     int stacks = amplifier + 1;
                     if (stacks >= 5) {
                         for (EquipmentSlot slot : new EquipmentSlot[]{
@@ -57,6 +57,7 @@ public class FlammableSporesEffect extends MobEffect {
                                 EquipmentSlot.MAINHAND}) {
                             ItemStack stack = entity.getItemBySlot(slot);
                             if (!stack.isEmpty() && stack.isDamageableItem()) {
+                                int durabilityDamage = Math.max(1, (int) Math.round(stack.getMaxDamage() * durabilityPercent / 100.0));
                                 stack.hurtAndBreak(durabilityDamage, entity, s -> {});
                             }
                         }
@@ -70,7 +71,9 @@ public class FlammableSporesEffect extends MobEffect {
                         }
                         for (int i = 0; i < stacks && !slots.isEmpty(); i++) {
                             EquipmentSlot targetSlot = slots.remove(entity.getRandom().nextInt(slots.size()));
-                            entity.getItemBySlot(targetSlot).hurtAndBreak(durabilityDamage, entity, s -> {});
+                            ItemStack stack = entity.getItemBySlot(targetSlot);
+                            int durabilityDamage = Math.max(1, (int) Math.round(stack.getMaxDamage() * durabilityPercent / 100.0));
+                            stack.hurtAndBreak(durabilityDamage, entity, s -> {});
                         }
                     }
                 }

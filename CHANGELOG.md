@@ -2,6 +2,10 @@
 
 ## [1.7.4] - 2026-09-01
 
+### Added
+- Added a config option for the Fire Counter damage reduction ratio (default 90%), adjustable from no reduction to full immunity.
+  新增赤焰反制伤害减免比例的配置项（默认 90%），可在不减免到完全免疫之间自由调整。
+
 ### Changed
 - Flammable Spore contagion is no longer limited to a single spread: a source entity now spreads spores repeatedly while its spore effect lasts. Each entity can only be infected once per spore effect.
   易燃孢子传染不再限定为一次：携带孢子的实体在效果持续期间可持续传染；每个实体在持有孢子效果期间只会被传染一次。

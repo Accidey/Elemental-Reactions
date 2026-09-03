@@ -40,7 +40,7 @@ public class ElementalFireNatureReactionsConfig {
     public static final ForgeConfigSpec.DoubleValue SPORE_COLD_BIOME_DURATION_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue SPORE_COLD_BIOME_CHANCE_MULTIPLIER;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> SPORE_ENTITY_BLACKLIST;
-    public static final ForgeConfigSpec.IntValue SPORE_DURABILITY_DAMAGE;
+    public static final ForgeConfigSpec.DoubleValue SPORE_DURABILITY_PERCENT;
     public static final int CONTAGION_CHECK_INTERVAL = 20;
     public static final ForgeConfigSpec.DoubleValue CONTAGION_BASE_RADIUS;
     public static final ForgeConfigSpec.DoubleValue CONTAGION_RADIUS_PER_STACK;
@@ -986,14 +986,15 @@ public class ElementalFireNatureReactionsConfig {
             .defineListAllowEmpty("spore_entity_blacklist", List.of(), o -> o instanceof String);
     BUILDER.comment(" ");
 
-    SPORE_DURABILITY_DAMAGE = BUILDER
-            .comment("每秒对穿戴装备的耐久度侵蚀值。0 = 关闭此功能。",
-                     "例如设为 1：每秒减少1点耐久。",
+    SPORE_DURABILITY_PERCENT = BUILDER
+            .comment("每秒侵蚀装备最大耐久的百分比。0 = 关闭此功能。",
+                     "例如设为 0.1：每秒减少该装备最大耐久的 0.1%（不足 1 点时按 1 点计）。",
                      "层数决定侵蚀几件装备：1层→1件，2层→2件，5层→全部护甲+主手。",
-                     "Durability damage per second to worn equipment. 0 = disable.",
+                     "Durability damage per second to worn equipment, as a percentage of each item's max durability.",
+                     "Example 0.1 = 0.1% of max durability per second (minimum 1 point). 0 = disable.",
                      "Stacks determine how many pieces are affected: 1→1, 2→2, 5→all armor+mainhand.",
-                     "Default: 1 / 默认：1")
-            .defineInRange("spore_durability_damage", 1, 0, 100);
+                     "Default: 0.1 (0.1%) / 默认：0.1（0.1%）")
+            .defineInRange("spore_durability_percent", 0.1, 0.0, 100.0);
     BUILDER.pop();
 
     BUILDER.push("contagion_system");
@@ -1241,7 +1242,7 @@ public class ElementalFireNatureReactionsConfig {
     public static double sporeColdBiomeDurationMultiplier;
     public static double sporeColdBiomeChanceMultiplier;
     public static List<? extends String> cachedSporeBlacklist;
-    public static int sporeDurabilityDamage;
+    public static double sporeDurabilityPercent = 0.1;
     public static int contagionTransferBase;
     public static double contagionBaseRadius;
     public static double contagionRadiusPerStack;
@@ -1373,7 +1374,7 @@ public class ElementalFireNatureReactionsConfig {
         sporeColdBiomeDurationMultiplier = SPORE_COLD_BIOME_DURATION_MULTIPLIER.get();
         sporeColdBiomeChanceMultiplier = SPORE_COLD_BIOME_CHANCE_MULTIPLIER.get();
         cachedSporeBlacklist = SPORE_ENTITY_BLACKLIST.get();
-        sporeDurabilityDamage = SPORE_DURABILITY_DAMAGE.get();
+        sporeDurabilityPercent = SPORE_DURABILITY_PERCENT.get();
         contagionTransferBase = CONTAGION_TRANSFER_BASE.get();
         contagionBaseRadius = CONTAGION_BASE_RADIUS.get();
         contagionRadiusPerStack = CONTAGION_RADIUS_PER_STACK.get();

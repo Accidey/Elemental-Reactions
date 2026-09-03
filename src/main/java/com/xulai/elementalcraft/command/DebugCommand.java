@@ -16,6 +16,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.projectile.ThrownTrident;
@@ -1138,7 +1139,19 @@ public class DebugCommand {
         ElementalCraft.LOGGER.info("[EC Debug] " + message.getString());
         serverLevel.getServer().getPlayerList().getPlayers().stream()
                 .filter(DebugMode::isEnabled)
+                .filter(p -> isRelatedTo(contextEntity, p))
                 .forEach(p -> p.displayClientMessage(message, false));
+    }
+
+    private static boolean isRelatedTo(LivingEntity contextEntity, Player player) {
+        if (contextEntity == null) return false;
+        if (contextEntity.getUUID().equals(player.getUUID())) return true;
+        if (contextEntity instanceof Mob mob) {
+            LivingEntity target = mob.getTarget();
+            if (target != null && target.getUUID().equals(player.getUUID())) return true;
+        }
+        LivingEntity lastAttacker = player.getLastHurtByMob();
+        return lastAttacker != null && lastAttacker.getUUID().equals(contextEntity.getUUID());
     }
 
     public static long getRemainingCooldown(LivingEntity entity, String nbtKey) {
