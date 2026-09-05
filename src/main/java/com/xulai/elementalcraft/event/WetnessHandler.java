@@ -450,6 +450,22 @@ public class WetnessHandler {
         return false;
     }
 
+    public static boolean canGainWetness(LivingEntity entity) {
+        if (ElementalFireNatureReactionsConfig.wetnessMaxLevel <= 0) return false;
+        if (ScorchedHandler.isScorched(entity)) return false;
+        if (isImmune(entity)) return false;
+        if (blockWetnessIfParalyzed(entity) || blockWetnessIfFrozen(entity)) return false;
+        return !hasMaxedSpores(entity);
+    }
+
+    private static boolean hasMaxedSpores(LivingEntity entity) {
+        if (ElementalFireNatureReactionsConfig.sporeMaxStacks <= 0) return false;
+        if (!ModMobEffects.SPORES.isPresent()) return false;
+        MobEffectInstance spores = entity.getEffect(ModMobEffects.SPORES.get());
+        if (spores == null) return false;
+        return spores.getAmplifier() + 1 >= ElementalFireNatureReactionsConfig.sporeMaxStacks;
+    }
+
     public static void clearWetnessData(LivingEntity entity) {
         CompoundTag data = entity.getPersistentData();
         data.remove(NBT_WETNESS);

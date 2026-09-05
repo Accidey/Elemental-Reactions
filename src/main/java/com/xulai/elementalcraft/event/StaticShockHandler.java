@@ -224,7 +224,7 @@ public class StaticShockHandler {
 
         trimStaticStacks(target);
 
-        ElementType consistentElement = ElementUtils.getConsistentAttackElement(attacker);
+        ElementType consistentElement = ElementUtils.getConsistentAttackElement(event.getSource(), attacker);
         if (consistentElement != ElementType.THUNDER) {
             return;
         }
@@ -1467,6 +1467,7 @@ public class StaticShockHandler {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onTryThunderCounter(LivingDamageEvent event) {
         if (event.getEntity().level().isClientSide) return;
+        if (event.getSource().getEntity() == null) return;
         LivingEntity target = event.getEntity();
         double bloodThreshold = ElementalThunderFrostReactionsConfig.thunderCounterBloodThreshold;
         if (bloodThreshold <= 0) return;

@@ -1,5 +1,23 @@
 # Changelog / 更新日志
 
+## [1.7.6] - 2026-09-05
+
+### Changed
+- Water-bottle-throwing mobs (attribute mobs and ISS caster mobs) now check whether the target can currently gain the Wetness state before throwing: they hold fire while the target is scorched, wetness-immune (Nether/water animals/blacklist), paralyzed, frozen, or at maximum Flammable Spore stacks, and resume once the target can be wetted again.
+  投掷水瓶的属性生物与ISS施法生物现在会在投掷前检测目标当前能否获得潮湿状态：目标处于焦灼、潮湿免疫（下界/水生生物/黑名单）、麻痹、冻结或易燃孢子满层时暂停投掷，待目标可以再次获得潮湿后继续投掷。
+- Attribute counters (Fire/Frost/Thunder/Nature) now only trigger when the health drop was caused by an entity attack. Self-inflicted damage such as falls, burning, starvation, poison ticks, or the mod's own damage-over-time effects no longer triggers counters.
+  属性反制（赤焰/冰霜/雷霆/自然）现在仅在被实体攻击导致血量下降时触发；摔落、灼烧、饥饿、中毒以及本Mod自身持续伤害等自行受伤不再触发反制。
+- Projectile attacks now derive their element from the projectile itself (the trident or thrown item, or the bow/crossbow that fired it) instead of the shooter's hands: throwing a splash potion while an enchanted weapon is held in the other hand no longer triggers any elemental effects, and melee now only considers the main-hand item.
+  投射物攻击现在只认投掷物自身携带的属性攻击附魔（三叉戟/投掷物物品、发射它的弓弩），不再从施法者手上其他物品推断：另一只手持属性附魔武器时投掷药水瓶不会再触发属性特效；近战也只认主手武器。
+
+## [1.7.5] - 2026-09-03
+
+### Changed
+- Flammable Spore equipment corrosion now damages durability as a percentage of each item's max durability (configurable, default 0.1% per second) instead of a fixed amount.
+  易燃孢子的装备耐久腐蚀由固定点数改为按装备最大耐久的百分比计算（可配置，默认每秒 0.1%）。
+- Debug mode now only shows messages related to you: your own reactions, or those of mobs currently fighting you. Events between other creatures are no longer displayed.
+  Debug 模式现在只显示与自身相关的信息：你自己的反应，或正在与你战斗的生物的反应；其它生物之间的事件不再显示。
+
 ## [1.7.4] - 2026-09-01
 
 ### Added

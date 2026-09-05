@@ -27,7 +27,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.ThrownTrident;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.sounds.SoundEvents;
@@ -38,7 +38,6 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.lang.reflect.Field;
 import java.util.Random;
 
 @Mod.EventBusSubscriber(modid = ElementalCraft.MODID)
@@ -47,22 +46,6 @@ public class CombatEvents {
     private static final String NBT_SELF_DRYING_PENALTY = "EC_SelfDryingPenalty";
 
     private static final Random RANDOM = new Random();
-
-    private static final Field TRIDENT_ITEM_FIELD;
-    static {
-        Field field = null;
-        for (String name : new String[]{"tridentItem", "f_37555_"}) {
-            try {
-                field = ThrownTrident.class.getDeclaredField(name);
-                field.setAccessible(true);
-                break;
-            } catch (NoSuchFieldException ignored) {}
-        }
-        if (field == null) {
-            ElementalCraft.LOGGER.error("Failed to find ThrownTrident.tridentItem field");
-        }
-        TRIDENT_ITEM_FIELD = field;
-    }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onLivingDamageFireCounterReduction(LivingDamageEvent event) {
@@ -111,26 +94,10 @@ public class CombatEvents {
         ItemStack weaponStack = ItemStack.EMPTY;
         Entity directEntity = source.getDirectEntity();
 
-        if (directEntity instanceof ThrownTrident trident && TRIDENT_ITEM_FIELD != null) {
-            try {
-                ItemStack tridentStack = (ItemStack) TRIDENT_ITEM_FIELD.get(trident);
-                if (tridentStack != null && !tridentStack.isEmpty()) {
-                    weaponStack = tridentStack;
-                }
-            } catch (IllegalAccessException e) {
-            }
-        }
-        if (weaponStack.isEmpty()) {
-            ElementType consistentElement = ElementUtils.getConsistentAttackElement(attacker);
-            if (consistentElement != ElementType.NONE) {
-                ItemStack mainHand = attacker.getMainHandItem();
-                ItemStack offHand = attacker.getOffhandItem();
-                if (ElementUtils.getAttackElement(mainHand) == consistentElement) {
-                    weaponStack = mainHand;
-                } else if (ElementUtils.getAttackElement(offHand) == consistentElement) {
-                    weaponStack = offHand;
-                }
-            }
+        if (directEntity instanceof Projectile projectile && directEntity != attacker) {
+            weaponStack = ElementUtils.getProjectileWeaponStack(projectile, attacker);
+        } else if (ElementUtils.getConsistentAttackElement(attacker) != ElementType.NONE) {
+            weaponStack = attacker.getMainHandItem();
         }
 
         ElementType attackElement = ElementUtils.getAttackElement(weaponStack);

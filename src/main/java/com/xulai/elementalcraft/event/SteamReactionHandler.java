@@ -189,7 +189,7 @@ public class SteamReactionHandler {
             return;
         }
 
-        ElementType attackElement = ElementUtils.getConsistentAttackElement(attacker);
+        ElementType attackElement = ElementUtils.getConsistentAttackElement(event.getSource(), attacker);
 
         if (event.getSource().is(DamageTypeTags.IS_FIRE)) attackElement = ElementType.FIRE;
 

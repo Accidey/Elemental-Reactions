@@ -234,7 +234,7 @@ public class ReactionHandler {
         LivingEntity target = event.getEntity();
         Level level = target.level();
 
-        ElementType attackType = ElementUtils.getConsistentAttackElement(attacker);
+        ElementType attackType = ElementUtils.getConsistentAttackElement(event.getSource(), attacker);
         double naturePower = ElementUtils.getDisplayEnhancement(attacker, ElementType.NATURE);
         double firePower = ElementUtils.getDisplayEnhancement(attacker, ElementType.FIRE);
 
@@ -320,6 +320,7 @@ public class ReactionHandler {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onTryNatureCounter(LivingDamageEvent event) {
         if (event.getEntity().level().isClientSide) return;
+        if (event.getSource().getEntity() == null) return;
         LivingEntity target = event.getEntity();
         double bloodThreshold = ElementalFireNatureReactionsConfig.wildfireBloodThreshold;
         if (bloodThreshold <= 0) return;

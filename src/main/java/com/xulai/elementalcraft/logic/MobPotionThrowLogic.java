@@ -3,7 +3,6 @@ package com.xulai.elementalcraft.logic;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
-import com.xulai.elementalcraft.event.ScorchedHandler;
 import com.xulai.elementalcraft.event.WetnessHandler;
 import com.xulai.elementalcraft.event.iss.ISSCore;
 import com.xulai.elementalcraft.util.ElementType;
@@ -132,10 +131,7 @@ public class MobPotionThrowLogic {
             }
             ISSCore.throwSplashPoisonBottle(mob, target);
         } else {
-            if (ScorchedHandler.isScorched(target)) return;
-            if (ElementalFireNatureReactionsConfig.wetnessMaxLevel <= 0) return;
-            if (ElementalFireNatureReactionsConfig.wetnessNetherDimensionImmune
-                    && target.level().dimension() == Level.NETHER) return;
+            if (!WetnessHandler.canGainWetness(target)) return;
             int wetnessLevel = WetnessHandler.getWetnessLevel(target);
             if (wetnessLevel >= ElementalFireNatureReactionsConfig.wetnessMaxLevel) {
                 data.putInt(NBT_BOTTLE_ROUND, 0);

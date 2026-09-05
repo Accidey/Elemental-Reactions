@@ -140,6 +140,7 @@ public class FrostbiteHandler {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onTryFrostCounter(LivingDamageEvent event) {
         if (event.getEntity().level().isClientSide) return;
+        if (event.getSource().getEntity() == null) return;
         LivingEntity target = event.getEntity();
         double bloodThreshold = ElementalThunderFrostReactionsConfig.frostCounterBloodThreshold;
         if (bloodThreshold <= 0) return;
@@ -248,7 +249,7 @@ public class FrostbiteHandler {
         if (!(sourceEntity instanceof LivingEntity attacker)) return;
         LivingEntity target = event.getEntity();
 
-        ElementType attackType = ElementUtils.getConsistentAttackElement(attacker);
+        ElementType attackType = ElementUtils.getConsistentAttackElement(event.getSource(), attacker);
         double frostPower = ElementUtils.getDisplayEnhancement(attacker, ElementType.FROST);
 
         if (attackType != ElementType.FROST) return;
@@ -917,7 +918,7 @@ public class FrostbiteHandler {
             boolean isElemental = source.is(DamageTypeTags.IS_FIRE) || source.is(ModDamageTypes.FROSTBITE_THERMAL_SHOCK) || source.is(ModDamageTypes.LAVA_MAGIC) || source.is(ModDamageTypes.STATIC_SHOCK) || source.is(ModDamageTypes.SPORES) || source.is(ModDamageTypes.STEAM_SCALDING) || ISSCore.isISSMagicDamage(source);
 
             if (source.getEntity() instanceof LivingEntity attacker) {
-                ElementType attackElement = ElementUtils.getConsistentAttackElement(attacker);
+                ElementType attackElement = ElementUtils.getConsistentAttackElement(source, attacker);
                 if (attackElement != ElementType.NONE) {
                     isElemental = true;
                 }

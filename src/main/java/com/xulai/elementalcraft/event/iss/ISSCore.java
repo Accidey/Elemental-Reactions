@@ -558,7 +558,7 @@ public class ISSCore {
         if (pendingCast > 0) return false;
 
         int wetnessMax = ElementalFireNatureReactionsConfig.wetnessMaxLevel;
-        if (wetnessMax <= 0) return true;
+        if (!WetnessHandler.canGainWetness(target)) return true;
         int wetness = WetnessHandler.getWetnessLevel(target);
         if (wetness >= wetnessMax) {
             data.putInt(NBT_MOB_BOTTLE_ROUND, 0);

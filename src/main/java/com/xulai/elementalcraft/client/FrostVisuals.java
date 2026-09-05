@@ -166,7 +166,7 @@ public class FrostVisuals {
         if (event.getEntity() instanceof Projectile projectile) {
             Entity owner = projectile.getOwner();
             if (owner instanceof LivingEntity shooter) {
-                ElementType type = ElementUtils.getConsistentAttackElement(shooter);
+                ElementType type = ElementUtils.getAttackElement(ElementUtils.getProjectileWeaponStack(projectile, shooter));
                 if (type == ElementType.FROST) {
                     int tier = calculateVisualTier(shooter, type);
                     if (tier > 0) {
