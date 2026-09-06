@@ -54,20 +54,6 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    maven { url 'https://libraries.minecraft.net/' }
-    maven { url 'https://maven.aliyun.com/repository/public/' }
-    maven { url 'https://maven.aliyun.com/repository/google/' }
-    maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
-    maven {
-        name = 'BMCLAPI'
-        url = 'https://bmclapi2.bangbang93.com/maven'
-    }
-    maven {
-        name = 'MinecraftForge'
-        url = 'https://maven.minecraftforge.net/'
-    }
-    
-    mavenLocal()
 }
 
 dependencies {
