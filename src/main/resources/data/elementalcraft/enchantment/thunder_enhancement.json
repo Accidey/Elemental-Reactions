@@ -1,0 +1,26 @@
+{
+  "anvil_cost": 8,
+  "description": {
+    "translate": "enchantment.elementalcraft.thunder_enhancement"
+  },
+  "effects": {},
+  "exclusive_set": "#elementalcraft:thunder_enhancement_exclusive",
+  "max_cost": {
+    "base": 40,
+    "per_level_above_first": 10
+  },
+  "max_level": 5,
+  "min_cost": {
+    "base": 10,
+    "per_level_above_first": 10
+  },
+  "primary_items": "#minecraft:enchantable/armor",
+  "slots": [
+    "head",
+    "chest",
+    "legs",
+    "feet"
+  ],
+  "supported_items": "#minecraft:enchantable/armor",
+  "weight": 2
+}
