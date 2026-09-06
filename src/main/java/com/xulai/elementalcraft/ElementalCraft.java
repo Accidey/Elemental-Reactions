@@ -56,8 +56,6 @@ public class ElementalCraft {
         modEventBus.addListener(this::onConfigLoad);
         modEventBus.addListener(this::registerPayloads);
 
-        NeoForge.EVENT_BUS.register(TooltipEvents.class);
-        NeoForge.EVENT_BUS.register(ModCommands.class);
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
 
         LOGGER.info("§a[ElementalCraft] Mod Constructed!");
