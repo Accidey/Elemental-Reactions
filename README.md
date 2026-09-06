@@ -1,5 +1,7 @@
 # ElementalCraft: Reactions（中文描述在下方）
 
+**Support 1.21.1 and 26.2 NeoForge Now！！！**
+
 Welcome to **ElementalCraft: Reactions**! This Minecraft mod introduces a new elemental attribute system, reaction mechanics, dedicated enchantments, and visual effects on top of vanilla survival and combat.
 
 **If you have good ideas or encounter problems, please submit an issue on github（github.com/Accidey/elementalcraft）, and I will review and resolve it as soon as possible.**
@@ -24,13 +26,13 @@ The mod adds 12 dedicated enchantments (3 per element) for weapons and armor:
 
 ### Weapon Enchantments
 - **Fire Aspect / Nature Aspect / Frost Aspect / Thunder Aspect**: Imbues the weapon with the corresponding element, dealing additional elemental damage to enemies.
-  - Can be applied to all weapons that deal damage . (Previously limited to swords, axes, tridents, bows, and crossbows)
+  - Can be applied to all weapons that deal damage. (Previously limited to swords, axes, tridents, bows, and crossbows)
   - Mutually exclusive with Fire Aspect (vanilla), Flame, and Channeling.
   - Different elemental Aspect enchantments are also mutually exclusive.
 
 ### Armor Enchantments (Enhancement + Resistance)
 - **Fire / Nature / Frost / Thunder Enhancement**: Increases the wearer's enhancement stat for the corresponding element (fixed percentage per level).
-- **Fire / Nature / Frost / Thunder Resistance**: Redcribes incoming elemental damage of the corresponding type.
+- **Fire / Nature / Frost / Thunder Resistance**: Reduces incoming elemental damage of the corresponding type.
   - Can only be applied to armor (helmet, chestplate, leggings, boots).
   - Enhancement and Resistance of the same element can coexist on the same piece.
   - Different Enhancement enchantments are mutually exclusive; same for Resistance.
@@ -51,12 +53,12 @@ The mod adds 6 new status effects:
 
 | Effect | Description |
 |--------|-------------|
-| **Wetness** | Triggers elemental reactions when hit by elemental attacks. Slowly fades away from water; maintained or increased in rain/water. Increases hunger exhaustion. |
-| **Flammable Spores** | Parasitic spores deal poison damage over time and corrode equipment durability. Fire and Static Shock detonate them; Frostbite suppresses them. |
-| **Static Shock** | Takes random damage periodically. At high stacks, forms a Static Aura that damages nearby entities, detonates Spores and Creepers, and causes them to flee. Conducts electricity when wet; can also break Freeze. |
-| **Paralysis** | Unable to act; mob AI is disabled. Continuously sinks and takes drowning damage in water. |
-| **Frostbite**  | Takes ice damage every 5 seconds; movement speed and attack speed are reduced. At high stacks, forms a Frostbite Aura that applies frostbite to entities in range and forces them to flee. Contact with Wetness causes freezing! |
-| **Freeze**  | Completely immobilized! Unable to move or attack; takes periodic ice damage; mob AI disabled. Physical melee/projectile attacks are blocked by the ice shell, but elemental attacks penetrate and deal attribute damage. Fire attacks (strong enough) instantly break Freeze and convert it to Wetness. |
+| **Wetness** | A stacking effect that acts as a catalyst for elemental reactions. Gained from water, rain, snow, splash water bottles, and low‑heat steam clouds (condensation). Decays over time when away from water sources, but decay speed is affected by biome temperature and nearby heat sources (fire, lava, campfires, furnaces). Hot biomes dry faster, cold biomes slow drying. Fire and Scorched instantly remove Wetness. While wet, hunger exhaustion increases. Wetness is required for Paralysis (with Static) and Freeze (with Frostbite), and can also convert to Spores. |
+| **Flammable Spores** | A stacking parasitic infection that deals periodic poison damage and corrodes equipment durability. Gained from Nature attacks (Nature Parasite), Spore Contagion, or converting Wetness. Spores are suppressed by Frostbite (damage and corrosion paused, duration decays faster) and completely cleared by Freeze. Fire and Static Shock detonate Spores, causing a Toxic Blast explosion (damage and range scale with stack count; low stacks cause a weak ignite instead). Spore duration is affected by the target's own element: Fire reduces duration; Nature, Thunder, and Frost increase it. Cold biomes also reduce duration. At high stacks, Spores spread to nearby hostile mobs. Spores are immune to entities with high Nature Resistance or those on the blacklist. |
+| **Static Shock** | A stacking electrical charge that deals random damage periodically. High stacks form a Static Aura that damages nearby entities, detonates Spores, ignites Creepers, and forces mobs to flee. Conducts electricity when wet (triggers Paralysis or Water Electrification) and can also break Freeze. Damage type and multiplier depend on the target's own element. Immune to entities with high Thunder Resistance or blacklisted. |
+| **Paralysis** | A powerful crowd-control effect that completely immobilizes the target: unable to move, attack, cast spells, or use items; mob AI is disabled. While in water, the target sinks at 1 block per second and takes drowning damage every second. Immune to blacklisted entities. |
+| **Frostbite** | A stacking frost infection that deals periodic ice damage and reduces movement/attack speed (scaling with stacks, up to 90% slow). High stacks form a Frostbite Aura that applies temporary Frostbite to nearby entities, freezes wet targets, clears Scorched from them, and forces fleeing. Frostbite is suppressed by heat sources and instantly cleared by fire or Scorched. Duration decays faster in hot biomes and near heat sources. Immune to entities with high Frost Resistance or blacklisted. |
+| **Freeze** | A devastating crowd-control effect that completely immobilizes the target (no movement, attack, or AI). The ice shell blocks all physical melee and projectile damage, but elemental attacks (Fire, Frost, Thunder, Nature, ISS magic) penetrate and deal full damage. Periodic ice damage is dealt. While in water, the target sinks at 2 blocks per second (twice as fast as Paralysis) and takes drowning damage every second. Freeze is triggered by combining Frostbite with Wetness. It can be broken by strong Fire attacks (converts to Wetness) or by Scorched (converts to Steam). Static can also break Freeze with a chance. Freeze clears Spores and can be refreshed by Frost spells. Immune to blacklisted entities. |
 
 Duration, damage, and other parameters are configurable.
 
@@ -71,15 +73,14 @@ Duration, damage, and other parameters are configurable.
 | **Scorched Aura**  | Scorched entity has high enough Fire power | Periodically damages entities in range, applies temporary Scorched, clears Frostbite from nearby entities, detonates Creepers, forces nearby mobs to flee. |
 | **Poison Boost**  | Scorched target has Poison effect | Consumes the Poison effect to boost Scorched: extends duration and increases damage multiplier. |
 | **High-Heat Steam Cloud** | Fire attack + target is Wet | Spawns a High-Heat Steam Cloud. Periodically scalds entities inside (fire damage, scales with level). Clears Wetness and Frostbite from entities inside. Applies Blindness. Clears aggro. Fire-immune entities take reduced damage. |
-| **Low-Heat Steam Cloud** | Generated from Self-Drying, Thermal Shock, or Freeze→Steam | Slowly applies Wetness (condensation) and Blindness to entities inside.  Can be electrified by Static entities (→ damage + Paralysis) or frosted by Frostbite entities (→ freeze entities inside). Electrified/Frosted clouds prevent further condensation. |
+| **Low-Heat Steam Cloud** | Generated from Self-Drying, Thermal Shock, or Freeze→Steam | Slowly applies Wetness (condensation) and Blindness to entities inside. Can be electrified by Static entities (→ damage + Paralysis) or frosted by Frostbite entities (→ freeze entities inside). Electrified/Frosted clouds prevent further condensation. |
 
 ### Nature Reactions
 
 | Reaction | Trigger | Effect |
 |---------------|-------------------|--------|
 | **Nature Parasite** | Nature attack (chance scales with Nature Enhancement; Wetness bonus, stacking bonus) | Applies Flammable Spores stacks. Immune if Nature Resistance ≥ threshold. Frozen targets are immune. |
-| **Nature Counter** | Nature-aligned entity enters Scorched state (victim's Nature Enhancement ≥ threshold) | Knocks back nearby hostile enemies and applies Spores to them. Can optionally clear the victim's Scorched state. |
-| **Spore Contagion** | Spore stacks reach threshold | Periodically spreads Spores to nearby entities. Wetness on targets converts Wetness stacks to additional Spore stacks. Only spreads to hostile mobs, not players or tamed animals. |
+| **Spore Contagion** | Spore stacks reach the threshold (default 3) | Spreads repeatedly (every 20 ticks) while the source's spore effect lasts. Transferred stacks = source stacks − 2 (min 1); radius grows with stacks. Target Wetness converts to Spores first. Each entity can only be infected once per spore effect, and never infects back its original source; re-infection is possible after the effect ends. By default spreads to any nearby entity without Spores (including players and tamed animals); a config option restricts it to hostile mobs. Infected entities do not spread further by default (chain contagion is configurable). |
 | **Toxic Blast** | Scorched target has Flammable Spores | **Low stacks (< threshold):** Weak blast — applies reduced Scorched without explosion. **High stacks (≥ threshold):** Full explosion — area damage with radius scaling by Spore stacks, applies enhanced Scorched to all nearby entities. Can chain-detonate nearby targets with Spores ≥ threshold. |
 
 ### Thunder Reactions
@@ -91,7 +92,6 @@ Duration, damage, and other parameters are configurable.
 | **Water Electrification**  | Static entity enters/stands in water | Electrifies a zone of water, dealing settlement damage and Paralysis to all entities in the water. Clears the source entity's Static and Wetness. |
 | **Static Spore Blast** | Entity with Static (or in Static Aura range) has Spores | Chance to detonate Spores based on Static and Spore stacks. |
 | **Paralysis** | Static target gains Wetness (or Static Aura hits wet target) | Clears Static and Wetness, converts to Paralysis, deals remaining Static damage. |
-| **Thunder Counter** | Nature attack hits a Thunder-aligned entity with Spores | Thunder entity counter-attacks the attacker with lightning, applying Paralysis (if wet) or Static (if not wet). |
 | **Static Steam Cloud**  | Static entity enters Low-Heat Steam Cloud | Electrifies the steam cloud, dealing settlement damage and Paralysis to all entities inside. |
 
 ### Frost Reactions 
@@ -115,7 +115,21 @@ Duration, damage, and other parameters are configurable.
 |---------------|-------------------|--------|
 | **Thermal Shock** | Scorched target contacts water | Instantly deals remaining Scorched damage and clears Scorched. Generates Low-Heat Steam Cloud. Vaporizes water at the contact point. |
 
-All reaction parameters are configurable.
+### 🩸 Elemental Counters (Blood-Triggered Reversal)
+
+When an element-aligned entity takes damage that would drop its HP below a configurable **blood threshold**, it may trigger a powerful counter-attack. All counters share the same framework:
+- The entity's consistent element must match the counter's element.
+- The entity's corresponding Enhancement points must reach the counter's strength threshold.
+- After triggering, the counter enters a **health-recovery cooldown**: the entity cannot counter again until its HP heals back above a configurable recovery threshold.
+
+| Counter | Trigger | Effect |
+|---------------|-------------------|--------|
+| **Fire Counter** | Fire-aligned entity at low HP (Fire Enhancement ≥ threshold; Fire Resistance below Scorched immunity threshold) | Locks itself in place with **90% damage reduction against ALL incoming damage**; a contracting fire ring pulls nearby entities toward the center; then explodes: area knockback + Fire damage + unconditional Scorched applied to all affected entities, with a fire tornado visual. |
+| **Nature Counter** | Nature-aligned entity at low HP (Nature Enhancement ≥ threshold) | Eruption knocks back all nearby enemies and applies Spores to them; optionally clears the victim's own Scorched state (configurable). |
+| **Thunder Counter** | Thunder-aligned entity at low HP (Thunder Enhancement ≥ threshold) | Summons a localized thunderstorm that expands to max radius: periodic lightning strikes deal lightning damage, apply max-stack Paralysis and additional Static stacks, and force Wetness on affected entities over time. |
+| **Frost Counter** | Frost-aligned entity at low HP (Frost Enhancement ≥ threshold) | Triggers an ice burst (Frost Burst) centered on the entity. The burst expands to max radius, then lingers for 40 ticks. Entities within the area are affected: Frostbite is applied (scaled by the caster's Frost Enhancement), and wet targets are additionally frozen (Freeze). Also spawns a frosted steam cloud. |
+
+All counter parameters (blood thresholds, strength thresholds, recovery ratios, radii, damage) are configurable.
 
 ## 🌍 Biome Element Bias
 
@@ -127,25 +141,34 @@ Different biomes grant element tendencies to spawned mobs:
 
 ## 🧟 Mob Attribute System
 
-Mobs can randomly gain elemental attributes at spawn based on biome bias and configuration:
+Mobs can gain elemental attributes at spawn through a priority-based system:
 
-### Attribute Assignment
-- **Hostile mobs** (Monster) have a configurable chance to gain elemental attributes at spawn.
-- **Neutral mobs** (NeutralMob, Piglins) have a separate, lower chance.
-- Blacklisted mobs will not gain attributes.
-- The assigned element is determined by **biome element bias** (e.g. Nether → Fire, End → Thunder).
-- Each mob can gain: **Attack element** (chance-based), **Enhancement points** (distributed across 4 armor slots), **Resistance points** (distributed across 4 armor slots).
-- The resistance type may be the attack element's **counter element** (configurable chance).
+### Attribute Assignment Priority
+1. **Blacklist**: Mobs in the attribute blacklist never gain any attributes.
+2. **Forced Attributes (Commands)**: If an admin has configured forced attributes for a mob type via commands (`/elementalcraft entity add`), those attributes are applied with highest priority.
+3. **Dimension Defaults**: If no forced attributes exist:
+   - **Nether**: Mobs default to Fire attribute (configurable points).
+   - **End**: Mobs default to Thunder attribute (configurable points).
+4. **Random Generation (Chance-based)**:
+   - **Hostile mobs** (Monster) have a configurable chance to gain attributes.
+   - **Neutral mobs** (NeutralMob, Piglins) have a separate, lower chance.
+   - The assigned element is determined by **biome element bias** (e.g. Desert → Fire, Snowy Plains → Frost).
+   - Each mob can gain: **Attack element** (chance-based), **Enhancement points** (distributed across 4 armor slots), **Resistance points** (distributed across 4 armor slots).
+   - The resistance type has a configurable chance to be the attack element's **counter element** (e.g. Fire mob with Frost resistance).
 
 ### Equipment & Durability
-- Mobs with an attack element receive a **random weapon** (sword, axe, pickaxe, shovel, etc.) with the corresponding **elemental Aspect enchantment** and **Unbreaking III**.
-- If the mob already has a held weapon, the enchantments are applied directly without replacement.
-- Armor is automatically generated (if missing) with **Enhancement** and/or **Resistance enchantments** + **Unbreaking III**, with points distributed proportionally across the 4 armor slots.
-- All equipment drop chances default to 0% (equipment does not drop).
+- Mobs with an attack element receive:
+  - **Weapon**: A random weapon (sword, axe, pickaxe, shovel, etc.) with the corresponding **elemental Aspect enchantment** and **Unbreaking III**.
+  - **If the mob already has a held weapon**: The enchantments are applied directly to the existing weapon without replacement.
+  - **Armor**: Armor is automatically generated (if missing) with **Enhancement** and/or **Resistance enchantments** + **Unbreaking III**, with points distributed proportionally across the 4 armor slots.
+- All equipment drop chances default to 0% (equipment does not drop). Attribute data is stored in NBT for enchanted book drops.
 
 ### Enchanted Book Drops
 - Element-aligned mobs have a chance to drop **enchanted books** on death (affected by Looting).
-- Books may contain the mob's **Aspect enchantment**, **Enhancement enchantment** (random level based on enhancement points), or **Resistance enchantment** (random level based on resistance points).
+- Books may contain the mob's:
+  - **Aspect enchantment**
+  - **Enhancement enchantment** (random level based on enhancement points)
+  - **Resistance enchantment** (random level based on resistance points)
 - Book level weighting favors the mob's actual attribute quality.
 
 ### Dimension Defaults
@@ -154,67 +177,76 @@ Mobs can randomly gain elemental attributes at spawn based on biome bias and con
 
 ### Mob Flee Behavior
 - Mobs near entities with **Scorched Aura**, **Frostbite Aura**, or **Static Aura** effects will attempt to **flee** (path away from the aura source; can be disabled in config).
-- If stuck while fleeing, mobs will try to jump over 1-block-high obstacles.
-- Fleeing lasts up to 200 ticks (10 seconds), stopping when the target point is reached or the aura source is far enough.
+- **Flee mechanics**:
+  - Mob AI is temporarily disabled (`setNoAi(true)`), and the current attack target is cleared.
+  - The mob calculates an escape path away from the aura source, avoiding obstacles.
+  - If stuck (5 ticks with less than 0.05 blocks moved), the mob will attempt to jump over 1-block-high obstacles or teleport to a valid standing position.
+  - Fleeing lasts up to **200 ticks (10 seconds)** , stopping when the target point is reached or the aura source is far enough away.
+- **Suppression**: Fleeing is disabled if the mob is immobilized by Iron's Spellbooks **Root** spell.
+
+### Tactical Potion Throwing (All Element-aligned Mobs)
+- **All mobs that have an attack element** (Fire, Nature, Thunder, Frost) and **are NOT ISS casters** have a configurable chance to equip a splash potion in their offhand.
+- **Potion type depends on the mob's element**:
+  - **Fire‑aligned mobs** equip a **Splash Potion of Poison** (to trigger the Poison Boost effect for Scorched).
+  - **Nature, Thunder, and Frost‑aligned mobs** equip a **Splash Water Bottle** (to apply Wetness, which is required for Nature Parasite bonus, Paralysis, or Freeze reactions).
+- **Throwing behavior**:
+  - The mob throws the potion at its target when the target is within 12 blocks, has line of sight, is not already affected by the desired effect, and is not Scorched (for water bottles).
+  - After throwing, the mob waits 20 ticks to check if the effect was successfully applied:
+    - **Success**: The mob continues normal combat.
+    - **Failure (effect not applied)**: Counts as a miss.
+  - After **3 consecutive misses**, the mob gives up and stops throwing potions (enters a long cooldown).
+- This behavior is disabled in the Nether if `wetnessNetherDimensionImmune` is enabled (water bottles are not equipped; poison potions may still be used in the Nether depending on config).
 
 ## 🛠️ Command System (Admin/OP)
 
 All commands start with `/elementalcraft` and support Tab completion.
 
 ### Debug Mode
-```
+
 /elementalcraft debug  # Toggle debug mode, shows elemental damage calculation and reaction info
-```
 
 ### Reload Config 
-```
+
 /elementalcraft reload  # Reload all config caches from disk
-```
 
 ### Biome Bias Management
-```
+
 /elementalcraft biome add <element> <probability>
 /elementalcraft biome remove <element>
 /elementalcraft biome list
-```
 
 ### Forced Entity Attributes
-```
+
 /elementalcraft entity add <attack element> [enhancement element] [enhancement points] [resistance element] [resistance points]
 Example: /elementalcraft entity add fire fire 50 frost 20
 Points support fixed values (e.g. 50) or ranges (e.g. 20-80)
 All parameters after attack element are optional (default: none, 0, none, 0)
 /elementalcraft entity remove              # Clears forced attributes for the held spawn egg
-```
 
 ### Entity Attribute Blacklist
-```
+
 /elementalcraft entity blacklist add <element>     # Held spawn egg: prevent this entity from gaining the specified element (or "all" for all elements)
 /elementalcraft entity blacklist remove <element>
 /elementalcraft entity blacklist list
-```
 
 ### Forced Item Attributes
 - **Weapons**:
-```
+
 /elementalcraft item weapon add <element>       # Bind attack attribute (held weapon)
 /elementalcraft item weapon remove           # Remove forced weapon attribute (held weapon)
-```
 
 - **Armor**:
-```
+
 /elementalcraft item armor add <enhancement element> [enhancement points] [resistance element] [resistance points]
-# Bind enhancement + resistance attributes (held armor)
-# Enhancement element is required; points, resistance element, and resistance points are optional (default: 0, none, 0)
+Bind enhancement + resistance attributes (held armor)
+Enhancement element is required; points, resistance element, resistance points are optional (default: 0, none, 0)
 /elementalcraft item armor remove            # Remove forced armor attributes (held armor)
-```
 
 ### Effect Immunity Blacklist
-```
-# Command format (using Scorched as example):
+
+Command format (using Scorched as example):
 /elementalcraft blacklist scorched add/remove/list
-# All effects: scorched, spore, static, paralysis, frostbite, freeze, steam, wetness
-```
+All effects: scorched, spore, static, paralysis, frostbite, freeze, steam, wetness
 
 ### Config File Operations
 - Changes made via commands are automatically saved and hot-loaded; no server restart needed.
@@ -253,104 +285,123 @@ Config files are located in `config/ElementalCraft/`:
 |------|---------|
 | **elementalcraft-common.toml** | Element restraints, damage multipliers, biome bias, enchantment stats, forced entities/blacklists, dimension attributes, etc. |
 | **elementalcraft-forced-items.toml** | Forced item attributes (can be added via commands). |
-| **elementalcraft-fire-nature-reactions.toml** | Fire and Nature reaction parameters (Scorched, Spores, Steam, Toxic Blast, etc.). |
-| **elementalcraft-thunder-frost-reactions.toml** | Thunder and Frost reaction parameters (Static, Paralysis, Frostbite, Freeze, Water Electrification, etc.). Frost parameters added in V1.7.0. |
+| **elementalcraft-fire-nature-reactions.toml** | Fire and Nature reaction parameters (Scorched, Spores, Steam, Toxic Blast, Fire/Nature Counters, etc.). |
+| **elementalcraft-thunder-frost-reactions.toml** | Thunder and Frost reaction parameters (Static, Paralysis, Frostbite, Freeze, Water Electrification, Thunder/Frost Counters, etc.). |
 | **elementalcraft-visuals.toml** | Particle effect toggles, density, angles, speed, etc. |
 
 Hot-reload supported: configurations refresh automatically after save.
 
 ## 🔗 Iron's Spellbooks Integration
 
-When **Iron's Spellbooks** is installed alongside ElementalCraft, additional integration features are enabled. All spell reaction chances and intensities are calculated based on the caster's corresponding element enhancement points (spell rarity → stacks, best spell level matched to enhancement points).
+When **Iron's Spellbooks** is installed alongside ElementalCraft, additional integration features are enabled. All spell reaction chances and intensities are calculated based on the caster's corresponding element enhancement points, with the best spell level matched to the caster's power.
 
 ### Caster Mob Spawning
 - Mobs with an attack element have a chance to become **ISS spell caster mobs** at spawn.
 - Caster spawn chance is controlled by a unified config value `casterMobChance` (shared across all elements).
 - Caster type is tied to the attack element (Thunder → Thunder caster, Nature → Nature caster, etc.).
 - A caster blacklist can prevent specific entities from becoming casters.
-- Nature casters with the Acid Orb spell additionally receive a random weapon (main hand), with the scroll in the off hand.
+- **Nature casters** with the Acid Orb spell equip the scroll in the offhand and a random weapon in the main hand.
+- **Frost casters** with the Summon Polar Bear spell equip the scroll in the offhand and a random weapon in the main hand.
 
 ### Fire Spell Reactions
 - Fire spells (Firebolt, Fireball, Burning Dash, Magma Bomb, Flaming Barrage, Flaming Strike, Scorch, Heat Surge, Blaze Storm, Fire Breath, Fire Arrow) have a chance to apply **Scorched** on hit, replacing ISS's built-in fire effect.
-- **Blaze Storm** (each small fireball independently rolls for Scorched with a cooldown between triggers) and **Flaming Barrage** each roll independently.
-- **Flaming Strike** and **Raise Hell** have dedicated handlers that trigger Scorched through the main spell reaction path.
-- **Fire Field / Wall of Fire** continuously applies Scorched over time to entities in range; first checks for **Fire Freeze Melt** on frozen targets, then checks **Wetness** for High-Heat Steam Cloud, then applies Scorched.
+- **Blaze Storm** fires multiple small fireballs; each can trigger Scorched independently, but with a cooldown between triggers.
+- **Flaming Strike** and **Raise Hell** have dedicated handlers that trigger Scorched.
+- **Fire Field / Wall of Fire** continuously applies Scorched over time to entities inside; it first checks for **Fire Freeze Melt** on frozen targets, then checks **Wetness** for High-Heat Steam Cloud, and finally applies Scorched.
 - If the target has **Poison** or **Flammable Spores**, the Scorched trigger chance is boosted to **100%** and damage is amplified.
-- A Nature-aligned target with both Spores and Scorched can trigger **Nature Counter** (knocks back enemies and clears Scorched).
 
 ### Nature Spell Reactions
 - Nature spells (Acid Orb, Poison Arrow, Earthquake, Firefly Swarm, Poison Spray, Poison Splash, Root, Stomp) trigger **Nature Parasite** (apply Flammable Spores) on hit.
-- **Poison-type spells** (Poison Arrow, Poison Spray, Poison Splash) do NOT apply Spores — they are explicitly excluded from spore application.
+- **Poison-type spells** (Poison Arrow, Poison Spray, Poison Splash) do NOT apply Spores — they only apply vanilla Poison.
 - **Acid Orb** applies Spores in an AoE (3.5 block radius) on impact, affecting all nearby entities.
-- **Root** applies initial Spores on hit, then continuously applies additional Spores every second while the target remains Rooted.
+- **Root** applies initial Spores on hit, and while the target remains Rooted, additional Spores are applied continuously over time. If a Rooted target is hit by **Scorched**, Root is removed and the Scorched duration and damage are enhanced (similar to Poison boost).
 
 ### Thunder Spell Reactions
 - Thunder spells (Lightning Lance, Chain Lightning, Ball Lightning, Electrocute, Lightning Bolt, Shockwave, Thunderstorm, Ascension, Volt Strike) apply **Static Shock** stacks based on the caster's Thunder Enhancement.
 - If target has **Wetness**, triggers **Paralysis** (clears Wetness, converts to Paralysis).
-- If target is **in water**, triggers **Water Electrification** — creates a persistent electrified water zone per dimension that periodically damages and paralyzes aquatic entities.
+- If target is **in water**, triggers **Water Electrification** — creates a persistent electrified water zone that periodically damages and paralyzes aquatic entities.
 - If target has **Flammable Spores**, triggers **Spore Blast**.
 - If target is in a **Low-Heat Steam Cloud**, electrifies the cloud, dealing damage and Paralysis to entities inside.
-- **Electrocute** can refresh **Paralysis** duration on paralyzed targets. After electrocuting ends, the caster enters a Paralysis cooldown.
-- Vanilla **Lightning Bolt** hitting a wet target: if Water Electrification is available, triggers it; otherwise applies max Static Shock stacks and immediately resolves Wetness conflict.
+- **Electrocute** can refresh Paralysis duration on paralyzed targets, and the caster enters a cooldown after the spell ends.
+- Vanilla **Lightning Bolt** hitting a wet target: if Water Electrification is available, it triggers; otherwise applies max Static Shock stacks and resolves Wetness conflict.
 
 ### Frost Spell Reactions
 - Frost spells (Cone of Cold, Icicle, Ray of Frost, Frostwave, Ice Spikes, Snowball, Frostbite, Blizzard, Ice Tomb, Summon Polar Bear) have a chance to apply **Frostbite** based on the caster's Frost Enhancement.
-- **Blizzard** AoE continuously applies Frostbite every second to all entities inside the blizzard area.
-- **Ice Tomb** is specially handled for caster mobs — directly traps the target with a 5-second duration.
+- **Blizzard** AoE continuously applies Frostbite every second to all entities inside.
+- **Ice Tomb** is specially handled for caster mobs — directly traps the target for a short duration.
 - If the target has **Wetness**, triggers **Freeze** (Frostbite + Wetness → Freeze).
 - Frost spells hitting an already-frozen target **refresh** the Freeze duration, keeping the target immobilized longer.
 - ISS's **Chilled** effect combined with Wetness converts to **Freeze** automatically.
-- **Polar Bear** casters' summoned bears are automatically removed on caster death.
+- **Polar Bear** casters summon a bear; they track its status and re-summon if killed (up to 3 times). Bears are removed when the caster dies.
 
 ### Poison Cloud + Fire Reaction
-- When a **Scorched target** enters an ISS **Poison Cloud**, the cloud enhances the Scorched duration and damage multiplier (poison boost), then dissipates with a poof effect.
+- When a **Scorched target** enters an ISS **Poison Cloud**, the cloud enhances the Scorched duration and damage multiplier (poison boost), then dissipates with a puff effect.
 - Scorched Aura entities near a Poison Cloud can also trigger this reaction.
 
 ### ROOT Spell Integration
 - **ROOT** spell applies **Flammable Spores** stacks on hit based on the caster's Nature Enhancement.
-- While ROOTed, additional Spores are applied every second based on the caster's Nature Enhancement.
-- If a ROOTed target is hit by **Scorched** (Fire attack triggers), ROOT is removed, and the Scorched duration and damage multiplier are enhanced (same mechanic as the Poison boost).
-- ROOT immobilization suppresses mob flee behavior — affected mobs stop fleeing attempts.
+- While ROOTed, additional Spores are applied over time.
+- If a ROOTed target is hit by **Scorched**, ROOT is removed, and the Scorched duration and damage are enhanced (same as Poison boost).
+- ROOT immobilization suppresses mob flee behavior — affected mobs stop fleeing.
 
 ### Caster Mob AI
 
 All 4 element caster mobs share the following behaviors:
-- Automatically equipped with the corresponding element's **spell scroll** (main/off hand) and **elemental Aspect enchantment** at spawn.
+- Automatically equipped with the corresponding element's **spell scroll** and **elemental Aspect enchantment** at spawn.
 - Spell level is selected based on the mob's enhancement points via a rarity-matching algorithm to pick the most appropriate level.
 - Enters **aggressive mode** (more frequent casting) below **50%** health.
 - Scroll drop chance is configurable (default: 100%).
 - **Drop enchantment cleansing**: Items with elemental Aspect enchantments dropped by ISS caster mobs are automatically de-enchanted (prevents infinite farming of elemental enchantments from mob kills).
 
-**Fire caster mobs**: Equipped with splash poison potions. Throws poison at the target before casting fire spells — if target is wet, triggers High-Heat Steam Cloud first (consumes Wetness); once Wetness is cleared, Poison guarantees 100% Scorched trigger chance and enhances Scorched duration.
+**Fire caster mobs**:
+- Equipped with a **Splash Potion of Poison** in the offhand.
+- Throws poison at the target before casting spells. If the target is wet, it triggers High-Heat Steam Cloud first (consumes Wetness). Once Wetness is cleared, Poison ensures 100% Scorched trigger chance and enhances duration.
+- If the poison fails to apply multiple times, the caster enters a cooldown.
 
 **Nature caster mobs**:
-- With Acid Orb: Special AI loop (cast → wait for hit → check **REND** effect → if applied, melee while REND lasts; if missed, retry; 2 consecutive misses triggers cooldown).
-- Other spells: Standard casting, checks target paralysis immunity.
+- **Do NOT throw any potions**.
+- **With Acid Orb**: Special AI loop — casts, waits for hit, checks if target has the **REND** effect. If REND is applied, it switches to melee; if not, it retries; 2 consecutive misses trigger a cooldown.
+- **With other spells**: Standard casting, checks target paralysis immunity.
 
 **Thunder caster mobs**:
-- Throws **splash water bottles** to apply Wetness before casting to trigger Paralysis.
-- Tracks target's Wetness status; only throws bottle if target is not already wet.
-- If `wetnessNetherDimensionImmune` is enabled, does not equip water bottles in the Nether (Wetness is disabled).
+- Equipped with a **Splash Water Bottle** in the offhand.
+- Throws water to apply Wetness before casting to trigger Paralysis.
+- Tracks target's Wetness status; only throws if target is not already wet.
+- If the target remains dry after throwing, it counts as a miss; 2 misses trigger a cooldown.
+- Does not equip water bottles in the Nether if `wetnessNetherDimensionImmune` is enabled.
 
 **Frost caster mobs**:
-- Throws **splash water bottles** to apply Wetness before casting to trigger Freeze.
-- Can cast **Summon Polar Bear** — after casting, periodically checks if the bear is alive; if dead, re-summons (up to 3 total summons, 48-block search range).
-- Caster's polar bears are automatically removed when the caster dies.
-- If `wetnessNetherDimensionImmune` is enabled, does not equip water bottles in the Nether (Wetness is disabled).
+- Equipped with a **Splash Water Bottle** in the offhand (except Summon Polar Bear casters).
+- Throws water to apply Wetness before casting to trigger Freeze.
+- Same miss-tracking as Thunder casters.
+- **Summon Polar Bear** casters do not equip water bottles. After casting, they check if the bear is alive (48-block range) and re-summon if dead (up to 3 times). Bears are removed on caster death.
+- Does not equip water bottles in the Nether if `wetnessNetherDimensionImmune` is enabled.
 
 ### Other Integration Details
-- **Non-aggressive spell exclusion**: Heat Surge, Acid Orb, Oakskin, Fire Breath, Cone of Cold, and Electrocute do not trigger aggressive casting.
+- **Non-aggressive spell exclusion**: Heat Surge, Acid Orb, Oakskin, Fire Breath, Cone of Cold, and Electrocute do not trigger aggressive casting (they are excluded from aggressive mode).
 - **Scroll Rarity Matching**: Mobs calculate the best spell level from their enhancement points by matching closest rarity value.
-- **Player Spell Tracking**: When a player casts a spell, the last spell ID, level, and cast source are tracked on the player's NBT data, used for reaction calculations on subsequent hits.
-- **Thunder Spell Enchantment Handling**: Thunder caster mob spells temporarily save and clear enchantments on the target's items during damage calculation, then restore them after, ensuring damage tracking is accurate.
+- **Player Spell Tracking**: The last spell ID, level, and cast source are tracked on the player's NBT data, used for reaction calculations on subsequent hits.
+- **Thunder Spell Enchantment Handling**: Thunder caster mob spells temporarily save and clear enchantments on the target's items during damage calculation, then restore them after, ensuring accurate damage tracking.
+
+## 🔗 L_Ender's Cataclysm Integration
+
+When **L_Ender's Cataclysm** is installed, Cataclysm's Wetness effect is replaced by ElementalCraft's Wetness system:
+
+- Wetness applied by Cataclysm (e.g. wetness-inflicting attacks) now becomes ElementalCraft's Wetness instead, with the same stacking, natural decay, and access to all elemental reactions (steam, paralysis, freeze, spores, etc.).
+- Consecutive hits stack the Wetness higher, up to the usual maximum.
+- Cataclysm's "Wetness + Lightning" bonus is preserved: lightning deals extra damage against wet targets (up to +100%).
+- Cataclysm bosses can be affected by ElementalCraft effects.
+- The mod has no effect when Cataclysm is not installed.
 
 <br>
 
 # 属性锻造：元素反应 模组介绍
 
+**现已支持1.21.1和26.2 Neoforge**
+
 欢迎来到《属性锻造：元素反应》！这是一款围绕元素战斗打造的Minecraft模组，为原版生存与战斗玩法新增了全新的属性系统、元素反应机制、专属附魔以及炫酷的视觉特效。
 
-**如果你有好的想法或遇到问题,请在GitHub上提交issue（github.com/Accidey/elementalcraft）
+**如果你有好的想法或遇到问题,请在GitHub上提交issue（github.com/Accidey/elementalcraft）**
 
 ## 🌟 核心元素
 
@@ -399,12 +450,12 @@ All 4 element caster mobs share the following behaviors:
 
 | 效果 | 描述 |
 |--------|-------------|
-| **潮湿** | 受到元素攻击时会触发元素反应。远离水源时缓慢消退，在雨中或水中会维持/提升层数。会增加饱食度消耗。 |
-| **易燃孢子** | 被孢子寄生，持续受到毒伤，装备耐久会被腐蚀。赤焰和静电会引爆它们，霜冻期间会抑制它们。 |
-| **静电** | 每隔一段时间受到随机伤害。层数足够时会形成静电光环伤害光环范围内实体，可引爆孢子和苦力怕，并迫使它们逃跑。潮湿时会导电，但也能破除冰冻。 |
-| **麻痹** | 无法做出任何动作，生物AI被禁用。在水中会持续下沉并受到溺水伤害。 |
-| **霜冻**  | 被冰霜侵蚀，每5秒受到一次冰冻伤害，移动速度和攻击速度降低。层数足够时形成霜冻光环，对光环范围内的实体施加霜冻并迫使它们逃跑。与潮湿效果接触时会被冻结！ |
-| **冻结**  | 完全被冻住！无法移动和攻击，周期性受到冰冻伤害，生物AI被禁用。物理近战/投射物攻击被冰壳格挡，但元素攻击可以穿透并造成属性伤害。赤焰属性攻击（强度足够时）会立即解除冻结并转化为潮湿。 |
+| **潮湿** | 一种层数型效果，是元素反应的“催化剂”。通过浸水、雨雪、喷溅水瓶和低温蒸汽云（冷凝）获得。离开水源后会逐渐衰减，干燥速度受生物群系温度和附近热源（火、熔岩、营火、熔炉）影响。炎热群系加速干燥，寒冷群系减缓干燥。火焰和灼烧会立即清除潮湿。潮湿状态下饱食度消耗增加。潮湿是触发麻痹（配合静电）和冻结（配合霜冻）的必要条件，也可转化为孢子。 |
+| **易燃孢子** | 一种层数型寄生感染效果，会周期性造成毒伤并腐蚀装备耐久。通过自然攻击（自然寄生）、孢子传播或潮湿转化获得。霜冻会抑制孢子（暂停伤害和腐蚀，加快衰减），冻结会完全清除孢子。赤焰和静电会引爆孢子，触发毒火爆燃（伤害和范围随层数提升，低层数为弱效点燃）。孢子的持续时间受目标自身元素影响：火属性缩短，自然、雷霆、冰霜延长。寒冷群系也会缩短持续时间。高层数时孢子会向附近敌对生物传播。自然抗性极高或处于黑名单中的实体免疫孢子。 |
+| **静电** | 一种层数型电荷效果，会周期性造成随机伤害。层数足够时形成静电光环，伤害周围实体、引爆孢子、引燃苦力怕并迫使生物逃跑。潮湿时会导电（触发麻痹或感电水域），也可破除冰冻。伤害类型和倍率受目标自身元素影响。雷霆抗性极高或处于黑名单中的实体免疫静电。 |
+| **麻痹** | 强力的控制效果，完全禁锢目标：无法移动、攻击、施法、使用物品，生物AI被禁用。在水中会以每秒1格的速度下沉，并每秒受到溺水伤害。由静电与潮湿反应触发。黑名单中的实体免疫麻痹。 |
+| **霜冻** | 一种层数型冻伤效果，周期性造成冰冻伤害，并降低移动速度和攻击速度（层数越高减速越严重，最高90%）。层数足够时形成霜冻光环，对范围内实体施加临时霜冻，冻结潮湿目标，清除灼烧并迫使逃跑。霜冻受热源抑制，被火焰或灼烧立即清除。炎热群系和热源附近加速衰减。冰霜抗性极高或处于黑名单中的实体免疫霜冻。 |
+| **冻结** | 毁灭性的控制效果，完全禁锢目标（无法移动、攻击、AI禁用）。冰壳格挡所有物理近战和投射物伤害，但元素攻击（赤焰、冰霜、雷霆、自然、ISS魔法）穿透并造成全额伤害。周期性承受冰冻伤害。在水中时会以每秒2格的速度加速下沉（麻痹的两倍），并每秒受到溺水伤害。由霜冻与潮湿反应触发。强力的赤焰攻击可破除冻结并转化为潮湿，灼烧可转化为蒸汽，静电有概率破除。冻结会清除孢子，冰霜法术可刷新持续时间。黑名单中的实体免疫冻结。 |
 
 持续时间、伤害等参数均可在配置文件中调整。
 
@@ -426,8 +477,7 @@ All 4 element caster mobs share the following behaviors:
 | 反应名称 | 触发条件 | 效果 |
 |---------------|-------------------|--------|
 | **自然寄生** | 自然属性攻击（概率随自然强化点数提升，潮湿加成，叠加加成） | 附加易燃孢子层数。自然抗性 ≥ 阈值则免疫。冻结目标免疫。 |
-| **自然反制** | 自然属性实体进入灼烧状态（受害者的自然强化 ≥ 阈值） | 击退附近敌对敌人并对其施加孢子。根据配置可清除受害者的灼烧状态。 |
-| **孢子传播** | 孢子层数达到阈值 | 定期向附近实体传播。潮湿目标的潮湿层数会转化为额外孢子层数。仅传播至敌对生物，不会传播给玩家或已驯服动物。 |
+| **孢子传播** | 孢子层数达到阈值（默认3层） | 孢子效果持续期间每20刻周期性向附近实体传播。转移层数 = 源层数 − 2（最低1层），半径随层数增长。目标自身的潮湿会先转化为孢子。每个实体同一孢子持续期间只会被传染一次，且不会传染回其原传染源；效果结束后可再次被传染。默认传播给范围内所有未携带孢子的实体（包括玩家与驯服动物），可在配置中限制为仅敌对生物；被传染者默认不会继续扩散（可在配置中开启链式传染）。 |
 | **毒火爆燃** | 灼烧目标带有易燃孢子 | **低层数（< 阈值）：** 弱效爆燃——仅施加伤害降低的灼烧，无爆炸。**高层数（≥ 阈值）：** 完整爆炸——造成范围爆炸伤害，范围随孢子层数增长，对附近所有实体施加增强灼烧。可连锁引爆附近孢子 ≥ 阈值的目标。 |
 
 ### ⚡ 雷霆相关反应
@@ -439,7 +489,6 @@ All 4 element caster mobs share the following behaviors:
 | **感电水域** | 静电实体进入/站在水中 | 使范围内的水域感电，对水中所有实体造成结算伤害和麻痹效果。清除源实体的静电和潮湿。 |
 | **静电孢子引爆** | 带有静电效果或处于静电光环范围内的实体拥有孢子 | 基于静电和孢子层数的概率引爆孢子。 |
 | **麻痹** | 静电目标获得潮湿状态（或静电光环 + 潮湿目标） | 清除静电和潮湿状态，转化为麻痹效果，结算剩余静电伤害。 |
-| **雷霆反制** | 自然攻击带有孢子的雷霆属性实体 | 雷霆实体用闪电反击攻击者，施加麻痹（若潮湿）或静电（若不潮湿）。 |
 | **感电蒸汽云** | 静电实体进入低温蒸汽云 | 使蒸汽云感电，对云中所有实体造成结算伤害和麻痹效果。 |
 
 ### ❄️ 冰霜相关反应 
@@ -463,7 +512,21 @@ All 4 element caster mobs share the following behaviors:
 |---------------|-------------------|--------|
 | **热冲击** | 处于灼烧状态的目标接触水 | 瞬间结算剩余灼烧伤害并清除灼烧状态。生成低温蒸汽云。蒸发接触点的水。 |
 
-所有反应参数均可在配置文件中调整。
+### 🩸 元素反制（濒血反击机制）
+
+当携带元素属性的生物受到伤害、血量将跌破配置的**血线阈值**时，可能触发强力反制。所有反制共享同一框架：
+- 实体的一致属性必须与反制属性匹配。
+- 实体对应属性的强化点数必须达到反制的强度阈值。
+- 触发后进入**血量回复式冷却**：实体必须将血量回复到配置的回复阈值以上，才能再次触发反制。
+
+| 反制名称 | 触发条件 | 效果 |
+|---------------|-------------------|--------|
+| **🔥 赤焰反制** | 赤焰属性实体濒血（赤焰强化 ≥ 阈值；赤焰抗性低于灼烧免疫阈值） | 自身原地锁定，**期间减免90%的所有类型受到伤害**；收缩的火环将附近实体拉向中心；随后爆炸：范围击退 + 赤焰伤害 + 对所有受影响实体**无条件施加灼烧**，伴随火龙卷视觉特效。 |
+| **🌿 自然反制** | 自然属性实体濒血（自然强化 ≥ 阈值） | 爆发排斥波击退附近所有敌人并对其施加孢子；根据配置可清除自身的灼烧状态。 |
+| **⚡ 雷霆反制** | 雷霆属性实体濒血（雷霆强化 ≥ 阈值） | 召唤局部雷暴并扩张至最大半径：周期性落雷造成闪电伤害、施加满层麻痹和额外静电层数，并随时间对受影响实体强制施加潮湿。 |
+| **❄️ 冰霜反制** | 冰霜属性实体濒血（冰霜强化 ≥ 阈值） | 以自身为中心生成冰霜爆发（冰暴），光环扩张至最大半径后驻留40 tick。范围内敌人：施加霜冻（层数基于施法者冰霜强化点数），潮湿目标额外触发冻结。同时生成霜寒蒸汽云。 |
+
+所有反制参数（血线阈值、强度阈值、回复比例、半径、伤害）均可在配置文件中调整。
 
 ## 🌍 群系元素偏向
 
@@ -475,21 +538,27 @@ All 4 element caster mobs share the following behaviors:
 
 ## 🧟 生物属性系统
 
-生物在生成时可以根据群系偏向和配置随机获得元素属性：
+生物在生成时按照以下优先级获取元素属性：
 
-### 属性分配 
-- **敌对生物**（Monster）有可配置的概率在生成时获得元素属性。
-- **中立生物**（NeutralMob、猪灵）有独立的、较低的概率。
-- 黑名单中的生物不会获得属性。
-- 分配的元素由**群系元素偏向**决定（如下界→赤焰，末地→雷霆）。
-- 每个生物可获得：**攻击元素**（概率触发）、**强化点数**（分配到4个防具槽位）、**抗性点数**（分配到4个防具槽位）。
-- 抗性类型可能是攻击元素的**克制元素**（可配置概率）。
+### 属性分配优先级
+1. **黑名单**：处于属性黑名单中的生物不会获得任何属性。
+2. **强制属性（指令配置）**：若管理员通过指令（`/elementalcraft entity add`）为该生物类型配置了强制属性，则优先应用。
+3. **维度默认值**：若未配置强制属性：
+   - **下界**：生物默认为赤焰属性（点数可配置）。
+   - **末地**：生物默认为雷霆属性（点数可配置）。
+4. **随机生成（概率）**：
+   - **敌对生物**（Monster）有可配置的概率获得属性。
+   - **中立生物**（NeutralMob、猪灵）有独立的、较低的概率。
+   - 分配的元素由**群系元素偏向**决定（如沙漠→赤焰、雪原→冰霜）。
+   - 每个生物可获得：**攻击元素**（概率触发）、**强化点数**（分配到4个防具槽位）、**抗性点数**（分配到4个防具槽位）。
+   - 抗性类型有可配置的概率是攻击元素的**克制元素**（如火属性生物带冰霜抗性）。
 
 ### 装备与耐久 
-- 拥有攻击属性的生物会获得一把**随机武器**（剑、斧、镐、锹等），附带对应的**元素攻击附魔**和**耐久III**。
-- 如果生物已有手持武器，则直接在其武器上附加元素攻击附魔和耐久III，不替换。
-- 防具会自动生成（若缺失），附带**强化**和/或**抗性附魔** + **耐久III**，强化/抗性点数按比例分配到4个防具槽位。
-- 所有装备掉落概率默认设为0%（不掉落装备本身）。
+- 拥有攻击属性的生物会获得：
+  - **武器**：一把**随机武器**（剑、斧、镐、锹等），附带对应的**元素攻击附魔**和**耐久III**。
+  - **如果生物已有手持武器**：则直接在其武器上附加元素攻击附魔和耐久III，不替换。
+  - **防具**：防具会自动生成（若缺失），附带**强化**和/或**抗性附魔** + **耐久III**，强化/抗性点数按比例分配到4个防具槽位。
+- 所有装备掉落概率默认设为0%（不掉落装备本身）。属性数据会存入NBT，用于附魔书掉落判定。
 
 ### 附魔书掉落 
 - 拥有元素属性的生物死亡时，有概率掉落**附魔书**（受抢夺等级影响）。
@@ -501,68 +570,78 @@ All 4 element caster mobs share the following behaviors:
 - **末地**：所有生物默认为雷霆属性（可配置）。
 
 ### 生物逃跑行为 
-- 靠近拥有**蒸汽云*、*灼烧光环**、**霜冻光环**或**静电光环**效果的实体时，生物会尝试**逃跑**（远离光环来源寻路，可通过配置选项关闭）。
-- 逃跑过程中卡住时，尝试跳跃越过1格高的障碍物继续逃跑。
-- 逃跑持续最多200 tick（10秒），到达目标点或远离光环源后停止。
+- 靠近拥有**灼烧光环**、**霜冻光环**或**静电光环**效果的实体时，生物会尝试**逃跑**（远离光环来源寻路，可通过配置选项关闭）。
+- **逃跑机制**：
+  - 生物AI被暂时禁用（`setNoAi(true)`），并清除当前攻击目标。
+  - 生物计算远离光环来源的逃生路径，并尝试避开障碍物。
+  - 若卡住（5 tick 内位移小于0.05格），会尝试跳跃越过1格高的障碍物，或传送至有效的可站立方块位置。
+  - 逃跑持续最多**200 tick（10秒）**，到达目标点或远离光环源后停止。
+- **抑制**：若被Iron's Spellbooks的**根须缠绕（Root）** 法术禁锢，则禁止逃跑。
+
+### 战术药水投掷（所有元素属性生物）
+
+- **所有拥有攻击元素的生物**（赤焰、自然、雷霆、冰霜）且**不是ISS施法者**，都有可配置的概率在副手装备一瓶喷溅药水。
+- **药水类型取决于生物的元素属性**：
+  - **赤焰属性生物**装备**喷溅剧毒药水**（用于触发灼烧的中毒增幅效果）。
+  - **自然、雷霆、冰霜属性生物**装备**喷溅水瓶**（用于施加潮湿，以触发自然寄生的潮湿加成、雷霆的麻痹或冰霜的冻结）。
+- **投掷行为**：
+  - 当目标在12格内、有视线、尚未被所需效果影响且不是灼烧状态（对水瓶而言）时，生物向目标投掷药水。
+  - 投掷后等待20 tick判定结果：
+    - **成功（效果生效）**：重置连续未命中计数。
+    - **失败（效果未生效）**：连续未命中+1。
+  - 连续**未命中3次**后，生物放弃投掷（进入长冷却）。
+- 若配置 `wetnessNetherDimensionImmune` 为 true，下界生物不会装备水瓶（但剧毒药水可能仍会使用，取决于配置）。
 
 ## 🛠️ 指令系统（管理员/OP专用）
 
 所有指令均以 `/elementalcraft` 开头，支持Tab补全。
 
 ### 调试模式
-```
+
 /elementalcraft debug  # 切换调试模式，显示元素伤害计算过程和反应相关信息
-```
 
 ### 重载配置 
-```
+
 /elementalcraft reload  # 从磁盘重新加载所有配置缓存
-```
 
 ### 群系偏向管理
-```
+
 /elementalcraft biome add <元素> <概率>
 /elementalcraft biome remove <元素>
 /elementalcraft biome list
-```
 
 ### 强制实体属性
-```
+
 /elementalcraft entity add <攻击元素> [强化元素] [强化点数] [抗性元素] [抗性点数]
 示例：/elementalcraft entity add fire fire 50 frost 20
 点数支持固定值（如50）或范围值（如20-80）
 攻击元素之后的所有参数均为可选（默认：无、0、无、0）
 /elementalcraft entity remove              # 清除手持刷怪蛋对应的实体强制属性
-```
 
 ### 实体属性黑名单
-```
+
 /elementalcraft entity blacklist add <元素>      # 手持刷怪蛋，禁止该实体携带指定元素（或填写"all"表示所有元素）
 /elementalcraft entity blacklist remove <元素>
 /elementalcraft entity blacklist list
-```
 
 ### 强制物品属性
 - **武器**：
-```
+
 /elementalcraft item weapon add <元素>       # 绑定攻击属性（手持武器）
 /elementalcraft item weapon remove           # 移除强制武器属性（手持武器）
-```
 
 - **防具**：
-```
+
 /elementalcraft item armor add <强化元素> [强化点数] [抗性元素] [抗性点数]
-# 绑定强化+抗性属性（手持防具）
-# 强化元素为必填；点数、抗性元素、抗性点数为可选（默认：0、无、0）
+绑定强化+抗性属性（手持防具）
+强化元素为必填；点数、抗性元素、抗性点数为可选（默认：0、无、0）
 /elementalcraft item armor remove            # 移除强制防具属性（手持防具）
-```
 
 ### 效果免疫黑名单
-```
-# 指令格式（以灼烧为例）：
+
+指令格式（以灼烧为例）：
 /elementalcraft blacklist scorched add/remove/list
-# 全部效果：scorched（灼烧）、spore（孢子）、static（静电）、paralysis（麻痹）、frostbite（霜冻）、freeze（冻结）、steam（蒸汽）、wetness（潮湿）
-```
+全部效果：scorched（灼烧）、spore（孢子）、static（静电）、paralysis（麻痹）、frostbite（霜冻）、freeze（冻结）、steam（蒸汽）、wetness（潮湿）
 
 ### 配置文件操作
 - 通过指令做出的修改会自动保存并热加载，无需重启服务器。
@@ -601,36 +680,39 @@ All 4 element caster mobs share the following behaviors:
 |------|---------|
 | **elementalcraft-common.toml** | 元素克制关系、伤害倍率、群系偏向、附魔加成、强制实体/黑名单、维度属性等。 |
 | **elementalcraft-forced-items.toml** | 强制物品属性配置（可通过指令添加）。 |
-| **elementalcraft-fire-nature-reactions.toml** | 赤焰与自然元素反应参数（灼烧、孢子、蒸汽、毒火爆燃等）。 |
-| **elementalcraft-thunder-frost-reactions.toml** | 雷霆与冰霜元素反应参数（静电、麻痹、霜冻、冻结、感电水域等）。冰霜参数于V1.7.0版本添加。 |
+| **elementalcraft-fire-nature-reactions.toml** | 赤焰与自然元素反应参数（灼烧、孢子、蒸汽、毒火爆燃、赤焰/自然反制等）。 |
+| **elementalcraft-thunder-frost-reactions.toml** | 雷霆与冰霜元素反应参数（静电、麻痹、霜冻、冻结、感电水域、雷霆/冰霜反制等）。 |
 | **elementalcraft-visuals.toml** | 粒子特效开关、密度、角度、速度等。 |
 
 支持热加载：保存修改后配置会自动刷新。
 
 ## 🔗 Iron's Spellbooks 联动
 
-当 **Iron's Spellbooks**（铁的法术书）与 ElementalCraft 同时安装时，将启用额外的联动功能。所有法术反应的触发概率和强度基于施法者的对应元素强化点数计算（稀有度等级 → stacks，与强化点数匹配最佳法术等级）。
+当 **Iron's Spellbooks**（铁的法术书）与 ElementalCraft 同时安装时，将启用额外的联动功能。所有法术反应的触发概率和强度基于施法者的对应元素强化点数计算，并自动匹配最佳法术等级。
 
 ### 施法者生物生成
 - 拥有攻击元素的生物在生成时，有概率成为**ISS法术施法者**。
 - 施法者生成概率由统一配置项 `casterMobChance` 控制（各元素共用此值）。
 - 施法者类型与攻击元素绑定（雷霆→雷霆施法者，自然→自然施法者，等）。
 - 施法者黑名单可阻止特定实体成为施法者。
-- 自然施法者装备酸液球法术时，额外获得一把随机武器（主手），卷轴放在副手。
+- **自然施法者**装备酸液球法术时，卷轴放在副手，额外获得一把随机武器（主手）。
+- **冰霜施法者**装备召唤北极熊法术时，卷轴放在副手，额外获得一把随机武器（主手）。
 
 ### 赤焰法术反应
 - 赤焰法术（火矢、火球术、烈焰冲刺、岩浆炸弹、烈焰弹幕、烈焰打击、灼烧、热浪、烈焰风暴、龙息术、火焰箭矢）命中时，根据施法者的**赤焰强化点数**概率触发**灼烧**效果，替换ISS自带的着火效果。
-- **烈焰风暴**（Blaze Storm）的每一发小型火球均可独立触发灼烧判定，但触发之间有冷却间隔；**炽焰追踪弹幕**（Flaming Barrage）同样可独立触发。
+- **烈焰风暴**（Blaze Storm）的每一发小型火球均可独立触发灼烧判定，但触发之间有内置冷却。
 - **烈焰打击**（Flaming Strike）和**地狱浮现**（Raise Hell）有专属处理器，通过法术反应路径触发灼烧。
 - **火墙/岩浆场**（Fire Field / Wall of Fire）持续对范围内实体施加灼烧；先检查**赤焰融冰**（若目标被冻结），再检查**潮湿**（触发高温蒸汽云），最后施加灼烧。
 - 若目标同时有**中毒**或**易燃孢子**，灼烧触发概率提升至**100%**，并增幅灼烧伤害。
-- 目标为自然属性且同时有孢子和灼烧时，可触发**自然反制**（击退敌人并清除灼烧）。
 
 ### 自然法术反应
 - 自然法术（酸液球、毒箭、地震、萤火虫群、毒雾喷射、毒液溅射、根须缠绕、践踏等）命中时触发**自然寄生**（施加易燃孢子）。
-- **毒属性法术**（毒箭、毒雾喷射、毒液溅射）**不施加孢子**——它们被明确排除在孢子施加之外。
+- **毒属性法术**（毒箭、毒雾喷射、毒液溅射）**不施加孢子**——它们被明确排除在孢子施加之外（仅施加原版中毒效果）。
 - **酸液球**（Acid Orb）命中时触发AoE孢子施加（半径3.5格内所有实体）。
-- **根须缠绕**（Root）命中时施加初始孢子层数，然后在缠绕持续期间每隔1秒根据施法者自然强化点数追加孢子层数。
+- **根须缠绕**（Root）：
+  - 命中时施加初始孢子层数。
+  - 在缠绕持续期间**持续**根据施法者自然强化点数追加孢子层数。
+  - 若被Root的目标受到**灼烧**，Root被移除，同时灼烧持续时间和伤害倍率增强（与中毒增幅机制相同）。
 
 ### 雷霆法术反应
 - 闪电法术（闪电长矛、连锁闪电、球状闪电、电击、闪电束、冲击波、雷暴、升天、伏特打击）根据施法者的雷霆强化点数对目标施加**静电**层数。
@@ -644,19 +726,19 @@ All 4 element caster mobs share the following behaviors:
 ### 冰霜法术反应
 - 冰霜法术（寒冰锥、冰锥术、霜冻射线、霜浪、冰刺、雪球、霜咬、暴风雪、冰墓、召唤北极熊）根据施法者的冰霜强化点数概率触发**霜冻**效果。
 - **暴风雪**（Blizzard）AoE**每秒**对范围内所有实体施加霜冻判定。
-- **冰墓**（Ice Tomb）被生物施法者特殊处理——直接封锁目标5秒。
+- **冰墓**（Ice Tomb）被生物施法者特殊处理——直接封锁目标5秒（不造成伤害，仅禁锢）。
 - 若目标已有**潮湿**效果，冰霜法术触发**冻结**（霜冻+潮湿→冻结）。
 - 冰霜法术命中已冻结的目标会**刷新冻结持续时间**，延长目标被禁锢的时间。
 - ISS的**Chilled**效果与潮湿叠加时自动转化为**冻结**。
-- **北极熊**施法者死亡时，其召唤的北极熊自动移除。
+- **北极熊**施法者会追踪北极熊是否存活（48格搜索范围），若死亡则重新召唤（最多3次）；施法者死亡时其召唤的北极熊自动移除。
 
 ### 毒雾云 + 赤焰反应
-- **灼烧目标**进入ISS的**毒雾云**范围时，毒雾云会增强灼烧的持续时间和伤害倍率（中毒增幅），然后消散（伴随 buff 粒子效果）。
+- **灼烧目标**进入ISS的**毒雾云**范围时，毒雾云会增强灼烧的持续时间和伤害倍率（中毒增幅），然后消散（伴随粒子效果）。
 - 灼烧光环实体靠近毒雾云时也可触发此反应。
 
 ### ROOT法术联动
 - **ROOT**法术命中目标时，根据施法者的自然强化点数施加**易燃孢子**层数。
-- ROOT持续期间，每隔1秒根据施法者自然强化点数追加孢子层数。
+- ROOT持续期间，持续根据施法者自然强化点数追加孢子层数。
 - 若被ROOT的目标受到**灼烧**（赤焰攻击触发），ROOT被移除，同时灼烧持续时间和伤害倍率增强（与中毒增幅机制相同）。
 - ROOT禁锢期间抑制目标逃跑行为——受影响的生物停止逃跑尝试。
 
@@ -669,26 +751,51 @@ All 4 element caster mobs share the following behaviors:
 - 法术卷轴掉落概率可配置（默认：100%）。
 - **掉落附魔净化**：ISS施法者掉落的物品若带有元素攻击附魔，会被自动清除（防止通过击杀生物无限获取元素附魔书）。
 
-**赤焰施法生物**：配备喷溅剧毒水瓶，向目标投毒后施放赤焰法术——目标潮湿时优先触发高温蒸汽云（消耗潮湿），潮湿清除后中毒确保灼烧100%触发并增强持续时间。
+**赤焰施法生物**：
+- 副手装备**喷溅剧毒药水瓶**。
+- 战斗时先向目标投掷毒药水瓶，再施放法术：
+  - 若目标潮湿，优先触发高温蒸汽云（消耗潮湿）。
+  - 潮湿清除后，中毒效果确保灼烧**100%触发**并增强持续时间。
+- 若毒药未命中多次，施法者会进入冷却。
 
 **自然施法生物**：
-- 装备酸液球时：特殊AI循环（施法→等待命中判定→检测**REND**效果→命中则近战等待REND消失，未命中则重试，连续2次未命中进入冷却）。
+- **不投掷任何药水**。
+- 装备**酸液球**时：
+  - 特殊AI循环：施法 → 等待命中判定 → 检测目标是否带有 **REND** 效果。
+  - 若REND生效：转为近战攻击，等待REND消失。
+  - 若REND未生效：重新尝试施法，连续2次未命中进入冷却。
 - 其他法术：常规施法，检测目标麻痹免疫状态。
 
 **雷霆施法生物**：
-- 向目标投掷**喷溅水瓶**施加潮湿后再施法以触发麻痹。
+- 副手装备**喷溅水瓶**。
+- 战斗时先向目标投掷水瓶施加潮湿，再施放法术以触发麻痹。
 - 追踪目标潮湿状态，仅当目标未潮湿时才投掷水瓶。
-- 若 `wetnessNetherDimensionImmune` 开启且在下界维度，不给喷溅水瓶（潮湿效果已禁用）。
+- 若目标仍未被潮湿，计为一次未命中；连续2次未命中进入冷却。
+- 若 `wetnessNetherDimensionImmune` 开启且在下界维度，不装备水瓶（潮湿效果已禁用）。
 
 **冰霜施法生物**：
-- 向目标投掷**喷溅水瓶**施加潮湿后再施法以触发冻结。
-- 可施放**召唤北极熊**——施法后每隔1秒检测北极熊是否存活（48格搜索范围），若死亡则重新召唤（最多3次）。
-- 施法者死亡时自动移除其召唤的北极熊。
-- 若 `wetnessNetherDimensionImmune` 开启且在下界维度，不给喷溅水瓶（潮湿效果已禁用）。
+- 副手装备**喷溅水瓶**（召唤北极熊施法者除外）。
+- 战斗时先向目标投掷水瓶施加潮湿，再施放法术以触发冻结。
+- 采用与雷霆施法者相同的命中追踪机制。
+- **召唤北极熊**施法者：
+  - **不装备水瓶**。
+  - 施法后持续检测北极熊是否存活（48格搜索范围）。
+  - 若死亡则重新召唤（最多3次）。
+  - 施法者死亡时自动移除其召唤的北极熊。
+- 若 `wetnessNetherDimensionImmune` 开启且在下界维度，不装备水瓶（潮湿效果已禁用）。
 
 ### 其他联动细节
-- **非攻击法术排除**：热浪、酸液球、橡木皮肤、龙息术、寒冰锥、电击等非攻击或持续施法法术不会触发激进施法。
+- **非攻击法术排除**：热浪、酸液球、橡木皮肤、龙息术、寒冰锥、电击等非攻击或持续施法法术**不会触发激进施法**。
 - **卷轴稀有度匹配**：生物根据自身强化点数计算法术最优等级（通过稀有度值匹配最接近的等级）。
-- **玩家法术追踪**：玩家施法时，最后一次施法的法术ID、等级和施法来源会被记录在NBT数据中，用于后续命中的反应计算。
-- **雷霆法术附魔处理**：雷霆施法生物在伤害计算期间临时保存并清除目标物品上的附魔，计算完毕后恢复，确保伤害追踪准确。
+- **玩家法术追踪**：玩家最后一次施法的法术信息会被记录，用于后续命中的反应计算。
+- **雷霆法术附魔处理**：雷霆施法生物在伤害计算期间会临时处理目标物品附魔，确保伤害追踪准确。
 
+## 🔗 L_Ender's Cataclysm 灾厄联动
+
+当安装 **L_Ender's Cataclysm**（灾厄）模组时，灾厄的潮湿效果会被 ElementalCraft 的潮湿系统取代：
+
+- 来自灾厄的潮湿（例如潮湿类攻击命中）会变为 ElementalCraft 的潮湿，享受相同的叠加、自然衰减以及全部元素反应（蒸汽、麻痹、冻结、孢子等）。
+- 连续命中会逐层叠加潮湿，最高可叠满。
+- 保留灾厄的"潮湿 + 闪电"增伤机制：对潮湿目标，闪电会造成额外伤害（最高 +100%）。
+- 灾厄 Boss 也可以受到 ElementalCraft 效果的影响。
+- 未安装灾厄时，本模组不产生任何影响。
