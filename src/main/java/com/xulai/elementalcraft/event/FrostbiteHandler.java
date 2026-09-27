@@ -24,6 +24,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -87,6 +88,9 @@ public class FrostbiteHandler {
     public static final String NBT_TEMP_FROSTBITE_STACKS = "EC_TempFrostbiteStacks";
     public static final String NBT_FROSTBITE_AURA_LOGGED = "EC_FrostbiteAuraLogged";
     public static final String NBT_FROST_AURA_TRACKED = "EC_FrostAuraTracked";
+
+    private static final Identifier TEMP_SPEED_MODIFIER_ID = Identifier.fromNamespaceAndPath(ElementalCraft.MODID, "temp_frostbite_speed");
+    private static final Identifier TEMP_ATTACK_SPEED_MODIFIER_ID = Identifier.fromNamespaceAndPath(ElementalCraft.MODID, "temp_frostbite_attack_speed");
 
     private static final Set<UUID> removedByClear = new HashSet<>();
     private static volatile boolean suppressRemoveCleanup = false;
@@ -1019,20 +1023,20 @@ duration--;
         AttributeInstance speedAttr = entity.getAttribute(Attributes.MOVEMENT_SPEED);
         AttributeInstance attackAttr = entity.getAttribute(Attributes.ATTACK_SPEED);
         if (speedAttr != null) {
-            speedAttr.removeModifier(FrostbiteEffect.SPEED_MODIFIER_ID);
-            speedAttr.addPermanentModifier(new AttributeModifier(FrostbiteEffect.SPEED_MODIFIER_ID, value, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+            speedAttr.removeModifier(TEMP_SPEED_MODIFIER_ID);
+            speedAttr.addPermanentModifier(new AttributeModifier(TEMP_SPEED_MODIFIER_ID, value, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
         if (attackAttr != null) {
-            attackAttr.removeModifier(FrostbiteEffect.ATTACK_SPEED_MODIFIER_ID);
-            attackAttr.addPermanentModifier(new AttributeModifier(FrostbiteEffect.ATTACK_SPEED_MODIFIER_ID, value, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+            attackAttr.removeModifier(TEMP_ATTACK_SPEED_MODIFIER_ID);
+            attackAttr.addPermanentModifier(new AttributeModifier(TEMP_ATTACK_SPEED_MODIFIER_ID, value, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
     }
 
     private static void removeTempFrostbiteSlowness(LivingEntity entity) {
         AttributeInstance speedAttr = entity.getAttribute(Attributes.MOVEMENT_SPEED);
         AttributeInstance attackAttr = entity.getAttribute(Attributes.ATTACK_SPEED);
-        if (speedAttr != null) speedAttr.removeModifier(FrostbiteEffect.SPEED_MODIFIER_ID);
-        if (attackAttr != null) attackAttr.removeModifier(FrostbiteEffect.ATTACK_SPEED_MODIFIER_ID);
+        if (speedAttr != null) speedAttr.removeModifier(TEMP_SPEED_MODIFIER_ID);
+        if (attackAttr != null) attackAttr.removeModifier(TEMP_ATTACK_SPEED_MODIFIER_ID);
     }
 
     private static boolean shouldSkipFrostbiteAuraTarget(LivingEntity target, LivingEntity source) {

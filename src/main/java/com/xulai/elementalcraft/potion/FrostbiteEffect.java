@@ -19,8 +19,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 
 public class FrostbiteEffect extends MobEffect {
 
-    public static final Identifier SPEED_MODIFIER_ID = Identifier.fromNamespaceAndPath(ElementalCraft.MODID, "frostbite_speed");
-    public static final Identifier ATTACK_SPEED_MODIFIER_ID = Identifier.fromNamespaceAndPath(ElementalCraft.MODID, "frostbite_attack_speed");
+    private static final Identifier SPEED_MODIFIER_ID = Identifier.fromNamespaceAndPath(ElementalCraft.MODID, "frostbite_speed");
+    private static final Identifier ATTACK_SPEED_MODIFIER_ID = Identifier.fromNamespaceAndPath(ElementalCraft.MODID, "frostbite_attack_speed");
 
     public FrostbiteEffect() {
         super(MobEffectCategory.HARMFUL, 0x66CCFF);
