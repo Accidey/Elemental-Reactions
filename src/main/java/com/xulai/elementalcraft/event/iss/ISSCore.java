@@ -70,7 +70,7 @@ public class ISSCore {
             "irons_spellbooks:poison_arrow",
             "irons_spellbooks:earthquake",
             "irons_spellbooks:firefly_swarm",
-            "irons_spellbooks:poison_spray",
+            "irons_spellbooks:poison_breath",
             "irons_spellbooks:oakskin",
             "irons_spellbooks:poison_splash",
             "irons_spellbooks:root",
@@ -81,12 +81,12 @@ public class ISSCore {
             "irons_spellbooks:poison_arrow",
             "irons_spellbooks:earthquake",
             "irons_spellbooks:firefly_swarm",
-            "irons_spellbooks:poison_spray",
+            "irons_spellbooks:poison_breath",
             "irons_spellbooks:stomp");
 
     static final Set<String> NATURE_NO_SPORE_SPELLS = Set.of(
             "irons_spellbooks:poison_arrow",
-            "irons_spellbooks:poison_spray",
+            "irons_spellbooks:poison_breath",
             "irons_spellbooks:poison_splash");
 
     static final List<String> FROST_SPELL_IDS = List.of(
