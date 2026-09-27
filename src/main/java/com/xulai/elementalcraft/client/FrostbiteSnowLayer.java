@@ -6,7 +6,6 @@ import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import com.xulai.elementalcraft.potion.ModMobEffects;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;

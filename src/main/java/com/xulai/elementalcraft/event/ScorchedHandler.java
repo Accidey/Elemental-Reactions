@@ -16,7 +16,6 @@ import com.xulai.elementalcraft.event.SteamReactionHandler;
 import com.xulai.elementalcraft.util.ElementType;
 import com.xulai.elementalcraft.util.ElementUtils;
 import com.xulai.elementalcraft.util.ElementDamageHelper;
-import net.minecraft.core.Holder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.tags.FluidTags;

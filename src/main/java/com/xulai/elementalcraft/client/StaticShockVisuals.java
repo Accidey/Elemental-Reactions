@@ -11,12 +11,10 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
-import java.util.Random;
 
 @EventBusSubscriber(modid = ElementalCraft.MODID)
 public class StaticShockVisuals {
 
-    private static final Random RANDOM = new Random();
     private static final String NBT_STATIC_STACKS = "ec_static_stacks";
 
     private static final int MAX_RING_POINTS = 64;

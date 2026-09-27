@@ -3,7 +3,6 @@ package com.xulai.elementalcraft.event;
 import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.util.ElementType;
 import com.xulai.elementalcraft.util.ElementUtils;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;

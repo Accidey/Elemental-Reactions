@@ -5,7 +5,6 @@ import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalVisualConfig;
-import com.xulai.elementalcraft.config.ForcedItemConfig;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.config.ConfigTracker;
