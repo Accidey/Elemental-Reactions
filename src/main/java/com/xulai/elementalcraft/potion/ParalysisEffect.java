@@ -57,7 +57,7 @@ public class ParalysisEffect extends MobEffect {
         CompoundTag data = entity.getPersistentData();
         if (data.getBoolean(NBT_AI_DISABLED)) return;
         if (!data.contains(NBT_SHARED_ORIGINAL_NO_AI)) {
-            data.putBoolean(NBT_SHARED_ORIGINAL_NO_AI, mob.isNoAi());
+            data.putBoolean(NBT_SHARED_ORIGINAL_NO_AI, mob.isNoAi() && !data.getBoolean("EC_FleeActive"));
         }
         mob.setNoAi(true);
         data.putBoolean(NBT_AI_DISABLED, true);
@@ -69,6 +69,7 @@ public class ParalysisEffect extends MobEffect {
         if (!data.getBoolean(NBT_AI_DISABLED)) return;
         data.remove(NBT_AI_DISABLED);
         if (entity.hasEffect(ModMobEffects.FREEZE)) return;
+        if (data.getBoolean("EC_FleeActive")) return;
         boolean wasNoAi = data.getBoolean(NBT_SHARED_ORIGINAL_NO_AI);
         mob.setNoAi(wasNoAi);
         data.remove(NBT_SHARED_ORIGINAL_NO_AI);

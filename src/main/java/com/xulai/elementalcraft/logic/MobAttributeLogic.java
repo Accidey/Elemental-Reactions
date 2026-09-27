@@ -5,6 +5,7 @@ import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.event.FrostbiteHandler;
 import com.xulai.elementalcraft.event.ScorchedHandler;
 import com.xulai.elementalcraft.event.StaticShockHandler;
+import com.xulai.elementalcraft.potion.ModMobEffects;
 import com.xulai.elementalcraft.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -512,6 +513,7 @@ public class MobAttributeLogic {
         CompoundTag data = entity.getPersistentData();
         if (!data.getBoolean("EC_FleeActive")) return;
         if (isRootImmobilized(entity)) { stopFlee(entity); return; }
+        if (entity.hasEffect(ModMobEffects.FREEZE) || entity.hasEffect(ModMobEffects.PARALYSIS)) return;
         int ticks = data.getInt(NBT_FLEE_TICKS) + 1;
         data.putInt(NBT_FLEE_TICKS, ticks);
         if (ticks >= MAX_FLEE_TICKS) {
@@ -614,7 +616,11 @@ public class MobAttributeLogic {
         data.remove(NBT_FLEE_LAST_Z);
         data.putBoolean("EC_FleeActive", false);
         if (entity instanceof Mob mob) {
-            mob.setNoAi(false);
+            boolean aiLocked = entity.hasEffect(ModMobEffects.FREEZE) || entity.hasEffect(ModMobEffects.PARALYSIS);
+            if (!aiLocked) {
+                mob.setNoAi(data.getBoolean("EC_SharedOriginalNoAi"));
+                data.remove("EC_SharedOriginalNoAi");
+            }
         }
     }
 
