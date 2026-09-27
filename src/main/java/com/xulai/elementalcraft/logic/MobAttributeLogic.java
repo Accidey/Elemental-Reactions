@@ -122,11 +122,12 @@ public class MobAttributeLogic {
     }
 
     private static void applyRandomAttributes(Mob mob, java.util.Set<ElementType> blocked) {
+        if (!(mob.level() instanceof ServerLevel serverLevel)) return;
         ItemStack mainHand = mob.getMainHandItem();
         ItemStack offHand = mob.getOffhandItem();
         boolean hasHandItem = !mainHand.isEmpty() || !offHand.isEmpty();
 
-        ElementType mainType = pickBiasedElement((ServerLevel) mob.level(), mob.blockPosition(), blocked);
+        ElementType mainType = pickBiasedElement(serverLevel, mob.blockPosition(), blocked);
 
         ElementType attackType = null;
         if (ThreadLocalRandom.current().nextDouble() < ElementalConfig.attackChance) {
@@ -389,9 +390,8 @@ public class MobAttributeLogic {
         double moveDist = Math.sqrt(moveDx * moveDx + moveDz * moveDz);
         if (moveDist > 0.1) {
             float speed = 0.30f;
-            float rad = (float) Math.toRadians(target.getYRot());
-            float moveX = -net.minecraft.util.Mth.sin(rad) * speed;
-            float moveZ = net.minecraft.util.Mth.cos(rad) * speed;
+            float moveX = (float) (moveDx / moveDist * speed);
+            float moveZ = (float) (moveDz / moveDist * speed);
             target.setDeltaMovement(moveX, target.getDeltaMovement().y, moveZ);
             target.hurtMarked = true;
             target.move(net.minecraft.world.entity.MoverType.SELF, target.getDeltaMovement());
