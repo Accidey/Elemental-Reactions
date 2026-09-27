@@ -109,7 +109,9 @@ public class InventoryAutoForceEvents {
         if (armorData != null) {
             if (armorData.enhanceType() != null && armorData.enhancePoints() > 0) {
                 Holder<Enchantment> targetEnhance = getEnhancementEnchantment(armorData.enhanceType());
-                int level = Math.max(1, Math.min(5, armorData.enhancePoints() / ElementalConfig.getStrengthPerLevel()));
+                int enhancePerLevel = ElementalConfig.getStrengthPerLevel();
+                int enhanceMaxLevel = Math.max(1, ElementalConfig.getMaxStatCap() / enhancePerLevel);
+                int level = Math.max(1, Math.min(enhanceMaxLevel, armorData.enhancePoints() / enhancePerLevel));
 
                 if (targetEnhance != null) {
                     forcedData.putString("enhance", armorData.enhanceType().getId());
@@ -147,7 +149,9 @@ public class InventoryAutoForceEvents {
 
             if (armorData.resistType() != null && armorData.resistPoints() > 0) {
                 Holder<Enchantment> targetResist = getResistanceEnchantment(armorData.resistType());
-                int level = Math.max(1, Math.min(5, armorData.resistPoints() / ElementalConfig.getResistPerLevel()));
+                int resistPerLevel = ElementalConfig.getResistPerLevel();
+                int resistMaxLevel = Math.max(1, ElementalConfig.getMaxStatCap() / resistPerLevel);
+                int level = Math.max(1, Math.min(resistMaxLevel, armorData.resistPoints() / resistPerLevel));
 
                 if (targetResist != null) {
                     forcedData.putString("resist", armorData.resistType().getId());
