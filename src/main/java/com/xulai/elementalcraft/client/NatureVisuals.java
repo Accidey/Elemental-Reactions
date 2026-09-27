@@ -38,6 +38,9 @@ public class NatureVisuals {
 
     private static final Random RANDOM = new Random();
 
+    private static final int MAX_HELIX_PARTICLES_PER_GROUP = 12;
+    private static final int MAX_TRAIL_PARTICLES_PER_GROUP = 6;
+
     private static final Set<Projectile> ACTIVE_PROJECTILES = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
     public static int calculateVisualTier(LivingEntity entity, ElementType type) {
@@ -247,6 +250,7 @@ public class NatureVisuals {
         int activationInterval = ElementalVisualConfig.natureRangedActivationInterval;
         int activatedHelices = Math.min(totalHelices, elapsed / activationInterval + 1);
         if (activatedHelices < 1) activatedHelices = 1;
+        activatedHelices = Math.min(activatedHelices, MAX_HELIX_PARTICLES_PER_GROUP);
 
         Vec3 dir = velocity.normalize();
         Vec3 up = new Vec3(0, 1, 0);
@@ -278,6 +282,7 @@ public class NatureVisuals {
         int tailElapsed = Math.max(0, elapsed - tailDelay);
         int tailActivatedHelices = Math.min(tailTotalHelices, tailElapsed / activationInterval + 1);
         if (tailActivatedHelices < 1) tailActivatedHelices = 0;
+        tailActivatedHelices = Math.min(tailActivatedHelices, MAX_TRAIL_PARTICLES_PER_GROUP);
 
         Vec3 tailPos = p.position().subtract(dir.scale(ElementalVisualConfig.natureRangedBackOffsetStart));
         double tailRadius = ElementalVisualConfig.natureRangedConeMaxRadius

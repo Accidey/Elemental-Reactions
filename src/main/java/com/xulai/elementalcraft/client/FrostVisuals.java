@@ -39,6 +39,9 @@ public class FrostVisuals {
 
     private static final Random RANDOM = new Random();
 
+    private static final int MAX_HELIX_PARTICLES_PER_GROUP = 12;
+    private static final int MAX_TRAIL_PARTICLES_PER_GROUP = 6;
+
     private static final Set<Projectile> ACTIVE_PROJECTILES = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
     public static int calculateVisualTier(LivingEntity entity, ElementType type) {
@@ -280,6 +283,7 @@ public class FrostVisuals {
         int activationInterval = ElementalVisualConfig.frostRangedActivationInterval;
         int activatedHelicesOuter = Math.min(totalHelicesOuter, elapsed / activationInterval + 1);
         if (activatedHelicesOuter < 1) activatedHelicesOuter = 1;
+        activatedHelicesOuter = Math.min(activatedHelicesOuter, MAX_HELIX_PARTICLES_PER_GROUP);
 
         double baseAngle = p.tickCount * ElementalVisualConfig.frostRangedRotationSpeed;
 
@@ -302,6 +306,7 @@ public class FrostVisuals {
             int totalHelicesInner = tier * ElementalVisualConfig.frostRangedHelixCountPerTier;
             int activatedHelicesInner = Math.min(totalHelicesInner, innerElapsed / activationInterval + 1);
             if (activatedHelicesInner < 1) activatedHelicesInner = 0;
+            activatedHelicesInner = Math.min(activatedHelicesInner, MAX_HELIX_PARTICLES_PER_GROUP);
 
             Vec3 corePos = p.position().subtract(dir.scale(ElementalVisualConfig.frostRangedBackOffsetStart));
             double innerRadius = ElementalVisualConfig.frostRangedConeMaxRadius * ElementalVisualConfig.frostRangedInnerRadiusFactor;
@@ -321,7 +326,8 @@ public class FrostVisuals {
         Vec3 tailPos = p.position().subtract(dir.scale(ElementalVisualConfig.frostRangedBackOffsetStart));
 
         if (tier >= 2 && ElementalVisualConfig.frostRangedTailMistEnabled) {
-            for (int i = 0; i < ElementalVisualConfig.frostRangedTailMistCount; i++) {
+            int mistCount = Math.min(ElementalVisualConfig.frostRangedTailMistCount, MAX_TRAIL_PARTICLES_PER_GROUP);
+            for (int i = 0; i < mistCount; i++) {
                 double offsetX = (RANDOM.nextDouble() - 0.5) * ElementalVisualConfig.frostRangedTailMistSpread;
                 double offsetY = (RANDOM.nextDouble() - 0.5) * ElementalVisualConfig.frostRangedTailMistSpread;
                 double offsetZ = (RANDOM.nextDouble() - 0.5) * ElementalVisualConfig.frostRangedTailMistSpread;
@@ -332,7 +338,8 @@ public class FrostVisuals {
         }
 
         if (tier >= 3 && ElementalVisualConfig.frostRangedTailShardEnabled) {
-            for (int i = 0; i < ElementalVisualConfig.frostRangedTailShardCount; i++) {
+            int shardCount = Math.min(ElementalVisualConfig.frostRangedTailShardCount, MAX_TRAIL_PARTICLES_PER_GROUP);
+            for (int i = 0; i < shardCount; i++) {
                 double offsetX = (RANDOM.nextDouble() - 0.5) * ElementalVisualConfig.frostRangedTailShardSpread;
                 double offsetY = (RANDOM.nextDouble() - 0.5) * ElementalVisualConfig.frostRangedTailShardSpread;
                 double offsetZ = (RANDOM.nextDouble() - 0.5) * ElementalVisualConfig.frostRangedTailShardSpread;

@@ -19,6 +19,9 @@ public class StaticShockVisuals {
     private static final Random RANDOM = new Random();
     private static final String NBT_STATIC_STACKS = "ec_static_stacks";
 
+    private static final int MAX_RING_POINTS = 64;
+    private static final int MAX_AURA_TARGETS = 16;
+
     @SubscribeEvent
     public static void onLivingTick(EntityTickEvent.Post event) {
         if (!ElementalVisualConfig.staticShockAuraEnabled) return;
@@ -53,7 +56,7 @@ public class StaticShockVisuals {
         double centerY = source.getY() + 0.1;
         double centerZ = source.getZ();
 
-        int points = Math.max(6, (int) (range * 4));
+        int points = Math.min(MAX_RING_POINTS, Math.max(6, (int) (range * 4)));
         double angleStep = Math.PI * 2 / points;
 
         double rotAngle = source.tickCount * 0.05;
@@ -84,7 +87,9 @@ public class StaticShockVisuals {
         );
         java.util.List<LivingEntity> nearby = serverLevel.getEntitiesOfClass(LivingEntity.class, area);
 
+        int drawn = 0;
         for (LivingEntity target : nearby) {
+            if (drawn >= MAX_AURA_TARGETS) break;
             if (target == source) continue;
             if (target.isDeadOrDying()) continue;
 
@@ -93,6 +98,7 @@ public class StaticShockVisuals {
             double dist = Math.sqrt(dx * dx + dz * dz);
             if (dist > range) continue;
 
+            drawn++;
             double tCenterX = target.getX();
             double tCenterY = target.getY() + target.getBbHeight() * 0.5;
             double tCenterZ = target.getZ();

@@ -38,6 +38,9 @@ public class ThunderVisuals {
 
     private static final Random RANDOM = new Random();
 
+    private static final int MAX_HELIX_PARTICLES_PER_GROUP = 12;
+    private static final int MAX_TRAIL_GROUPS = 6;
+
     private static final Set<Projectile> ACTIVE_PROJECTILES = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
     public static int calculateVisualTier(LivingEntity entity, ElementType type) {
@@ -251,6 +254,7 @@ public class ThunderVisuals {
         int activationInterval = ElementalVisualConfig.thunderRangedActivationInterval;
         int activatedHelices = Math.min(totalHelices, elapsed / activationInterval + 1);
         if (activatedHelices < 1) activatedHelices = 1;
+        activatedHelices = Math.min(activatedHelices, MAX_HELIX_PARTICLES_PER_GROUP);
 
         Vec3 dir = velocity.normalize();
         Vec3 up = new Vec3(0, 1, 0);
@@ -279,7 +283,7 @@ public class ThunderVisuals {
                     tailPos.x, tailPos.y, tailPos.z, ElementalVisualConfig.thunderRangedTailEndRodCount, 0, 0, 0, 0);
         }
         if (tier >= 3 && ElementalVisualConfig.thunderRangedTailReversePortalEnabled) {
-            int groups = ElementalVisualConfig.thunderRangedTailReversePortalGroups;
+            int groups = Math.min(ElementalVisualConfig.thunderRangedTailReversePortalGroups, MAX_TRAIL_GROUPS);
             int countPerGroup = ElementalVisualConfig.thunderRangedTailReversePortalCount;
             double spread = ElementalVisualConfig.thunderRangedTailReversePortalSpread;
             for (int i = 0; i < groups; i++) {
@@ -292,7 +296,7 @@ public class ThunderVisuals {
             }
         }
         if (tier >= 4 && ElementalVisualConfig.thunderRangedTailDragonBreathEnabled) {
-            int groups = ElementalVisualConfig.thunderRangedTailDragonBreathGroups;
+            int groups = Math.min(ElementalVisualConfig.thunderRangedTailDragonBreathGroups, MAX_TRAIL_GROUPS);
             int countPerGroup = ElementalVisualConfig.thunderRangedTailDragonBreathCount;
             double spread = ElementalVisualConfig.thunderRangedTailDragonBreathSpread;
             for (int i = 0; i < groups; i++) {

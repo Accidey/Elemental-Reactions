@@ -20,6 +20,9 @@ public class FrostbiteVisuals {
 
     private static final Random RANDOM = new Random();
 
+    private static final int AURA_RING_PARTICLE_BUDGET = 240;
+    private static final int MAX_AURA_TARGETS = 16;
+
     @SubscribeEvent
     public static void onLivingTick(EntityTickEvent.Post event) {
         if (!ElementalVisualConfig.frostbiteAuraEnabled) return;
@@ -99,6 +102,7 @@ public class FrostbiteVisuals {
 
         int points = Math.min(80, Math.max(16, (int) (range * 12)));
         double angleStep = Math.PI * 2 / points;
+        int maxSegPoints = Math.max(1, AURA_RING_PARTICLE_BUDGET / points);
 
         double rotAngle = source.tickCount * 0.02;
 
@@ -112,7 +116,7 @@ public class FrostbiteVisuals {
 
             double dx = px - prevPx;
             double dz = pz - prevPz;
-            int segPoints = Math.max(2, (int) (Math.sqrt(dx * dx + dz * dz) * 2));
+            int segPoints = Math.min(Math.max(2, (int) (Math.sqrt(dx * dx + dz * dz) * 2)), maxSegPoints);
             for (int s = 0; s < segPoints; s++) {
                 double t = (double) s / segPoints;
                 double ix = prevPx + dx * t;
@@ -136,7 +140,9 @@ public class FrostbiteVisuals {
         );
         java.util.List<LivingEntity> nearby = serverLevel.getEntitiesOfClass(LivingEntity.class, area);
 
+        int drawn = 0;
         for (LivingEntity target : nearby) {
+            if (drawn >= MAX_AURA_TARGETS) break;
             if (target == source) continue;
             if (target.isDeadOrDying()) continue;
 
@@ -145,6 +151,7 @@ public class FrostbiteVisuals {
             double dist = Math.sqrt(dx * dx + dz * dz);
             if (dist > range) continue;
 
+            drawn++;
             double tCenterX = target.getX();
             double tCenterY = target.getY() + target.getBbHeight() * 0.5;
             double tCenterZ = target.getZ();

@@ -39,6 +39,9 @@ public class FireVisuals {
 
     private static final Random RANDOM = new Random();
 
+    private static final int MAX_HELIX_PARTICLES_PER_GROUP = 12;
+    private static final int MAX_TRAIL_PARTICLES_PER_GROUP = 6;
+
     private static final Set<Projectile> ACTIVE_PROJECTILES = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
     public static int calculateVisualTier(LivingEntity entity, ElementType type) {
@@ -255,6 +258,7 @@ public class FireVisuals {
         int activationInterval = ElementalVisualConfig.fireRangedActivationInterval;
         int activatedHelicesOuter = Math.min(totalHelicesOuter, elapsed / activationInterval + 1);
         if (activatedHelicesOuter < 1) activatedHelicesOuter = 1;
+        activatedHelicesOuter = Math.min(activatedHelicesOuter, MAX_HELIX_PARTICLES_PER_GROUP);
 
         Vec3 dir = velocity.normalize();
         Vec3 up = new Vec3(0, 1, 0);
@@ -287,6 +291,7 @@ public class FireVisuals {
         int innerElapsed = Math.max(0, elapsed - innerDelay);
         int activatedHelicesInner = Math.min(totalHelicesInner, innerElapsed / activationInterval + 1);
         if (activatedHelicesInner < 1) activatedHelicesInner = 0;
+        activatedHelicesInner = Math.min(activatedHelicesInner, MAX_HELIX_PARTICLES_PER_GROUP);
 
         Vec3 tailPos = p.position().subtract(dir.scale(ElementalVisualConfig.fireRangedBackOffsetStart));
         double innerRadius = ElementalVisualConfig.fireRangedConeMaxRadius
@@ -307,7 +312,7 @@ public class FireVisuals {
 
 
         if (ElementalVisualConfig.fireRangedEnableTrailParticles) {
-            int lavaCount = ElementalVisualConfig.fireRangedTrailLavaParticleCount;
+            int lavaCount = Math.min(ElementalVisualConfig.fireRangedTrailLavaParticleCount, MAX_TRAIL_PARTICLES_PER_GROUP);
             double lavaSpread = ElementalVisualConfig.fireRangedTrailLavaSpread;
             for (int i = 0; i < lavaCount; i++) {
                 double offsetX = (RANDOM.nextDouble() - 0.5) * lavaSpread;
@@ -318,7 +323,7 @@ public class FireVisuals {
                         1, 0, 0, 0, 0);
             }
 
-            int soulCount = ElementalVisualConfig.fireRangedTrailSoulParticleCount;
+            int soulCount = Math.min(ElementalVisualConfig.fireRangedTrailSoulParticleCount, MAX_TRAIL_PARTICLES_PER_GROUP);
             double soulSpread = ElementalVisualConfig.fireRangedTrailSoulSpread;
             for (int i = 0; i < soulCount; i++) {
                 double offsetX = (RANDOM.nextDouble() - 0.5) * soulSpread;
