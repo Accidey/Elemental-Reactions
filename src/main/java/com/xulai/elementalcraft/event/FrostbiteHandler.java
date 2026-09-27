@@ -590,7 +590,7 @@ public class FrostbiteHandler {
                 }
                 int damageInterval = ElementalThunderFrostReactionsConfig.frostbiteDamageIntervalTicks;
                 if (damageInterval < 1) damageInterval = 1;
-                if (entity.tickCount % damageInterval == 0) {
+                if (!entity.hasEffect(ModMobEffects.FROSTBITE) && entity.tickCount % damageInterval == 0) {
                     float baseDamage = (float) ElementalThunderFrostReactionsConfig.frostbitePeriodicDamage;
                     float damage = baseDamage;
                     ElementType targetElement = ElementUtils.getConsistentAttackElement(entity);
