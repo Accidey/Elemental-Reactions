@@ -56,6 +56,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -772,13 +773,14 @@ public class ScorchedHandler {
     private static final String NBT_FIRE_COUNTER_SAVED_SPEED = "ec_fire_counter_saved_speed";
     private static final String NBT_FIRE_COUNTER_SPEED_TIME = "ec_fire_counter_speed_time";
 
-    private static final Map<ResourceKey<Level>, ActiveFireCounter> activeFireCounters = new HashMap<>();
+    private static final Map<UUID, ActiveFireCounter> activeFireCounters = new HashMap<>();
 
     private enum FireCounterPhase { CONTRACT, EXPLODE }
 
     private static class ActiveFireCounter {
         final double x, y, z;
         final UUID ownerUUID;
+        final ResourceKey<Level> dimension;
         final double maxRadius;
         final double expansionSpeed;
         final double damage;
@@ -795,6 +797,7 @@ public class ScorchedHandler {
             this.y = owner.getY();
             this.z = owner.getZ();
             this.ownerUUID = owner.getUUID();
+            this.dimension = owner.level().dimension();
             this.maxRadius = ElementalFireNatureReactionsConfig.fireCounterRadius;
             this.expansionSpeed = ElementalFireNatureReactionsConfig.fireCounterExpansionSpeed;
             this.damage = ElementalFireNatureReactionsConfig.fireCounterDamage;
@@ -849,8 +852,7 @@ public class ScorchedHandler {
 
     public static void triggerFireCounter(LivingEntity target) {
         if (!(target.level() instanceof ServerLevel)) return;
-        ResourceKey<Level> dim = target.level().dimension();
-        if (activeFireCounters.containsKey(dim)) return;
+        if (activeFireCounters.containsKey(target.getUUID())) return;
         target.getPersistentData().putBoolean(NBT_FIRE_COUNTER_INVULN, true);
         if (target instanceof Mob mob) {
             mob.getNavigation().stop();
@@ -865,7 +867,7 @@ public class ScorchedHandler {
             PacketDistributor.sendToPlayer(sp,
                     new FireCounterLockPacket(true));
         }
-        activeFireCounters.put(dim, new ActiveFireCounter(target));
+        activeFireCounters.put(target.getUUID(), new ActiveFireCounter(target));
     }
 
     @SubscribeEvent
@@ -881,9 +883,16 @@ public class ScorchedHandler {
         if (!(event.getLevel() instanceof ServerLevel sl)) return;
 
         ResourceKey<Level> dim = event.getLevel().dimension();
-        ActiveFireCounter fc = activeFireCounters.get(dim);
-        if (fc == null) return;
+        List<ActiveFireCounter> active = new ArrayList<>();
+        for (ActiveFireCounter counter : activeFireCounters.values()) {
+            if (counter.dimension.equals(dim)) active.add(counter);
+        }
+        for (ActiveFireCounter fc : active) {
+            tickActiveFireCounter(sl, fc);
+        }
+    }
 
+    private static void tickActiveFireCounter(ServerLevel sl, ActiveFireCounter fc) {
         Entity ownerEntity = sl.getEntity(fc.ownerUUID);
         if (ownerEntity == null || !(ownerEntity instanceof LivingEntity owner) || owner.isDeadOrDying()) {
             if (ownerEntity instanceof Mob mob) {
@@ -905,7 +914,7 @@ public class ScorchedHandler {
                 ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
                 ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_LOCK);
             }
-            activeFireCounters.remove(dim);
+            activeFireCounters.remove(fc.ownerUUID);
             return;
         }
 
@@ -944,7 +953,7 @@ public class ScorchedHandler {
                     owner.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_SPEED);
                     owner.getPersistentData().remove(NBT_FIRE_COUNTER_SPEED_TIME);
                 }
-                activeFireCounters.remove(dim);
+                activeFireCounters.remove(fc.ownerUUID);
                 break;
         }
     }
