@@ -17,6 +17,10 @@ public final class BiomeAttributeBias {
 
     private static final Random RANDOM = new Random();
 
+    private static final ElementType[] FALLBACK_ELEMENTS = {
+            ElementType.FIRE, ElementType.FROST, ElementType.THUNDER, ElementType.NATURE
+    };
+
     public static ElementType getBiasedElement(ServerLevel level, BlockPos pos) {
         Holder<Biome> biomeHolder = level.getBiome(pos);
         ResourceLocation biomeId = biomeHolder.unwrapKey().map(key -> key.location()).orElse(null);
@@ -64,7 +68,7 @@ public final class BiomeAttributeBias {
             }
         }
 
-        return ElementType.values()[1 + RANDOM.nextInt(4)];
+        return FALLBACK_ELEMENTS[RANDOM.nextInt(FALLBACK_ELEMENTS.length)];
     }
 
     private static boolean isForest(Holder<Biome> biomeHolder) {
