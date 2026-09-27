@@ -1,6 +1,5 @@
 package com.xulai.elementalcraft.util;
 
-import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.enchantment.ModEnchantments;
 import net.minecraft.world.damagesource.DamageSource;
@@ -15,26 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
-import java.lang.reflect.Field;
-
 public class ElementUtils {
-
-    private static final Field TRIDENT_ITEM_FIELD;
-    static {
-        Field field = null;
-        for (String name : new String[]{"tridentItem", "f_37555_"}) {
-            try {
-                field = ThrownTrident.class.getDeclaredField(name);
-                field.setAccessible(true);
-                break;
-            } catch (NoSuchFieldException ignored) {}
-        }
-        if (field == null) {
-            ElementalCraft.LOGGER.error("Failed to find ThrownTrident.tridentItem field");
-        }
-        TRIDENT_ITEM_FIELD = field;
-    }
-
 
     public static ElementType getAttackElement(ItemStack stack) {
         if (stack == null || stack.isEmpty()) return ElementType.NONE;
@@ -75,12 +55,8 @@ public class ElementUtils {
 
     public static ItemStack getProjectileWeaponStack(Entity projectile, LivingEntity shooter) {
         if (projectile instanceof ThrownTrident trident) {
-            if (TRIDENT_ITEM_FIELD != null) {
-                try {
-                    ItemStack tridentStack = (ItemStack) TRIDENT_ITEM_FIELD.get(trident);
-                    if (tridentStack != null && !tridentStack.isEmpty()) return tridentStack;
-                } catch (IllegalAccessException ignored) {}
-            }
+            ItemStack tridentStack = trident.getWeaponItem();
+            if (!tridentStack.isEmpty()) return tridentStack;
             return ItemStack.EMPTY;
         }
         if (projectile instanceof ThrowableItemProjectile throwable) {
