@@ -674,6 +674,14 @@ public class StaticShockHandler {
         waterElectrificationCooldowns.clear();
     }
 
+    public static void clearSessionState(LivingEntity entity) {
+        CompoundTag data = entity.getPersistentData();
+        data.remove(NBT_THUNDER_COUNTER_COOLDOWN);
+        data.remove(NBT_STORM_EXPOSURE);
+        data.remove(NBT_STORM_PARALYSIS);
+        data.remove(NBT_THUNDER_BREAK_FREEZE_CD);
+    }
+
     private static boolean processWaterElectrification(LivingEntity source, int stacks) {
         if (ElementalThunderFrostReactionsConfig.waterElectrificationRangeBase <= 0) return false;
         if (stacks <= 0) return false;

@@ -200,6 +200,10 @@ public class FrostbiteHandler {
         removedByClear.clear();
     }
 
+    public static void clearSessionState(LivingEntity entity) {
+        entity.getPersistentData().remove(NBT_FROST_COUNTER_COOLDOWN);
+    }
+
     private static void releaseFrostBurstTargets(ServerLevel sl, ActiveFrostBurst burst) {
         for (UUID trackedId : burst.hitEntities) {
             Entity tracked = sl.getEntity(trackedId);

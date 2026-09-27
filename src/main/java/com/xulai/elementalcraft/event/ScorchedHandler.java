@@ -899,6 +899,10 @@ public class ScorchedHandler {
         activeFireCounters.clear();
     }
 
+    public static void clearSessionState(LivingEntity entity) {
+        entity.getPersistentData().remove(NBT_FIRE_COUNTER_CD);
+    }
+
     private static void tickActiveFireCounter(ServerLevel sl, ActiveFireCounter fc) {
         Entity ownerEntity = sl.getEntity(fc.ownerUUID);
         if (ownerEntity == null || !(ownerEntity instanceof LivingEntity owner) || owner.isDeadOrDying()) {

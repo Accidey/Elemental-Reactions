@@ -83,5 +83,9 @@ public class NbtCleanupHandler {
         data.remove("EC_SelfDryingPenalty");
         data.remove("EC_LastSelfDryTick");
         data.remove("EC_NatureAttackCooldown");
+
+        StaticShockHandler.clearSessionState(player);
+        FrostbiteHandler.clearSessionState(player);
+        ScorchedHandler.clearSessionState(player);
     }
 }
