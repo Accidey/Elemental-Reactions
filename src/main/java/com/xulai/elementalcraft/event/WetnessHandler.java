@@ -52,6 +52,10 @@ public class WetnessHandler {
     public static final String NBT_FIRE_STAND_TIMER = "EC_WetnessFireStandTimer";
     public static final String NBT_REACTION_RESOLVED = "EC_ReactionResolved";
     public static final String NBT_COLD_FREEZE_TIMER = "EC_ColdFreezeTimer";
+    public static final String NBT_HEAT_CHECK_TICK = "EC_WetnessHeatCheckTick";
+    public static final String NBT_NEAR_HEAT = "EC_WetnessNearHeat";
+
+    private static final long HEAT_SCAN_INTERVAL_TICKS = 20;
 
     private static final RandomSource RANDOM = RandomSource.create();
     private static final int PAUSED_DURATION_TICKS = 24000;
@@ -182,7 +186,16 @@ public class WetnessHandler {
         CompoundTag data = entity.getPersistentData();
 
         boolean inLava = entity.isInLava();
-        boolean nearHeatSource = checkHeatSource(level, pos);
+        long gameTime = level.getGameTime();
+        boolean heatScanDue = gameTime - data.getLongOr(NBT_HEAT_CHECK_TICK, -HEAT_SCAN_INTERVAL_TICKS) >= HEAT_SCAN_INTERVAL_TICKS;
+        boolean nearHeatSource;
+        if (heatScanDue) {
+            nearHeatSource = checkHeatSource(level, pos);
+            data.putBoolean(NBT_NEAR_HEAT, nearHeatSource);
+            data.putLong(NBT_HEAT_CHECK_TICK, gameTime);
+        } else {
+            nearHeatSource = data.getBooleanOr(NBT_NEAR_HEAT, false);
+        }
         if (inLava || nearHeatSource) {
             if (getWetnessLevel(entity) > 0) {
                 clearWetnessData(entity);
@@ -476,6 +489,8 @@ public class WetnessHandler {
         data.remove(NBT_FIRE_STAND_TIMER);
         data.remove(NBT_LAST_EXHAUSTION);
         data.remove(NBT_REACTION_RESOLVED);
+        data.remove(NBT_HEAT_CHECK_TICK);
+        data.remove(NBT_NEAR_HEAT);
         data.remove("EC_WetnessParalysisLogged");
         data.remove("EC_WetnessFrozenLogged");
         if (entity.hasEffect(ModMobEffects.WETNESS)) {

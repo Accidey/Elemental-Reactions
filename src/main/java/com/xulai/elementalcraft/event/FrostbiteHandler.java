@@ -71,6 +71,9 @@ public class FrostbiteHandler {
     public static final String NBT_FROSTBITE_DURATION = "EC_FrostbiteDuration";
     public static final String NBT_FROST_HEAT_ACCEL = "EC_FrostbiteHeatAccel";
     public static final String NBT_FROST_HEAT_MULT = "EC_FrostbiteHeatMult";
+    public static final String NBT_FROST_HEAT_CHECK_TICK = "EC_FrostbiteHeatCheckTick";
+
+    private static final long HEAT_SCAN_INTERVAL_TICKS = 20;
     public static final String NBT_FROSTBITE_APPLY_TICK = "EC_FrostbiteApplyTick";
     public static final String NBT_FREEZE_COOLDOWN = "EC_FreezeCooldown";
 
@@ -412,6 +415,7 @@ public class FrostbiteHandler {
 
         data.putBoolean(NBT_FROST_HEAT_ACCEL, false);
         data.remove(NBT_FROST_HEAT_MULT);
+        data.remove(NBT_FROST_HEAT_CHECK_TICK);
         data.remove(NBT_FROSTBITE_FIRE_STAND_TIMER);
         data.putInt(NBT_FROSTBITE_STACKS, newStacks);
         data.putInt(NBT_FROSTBITE_DURATION, durationTicks);
@@ -669,6 +673,8 @@ public class FrostbiteHandler {
 
         boolean auraActive = ElementalThunderFrostReactionsConfig.frostbiteAuraThreshold > 0 && stacks >= ElementalThunderFrostReactionsConfig.frostbiteAuraThreshold;
 
+        boolean heatScanDue = gameTime - data.getLongOr(NBT_FROST_HEAT_CHECK_TICK, -HEAT_SCAN_INTERVAL_TICKS) >= HEAT_SCAN_INTERVAL_TICKS;
+
         if (auraActive) {
             applyFrostbiteAuraEffects(entity, stacks);
         }
@@ -697,7 +703,7 @@ public class FrostbiteHandler {
                 return;
             }
 
-            if (WetnessHandler.checkHeatSource(entity.level(), entity.blockPosition(),
+            if (heatScanDue && WetnessHandler.checkHeatSource(entity.level(), entity.blockPosition(),
                     ElementalThunderFrostReactionsConfig.frostbiteHeatSearchRadius)) {
                 if (auraActive) {
                     clearFrostbiteAuraEffects(entity, stacks);
@@ -708,29 +714,32 @@ public class FrostbiteHandler {
             }
         }
 
-double heatMult = checkFrostbiteHeatAccelerator(entity, entity.level(), entity.blockPosition());
-        boolean hasHeat = heatMult > 1.0;
-        boolean hadHeat = data.getBooleanOr(NBT_FROST_HEAT_ACCEL, false);
-        if (hasHeat != hadHeat) {
-            data.putBoolean(NBT_FROST_HEAT_ACCEL, hasHeat);
-            if (hasHeat) {
-                data.putDouble(NBT_FROST_HEAT_MULT, heatMult);
-                duration = Math.max(1, (int)(duration / heatMult));
-            } else {
-                double storedMult = data.getDoubleOr(NBT_FROST_HEAT_MULT, 0.0);
-                data.remove(NBT_FROST_HEAT_MULT);
-                if (storedMult > 1.0) {
-                    duration = Math.max(1, (int)(duration * storedMult));
+        if (heatScanDue) {
+            data.putLong(NBT_FROST_HEAT_CHECK_TICK, gameTime);
+            double heatMult = checkFrostbiteHeatAccelerator(entity, entity.level(), entity.blockPosition());
+            boolean hasHeat = heatMult > 1.0;
+            boolean hadHeat = data.getBooleanOr(NBT_FROST_HEAT_ACCEL, false);
+            if (hasHeat != hadHeat) {
+                data.putBoolean(NBT_FROST_HEAT_ACCEL, hasHeat);
+                if (hasHeat) {
+                    data.putDouble(NBT_FROST_HEAT_MULT, heatMult);
+                    duration = Math.max(1, (int)(duration / heatMult));
+                } else {
+                    double storedMult = data.getDoubleOr(NBT_FROST_HEAT_MULT, 0.0);
+                    data.remove(NBT_FROST_HEAT_MULT);
+                    if (storedMult > 1.0) {
+                        duration = Math.max(1, (int)(duration * storedMult));
+                    }
                 }
-            }
-            data.putInt(NBT_FROSTBITE_DURATION, duration);
-            suppressRemoveCleanup = true;
-            try {
-                entity.removeEffect(ModMobEffects.FROSTBITE);
-                entity.addEffect(new MobEffectInstance(ModMobEffects.FROSTBITE,
-                        duration, stacks - 1, false, false, true));
-            } finally {
-                suppressRemoveCleanup = false;
+                data.putInt(NBT_FROSTBITE_DURATION, duration);
+                suppressRemoveCleanup = true;
+                try {
+                    entity.removeEffect(ModMobEffects.FROSTBITE);
+                    entity.addEffect(new MobEffectInstance(ModMobEffects.FROSTBITE,
+                            duration, stacks - 1, false, false, true));
+                } finally {
+                    suppressRemoveCleanup = false;
+                }
             }
         }
 
