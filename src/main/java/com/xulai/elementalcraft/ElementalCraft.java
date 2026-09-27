@@ -66,30 +66,35 @@ public class ElementalCraft {
     }
 
     private void migrateConfigFiles() {
-        try {
-            Path configRoot = FMLPaths.CONFIGDIR.get();
+        Path configRoot = FMLPaths.CONFIGDIR.get();
 
-            String[] filesToDelete = {
-                "elementalcraft-common.toml",
-                "elementalcraft-forced-items.toml",
-                "elementalcraft-reactions.toml",
-                "elementalcraft-fire-nature-reactions.toml",
-                "elementalcraft-visuals.toml",
-                "elementalcraft-thunderfrost-reactions.toml",
-                "elementalcraft-thunder-frost-reactions.toml",
-                "elementalcraft-iss-integration.toml"
-            };
+        String[] legacyFiles = {
+            "elementalcraft-common.toml",
+            "elementalcraft-forced-items.toml",
+            "elementalcraft-reactions.toml",
+            "elementalcraft-fire-nature-reactions.toml",
+            "elementalcraft-visuals.toml",
+            "elementalcraft-thunderfrost-reactions.toml",
+            "elementalcraft-thunder-frost-reactions.toml",
+            "elementalcraft-iss-integration.toml"
+        };
 
-            for (String file : filesToDelete) {
+        for (String file : legacyFiles) {
+            try {
                 Path oldPath = configRoot.resolve(file);
-                if (Files.exists(oldPath)) {
-                    Files.delete(oldPath);
-                    LOGGER.info("[ElementalCraft] 删除旧配置文件: {}", file);
-                }
-            }
+                if (!Files.exists(oldPath)) continue;
 
-        } catch (Exception e) {
-            LOGGER.warn("[ElementalCraft] 清理旧配置文件失败: {}", e.getMessage());
+                Path backupPath = configRoot.resolve(file + ".bak");
+                if (Files.exists(backupPath)) {
+                    LOGGER.info("[ElementalCraft] 旧配置文件已有备份，保留原文件: {}", file);
+                    continue;
+                }
+
+                Files.move(oldPath, backupPath);
+                LOGGER.info("[ElementalCraft] 旧配置文件已备份为: {}", backupPath.getFileName());
+            } catch (Exception e) {
+                LOGGER.warn("[ElementalCraft] 备份旧配置文件失败: {} ({})", file, e.getMessage());
+            }
         }
     }
 
