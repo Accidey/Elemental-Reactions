@@ -12,13 +12,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
-import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 @EventBusSubscriber(modid = ElementalCraft.MODID, value = Dist.CLIENT)
 public class FrozenIceLayer {
@@ -26,37 +21,11 @@ public class FrozenIceLayer {
     @SuppressWarnings("removal")
     private static final ResourceLocation ICE_TEXTURE = ResourceLocation.withDefaultNamespace("textures/block/packed_ice.png");
 
-    private static final Map<UUID, Boolean> freezeCache = new HashMap<>();
-
-    @SubscribeEvent
-    public static void onMobEffectAdded(MobEffectEvent.Added event) {
-        if (event.getEffectInstance() != null && event.getEffectInstance().getEffect().value() == ModMobEffects.FREEZE.get()) {
-            freezeCache.put(event.getEntity().getUUID(), true);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onMobEffectRemoved(MobEffectEvent.Remove event) {
-        if (event.getEffect().value() == ModMobEffects.FREEZE.get()) {
-            freezeCache.remove(event.getEntity().getUUID());
-        }
-    }
-
-    @SubscribeEvent
-    public static void onMobEffectExpired(MobEffectEvent.Expired event) {
-        if (event.getEffectInstance() != null && event.getEffectInstance().getEffect().value() == ModMobEffects.FREEZE.get()) {
-            freezeCache.remove(event.getEntity().getUUID());
-        }
-    }
-
     @SubscribeEvent
     public static void onRenderLivingPost(RenderLivingEvent.Post<?, ?> event) {
         LivingEntity entity = event.getEntity();
 
-        boolean hasFreezeEffect = freezeCache.containsKey(entity.getUUID());
-        boolean hasFrozenTicks = false;
-
-        if (!hasFreezeEffect) return;
+        if (!entity.hasEffect(ModMobEffects.FREEZE)) return;
 
         float alpha = calcAlpha(entity);
         if (alpha <= 0.01f) return;
@@ -65,12 +34,10 @@ public class FrozenIceLayer {
     }
 
     private static float calcAlpha(LivingEntity entity) {
-        if (!freezeCache.containsKey(entity.getUUID())) return 0;
         MobEffectInstance effect = entity.getEffect(ModMobEffects.FREEZE);
-        if (effect != null) {
-            int dur = effect.getDuration();
-            if (dur < 20) return 1.0f * (dur / 20.0f);
-        }
+        if (effect == null) return 0.0f;
+        int dur = effect.getDuration();
+        if (dur < 20) return 1.0f * (dur / 20.0f);
         return 1.0f;
     }
 

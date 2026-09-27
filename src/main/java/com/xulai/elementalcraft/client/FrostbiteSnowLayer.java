@@ -16,39 +16,11 @@ import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 @EventBusSubscriber(modid = ElementalCraft.MODID, value = Dist.CLIENT)
 public class FrostbiteSnowLayer {
 
     @SuppressWarnings("removal")
     private static final ResourceLocation SNOW_TEXTURE = ResourceLocation.withDefaultNamespace("textures/block/powder_snow.png");
-
-    private static final Map<UUID, Integer> frostbiteCache = new HashMap<>();
-
-    @SubscribeEvent
-    public static void onMobEffectAdded(net.neoforged.neoforge.event.entity.living.MobEffectEvent.Added event) {
-        MobEffectInstance effectInstance = event.getEffectInstance();
-        if (effectInstance != null && effectInstance.getEffect().value() == ModMobEffects.FROSTBITE.get()) {
-            frostbiteCache.put(event.getEntity().getUUID(), effectInstance.getAmplifier() + 1);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onMobEffectRemoved(net.neoforged.neoforge.event.entity.living.MobEffectEvent.Remove event) {
-        if (event.getEffect().value() == ModMobEffects.FROSTBITE.get()) {
-            frostbiteCache.remove(event.getEntity().getUUID());
-        }
-    }
-
-    @SubscribeEvent
-    public static void onMobEffectExpired(net.neoforged.neoforge.event.entity.living.MobEffectEvent.Expired event) {
-        if (event.getEffectInstance() != null && event.getEffectInstance().getEffect().value() == ModMobEffects.FROSTBITE.get()) {
-            frostbiteCache.remove(event.getEntity().getUUID());
-        }
-    }
 
     @SubscribeEvent
     public static void onRenderLivingPost(RenderLivingEvent.Post<?, ?> event) {
@@ -56,9 +28,9 @@ public class FrostbiteSnowLayer {
 
         if (entity.hasEffect(ModMobEffects.FREEZE)) return;
 
-        Integer cached = frostbiteCache.get(entity.getUUID());
-        if (cached == null || cached <= 0) return;
-        int stacks = cached;
+        MobEffectInstance frostbite = entity.getEffect(ModMobEffects.FROSTBITE);
+        if (frostbite == null) return;
+        int stacks = frostbite.getAmplifier() + 1;
         int maxStacks = ElementalThunderFrostReactionsConfig.frostbiteMaxTotalStacks;
         if (maxStacks <= 0) maxStacks = 5;
 
