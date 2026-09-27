@@ -162,6 +162,11 @@ public class NatureVisuals {
     }
 
     @SubscribeEvent
+    public static void onServerStopped(net.neoforged.neoforge.event.server.ServerStoppedEvent event) {
+        ACTIVE_PROJECTILES.clear();
+    }
+
+    @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
         boolean enabled = ElementalVisualConfig.natureRangedEnabled;
 
