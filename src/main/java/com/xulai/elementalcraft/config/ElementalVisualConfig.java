@@ -343,7 +343,7 @@ public class ElementalVisualConfig {
     public static double thunderRangedRotationSpeed = 6.0;
     public static int thunderRangedHelixCountPerTier = 2;
     public static int thunderRangedActivationInterval = 1;
-    public static int thunderRangedMainParticleCount = 48;
+    public static int thunderRangedMainParticleCount = 1;
     public static boolean thunderRangedTailEndRodEnabled = true;
     public static int thunderRangedTailEndRodCount = 3;
     public static boolean thunderRangedTailReversePortalEnabled = true;
