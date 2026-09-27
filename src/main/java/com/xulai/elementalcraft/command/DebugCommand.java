@@ -301,15 +301,16 @@ public class DebugCommand {
 
     public static void sendCombatLog(CombatLogContext ctx) {
         if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (ctx.target == null || ctx.attacker == null) return;
         if (!(ctx.target.level() instanceof ServerLevel serverLevel)) return;
 
         String sourceName = (ctx.directEntity instanceof ThrownTrident) ? "Trident" : ctx.attacker.getDisplayName().getString();
         String relationKey = ctx.restraintMult > 1.0f ? "debug.elementalcraft.relation.restrain" : ctx.restraintMult < 1.0f ? "debug.elementalcraft.relation.weak" : "debug.elementalcraft.relation.neutral";
 
         MutableComponent prefix = Component.translatable(relationKey, sourceName, ctx.target.getDisplayName().getString());
-        if (ctx.restraintMult > 1.0f) prefix.withStyle(ChatFormatting.RED);
-        else if (ctx.restraintMult < 1.0f) prefix.withStyle(ChatFormatting.BLUE);
-        else prefix.withStyle(ChatFormatting.GRAY);
+        if (ctx.restraintMult > 1.0f) prefix = prefix.withStyle(ChatFormatting.RED);
+        else if (ctx.restraintMult < 1.0f) prefix = prefix.withStyle(ChatFormatting.BLUE);
+        else prefix = prefix.withStyle(ChatFormatting.GRAY);
 
         MutableComponent overview = Component.translatable("debug.elementalcraft.damage_overview",
                 String.format("%.2f", ctx.totalDamage),
