@@ -430,7 +430,7 @@ public class FrostbiteHandler {
             if (hasFrostbite(target)) {
                 int auraStacks = target.getPersistentData().getInt(NBT_FROSTBITE_STACKS);
                 if (ElementalThunderFrostReactionsConfig.frostbiteAuraThreshold > 0 && auraStacks >= ElementalThunderFrostReactionsConfig.frostbiteAuraThreshold) {
-                    clearFrostbiteAuraEffects(target);
+                    clearFrostbiteAuraEffects(target, auraStacks);
                 }
                 clearFrostbite(target);
             } else {
@@ -458,7 +458,7 @@ public class FrostbiteHandler {
             if (hasFrostbite(target)) {
                 int auraStacks = data.getInt(NBT_FROSTBITE_STACKS);
                 if (ElementalThunderFrostReactionsConfig.frostbiteAuraThreshold > 0 && auraStacks >= ElementalThunderFrostReactionsConfig.frostbiteAuraThreshold) {
-                    clearFrostbiteAuraEffects(target);
+                    clearFrostbiteAuraEffects(target, auraStacks);
                 }
             }
             clearFrostbite(target);
@@ -523,7 +523,7 @@ public class FrostbiteHandler {
         }
 
         if (hasFrostbite(target) && ElementalThunderFrostReactionsConfig.frostbiteAuraThreshold > 0 && frostbiteStacks >= ElementalThunderFrostReactionsConfig.frostbiteAuraThreshold) {
-            clearFrostbiteAuraEffects(target);
+            clearFrostbiteAuraEffects(target, frostbiteStacks);
         }
         clearFrostbite(target);
         WetnessHandler.clearWetnessData(target);
@@ -674,7 +674,7 @@ public class FrostbiteHandler {
                 int threshold = ElementalThunderFrostReactionsConfig.frostbiteFireStandClearingTime * 20;
                 if (timer >= threshold) {
                     if (auraActive) {
-                        clearFrostbiteAuraEffects(entity);
+                        clearFrostbiteAuraEffects(entity, stacks);
                     }
                     clearFrostbite(entity);
                     entity.playSound(SoundEvents.FIRE_EXTINGUISH, 1.0f, 1.0f);
@@ -683,7 +683,7 @@ public class FrostbiteHandler {
                 data.putInt(NBT_FROSTBITE_FIRE_STAND_TIMER, timer);
             } else if (!data.contains(NBT_FROSTBITE_FIRE_STAND_TIMER) && entity.isOnFire()) {
                 if (auraActive) {
-                    clearFrostbiteAuraEffects(entity);
+                    clearFrostbiteAuraEffects(entity, stacks);
                 }
                 clearFrostbite(entity);
                 entity.playSound(SoundEvents.FIRE_EXTINGUISH, 1.0f, 1.0f);
@@ -693,7 +693,7 @@ public class FrostbiteHandler {
             if (WetnessHandler.checkHeatSource(entity.level(), entity.blockPosition(),
                     ElementalThunderFrostReactionsConfig.frostbiteHeatSearchRadius)) {
                 if (auraActive) {
-                    clearFrostbiteAuraEffects(entity);
+                    clearFrostbiteAuraEffects(entity, stacks);
                 }
                 clearFrostbite(entity);
                 entity.playSound(SoundEvents.FIRE_EXTINGUISH, 1.0f, 1.0f);
@@ -740,7 +740,7 @@ public class FrostbiteHandler {
                     DebugCommand.sendReactionCooldownBlock(entity, "freeze", DebugCommand.getRemainingCooldown(entity, NBT_FREEZE_COOLDOWN));
                 }
                 if (auraActive) {
-                    clearFrostbiteAuraEffects(entity);
+                    clearFrostbiteAuraEffects(entity, stacks);
                 }
                 clearFrostbite(entity);
                 WetnessHandler.clearWetnessData(entity);
@@ -769,7 +769,7 @@ public class FrostbiteHandler {
         data.remove(NBT_FROSTBITE_LAST_PERIODIC_DMG);
 
         if (ElementalThunderFrostReactionsConfig.frostbiteAuraThreshold > 0 && auraStacks >= ElementalThunderFrostReactionsConfig.frostbiteAuraThreshold) {
-            clearFrostbiteAuraEffects(entity);
+            clearFrostbiteAuraEffects(entity, auraStacks);
         }
 
         data.remove(NBT_FROST_AURA_TRACKED);
@@ -1183,30 +1183,50 @@ public class FrostbiteHandler {
         sourceData.putString(NBT_FROST_AURA_TRACKED, sb.toString());
     }
 
-    private static void clearFrostbiteAuraEffects(LivingEntity source) {
+    private static void clearFrostbiteAuraEffects(LivingEntity source, int stacks) {
         CompoundTag sourceData = source.getPersistentData();
         String trackedStr = sourceData.getString(NBT_FROST_AURA_TRACKED);
-        if (trackedStr.isEmpty()) {
-            sourceData.remove(NBT_FROST_AURA_TRACKED);
-            return;
-        }
-        for (String s : trackedStr.split(",")) {
-            try {
-                UUID id = UUID.fromString(s);
-                if (source.level() instanceof ServerLevel sl) {
-                    Entity e = sl.getEntity(id);
-                    if (e instanceof LivingEntity le) {
-                        if (le.hasEffect(ModMobEffects.FREEZE)) {
-                            le.removeEffect(ModMobEffects.FREEZE);
+        if (!trackedStr.isEmpty()) {
+            for (String s : trackedStr.split(",")) {
+                try {
+                    UUID id = UUID.fromString(s);
+                    if (source.level() instanceof ServerLevel sl) {
+                        Entity e = sl.getEntity(id);
+                        if (e instanceof LivingEntity le) {
+                            if (le.hasEffect(ModMobEffects.FREEZE)) {
+                                le.removeEffect(ModMobEffects.FREEZE);
+                            }
+                            CompoundTag targetData = le.getPersistentData();
+                            targetData.remove(NBT_FREEZE_COOLDOWN);
+                            targetData.remove(NBT_FREEZE_STACKS);
+                            clearTempFrostbite(le);
                         }
-                        CompoundTag targetData = le.getPersistentData();
-                        targetData.remove(NBT_FREEZE_COOLDOWN);
-                        targetData.remove(NBT_FREEZE_STACKS);
-                        clearTempFrostbite(le);
                     }
-                }
-            } catch (Exception ignored) {}
+                } catch (Exception ignored) {}
+            }
+            sourceData.remove(NBT_FROST_AURA_TRACKED);
         }
-        sourceData.remove(NBT_FROST_AURA_TRACKED);
+
+        double range = getAuraRange(stacks);
+        AABB area = new AABB(
+                source.getX() - range, source.getY() - range, source.getZ() - range,
+                source.getX() + range, source.getY() + range, source.getZ() + range
+        );
+        for (LivingEntity target : source.level().getEntitiesOfClass(LivingEntity.class, area)) {
+            if (target == source) continue;
+            if (shouldSkipFrostbiteAuraTarget(target, source)) continue;
+
+            double dx = target.getX() - source.getX();
+            double dz = target.getZ() - source.getZ();
+            if (Math.sqrt(dx * dx + dz * dz) > range) continue;
+
+            if (target.hasEffect(ModMobEffects.FREEZE)) {
+                target.removeEffect(ModMobEffects.FREEZE);
+            }
+            CompoundTag targetData = target.getPersistentData();
+            targetData.remove(NBT_FREEZE_COOLDOWN);
+            targetData.remove(NBT_FREEZE_STACKS);
+            clearTempFrostbite(target);
+        }
     }
 }
