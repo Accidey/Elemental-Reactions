@@ -1046,6 +1046,20 @@ public class FrostbiteHandler {
     private static void removeTempFrostbiteSlowness(LivingEntity entity) {
         AttributeInstance speedAttr = entity.getAttribute(Attributes.MOVEMENT_SPEED);
         AttributeInstance attackAttr = entity.getAttribute(Attributes.ATTACK_SPEED);
+        MobEffectInstance frostbite = entity.getEffect(ModMobEffects.FROSTBITE);
+        if (frostbite != null) {
+            double reduction = ElementalThunderFrostReactionsConfig.frostbiteSpeedReductionPerStack;
+            double value = reduction <= 0 ? 0.0 : Math.max(-reduction * (frostbite.getAmplifier() + 1), -0.9);
+            if (speedAttr != null) {
+                speedAttr.removeModifier(FrostbiteEffect.SPEED_MODIFIER_ID);
+                speedAttr.addPermanentModifier(new AttributeModifier(FrostbiteEffect.SPEED_MODIFIER_ID, value, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+            }
+            if (attackAttr != null) {
+                attackAttr.removeModifier(FrostbiteEffect.ATTACK_SPEED_MODIFIER_ID);
+                attackAttr.addPermanentModifier(new AttributeModifier(FrostbiteEffect.ATTACK_SPEED_MODIFIER_ID, value, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+            }
+            return;
+        }
         if (speedAttr != null) speedAttr.removeModifier(FrostbiteEffect.SPEED_MODIFIER_ID);
         if (attackAttr != null) attackAttr.removeModifier(FrostbiteEffect.ATTACK_SPEED_MODIFIER_ID);
     }
