@@ -792,22 +792,24 @@ public class ReactionHandler {
     public static double applySporeBiomeModifier(LivingEntity target, double chance) {
         double result = Math.min(1.0, chance);
         double coldMult = ElementalFireNatureReactionsConfig.sporeColdBiomeChanceMultiplier;
-        boolean modified = false;
-        CompoundTag data = target.getPersistentData();
-        if (coldMult < 1.0 && !data.getBoolean("EC_SporeBiomeColdLogged")) {
+        boolean coldApplied = false;
+        if (coldMult < 1.0) {
             Biome biome = target.level().getBiome(target.blockPosition()).value();
             if (biome.getBaseTemperature() <= 0.3) {
                 result *= coldMult;
-                data.putBoolean("EC_SporeBiomeColdLogged", true);
-                modified = true;
+                coldApplied = true;
             }
         }
         result = Math.min(1.0, result);
-        if (modified && DebugMode.hasAnyDebugEnabled()) {
-            MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.static_spore_blast.biome",
-                    Component.literal(String.format("%.0f", Math.min(1.0, chance) * 100)).withStyle(ChatFormatting.GRAY),
-                    Component.literal(String.format("%.0f", result * 100)).withStyle(ChatFormatting.GOLD));
-            DebugCommand.sendDebugMessage(target, msg);
+        CompoundTag data = target.getPersistentData();
+        if (coldApplied && !data.getBoolean("EC_SporeBiomeColdLogged")) {
+            data.putBoolean("EC_SporeBiomeColdLogged", true);
+            if (DebugMode.hasAnyDebugEnabled()) {
+                MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.static_spore_blast.biome",
+                        Component.literal(String.format("%.0f", Math.min(1.0, chance) * 100)).withStyle(ChatFormatting.GRAY),
+                        Component.literal(String.format("%.0f", result * 100)).withStyle(ChatFormatting.GOLD));
+                DebugCommand.sendDebugMessage(target, msg);
+            }
         }
         return result;
     }
