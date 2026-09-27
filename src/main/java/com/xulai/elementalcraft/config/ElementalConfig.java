@@ -557,11 +557,11 @@ public final class ElementalConfig {
                         "The point value used for Nether forced Fire strength AND resistance.",
                         "This value is applied to both strength and resistance equally.",
                         "",
-                        "Enchantment level = nether_fire_points / per_level (strength_per_level or resist_per_level).",
-                        "附魔等级 = nether_fire_points / 每级点数（strength_per_level 或 resist_per_level）。",
+                        "Enchantment levels = nether_fire_points / per_level in total, then spread evenly across the 4 armor pieces.",
+                        "附魔等级 = nether_fire_points / 每级点数（得到的总等级再均摊到 4 件护甲上）。",
                         "",
-                        "Example: nether_fire_points=100, strength_per_level=5 → Strength Lv.20 on each piece.",
-                        "示例：nether_fire_points=100, strength_per_level=5 → 每件护甲强化 Lv.20。",
+                        "Example: nether_fire_points=100, strength_per_level=5 → 20 levels total, about Lv.5 per piece.",
+                        "示例：nether_fire_points=100, strength_per_level=5 → 合计 20 级，均摊后约每件 Lv.5。",
                         "",
                         "Default: 100 / 默认：100")
                 .defineInRange("nether_fire_points", 100, 100, 100000);
@@ -687,14 +687,14 @@ public final class ElementalConfig {
                 .push("biome_weather_bias");
 
         HOT_FIRE_BIAS = BUILDER
-                .comment("炎热生物群系（沙漠、热带草原、恶地、下界等）中赤焰属性的权重。",
-                        "该值与其他属性的权重合并后归一化，得出实际概率。",
+                .comment("炎热生物群系（沙漠、热带草原、恶地、下界等）中赤焰属性的出现概率。",
+                        "该值是一次独立判定的概率，不做归一化：命中直接返回赤焰；未命中则按顺序继续判定寒冷/森林，最后落入四种元素的等概率兜底。",
                         "",
-                        "Weight for Fire element in hot biomes (Desert, Savanna, Badlands, Nether, etc.).",
-                        "This value is combined with weights for other elements and normalized to determine probability.",
+                        "Probability of Fire element in hot biomes (Desert, Savanna, Badlands, Nether, etc.).",
+                        "Used as a single independent roll, not normalized: success returns Fire; otherwise the cold/forest checks follow and a uniform 1-in-4 fallback is used last.",
                         "",
-                        "Example: hot_fire_bias=60, and other biases are 10, 10, 10 → Fire probability = 60/(60+10+10+10) = 66.7%.",
-                        "示例：hot_fire_bias=60，其他偏好为 10、10、10 → 赤焰概率 = 60/(60+10+10+10) = 66.7%。",
+                        "Example: hot_fire_bias=60 in a hot biome without thunderstorm/cold/forest → Fire 60%; the remaining 40% goes to the fallback roll.",
+                        "示例：hot_fire_bias=60，在无雷暴、非寒冷、非森林的炎热群系 → 赤焰 60%，其余 40% 落入等概率兜底。",
                         "",
                         "Default: 60.0 / 默认：60.0")
                 .defineInRange("hot_fire_bias", 60.0, 0.0, 100.0);
@@ -716,16 +716,14 @@ public final class ElementalConfig {
                 .defineInRange("forest_nature_bias", 60.0, 0.0, 100.0);
 
         THUNDERSTORM_THUNDER_BIAS = BUILDER
-                .comment("雷雨天气时雷霆属性的权重（全局生效，覆盖群系偏好）。",
-                        "雷雨天气激活时，此权重替代群系对雷霆的权重。",
-                        "群系的赤焰/冰霜/自然权重仍正常竞争。",
+                .comment("雷暴天气时雷霆属性的出现概率。",
+                        "这是独立判定中最先执行的一项：命中即返回雷霆；未命中才继续按群系判定赤焰/冰霜/自然。",
                         "",
-                        "Weight for Thunder element during thunderstorm weather (global, overrides biome bias).",
-                        "When a thunderstorm is active, this weight replaces the biome-based weight for Thunder.",
-                        "Biome Fire/Frost/Nature weights still compete normally.",
+                        "Probability of Thunder element during thunderstorm weather.",
+                        "Evaluated first as an independent roll: success returns Thunder; only on failure do the biome checks continue.",
                         "",
-                        "Example: thunderstorm_bias=80, hot_fire_bias=10, others=10 → Thunder=80%, Fire≈7%, others≈7%.",
-                        "示例：thunderstorm_bias=80, hot_fire_bias=10, 其他=10 → 雷霆≈80%，赤焰≈7%，其他≈7%。",
+                        "Example: thunderstorm_bias=80 in a hot biome with hot_fire_bias=10 → Thunder 80%, Fire about 2%, the rest goes to the uniform fallback.",
+                        "示例：thunderstorm_bias=80、hot_fire_bias=10 的炎热群系 → 雷霆 80%，赤焰约 2%，其余落入等概率兜底。",
                         "",
                         "Default: 80.0 / 默认：80.0")
                 .defineInRange("thunderstorm_thunder_bias", 80.0, 0.0, 100.0);
