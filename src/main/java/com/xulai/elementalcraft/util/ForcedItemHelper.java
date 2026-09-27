@@ -16,11 +16,14 @@ public final class ForcedItemHelper {
 
     private static final Map<Item, ArmorTemplate> ARMOR_CACHE = new ConcurrentHashMap<>();
 
+    private static final Map<Item, ArmorData> ARMOR_ROLLED_CACHE = new ConcurrentHashMap<>();
+
     private ForcedItemHelper() {}
 
     public static void clearCache() {
         WEAPON_CACHE.clear();
         ARMOR_CACHE.clear();
+        ARMOR_ROLLED_CACHE.clear();
     }
 
     public record WeaponData(ElementType attackType) {}
@@ -51,10 +54,13 @@ public final class ForcedItemHelper {
         ArmorTemplate template = ARMOR_CACHE.get(item);
         if (template == null) return null;
 
-        int enhancePts = template.enhanceRange().roll();
-        int resistPts = template.resistRange().roll();
-
-        return new ArmorData(template.enhanceType(), enhancePts, template.resistType(), resistPts);
+        ArmorData rolled = ARMOR_ROLLED_CACHE.get(item);
+        if (rolled == null) {
+            rolled = new ArmorData(template.enhanceType(), template.enhanceRange().roll(),
+                    template.resistType(), template.resistRange().roll());
+            ARMOR_ROLLED_CACHE.put(item, rolled);
+        }
+        return rolled;
     }
 
     @SuppressWarnings("deprecation")
