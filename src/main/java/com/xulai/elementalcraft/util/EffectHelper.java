@@ -61,6 +61,7 @@ public class EffectHelper {
             Vec3 end = target.position().add(0, target.getBbHeight() * 0.5, 0);
             double dist = start.distanceTo(end);
             int linePoints = (int) (dist * 4);
+            if (linePoints < 2) linePoints = 2;
             for (int j = 0; j <= linePoints; j++) {
                 double t = (double) j / linePoints;
                 double lx = Mth.lerp(t, start.x, end.x);
