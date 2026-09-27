@@ -92,6 +92,7 @@ public class StaticShockHandler {
     private static final String NBT_LAST_STATIC_ELEMENT = "ec_last_static_element";
     private static final String NBT_LAST_STATIC_ELEMENT_MULT = "ec_last_static_element_mult";
     private static final int THUNDER_BREAK_FREEZE_ATTEMPT_INTERVAL = 40;
+    private static final int MAX_STRIKE_BOLTS_PER_STRIKE = 4;
     private static final Map<UUID, ActiveElectrification> activeElectrifications = new HashMap<>();
     private static final Map<UUID, Long> waterElectrificationCooldowns = new HashMap<>();
     private static final Map<UUID, ActiveThunderStorm> activeThunderStorms = new HashMap<>();
@@ -632,12 +633,17 @@ public class StaticShockHandler {
             if (now < storm.nextStrikeTick) continue;
             storm.nextStrikeTick = now + storm.strikeInterval;
 
+            int boltBudget = Math.min(areaEntities.size(), MAX_STRIKE_BOLTS_PER_STRIKE);
+
             for (LivingEntity strikeTarget : areaEntities) {
-                LightningBolt lightning = net.minecraft.world.entity.EntityTypes.LIGHTNING_BOLT.create(sl, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
-                if (lightning != null) {
-                    lightning.snapTo(strikeTarget.getX(), strikeTarget.getY(), strikeTarget.getZ());
-                    lightning.setVisualOnly(true);
-                    sl.addFreshEntity(lightning);
+                if (boltBudget > 0) {
+                    boltBudget--;
+                    LightningBolt lightning = net.minecraft.world.entity.EntityTypes.LIGHTNING_BOLT.create(sl, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+                    if (lightning != null) {
+                        lightning.snapTo(strikeTarget.getX(), strikeTarget.getY(), strikeTarget.getZ());
+                        lightning.setVisualOnly(true);
+                        sl.addFreshEntity(lightning);
+                    }
                 }
 
                 ElementDamageHelper.applyDamage(strikeTarget,
