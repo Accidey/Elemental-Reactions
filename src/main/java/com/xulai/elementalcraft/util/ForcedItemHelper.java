@@ -179,7 +179,6 @@ public final class ForcedItemHelper {
 
         if (segmentMax < segmentMin) segmentMax = segmentMin;
 
-        int result = segmentMin + ThreadLocalRandom.current().nextInt(segmentMax - segmentMin + 1);
-        return (result / 10) * 10;
+        return segmentMin + ThreadLocalRandom.current().nextInt(segmentMax - segmentMin + 1);
     }
 }
