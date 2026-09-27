@@ -1,9 +1,10 @@
 package com.xulai.elementalcraft.command;
 
+import com.xulai.elementalcraft.ElementalCraft;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-@EventBusSubscriber(modid = "elementalcraft")
+@EventBusSubscriber(modid = ElementalCraft.MODID)
 public class ModCommands {
 
     @SubscribeEvent

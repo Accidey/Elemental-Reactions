@@ -1,5 +1,6 @@
 package com.xulai.elementalcraft.event;
 
+import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.logic.MobAttributeLogic;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -8,7 +9,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-@EventBusSubscriber(modid = "elementalcraft")
+@EventBusSubscriber(modid = ElementalCraft.MODID)
 public class PlayerTrackEvents {
 
     @SubscribeEvent

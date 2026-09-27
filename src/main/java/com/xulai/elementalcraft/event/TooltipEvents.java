@@ -1,5 +1,6 @@
 package com.xulai.elementalcraft.event;
 
+import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.util.ElementType;
 import com.xulai.elementalcraft.util.ElementUtils;
@@ -14,7 +15,7 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 import java.util.List;
 
-@EventBusSubscriber(modid = "elementalcraft")
+@EventBusSubscriber(modid = ElementalCraft.MODID)
 public class TooltipEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
