@@ -353,23 +353,31 @@ public class ScorchedHandler {
             }
         }
 
+        if (data.contains(NBT_FIRE_COUNTER_SAVED_SPEED) && data.contains(NBT_FIRE_COUNTER_SPEED_TIME)) {
+            long elapsed = entity.level().getGameTime() - data.getLongOr(NBT_FIRE_COUNTER_SPEED_TIME, 0L);
+            if (elapsed > 100) {
+                restoreSavedSpeed(entity);
+            }
+        }
+
         if (!data.contains(NBT_SCORCHED_TICKS)) {
             handleTempScorch(entity, data);
             return;
         }
         handleRegularScorch(entity, data);
-        if (data.contains(NBT_FIRE_COUNTER_SAVED_SPEED) && data.contains(NBT_FIRE_COUNTER_SPEED_TIME)) {
-            long elapsed = entity.level().getGameTime() - data.getLongOr(NBT_FIRE_COUNTER_SPEED_TIME, 0L);
-            if (elapsed > 100 && entity instanceof net.minecraft.world.entity.Mob mob) {
-                double savedSpeed = data.getDoubleOr(NBT_FIRE_COUNTER_SAVED_SPEED, 0.0);
-                if (savedSpeed > 0) {
-                    var attr = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
-                    if (attr != null) attr.setBaseValue(savedSpeed);
-                }
-                data.remove(NBT_FIRE_COUNTER_SAVED_SPEED);
-                data.remove(NBT_FIRE_COUNTER_SPEED_TIME);
-            }
+    }
+
+    private static void restoreSavedSpeed(Entity entity) {
+        if (!(entity instanceof Mob mob)) return;
+        CompoundTag data = entity.getPersistentData();
+        if (!data.contains(NBT_FIRE_COUNTER_SAVED_SPEED)) return;
+        double savedSpeed = data.getDoubleOr(NBT_FIRE_COUNTER_SAVED_SPEED, 0.0);
+        if (savedSpeed > 0) {
+            var attr = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+            if (attr != null) attr.setBaseValue(savedSpeed);
         }
+        data.remove(NBT_FIRE_COUNTER_SAVED_SPEED);
+        data.remove(NBT_FIRE_COUNTER_SPEED_TIME);
     }
 
     private static void handleTempScorch(LivingEntity entity, CompoundTag data) {
@@ -900,21 +908,14 @@ public class ScorchedHandler {
     }
 
     public static void clearSessionState(LivingEntity entity) {
+        restoreSavedSpeed(entity);
         entity.getPersistentData().remove(NBT_FIRE_COUNTER_CD);
     }
 
     private static void tickActiveFireCounter(ServerLevel sl, ActiveFireCounter fc) {
         Entity ownerEntity = sl.getEntity(fc.ownerUUID);
         if (ownerEntity == null || !(ownerEntity instanceof LivingEntity owner) || owner.isDeadOrDying()) {
-            if (ownerEntity instanceof Mob mob) {
-                double savedSpeed = ownerEntity.getPersistentData().getDoubleOr(NBT_FIRE_COUNTER_SAVED_SPEED, 0.0);
-                if (savedSpeed > 0) {
-                    var attr = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
-                    if (attr != null) attr.setBaseValue(savedSpeed);
-                }
-                ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_SPEED);
-                ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_SPEED_TIME);
-            }
+            restoreSavedSpeed(ownerEntity);
             net.minecraft.server.level.ServerPlayer lockOwner = ownerEntity instanceof net.minecraft.server.level.ServerPlayer sp
                     ? sp
                     : sl.getServer().getPlayerList().getPlayer(fc.ownerUUID);
@@ -950,15 +951,7 @@ public class ScorchedHandler {
                     PacketDistributor.sendToPlayer(sp,
                             new FireCounterLockPacket(false));
                 }
-                if (owner instanceof Mob mob) {
-                    double savedSpeed = owner.getPersistentData().getDoubleOr(NBT_FIRE_COUNTER_SAVED_SPEED, 0.0);
-                    if (savedSpeed > 0) {
-                        var attr = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
-                        if (attr != null) attr.setBaseValue(savedSpeed);
-                    }
-                    owner.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_SPEED);
-                    owner.getPersistentData().remove(NBT_FIRE_COUNTER_SPEED_TIME);
-                }
+                restoreSavedSpeed(owner);
                 activeFireCounters.remove(fc.ownerUUID);
                 break;
         }
