@@ -54,7 +54,7 @@ public class CherryBlossomParticle extends SingleQuadParticle {
             return;
         }
 
-        float progress = (float)this.age / 300.0F;
+        float progress = (float)this.age / this.lifetime;
         float driftMag = (float)Math.pow(progress, 1.25f) * 2.0f * 0.0025f;
         double dx = Math.cos(Math.toRadians(driftSeed * 60.0f)) * driftMag;
         double dz = Math.sin(Math.toRadians(driftSeed * 60.0f)) * driftMag;
