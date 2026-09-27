@@ -109,7 +109,13 @@ public class ElementalCraft {
     public void onConfigLoad(ModConfigEvent.Loading event) {
         if (event.getConfig().getSpec() == ElementalConfig.SPEC) {
             ElementalConfig.refreshCache();
+            CustomBiomeBias.clearCache();
+            ForcedAttributeHelper.clearCache();
             LOGGER.info("[ElementalCraft] Config Loaded: elementalcraft-common.toml");
+        }
+        if (event.getConfig().getSpec() == ForcedItemConfig.SPEC) {
+            ForcedItemHelper.clearCache();
+            LOGGER.info("[ElementalCraft] Config Loaded: elementalcraft-forced-items.toml");
         }
         if (event.getConfig().getSpec() == ElementalFireNatureReactionsConfig.SPEC) {
             ElementalFireNatureReactionsConfig.refreshCache();
