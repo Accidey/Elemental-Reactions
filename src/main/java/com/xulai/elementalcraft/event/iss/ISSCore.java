@@ -187,7 +187,7 @@ public class ISSCore {
     static final String NBT_ISS_REFRESH_CD = "EC_ISS_RefreshCD";
 
     static {
-        System.out.println("[EC ROOT DEBUG] === Static block START ===");
+        ElementalCraft.LOGGER.debug("[ElementalCraft] ISS integration static init: start");
         boolean loaded = false;
         try {
             loaded = ModList.get() != null && ModList.get().isLoaded("irons_spellbooks");
@@ -195,7 +195,7 @@ public class ISSCore {
             loaded = false;
         }
         ISS_LOADED = loaded;
-        System.out.println("[EC ROOT DEBUG] ISS_LOADED=" + ISS_LOADED);
+        ElementalCraft.LOGGER.debug("[ElementalCraft] irons_spellbooks loaded: {}", ISS_LOADED);
 
         if (ISS_LOADED) {
             try {
@@ -225,8 +225,7 @@ public class ISSCore {
             }
         }
 
-        System.out.println("[EC ROOT DEBUG] === Static block END ===");
-        System.out.println("[EC ROOT DEBUG] === Static block END ===");
+        ElementalCraft.LOGGER.debug("[ElementalCraft] ISS integration static init: end");
     }
 
     private static void onSpellOnCast(net.neoforged.bus.api.Event event) {
