@@ -3,17 +3,11 @@ package com.xulai.elementalcraft.client;
 import com.xulai.elementalcraft.ElementalCraft;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
-@EventBusSubscriber(modid = ElementalCraft.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class ModParticles {
 
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES =
@@ -47,49 +41,5 @@ public class ModParticles {
 
     public static SimpleParticleType frostSnowflake() {
         return ISS_LOADED ? FROST_SNOWFLAKE_ISS.get() : FROST_SNOWFLAKE.get();
-    }
-
-    @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-    public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(
-                THUNDER_SPARK_PERSISTENT.get(),
-                PersistentSparkParticle.Factory::new
-        );
-
-        event.registerSpriteSet(
-                FROST_SNOWFLAKE.get(),
-                FrostSnowflakeParticle.Factory::new
-        );
-
-        event.registerSpriteSet(
-                FROST_SNOWFLAKE_ISS.get(),
-                FrostSnowflakeParticle.Factory::new
-        );
-
-        event.registerSpriteSet(
-                STEAM_CLOUD.get(),
-                SteamCloudParticle.Factory::new
-        );
-
-        event.registerSpriteSet(
-                TOXIC_BLAST.get(),
-                ToxicBlastParticle.Factory::new
-        );
-
-        event.registerSpriteSet(
-                STORM_CLOUD.get(),
-                StormCloudParticle.Factory::new
-        );
-
-        event.registerSpriteSet(
-                CHERRY_BLOSSOM.get(),
-                CherryBlossomParticle.Factory::new
-        );
-
-        event.registerSpriteSet(
-                FROST_ICE_RUNE.get(),
-                FrostIceRuneParticle.Factory::new
-        );
     }
 }
