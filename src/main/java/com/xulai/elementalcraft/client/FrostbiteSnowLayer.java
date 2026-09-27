@@ -33,8 +33,7 @@ public class FrostbiteSnowLayer {
         MobEffectInstance frostbite = entity.getEffect(ModMobEffects.FROSTBITE);
         if (frostbite == null) return;
         int stacks = frostbite.getAmplifier() + 1;
-        int maxStacks = ElementalThunderFrostReactionsConfig.frostbiteMaxTotalStacks;
-        if (maxStacks <= 0) maxStacks = 5;
+        int maxStacks = ElementalThunderFrostReactionsConfig.getFrostbiteMaxTotalStacks();
 
         float coverage = Math.min(1.0f, (float) stacks / maxStacks);
         float hw = entity.getBbWidth() / 2.0f + 0.2f;

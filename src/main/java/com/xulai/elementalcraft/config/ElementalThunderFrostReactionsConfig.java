@@ -1341,5 +1341,9 @@ public final class ElementalThunderFrostReactionsConfig {
         frostCounterHeightCeiling = FROST_COUNTER_HEIGHT_CEILING.get();
     }
 
+    public static int getFrostbiteMaxTotalStacks() {
+        return frostbiteMaxTotalStacks > 0 ? frostbiteMaxTotalStacks : 1;
+    }
+
     private ElementalThunderFrostReactionsConfig() {}
 }

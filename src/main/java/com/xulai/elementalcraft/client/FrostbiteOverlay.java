@@ -37,8 +37,7 @@ public class FrostbiteOverlay {
             targetAlpha = 1.0f;
         } else if (frostbiteEffect != null) {
             int stacks = frostbiteEffect.getAmplifier() + 1;
-            int maxStacks = ElementalThunderFrostReactionsConfig.frostbiteMaxTotalStacks;
-            if (maxStacks <= 0) maxStacks = 1;
+            int maxStacks = ElementalThunderFrostReactionsConfig.getFrostbiteMaxTotalStacks();
             targetAlpha = (float) stacks / (float) maxStacks;
         } else {
             targetAlpha = 0.0f;
