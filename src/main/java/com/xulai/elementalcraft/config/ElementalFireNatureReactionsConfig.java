@@ -776,7 +776,7 @@ public class ElementalFireNatureReactionsConfig {
     FIRE_COUNTER_STRENGTH_THRESHOLD = BUILDER
             .comment("触发赤焰反制所需的最小赤焰属性强化点数。",
                      "Minimum Fire enhancement points required to trigger Fire Counter.",
-                     "Default: 20.0 / 默认：20.0")
+                     "Default: 50.0 / 默认：50.0")
             .defineInRange("fire_counter_strength_threshold", 50.0, 0.0, 10000.0);
     BUILDER.comment(" ");
 
@@ -1178,14 +1178,14 @@ public class ElementalFireNatureReactionsConfig {
     WILDFIRE_KNOCKBACK = BUILDER
             .comment("反击造成的水平击退力度。",
                     "Horizontal knockback strength of the counter-attack.",
-                    "Default: 1.5 / 默认：1.5")
+                    "Default: 3.0 / 默认：3.0")
             .defineInRange("wildfire_knockback", 3.0, 0.0, 10.0);
     BUILDER.comment(" ");
 
     WILDFIRE_VERTICAL_KNOCKBACK = BUILDER
             .comment("反击造成的垂直击退力度。",
                     "Vertical knockback strength of the counter-attack.",
-                    "Default: 0.5 / 默认：0.5")
+                    "Default: 1.0 / 默认：1.0")
             .defineInRange("wildfire_vertical_knockback", 1.0, 0.0, 10.0);
     BUILDER.comment(" ");
 
