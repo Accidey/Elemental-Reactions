@@ -975,7 +975,7 @@ public class StaticShockHandler {
                 if (sourceStacks <= 0) continue;
 
                 if (ElementalThunderFrostReactionsConfig.staticSporeBlastBaseChance <= 0) continue;
-                double totalChance = Math.min(1.0,
+                double totalChance = ReactionHandler.applySporeBiomeModifier(target,
                         ElementalThunderFrostReactionsConfig.staticSporeBlastBaseChance
                         + sourceStacks * ElementalThunderFrostReactionsConfig.staticSporeBlastPerStaticStack
                         + sporeStacks * ElementalThunderFrostReactionsConfig.staticSporeBlastPerSporeStack);
