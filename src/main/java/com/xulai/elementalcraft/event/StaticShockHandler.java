@@ -79,6 +79,8 @@ public class StaticShockHandler {
     private static final String NBT_STATIC_PRIMED = "ec_static_primed";
     private static final String NBT_TEMP_STATIC = "ec_temp_static";
     private static final String NBT_TEMP_STATIC_STACKS = "ec_temp_static_stacks";
+    private static final String NBT_TEMP_STATIC_EXPIRE = "ec_temp_static_expire";
+    private static final int TEMP_STATIC_TTL_TICKS = 40;
     private static final String NBT_AURA_TRACKED = "ec_static_aura_tracked";
     private static final String NBT_LAST_STATIC_DAMAGE = "ec_last_static_damage";
     private static final String NBT_THUNDER_BREAK_FREEZE_CD = "EC_ThunderBreakFreezeCD";
@@ -369,6 +371,10 @@ public class StaticShockHandler {
         if (!data.contains(NBT_STATIC_STACKS)) {
             if (entity.hasEffect(ModMobEffects.STATIC_SHOCK)) {
                 entity.removeEffect(ModMobEffects.STATIC_SHOCK);
+            }
+            if (data.getBoolean(NBT_TEMP_STATIC)
+                    && entity.level().getGameTime() >= data.getLong(NBT_TEMP_STATIC_EXPIRE)) {
+                clearAuraTargetTempStatic(entity);
             }
             return;
         }
@@ -1385,6 +1391,7 @@ public class StaticShockHandler {
         data.remove(NBT_STATIC_PRIMED);
         data.remove(NBT_TEMP_STATIC);
         data.remove(NBT_TEMP_STATIC_STACKS);
+        data.remove(NBT_TEMP_STATIC_EXPIRE);
         data.remove(NBT_LAST_STATIC_DAMAGE);
         if (entity.hasEffect(ModMobEffects.STATIC_SHOCK)) {
             entity.removeEffect(ModMobEffects.STATIC_SHOCK);
@@ -1395,12 +1402,14 @@ public class StaticShockHandler {
         CompoundTag data = target.getPersistentData();
         data.putBoolean(NBT_TEMP_STATIC, true);
         data.putInt(NBT_TEMP_STATIC_STACKS, stacks);
+        data.putLong(NBT_TEMP_STATIC_EXPIRE, target.level().getGameTime() + TEMP_STATIC_TTL_TICKS);
     }
 
     private static void clearAuraTargetTempStatic(LivingEntity entity) {
         CompoundTag data = entity.getPersistentData();
         data.remove(NBT_TEMP_STATIC);
         data.remove(NBT_TEMP_STATIC_STACKS);
+        data.remove(NBT_TEMP_STATIC_EXPIRE);
     }
 
     private static boolean tryBreakFreeze(LivingEntity entity, int staticStacks) {
