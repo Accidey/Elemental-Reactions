@@ -50,35 +50,33 @@ public class FrostbiteEffect extends MobEffect {
     public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         if (entity.level().isClientSide) return true;
 
-        {
-            float baseDamage = (float) ElementalThunderFrostReactionsConfig.frostbitePeriodicDamage;
-            float damage = baseDamage;
-            ElementType element = ElementUtils.getConsistentAttackElement(entity);
-            float elementMult = 1.0f;
-            if (element == ElementType.FIRE) {
-                elementMult = (float) ElementalThunderFrostReactionsConfig.frostbiteDamageFireMultiplier;
-            } else if (element == ElementType.NATURE) {
-                elementMult = (float) ElementalThunderFrostReactionsConfig.frostbiteDamageNatureMultiplier;
-            } else if (element == ElementType.THUNDER) {
-                elementMult = (float) ElementalThunderFrostReactionsConfig.frostbiteDamageThunderMultiplier;
-            } else if (element == ElementType.FROST) {
-                elementMult = (float) ElementalThunderFrostReactionsConfig.frostbiteDamageFrostMultiplier;
-            }
-            damage *= elementMult;
-
-            CompoundTag data = entity.getPersistentData();
-            float lastDmg = data.getFloat(FrostbiteHandler.NBT_FROSTBITE_LAST_PERIODIC_DMG);
-            if (data.getInt(FrostbiteHandler.NBT_FROSTBITE_PERIODIC_LOGGED) == 0 || damage != lastDmg) {
-                DebugCommand.sendFrostbitePeriodicDamageLog(entity, baseDamage, element, elementMult, damage);
-                data.putFloat(FrostbiteHandler.NBT_FROSTBITE_LAST_PERIODIC_DMG, damage);
-                data.putInt(FrostbiteHandler.NBT_FROSTBITE_PERIODIC_LOGGED, 1);
-            }
-
-            entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.FROSTBITE), damage);
-
-            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(),
-                    SoundEvents.PLAYER_HURT_FREEZE, SoundSource.PLAYERS, 1.0f, 1.0f);
+        float baseDamage = (float) ElementalThunderFrostReactionsConfig.frostbitePeriodicDamage;
+        float damage = baseDamage;
+        ElementType element = ElementUtils.getConsistentAttackElement(entity);
+        float elementMult = 1.0f;
+        if (element == ElementType.FIRE) {
+            elementMult = (float) ElementalThunderFrostReactionsConfig.frostbiteDamageFireMultiplier;
+        } else if (element == ElementType.NATURE) {
+            elementMult = (float) ElementalThunderFrostReactionsConfig.frostbiteDamageNatureMultiplier;
+        } else if (element == ElementType.THUNDER) {
+            elementMult = (float) ElementalThunderFrostReactionsConfig.frostbiteDamageThunderMultiplier;
+        } else if (element == ElementType.FROST) {
+            elementMult = (float) ElementalThunderFrostReactionsConfig.frostbiteDamageFrostMultiplier;
         }
+        damage *= elementMult;
+
+        CompoundTag data = entity.getPersistentData();
+        float lastDmg = data.getFloat(FrostbiteHandler.NBT_FROSTBITE_LAST_PERIODIC_DMG);
+        if (data.getInt(FrostbiteHandler.NBT_FROSTBITE_PERIODIC_LOGGED) == 0 || damage != lastDmg) {
+            DebugCommand.sendFrostbitePeriodicDamageLog(entity, baseDamage, element, elementMult, damage);
+            data.putFloat(FrostbiteHandler.NBT_FROSTBITE_LAST_PERIODIC_DMG, damage);
+            data.putInt(FrostbiteHandler.NBT_FROSTBITE_PERIODIC_LOGGED, 1);
+        }
+
+        entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.FROSTBITE), damage);
+
+        entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(),
+                SoundEvents.PLAYER_HURT_FREEZE, SoundSource.PLAYERS, 1.0f, 1.0f);
         return true;
     }
 
