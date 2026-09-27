@@ -44,10 +44,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -162,20 +159,6 @@ public class StaticShockHandler {
         int remaining = entity.getEffect(ModMobEffects.PARALYSIS).getDuration();
         DebugCommand.sendReactionFailed(entity, "static_shock", "paralysis", entity.getDisplayName(), remaining, remaining / 20);
         return true;
-    }
-
-    @SubscribeEvent
-    public static void onProjectileImpact(ProjectileImpactEvent event) {
-        Level level = event.getProjectile().level();
-        if (level.isClientSide()) return;
-        if (!(event.getProjectile().getOwner() instanceof LivingEntity shooter)) return;
-        int thunderPower = ElementUtils.getDisplayEnhancement(shooter, ElementType.THUNDER);
-        int threshold = ElementalThunderFrostReactionsConfig.thunderStrengthThreshold;
-        if (threshold <= 0 || thunderPower < threshold) return;
-        Entity projectile = event.getProjectile();
-        if (projectile instanceof net.minecraft.world.entity.projectile.throwableitemprojectile.AbstractThrownPotion) return;
-        HitResult hitResult = event.getRayTraceResult();
-        if (hitResult.getType() == HitResult.Type.ENTITY && ((EntityHitResult) hitResult).getEntity() instanceof LivingEntity) return;
     }
 
     private static boolean isInOrOnWater(LivingEntity entity) {
