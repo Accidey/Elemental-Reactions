@@ -302,10 +302,10 @@ public class DebugCommand {
         if (ctx.target == null || ctx.attacker == null) return;
         if (!isWatchedByAnyone(ctx.attacker)) return;
 
-        String sourceName = (ctx.directEntity instanceof ThrownTrident) ? "Trident" : ctx.attacker.getDisplayName().getString();
+        String sourceName = (ctx.directEntity instanceof ThrownTrident) ? "Trident" : nameOf(ctx.attacker).getString();
         String relationKey = ctx.restraintMult > 1.0f ? "debug.elementalcraft.relation.restrain" : ctx.restraintMult < 1.0f ? "debug.elementalcraft.relation.weak" : "debug.elementalcraft.relation.neutral";
 
-        MutableComponent prefix = Component.translatable(relationKey, sourceName, ctx.target.getDisplayName().getString());
+        MutableComponent prefix = Component.translatable(relationKey, sourceName, nameOf(ctx.target).getString());
         if (ctx.restraintMult > 1.0f) prefix = prefix.withStyle(ChatFormatting.RED);
         else if (ctx.restraintMult < 1.0f) prefix = prefix.withStyle(ChatFormatting.BLUE);
         else prefix = prefix.withStyle(ChatFormatting.GRAY);
@@ -342,8 +342,8 @@ public class DebugCommand {
                     Component.literal(String.format("%.1f", ctx.rawBaseDamage)).withStyle(ChatFormatting.RED));
         }
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.toxic_blast.message",
-                ctx.attacker.getDisplayName(),
-                ctx.target.getDisplayName(),
+                nameOf(ctx.attacker),
+                nameOf(ctx.target),
                 Component.literal(String.valueOf(ctx.stacks)).withStyle(ChatFormatting.DARK_GREEN),
                 String.format("%.1f", ctx.radius),
                 ctx.affectedCount,
@@ -418,8 +418,8 @@ public class DebugCommand {
         if (!DebugMode.hasAnyDebugEnabled()) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.scorched_spore.header").withStyle(ChatFormatting.DARK_RED);
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.scorched_spore.message",
-                ctx.target.getDisplayName(),
-                ctx.applier.getDisplayName(),
+                nameOf(ctx.target),
+                nameOf(ctx.applier),
                 Component.literal(String.valueOf(ctx.stacks)).withStyle(ChatFormatting.DARK_GREEN)
         ).withStyle(ChatFormatting.WHITE);
         sendDebugMessage(ctx.target, prefix.append(Component.literal(" ")).append(content));
@@ -455,7 +455,7 @@ public class DebugCommand {
                         Component.literal(String.format("%.0f", ctx.enchReduction * 100)).withStyle(ChatFormatting.AQUA))
                 : Component.literal("");
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.paralysis.message",
-                ctx.target.getDisplayName(),
+                nameOf(ctx.target),
                 Component.literal(String.valueOf(ctx.staticStacks)).withStyle(ChatFormatting.LIGHT_PURPLE),
                 wetnessText,
                 Component.literal(String.valueOf(ctx.paralysisStacks)).withStyle(ChatFormatting.LIGHT_PURPLE),
@@ -759,7 +759,7 @@ public class DebugCommand {
         if (!DebugMode.hasAnyDebugEnabled()) return;
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.frostbite_aura.header").withStyle(ChatFormatting.AQUA);
         msg.append(Component.literal(" "));
-        msg.append(ctx.target.getDisplayName());
+        msg.append(nameOf(ctx.target));
         msg.append(Component.literal(" "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.frostbite_aura.base",
                 Component.literal(String.format("%.1f", ctx.baseDamage)).withStyle(ChatFormatting.WHITE)));
@@ -785,7 +785,7 @@ public class DebugCommand {
                         Component.literal(String.valueOf(ctx.wetnessLevel)).withStyle(ChatFormatting.AQUA))
                 : Component.literal("");
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.freeze.message",
-                ctx.target.getDisplayName(),
+                nameOf(ctx.target),
                 Component.literal(String.valueOf(ctx.frostbiteStacks)).withStyle(ChatFormatting.AQUA),
                 wetnessText,
                 Component.literal(String.valueOf(ctx.freezeStacks)).withStyle(ChatFormatting.AQUA),
@@ -849,7 +849,7 @@ public class DebugCommand {
     public static void sendAuraDamageLog(AuraDamageLogContext ctx) {
         if (!DebugMode.hasAnyDebugEnabled()) return;
         MutableComponent message = Component.translatable("debug.elementalcraft.reaction." + ctx.reactionKey + "_aura.message",
-                ctx.target.getDisplayName(),
+                nameOf(ctx.target),
                 Component.literal(String.format("%.1f", ctx.damage)).withStyle(ChatFormatting.RED),
                 ctx.source.getDisplayName()
         ).withStyle(ChatFormatting.WHITE);
@@ -1005,7 +1005,7 @@ public class DebugCommand {
         if (!DebugMode.hasAnyDebugEnabled()) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.thermal_shock.header").withStyle(ChatFormatting.GOLD);
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.thermal_shock.message",
-                ctx.target.getDisplayName(),
+                nameOf(ctx.target),
                 Component.literal(String.valueOf(ctx.remainingTicks)).withStyle(ChatFormatting.YELLOW),
                 Component.literal(String.format("%.1f", ctx.totalRemainingDamage)).withStyle(ChatFormatting.GOLD),
                 Component.literal(String.format("%.0f", ctx.ratio * 100)).withStyle(ChatFormatting.YELLOW),
@@ -1091,8 +1091,8 @@ public class DebugCommand {
         MutableComponent body;
         if (ctx.success) {
             body = Component.translatable("debug.elementalcraft.reaction.thunder_counter.success",
-                    ctx.attacker.getDisplayName(),
-                    ctx.target.getDisplayName(),
+                    nameOf(ctx.attacker),
+                    nameOf(ctx.target),
                     Component.literal(String.format("%.1f", ctx.lightningDamage)).withStyle(ChatFormatting.GOLD),
                     String.valueOf(ctx.appliedStacks),
                     Component.translatable(ctx.appliedEffectKey)
@@ -1102,8 +1102,8 @@ public class DebugCommand {
             ).withStyle(ChatFormatting.WHITE);
         } else {
             body = Component.translatable("debug.elementalcraft.reaction.thunder_counter.fail",
-                    ctx.target.getDisplayName(),
-                    ctx.attacker.getDisplayName(),
+                    nameOf(ctx.target),
+                    nameOf(ctx.attacker),
                     String.format("%.1f", ctx.chance * 100)
             ).withStyle(ChatFormatting.GRAY);
         }
@@ -1117,14 +1117,14 @@ public class DebugCommand {
         MutableComponent body;
         if (ctx.success) {
             body = Component.translatable("debug.elementalcraft.reaction.frost_counter.success",
-                    ctx.target.getDisplayName(),
+                    nameOf(ctx.target),
                     String.valueOf(ctx.staticStacks),
                     String.format("%.1f", ctx.chance * 100),
                     Component.literal(String.valueOf(ctx.maxRadius)).withStyle(ChatFormatting.GOLD)
             ).withStyle(ChatFormatting.WHITE);
         } else {
             body = Component.translatable("debug.elementalcraft.reaction.frost_counter.fail",
-                    ctx.target.getDisplayName(),
+                    nameOf(ctx.target),
                     String.valueOf(ctx.staticStacks),
                     String.format("%.1f", ctx.chance * 100)
             ).withStyle(ChatFormatting.GRAY);
@@ -1145,6 +1145,10 @@ public class DebugCommand {
 
         ElementalCraft.LOGGER.info("[EC Debug] " + message.getString());
         recipients.forEach(p -> p.sendSystemMessage(message));
+    }
+
+    private static Component nameOf(LivingEntity entity) {
+        return entity != null ? entity.getDisplayName() : Component.literal("-");
     }
 
     private static boolean isWatchedByAnyone(LivingEntity contextEntity) {
