@@ -8,7 +8,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.xulai.elementalcraft.util.ConfigAutoSync;
 import com.xulai.elementalcraft.util.DebugMode;
 import com.xulai.elementalcraft.util.ElementType;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;

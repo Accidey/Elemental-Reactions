@@ -1,6 +1,5 @@
 package com.xulai.elementalcraft.client;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.potion.ModMobEffects;
 import net.minecraft.client.Minecraft;
