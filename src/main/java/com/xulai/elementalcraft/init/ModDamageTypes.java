@@ -15,10 +15,6 @@ public class ModDamageTypes {
             Registries.DAMAGE_TYPE,
             Identifier.fromNamespaceAndPath(ElementalCraft.MODID, "steam_scalding")
     );
-    public static final ResourceKey<DamageType> STEAM_SPORE_COMBUSTION = ResourceKey.create(
-            Registries.DAMAGE_TYPE,
-            Identifier.fromNamespaceAndPath(ElementalCraft.MODID, "steam_spore_combustion")
-    );
 
     public static final ResourceKey<DamageType> LAVA_MAGIC = ResourceKey.create(
             Registries.DAMAGE_TYPE,
