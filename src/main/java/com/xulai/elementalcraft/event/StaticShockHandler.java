@@ -62,7 +62,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.Level;
 
 @EventBusSubscriber(modid = ElementalCraft.MODID)
 public class StaticShockHandler {
