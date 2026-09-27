@@ -904,9 +904,11 @@ public class ElementalFireNatureReactionsConfig {
 
     SPORE_DAMAGE_INTERVAL = BUILDER
             .comment("易燃孢子伤害触发的间隔（Tick）。默认40 Tick = 2秒。",
+                    "低于 20 刻时，伤害会与受击后的无敌帧重叠而被静默吞掉，故下限为 20。",
                     "Interval (Ticks) for Flammable Spores damage ticks. Default 40 Ticks = 2 seconds.",
+                    "Values below 20 overlap the post-hit invulnerability window and get silently swallowed, hence the 20-tick floor.",
                     "Default: 40 / 默认：40")
-            .defineInRange("spore_damage_interval", 40, 1, 12000);
+            .defineInRange("spore_damage_interval", 40, 20, 12000);
     BUILDER.comment(" ");
 
 

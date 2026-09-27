@@ -722,9 +722,11 @@ public final class ElementalThunderFrostReactionsConfig {
 
         FROSTBITE_DAMAGE_INTERVAL_TICKS = BUILDER
                 .comment("霜冻周期性伤害的间隔时间（以刻为单位）。20刻 = 1秒。",
+                         "低于 20 刻时，伤害会与受击后的无敌帧重叠而被静默吞掉，故下限为 20。",
                          "Interval (in ticks) between each Frostbite periodic damage. 20 ticks = 1 second.",
+                         "Values below 20 overlap the post-hit invulnerability window and get silently swallowed, hence the 20-tick floor.",
                          "Default: 100 (5 seconds) / 默认：100（5秒）")
-                .defineInRange("frostbite_damage_interval_ticks", 100, 1, 72000);
+                .defineInRange("frostbite_damage_interval_ticks", 100, 20, 72000);
 
         BUILDER.comment(" ");
 
