@@ -1,0 +1,22 @@
+{
+  "name": "The Restraint Cycle",
+  "category": "elementalcraft:basics",
+  "icon": "minecraft:target",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The four elements form a single closed cycle. Each one restrains the next and is restrained by the previous:$(br2)$(c)$(l)Fire $(#888)->$() Nature $(#888)->$() Thunder $(#888)->$() Frost $(#888)->$() Fire$()$(br2)Attacking an element you restrain multiplies your $(thing)elemental damage portion$() by $(thing)1.5$(). Attacking the element that restrains you multiplies it by $(thing)0.5$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "How the game reads a target",
+      "text": "The game compares your $(thing)attack element$() with the target's $(thing)attack element$() - not its armour. A zombie holding a Frost sword counts as Frost even if its armour is Fire-tempered.$(br2)If the target has no attack element at all, there is no restraint and no penalty."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The guaranteed floor",
+      "text": "Stacking resistance normally subtracts damage down to zero, which would make restricted matchups unwinnable.$(br2)There is one exception: if your element $(l)restrains$() the target, and its resistance is at or above the per-piece cap, resistance can never reduce your elemental damage below $(thing)10%$() of its value. Counter-picking always gets something through."
+    }
+  ]
+}

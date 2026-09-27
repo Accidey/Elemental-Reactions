@@ -1,0 +1,32 @@
+{
+  "name": "Toxic Blasts",
+  "category": "elementalcraft:reactions",
+  "icon": "minecraft:gunpowder",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Spores are a time bomb. Fire, static and Scorched all set them off.$(br2)A target carrying $(thing)3 or more spore stacks$() detonates into a $(thing)Toxic Blast$():$(br2)$(li)Radius $(thing)3 blocks$(), +1 per stack above 3$(li)Damage $(thing)10$(), +2 per extra stack, in a single hit$(li)Knockback away from the blast$(li)Everyone hit is set $(thing)Scorched$() and their Frostbite is cured"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Chain reactions",
+      "text": "If a blast hits another creature carrying 3+ spore stacks, that one detonates too - one second later. Spores spread through a crowd first and detonate second, so an infection that looks harmless can turn into a chain of explosions across a whole group.$(br2)Blast Protection and Protection reduce the damage; the caps are 50% and 25%."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Weak blasts",
+      "text": "Below 3 stacks nothing explodes. Instead the spores burn off in one violent flash and the target is set $(thing)Scorched$() with $(thing)double burn damage per second$().$(br2)A weak blast is not a wasted blast - it is a very strong Scorched."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Environmental detonation",
+      "text": "You do not always need an attacker. Spores ignite themselves when the host stands in:$(br2)$(li)Anywhere in the $(thing)Nether$()$(li)Lava, nearby magma blocks$(li)Ordinary fire, or catching on fire$(li)Within reach of a $(thing)lit campfire$() or $(thing)lit furnace$()$(br2)Nature-tempered mobs are their own worst enemy in the wrong biome."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Poison clouds",
+      "text": "If Iron's Spells is installed, a $(thing)Poison Cloud$() spell that touches a Scorched target is consumed and intensifies the burn: $(thing)+50% duration$() and $(thing)+50% damage$(). Poison and fire were already a strong pair - now they are a combo."
+    }
+  ]
+}

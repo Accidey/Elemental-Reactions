@@ -1,0 +1,27 @@
+{
+  "name": "Frostbite",
+  "category": "elementalcraft:effects",
+  "icon": "minecraft:powder_snow_bucket",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(#6cf)Frostbite$() is Frost's lingering chill. It slows you to a crawl, grinds you down with periodic damage, and suppresses spores - but its real danger is the $(l)Freeze$() it triggers the moment you get wet.$(br2)Up to $(thing)5 stacks$(): 10 seconds at one stack, 30 seconds at five."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "While frostbitten",
+      "text": "$(li)Movement speed and attack speed reduced by $(thing)10% per stack$(), up to 90%.$(li)$(thing)2 damage$() every 5 seconds, ignoring armour. That damage scales with your element: $(thing)x2$() for Nature-tempered, $(thing)x1.5$() Fire-tempered, $(thing)x0.5$() Thunder-tempered.$(li)You become immune to vanilla freezing damage.$(br2)At $(thing)3 stacks$() a $(thing)Frostbite Aura$() forms, chilling everything within $(thing)3 blocks and more$() - allies included."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Thawing out",
+      "text": "Frostbite hates heat:$(br2)$(li)Standing in fire for $(thing)2 seconds$() clears it.$(li)Lava or magma within a couple of blocks, or a lit campfire/furnace nearby, clears it.$(li)Anywhere in the $(thing)Nether$() it simply cannot exist.$(li)A $(thing)high-heat steam cloud$() strips it instantly.$(br2)And of course, $(thing)Fire$() attacks thaw it - at 50 Fire power or more it also melts you out of Freeze, see $(l:elementalcraft:reactions/freeze_chain)Breaking Freeze$(/l)."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Spore suppression",
+      "text": "Frostbite is the cheap answer to a spore infection: while frostbitten, any $(thing)Flammable Spores$() on you decay $(thing)10 times faster$(), and they can no longer be detonated by Thunder.$(br2)Cold biomes also halve spore duration and infection chance, so a snowy base is a genuinely safer base."
+    }
+  ]
+}

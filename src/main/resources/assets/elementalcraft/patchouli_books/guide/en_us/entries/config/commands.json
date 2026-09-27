@@ -1,0 +1,33 @@
+{
+  "name": "Commands",
+  "category": "elementalcraft:config",
+  "icon": "minecraft:command_block",
+  "sortnum": 0,
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Everything lives under $(thing)/elementalcraft$().$(br2)$(li)$(thing)/elementalcraft debug$() - toggles a per-player debug mode. While on, every attack prints its damage formula and every reaction explains why it triggered or failed. This is the fastest way to understand the system.$(li)$(thing)/elementalcraft reload$() - reloads all config files immediately.$(br2)$(thing)debug$() works for any player; every other subcommand requires permission level 2."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Immunity blacklists",
+      "text": "Hold a $(thing)spawn egg$() and run:$(br2)$(thing)/elementalcraft blacklist <type> add$()$(br2)$(li)$(l)types:$() $(thing)frostbite, paralysis, static, scorched, spore, steam, wetness, freeze$() (plus $(thing)caster$() if Iron's Spells is loaded)$(li)$(thing)remove$() with the same egg undoes it$(li)$(thing)list$() prints the current list$(br2)Requires permission level 2. The entity is written to the matching config file and takes effect immediately."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Forced items",
+      "text": "Hold the item and run:$(br2)$(li)$(thing)/elementalcraft item weapon add <element>$()$(br2)Requires a held item that has attack damage and attack speed. Marks it so it always carries that Aspect.$(br2)$(li)$(thing)/elementalcraft item armor add <element> [points] [resist element] [resist points]$()$(br2)Requires a held armour piece (it must have an armour value). Example: $(thing)armor add fire 50 frost 25$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Forced entities",
+      "text": "Hold a $(thing)spawn egg$() and run:$(br2)$(thing)/elementalcraft entity add <attack element> [enh element] [enh points] [res element] [res points]$()$(br2)Applied to every mob of that type the next time it is generated near a player.$(br2)$(li)$(thing)entity remove$() deletes the entry - existing mobs keep their gear.$(li)$(thing)/elementalcraft biome$() reads the element bias of the biome you are standing in, and can add or remove entries."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Attribute blacklist",
+      "text": "Holding a spawn egg:$(br2)$(thing)/elementalcraft entity blacklist add <element|all>$()$(br2)$(li)$(thing)all$() - the mob never gains any element.$(li)A single element, e.g. $(thing)fire$() - the mob may still be Frost, Thunder or Nature, but never Fire, as an attacker, an enhancement or a resistance.$(li)$(thing)entity blacklist remove <element|all>$()$(li)$(thing)entity blacklist list$()$(br2)Written as $(thing)\"minecraft:zombie:fire\"$() in the config file."
+    }
+  ]
+}

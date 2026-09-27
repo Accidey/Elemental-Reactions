@@ -1,0 +1,27 @@
+{
+  "name": "Wetness",
+  "category": "elementalcraft:effects",
+  "icon": "minecraft:water_bucket",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(#36f)Wetness$() is the setup effect. On its own it only slows you down; combined with another element it produces most of the mod's biggest reactions.$(br2)It stacks up to $(thing)5 levels$(). Each level costs $(thing)10 seconds$() of decay time, so a full soak lingers for a long while."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "How you get wet",
+      "text": "$(li)Swimming: $(thing)3 levels$() in shallow water, the full $(thing)5$() when fully submerged.$(li)Rain or snow: $()+1 level per 10 seconds, up to 5.$(li)A thrown $(thing)splash water bottle$(): +1 level. Elemental mobs carry these and will throw them at you.$(li)Standing in a $(thing)steam cloud$(): the cloud condenses onto you."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "How it ends",
+      "text": "$(li)Lava, magma blocks, and lit campfires or furnaces nearby dry you out.$(li)Standing $(thing)in fire$() for 2 seconds clears everything.$(li)In a hot, clear, open-sky biome, drying happens twice as fast.$(li)Cold biomes slow drying by half.$(li)A single Fire attack of your own burns off wetness - see $(l:elementalcraft:reactions/steam)Steam$(/l)."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "What wetness does to you",
+      "text": "$(li)You stop burning, and fire cannot re-light you.$(li)Incoming $(thing)Fire elemental damage is reduced by 10% per level$().$(li)You get hungrier: +0.5 exhaustion per level.$(li)You become a target for reactions. Every reaction in the next chapter that begins with 'while wet' now applies to you.$(br2)Water animals, anything in the Nether, and blacklisted mobs are immune."
+    }
+  ]
+}

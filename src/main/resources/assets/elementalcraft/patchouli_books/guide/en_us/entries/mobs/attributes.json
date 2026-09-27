@@ -1,0 +1,28 @@
+{
+  "name": "Elemental Mobs",
+  "category": "elementalcraft:mobs",
+  "icon": "minecraft:zombie_spawn_egg",
+  "sortnum": 0,
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Mobs do not spawn elemental - they $(l)become$() elemental the first time a player comes within about 20 blocks. At that moment the mod rolls for an element, builds a matching set of enchanted gear for the mob, and marks it permanently.$(br2)$(li)$(thing)40%$() of hostile mobs are elemental$(li)$(thing)30%$() of neutral mobs (including piglins)"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Where each element comes from",
+      "text": "The biome and the weather decide the odds:$(br2)$(li)$(thing)Hot biomes$() (temperature 0.95+) lean $(#c00)Fire$().$(li)$(thing)Cold biomes$() (snowy, temperature 0.05-) lean $(#6cf)Frost$().$(li)$(thing)Forests and jungles$() lean $(#2a2)Nature$().$(li)A $(thing)thunderstorm$() globally leans $(#a0f)Thunder$().$(br2)Very hot and very cold readings are checked first, so a snowy peak is Frost before it is anything else. If nothing matches, all four are equally likely."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Nether and the End",
+      "text": "Two dimensions override everything:$(br2)$(li)Every mob in the $(thing)Nether$() is given a full $(#c00)Fire$() set - 100 Enhancement points and 100 Resistance.$(li)Every mob in the $(thing)End$() is given a full $(#a0f)Thunder$() set.$(br2)Take Frost to the Nether (Fire restrains nothing there, but Frost restrains Fire) and bring Nature to the End. Bringing the resident element is the worst possible choice."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "How strong they are",
+      "text": "A mob's element is chosen first; then:$(br2)$(li)$(thing)60%$() chance its weapon carries the matching Aspect - otherwise it has no attack element.$(li)Its armour always carries $(thing)Enhancement$() of that element.$(li)$(thing)70%$() chance its Resistance is the element that $(l)counters its own attack$() - so Frost mobs tend to resist Fire.$(br2)Point totals are rolled in tiers: most mobs land at 0-50 points, but roughly one in ten gets 80-100 - a genuinely dangerous elite."
+    }
+  ]
+}

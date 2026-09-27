@@ -1,0 +1,27 @@
+{
+  "name": "Flammable Spores",
+  "category": "elementalcraft:effects",
+  "icon": "minecraft:spore_blossom",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(#2a2)Flammable Spores$() are Nature's infection. They poison you slowly, eat your equipment, and then $(l)explode$() when anything fiery or electric touches you.$(br2)Up to $(thing)5 stacks$(). Each stack adds $(thing)5 seconds$() of duration."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "While infected",
+      "text": "$(li)$(thing)2 damage$() every 2 seconds, ignoring armour (protection still applies).$(li)Equipment durability corroded by $(thing)1% of maximum$() per second. At 1-2 stacks it hits random pieces; at 5 stacks it hits all four armour slots $(l)and$() your main hand.$(li)Incoming $(thing)Fire elemental damage +10% per stack$().$(li)Durations change with the host's element: Thunder-tempered hosts burn twice as long, Fire and Frost hosts half as long."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Spreading",
+      "text": "At $(thing)3 or more stacks$() the infection becomes contagious. Every second, nearby creatures within $(thing)2 + 1 block per stack$() are infected too, gaining $(thing)stacks - 2$() stacks each time.$(br2)By default this spreads to $(l)players and pets as well$(). It is not limited to hostile mobs."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Suppressing spores",
+      "text": "Nature's own element does not stop spores. These do:$(br2)$(li)$(thing)Frostbite$() - spores decay $(thing)10x faster$() while you are frostbitten.$(li)$(thing)Freeze$() - instantly clears spores and blocks new ones.$(li)$(thing)Nature Resistance$() at 80 points or more - full immunity.$(li)Fire and Thunder do $(l)not$() clear spores. They detonate them."
+    }
+  ]
+}

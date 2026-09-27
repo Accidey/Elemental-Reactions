@@ -1,0 +1,27 @@
+{
+  "name": "配置文件",
+  "category": "elementalcraft:config",
+  "icon": "minecraft:writable_book",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "所有设置都位于 $(thing)config/ElementalCraft/$()。$(br2)每个文件都是双语的（中英文注释齐全），并且都支持热重载：保存后约 5 秒自动生效，也可以用 $(thing)/elementalcraft reload$() 强制刷新。$(br2)调整反应数值不需要重启服务器。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "文件清单",
+      "text": "$(li)$(thing)elementalcraft-common.toml$()：生物生成、每级点数、伤害与克制倍率、维度强制、附魔书掉率、群系偏向，以及首次进服是否赠送手册的 $(thing)guide_book_on_first_join$()。$(li)$(thing)elementalcraft-fire-nature-reactions.toml$()：潮湿、蒸汽、灼烧、孢子、毒火爆燃、自然反制。$(li)$(thing)elementalcraft-thunder-frost-reactions.toml$()：静电、麻痹、霜冻、冻结、各类反制、感电水域。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "其余文件",
+      "text": "$(li)$(thing)elementalcraft-forced-items.toml$()：为指定物品固定元素属性。$(li)$(thing)elementalcraft-visuals.toml$()：所有粒子、尾迹与螺旋特效，均可单独开关。$(li)$(thing)elementalcraft-iss-integration.toml$()：仅在安装钢铁法术书时生成，控制施法怪概率、冷却与黑名单。$(br2)删除文件后，下次启动会重新生成默认配置。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "怎样关掉机制",
+      "text": "几乎所有机制都可以把阈值设为$(thing)0$() 来关闭：$(br2)$(li)潮湿：$(thing)wetness_max_level = 0$()$(li)冻结：$(thing)freeze_max_stacks = 0$()$(li)灼烧：$(thing)scorched_trigger_threshold = 0$()$(li)静电光环：$(thing)static_aura_threshold = 0$()$(li)克制环：清空 $(thing)element_restraints$() 列表$(br2)把本模组加进既有整合包时很有用。"
+    }
+  ]
+}
