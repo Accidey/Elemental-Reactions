@@ -2,14 +2,12 @@ package com.xulai.elementalcraft;
 
 import com.mojang.logging.LogUtils;
 import com.xulai.elementalcraft.client.ModParticles;
-import com.xulai.elementalcraft.command.ModCommands;
 import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalVisualConfig;
 import com.xulai.elementalcraft.config.ForcedItemConfig;
 import com.xulai.elementalcraft.enchantment.ModEnchantments;
-import com.xulai.elementalcraft.event.TooltipEvents;
 import com.xulai.elementalcraft.network.FireCounterLockPacket;
 import com.xulai.elementalcraft.potion.ModMobEffects;
 import com.xulai.elementalcraft.sound.ModSounds;
