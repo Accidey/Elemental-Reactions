@@ -8,18 +8,20 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.xulai.elementalcraft.util.ConfigAutoSync;
 import com.xulai.elementalcraft.util.DebugMode;
 import com.xulai.elementalcraft.util.ElementType;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
+
+import java.util.List;
 
 public class DebugCommand {
 
@@ -1136,11 +1138,13 @@ public class DebugCommand {
     public static void sendDebugMessage(LivingEntity contextEntity, Component message) {
         if (!DebugMode.hasAnyDebugEnabled()) return;
         if (!(contextEntity.level() instanceof ServerLevel serverLevel)) return;
-        ElementalCraft.LOGGER.info("[EC Debug] " + message.getString());
-        serverLevel.getServer().getPlayerList().getPlayers().stream()
+        List<ServerPlayer> viewers = serverLevel.getServer().getPlayerList().getPlayers().stream()
                 .filter(DebugMode::isEnabled)
                 .filter(p -> isRelatedTo(contextEntity, p))
-                .forEach(p -> p.sendSystemMessage(message));
+                .toList();
+        if (viewers.isEmpty()) return;
+        ElementalCraft.LOGGER.info("[EC Debug] " + message.getString());
+        viewers.forEach(p -> p.sendSystemMessage(message));
     }
 
     private static boolean isRelatedTo(LivingEntity contextEntity, Player player) {
