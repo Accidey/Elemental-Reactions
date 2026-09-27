@@ -727,10 +727,11 @@ public class SteamReactionHandler {
                 } else if (FrostbiteHandler.isFrozen(entity) && !FrostbiteHandler.isFreezeImmune(entity)) {
                     MobEffectInstance currentFreeze = entity.getEffect(ModMobEffects.FREEZE);
                     if (currentFreeze != null) {
-                        int fullDuration = (currentFreeze.getAmplifier() + 1) * ElementalThunderFrostReactionsConfig.freezeDurationPerStackTicks;
+                        int currentAmplifier = Math.max(0, currentFreeze.getAmplifier());
+                        int fullDuration = (currentAmplifier + 1) * ElementalThunderFrostReactionsConfig.freezeDurationPerStackTicks;
                         if (fullDuration < 20) fullDuration = 20;
                         entity.addEffect(new MobEffectInstance(ModMobEffects.FREEZE,
-                            fullDuration, currentFreeze.getAmplifier(), false, false, true));
+                            fullDuration, currentAmplifier, false, false, true));
                     }
                 }
             }

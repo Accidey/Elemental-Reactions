@@ -408,6 +408,7 @@ public class WetnessHandler {
     static void tryColdBiomeFreeze(LivingEntity entity, Level level, BlockPos pos) {
         double chance = ElementalThunderFrostReactionsConfig.wetnessColdBiomeFreezeChance;
         if (chance <= 0) return;
+        if (ElementalThunderFrostReactionsConfig.freezeMaxStacks <= 0) return;
         var biome = level.getBiome(pos).value();
         if (biome == null || biome.getBaseTemperature() > 0.3) return;
         if (!level.isRaining() || !level.canSeeSky(pos)) return;
