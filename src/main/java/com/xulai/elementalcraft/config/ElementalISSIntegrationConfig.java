@@ -136,13 +136,13 @@ public final class ElementalISSIntegrationConfig {
         SPEC = BUILDER.build();
     }
 
-    public static double mobLowHealthThreshold = 0.5;
-    public static int mobAggressiveCastCooldown = 100;
-    public static int mobNormalCastCooldown = 200;
-    public static int mobBottleThrowCooldown = 200;
-    public static float scrollDropChance = 1.0F;
+    public static volatile double mobLowHealthThreshold = 0.5;
+    public static volatile int mobAggressiveCastCooldown = 100;
+    public static volatile int mobNormalCastCooldown = 200;
+    public static volatile int mobBottleThrowCooldown = 200;
+    public static volatile float scrollDropChance = 1.0F;
 
-    public static double casterMobChance = 0.5;
+    public static volatile double casterMobChance = 0.5;
     public static List<? extends String> cachedCasterBlacklist;
 
     public static void refreshCache() {

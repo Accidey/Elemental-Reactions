@@ -178,11 +178,14 @@ public final class ElementalConfig {
         CHANCE_80_100 = BUILDER
                 .comment("在最大值的 80~100% 区间内取值的概率。",
                         "这些是接近满属性的精英级生物。",
-                        "同时吸收其他三个区间未覆盖的剩余概率。",
+                        "生效权重取本值与前三档未覆盖的剩余概率中较大者；四档总和超过 1 时按比例归一化。",
+                        "例：前三档 0.30/0.30/0.15 时，本值设为 0.25 即与旧版分布一致（30%/30%/15%/25%）。",
                         "",
                         "Probability of rolling a value in the 80-100% range of max.",
                         "These are elite-tier mobs with near-maximum attributes.",
-                        "Also absorbs any leftover probability from the other three ranges.",
+                        "Effective weight is the larger of this value and the leftover probability of the other three ranges;",
+                        "all four bands are normalized proportionally when their sum exceeds 1.",
+                        "E.g. with 0.30/0.30/0.15 on the other three, setting 0.25 reproduces the legacy 30%/30%/15%/25% split.",
                         "",
                         "Default: 0.10 / 默认：0.10")
                 .defineInRange("chance_80_100", 0.10, 0.0, 1.0);
@@ -769,44 +772,44 @@ public final class ElementalConfig {
         SPEC = BUILDER.build();
     }
 
-    public static double restraintMultiplier = 1.5;
-    public static double weakMultiplier = 0.5;
-    public static double restraintMinDamagePercent = 0.1;
-    public static double elementalDamageMultiplier = 1.0;
-    public static double elementalResistanceMultiplier = 1.0;
-    public static int maxStatCap = 25;
-    public static int strengthPerLevel = 5;
-    public static int resistPerLevel = 5;
-    public static int strengthPerHalfDamage = 10;
-    public static int resistPerHalfReduction = 10;
+    public static volatile double restraintMultiplier = 1.5;
+    public static volatile double weakMultiplier = 0.5;
+    public static volatile double restraintMinDamagePercent = 0.1;
+    public static volatile double elementalDamageMultiplier = 1.0;
+    public static volatile double elementalResistanceMultiplier = 1.0;
+    public static volatile int maxStatCap = 25;
+    public static volatile int strengthPerLevel = 5;
+    public static volatile int resistPerLevel = 5;
+    public static volatile int strengthPerHalfDamage = 10;
+    public static volatile int resistPerHalfReduction = 10;
 
-    public static double chance0_20, chance20_50, chance50_80, chance80_100;
-    public static double mobChanceHostile, mobChanceNeutral, attackChance, counterResistChance;
+    public static volatile double chance0_20, chance20_50, chance50_80, chance80_100;
+    public static volatile double mobChanceHostile, mobChanceNeutral, attackChance, counterResistChance;
 
-    public static boolean netherForcedFire = true;
-    public static int netherFirePoints = 100;
-    public static boolean endForcedThunder = true;
-    public static int endThunderPoints = 100;
+    public static volatile boolean netherForcedFire = true;
+    public static volatile int netherFirePoints = 100;
+    public static volatile boolean endForcedThunder = true;
+    public static volatile int endThunderPoints = 100;
 
-    public static double hotFireBias = 60.0;
-    public static double coldFrostBias = 60.0;
-    public static double forestNatureBias = 60.0;
-    public static double thunderstormBias = 80.0;
+    public static volatile double hotFireBias = 60.0;
+    public static volatile double coldFrostBias = 60.0;
+    public static volatile double forestNatureBias = 60.0;
+    public static volatile double thunderstormBias = 80.0;
 
     public static List<? extends String> cachedRestraints = List.of();
     public static List<? extends String> cachedBlacklist = List.of();
 
-    public static boolean mobFleeEnabled = true;
-    public static boolean potionStack64Enabled = true;
-    public static boolean guideBookOnFirstJoin = true;
+    public static volatile boolean mobFleeEnabled = true;
+    public static volatile boolean potionStack64Enabled = true;
+    public static volatile boolean guideBookOnFirstJoin = true;
 
-    public static boolean mobPotionThrowEnabled = true;
-    public static double mobBottleEquipChance = 0.35;
-    public static int mobBottleThrowCooldown = 200;
+    public static volatile boolean mobPotionThrowEnabled = true;
+    public static volatile double mobBottleEquipChance = 0.35;
+    public static volatile int mobBottleThrowCooldown = 200;
 
-    public static double enchantedBookDropChance = 0.5;
-    public static double enchantedBookLootingBonus = 0.10;
-    public static double enchantedBookLevelSpread = 1.0;
+    public static volatile double enchantedBookDropChance = 0.5;
+    public static volatile double enchantedBookLootingBonus = 0.10;
+    public static volatile double enchantedBookLevelSpread = 1.0;
 
     public static void refreshCache() {
         restraintMultiplier = RESTRAINT_MULTIPLIER.get();
@@ -900,13 +903,21 @@ public final class ElementalConfig {
         return 1.0f;
     }
 
-    private static int rollDynamicValue(double c1, double c2, double c3, int maxValue) {
+    public static double[] chanceThresholds() {
+        double base = chance0_20 + chance20_50 + chance50_80;
+        double elite = Math.max(chance80_100, 1.0 - base);
+        double total = base + elite;
+        if (total <= 0.0) total = 1.0;
+        return new double[] { chance0_20 / total, chance20_50 / total, chance50_80 / total };
+    }
+
+    private static int rollDynamicValue(double[] thresholds, int maxValue) {
         int cap = Math.max(1, maxValue);
 
         double roll = ThreadLocalRandom.current().nextDouble();
-        double s1 = c1;
-        double s2 = s1 + c2;
-        double s3 = s2 + c3;
+        double s1 = thresholds[0];
+        double s2 = s1 + thresholds[1];
+        double s3 = s2 + thresholds[2];
 
         int min, max;
 
@@ -932,11 +943,11 @@ public final class ElementalConfig {
     }
 
     public static int rollMonsterStrength() {
-        return rollDynamicValue(chance0_20, chance20_50, chance50_80, maxStatCap * 4);
+        return rollDynamicValue(chanceThresholds(), maxStatCap * 4);
     }
 
     public static int rollMonsterResist() {
-        return rollDynamicValue(chance0_20, chance20_50, chance50_80, maxStatCap * 4);
+        return rollDynamicValue(chanceThresholds(), maxStatCap * 4);
     }
 
     public static boolean matchesBlacklist(List<? extends String> blacklist, String entityId) {

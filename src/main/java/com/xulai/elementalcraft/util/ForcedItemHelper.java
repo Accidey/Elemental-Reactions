@@ -150,14 +150,12 @@ public final class ForcedItemHelper {
 
         int rangeDiff = max - min;
 
-        double c1 = ElementalConfig.chance0_20;
-        double c2 = ElementalConfig.chance20_50;
-        double c3 = ElementalConfig.chance50_80;
+        double[] thresholds = ElementalConfig.chanceThresholds();
 
         double roll = ThreadLocalRandom.current().nextDouble();
-        double s1 = c1;
-        double s2 = s1 + c2;
-        double s3 = s2 + c3;
+        double s1 = thresholds[0];
+        double s2 = s1 + thresholds[1];
+        double s3 = s2 + thresholds[2];
 
         double minPct, maxPct;
 

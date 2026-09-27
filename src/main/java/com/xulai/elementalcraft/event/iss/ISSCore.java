@@ -1,6 +1,7 @@
 package com.xulai.elementalcraft.event.iss;
 
 import com.xulai.elementalcraft.ElementalCraft;
+import com.xulai.elementalcraft.util.ModCompat;
 import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalISSIntegrationConfig;
 import com.xulai.elementalcraft.enchantment.ModEnchantments;
@@ -29,6 +30,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.entity.projectile.ThrownPotion;
@@ -39,7 +42,6 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -131,20 +133,13 @@ public class ISSCore {
     static final String NBT_POLAR_BEAR_CAST = "EC_ISS_PolarBearCast";
     static final String NBT_POLAR_BEAR_COUNT = "EC_ISS_PolarBearCount";
 
-    static final Set<String> NO_AGGRESSIVE_SPELLS = Set.of(
-            "irons_spellbooks:heat_surge",
-            "irons_spellbooks:acid_orb",
-            "irons_spellbooks:oakskin",
-            "irons_spellbooks:fire_breath",
-            "irons_spellbooks:cone_of_cold",
-            "irons_spellbooks:electrocute"
-    );
-
     private static Object spellRegistryGetSpell;
     private static Object spellRegistryNone;
     private static Object abstractSpellOnCast;
     private static Object castSourceMob;
     private static Object magicDataCtor;
+    private static Class<?> spellOnCastEventClass;
+    private static final java.util.concurrent.atomic.AtomicBoolean spellListMissingWarned = new java.util.concurrent.atomic.AtomicBoolean();
 
     public static ParticleOptions FIRE_PARTICLE = ParticleTypes.FLAME;
     private static boolean fireParticleInit;
@@ -184,15 +179,14 @@ public class ISSCore {
     static final String NBT_ISS_REFRESH_CD = "EC_ISS_RefreshCD";
 
     static {
-        System.out.println("[EC ROOT DEBUG] === Static block START ===");
         boolean loaded = false;
         try {
-            loaded = ModList.get() != null && ModList.get().isLoaded("irons_spellbooks");
+            loaded = ModCompat.iss();
         } catch (Exception e) {
             loaded = false;
         }
         ISS_LOADED = loaded;
-        System.out.println("[EC ROOT DEBUG] ISS_LOADED=" + ISS_LOADED);
+        ElementalCraft.LOGGER.debug("[ElementalCraft] ISS integration loaded={}", ISS_LOADED);
 
         if (ISS_LOADED) {
             try {
@@ -206,19 +200,49 @@ public class ISSCore {
                 abstractSpellOnCast = spell.getMethod("onCast", Level.class, int.class, LivingEntity.class, cs, md);
                 castSourceMob = cs.getField("MOB").get(null);
                 magicDataCtor = md.getConstructor(boolean.class);
+                spellOnCastEventClass = Class.forName("io.redspace.ironsspellbooks.api.events.SpellOnCastEvent");
+                validateSpellIds();
             } catch (Exception e) {
-                ElementalCraft.LOGGER.error("Failed to cache ISS reflection", e);
+                ElementalCraft.LOGGER.warn("[ElementalCraft] ISS reflection initialization failed, ISS integration disabled: {}", e.toString());
             }
         }
+    }
 
-        System.out.println("[EC ROOT DEBUG] === Static block END ===");
-        System.out.println("[EC ROOT DEBUG] === Static block END ===");
+    private static void validateSpellIds() {
+        try {
+            java.lang.reflect.Method getSpell = (java.lang.reflect.Method) spellRegistryGetSpell;
+            Object none = ((java.lang.reflect.Method) spellRegistryNone).invoke(null);
+            List<String> missing = new ArrayList<>();
+            for (List<String> ids : List.of(THUNDER_SPELL_IDS, NATURE_SPELL_IDS, FROST_SPELL_IDS, FIRE_SPELL_IDS)) {
+                for (String id : ids) {
+                    try {
+                        if (getSpell.invoke(null, id) == none) missing.add(id);
+                    } catch (Exception e) {
+                        missing.add(id);
+                    }
+                }
+            }
+            for (Set<String> ids : List.of(NATURE_DAMAGE_SPELLS, NATURE_NO_SPORE_SPELLS, NON_AGGRESSIVE_SPELLS)) {
+                for (String id : ids) {
+                    if (missing.contains(id)) continue;
+                    try {
+                        if (getSpell.invoke(null, id) == none) missing.add(id);
+                    } catch (Exception e) {
+                        missing.add(id);
+                    }
+                }
+            }
+            if (!missing.isEmpty()) {
+                ElementalCraft.LOGGER.warn("[ElementalCraft] {} ISS spell id(s) not found in the installed Iron's Spells version, their reactions will not trigger: {}", missing.size(), missing);
+            }
+        } catch (Exception e) {
+            ElementalCraft.LOGGER.warn("[ElementalCraft] ISS spell id validation failed: {}", e.toString());
+        }
     }
 
     @SubscribeEvent
     public static void onAnyEvent(net.minecraftforge.eventbus.api.Event event) {
-        if (!ISS_LOADED) return;
-        if (!event.getClass().getName().equals("io.redspace.ironsspellbooks.api.events.SpellOnCastEvent")) return;
+        if (spellOnCastEventClass == null || event.getClass() != spellOnCastEventClass) return;
         try {
             Entity entity = (Entity) event.getClass().getMethod("getEntity").invoke(event);
             if (!(entity instanceof Player player)) return;
@@ -322,16 +346,30 @@ public class ISSCore {
         for (ItemEntity drop : event.getDrops()) {
             ItemStack stack = drop.getItem();
             if (stack.isEmpty()) continue;
-            if (stack.getEnchantmentLevel(ModEnchantments.NATURE_STRIKE.get()) > 0
-                    || stack.getEnchantmentLevel(ModEnchantments.THUNDER_STRIKE.get()) > 0
-                    || stack.getEnchantmentLevel(ModEnchantments.FROST_STRIKE.get()) > 0
-                    || stack.getEnchantmentLevel(ModEnchantments.FIRE_STRIKE.get()) > 0) {
+            if (stack.getEnchantmentLevel(ModEnchantments.NATURE_STRIKE.get()) <= 0
+                    && stack.getEnchantmentLevel(ModEnchantments.THUNDER_STRIKE.get()) <= 0
+                    && stack.getEnchantmentLevel(ModEnchantments.FROST_STRIKE.get()) <= 0
+                    && stack.getEnchantmentLevel(ModEnchantments.FIRE_STRIKE.get()) <= 0) {
+                continue;
+            }
+            Map<Enchantment, Integer> enchants = new LinkedHashMap<>(EnchantmentHelper.getEnchantments(stack));
+            enchants.remove(ModEnchantments.NATURE_STRIKE.get());
+            enchants.remove(ModEnchantments.THUNDER_STRIKE.get());
+            enchants.remove(ModEnchantments.FROST_STRIKE.get());
+            enchants.remove(ModEnchantments.FIRE_STRIKE.get());
+            if (enchants.isEmpty()) {
                 stack.removeTagKey("Enchantments");
+            } else {
+                EnchantmentHelper.setEnchantments(enchants, stack);
             }
         }
     }
 
     static void equipCasterMob(Mob mob, CompoundTag data) {
+        if (spellRegistryGetSpell == null || spellRegistryNone == null) {
+            data.putBoolean("EC_ISS_Equipped", true);
+            return;
+        }
         try {
             String element = data.getString(NBT_MOB_ELEMENT);
             boolean isNature = "nature".equals(element);
@@ -344,10 +382,27 @@ public class ISSCore {
             Item scrollItem = (Item) scrollRO.getClass().getMethod("get").invoke(scrollRO);
             ItemStack scrollStack = new ItemStack(scrollItem);
 
-            String spellId = spellList.get(RANDOM.nextInt(spellList.size()));
-            Object spell = ((java.lang.reflect.Method) spellRegistryGetSpell).invoke(null, spellId);
+            java.lang.reflect.Method getSpell = (java.lang.reflect.Method) spellRegistryGetSpell;
             Object noneSpell = ((java.lang.reflect.Method) spellRegistryNone).invoke(null);
-            if (spell == noneSpell) return;
+            List<String> candidates = new ArrayList<>(spellList);
+            java.util.Collections.shuffle(candidates, RANDOM);
+            String spellId = null;
+            Object spell = null;
+            for (String candidate : candidates) {
+                Object resolved = getSpell.invoke(null, candidate);
+                if (resolved != noneSpell) {
+                    spellId = candidate;
+                    spell = resolved;
+                    break;
+                }
+            }
+            if (spellId == null) {
+                if (spellListMissingWarned.compareAndSet(false, true)) {
+                    ElementalCraft.LOGGER.warn("[ElementalCraft] None of the ISS spell ids for element '{}' are available in the installed Iron's Spells version, caster mobs of this element stay inactive: {}", element, spellList);
+                }
+                data.putBoolean("EC_ISS_Equipped", true);
+                return;
+            }
 
             int maxLevel = (int) spell.getClass().getMethod("getMaxLevel").invoke(spell);
 
@@ -389,7 +444,8 @@ public class ISSCore {
 
             data.putBoolean("EC_ISS_Equipped", true);
         } catch (Exception e) {
-            ElementalCraft.LOGGER.error("Failed to equip ISS caster mob", e);
+            ElementalCraft.LOGGER.warn("[ElementalCraft] Failed to equip ISS caster mob, skipping this mob: {}", e.toString());
+            data.putBoolean("EC_ISS_Equipped", true);
         }
     }
 

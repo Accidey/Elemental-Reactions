@@ -2,6 +2,7 @@ package com.xulai.elementalcraft.event;
 
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.potion.ModMobEffects;
+import com.xulai.elementalcraft.util.DebugMode;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -21,12 +22,17 @@ public class NbtCleanupHandler {
         cleanupStaleData(event.getEntity());
     }
 
+    @SubscribeEvent
+    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        DebugMode.remove(event.getEntity());
+    }
+
     private static void cleanupStaleData(Player player) {
         CompoundTag data = player.getPersistentData();
 
         if (!player.hasEffect(ModMobEffects.STATIC_SHOCK.get())) {
             StaticShockHandler.clearStaticShock(player);
-            data.remove("ec_static_aura_spore_cd");
+            data.remove(StaticShockHandler.NBT_AURA_SPORE_CD);
             data.remove("ec_aura_sync_phase");
             data.remove("ec_last_aura_log_damage");
             data.remove("ec_last_static_base_damage");
@@ -57,7 +63,6 @@ public class NbtCleanupHandler {
             data.remove(FrostbiteHandler.NBT_FREEZE_ORIGINAL_NO_AI);
             data.remove("EC_SharedOriginalNoAI");
             data.remove("EC_DrownTimer");
-            player.setTicksFrozen(0);
         }
 
         if (!player.hasEffect(ModMobEffects.WETNESS.get())) {
@@ -68,6 +73,10 @@ public class NbtCleanupHandler {
             ScorchedHandler.clearScorched(player);
             data.remove(ScorchedHandler.NBT_ATTACKER_SCORCHED_COOLDOWN);
             data.remove(ScorchedHandler.NBT_WETNESS_STEAM_COOLDOWN);
+        }
+
+        if (!ScorchedHandler.hasActiveFireCounter(player)) {
+            data.remove(ScorchedHandler.NBT_FIRE_COUNTER_INVULN);
         }
 
         data.remove("EC_SteamCondensationTimer");

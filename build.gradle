@@ -9,7 +9,7 @@ version = mod_version
 group = mod_group_id
 
 base {
-    archivesName = mod_id
+    archivesName = archive_name
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -68,7 +68,7 @@ tasks.named('processResources') {
             minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
             forge_version: forge_version, forge_version_range: forge_version_range,
             loader_version_range: loader_version_range,
-            mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+            mod_id: mod_id, archive_name: archive_name, archive_display_name: archive_display_name, mod_license: mod_license, mod_version: mod_version,
             mod_authors: mod_authors, mod_description: mod_description,
     ]
     inputs.properties replaceProperties
@@ -81,7 +81,7 @@ tasks.named('processResources') {
 tasks.named('jar', Jar).configure {
     manifest {
         attributes([
-                'Specification-Title'     : mod_id,
+                'Specification-Title'     : archive_name,
                 'Specification-Vendor'    : mod_authors,
                 'Specification-Version'   : '1',
                 'Implementation-Title'    : project.name,

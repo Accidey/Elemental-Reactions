@@ -3,6 +3,8 @@ package com.xulai.elementalcraft.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
+import com.xulai.elementalcraft.util.ElementUtils;
+import com.xulai.elementalcraft.util.ModCompat;
 import com.xulai.elementalcraft.config.ElementalISSIntegrationConfig;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import net.minecraft.ChatFormatting;
@@ -13,7 +15,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -97,7 +98,7 @@ public class BlacklistCommandHelper {
                         "command.elementalcraft.freeze.blacklist")
         ));
 
-        if (ModList.get() != null && ModList.get().isLoaded("irons_spellbooks")) {
+        if (ModCompat.iss()) {
             entries.add(new BlacklistEntry("caster",
                     ElementalISSIntegrationConfig.CASTER_MOB_BLACKLIST,
                     ElementalISSIntegrationConfig.SPEC,
@@ -205,6 +206,6 @@ public class BlacklistCommandHelper {
             return null;
         }
         var type = egg.getType(stack.getTag());
-        return ForgeRegistries.ENTITY_TYPES.getKey(type).toString();
+        return ElementUtils.getEntityTypeId(type);
     }
 }

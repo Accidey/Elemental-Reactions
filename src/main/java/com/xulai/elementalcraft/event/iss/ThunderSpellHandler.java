@@ -212,7 +212,7 @@ public class ThunderSpellHandler {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public static void onLivingDamageLowest(LivingDamageEvent event) {
         if (event.getEntity().level().isClientSide) return;
         CompoundTag data = event.getEntity().getPersistentData();
@@ -221,6 +221,8 @@ public class ThunderSpellHandler {
         data.remove(NBT_ISS_ACTIVE);
 
         restoreAttackerEnchantments(event.getEntity(), data);
+
+        if (event.isCanceled()) return;
 
         if (!data.contains(NBT_ISS_DAMAGE)) {
             return;
@@ -332,7 +334,7 @@ public class ThunderSpellHandler {
                 if (stacks > 0 && StaticShockHandler.triggerWaterElectrificationDirect(target, stacks)) {
                     return;
                 }
-                long cd = StaticShockHandler.getWaterElectrificationCooldown(target.level());
+                long cd = StaticShockHandler.getWaterElectrificationCooldown(target);
                 if (cd > 0) {
                     com.xulai.elementalcraft.command.DebugCommand.sendReactionCooldownBlock(target, "water_electrification", cd);
                 }
@@ -570,7 +572,8 @@ public class ThunderSpellHandler {
         data.remove(NBT_ISS_ATTACKER + "Most");
         data.remove(NBT_ISS_ATTACKER + "Least");
 
-        Entity attackerEntity = target.level().getPlayerByUUID(attackerId);
+        Entity attackerEntity = target.getServer() != null
+                ? target.getServer().getPlayerList().getPlayer(attackerId) : null;
         if (attackerEntity == null && target.level() instanceof ServerLevel serverLevel) {
             attackerEntity = serverLevel.getEntity(attackerId);
         }
@@ -616,7 +619,7 @@ public class ThunderSpellHandler {
         if (target.level().isClientSide) return;
         if (ElementalThunderFrostReactionsConfig.paralysisMaxStacks <= 0) return;
 
-        String entityId = net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getKey(target.getType()).toString();
+        String entityId = ElementUtils.getEntityTypeId(target.getType());
         if (ElementalConfig.matchesBlacklist(ElementalThunderFrostReactionsConfig.cachedParalysisImmunityBlacklist, entityId)) return;
 
         double searchRadius = ElementalFireNatureReactionsConfig.steamCloudRadius * 3.0;

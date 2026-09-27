@@ -1,9 +1,11 @@
 package com.xulai.elementalcraft.logic;
 
 import com.xulai.elementalcraft.config.ElementalConfig;
+import com.xulai.elementalcraft.util.ModCompat;
 import com.xulai.elementalcraft.event.FrostbiteHandler;
 import com.xulai.elementalcraft.event.ScorchedHandler;
 import com.xulai.elementalcraft.event.StaticShockHandler;
+import com.xulai.elementalcraft.potion.ModMobEffects;
 import com.xulai.elementalcraft.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -24,7 +26,6 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import com.xulai.elementalcraft.config.ElementalISSIntegrationConfig;
@@ -152,10 +153,10 @@ public class MobAttributeLogic {
         int resistTotalPoints = ElementalConfig.rollMonsterResist();
 
         if (attackType != null) {
-            String entityId = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString();
-            boolean isBlacklisted = ModList.get() != null && ModList.get().isLoaded("irons_spellbooks")
+            String entityId = ElementUtils.getEntityTypeId(mob.getType());
+            boolean isBlacklisted = ModCompat.iss()
                     && ElementalConfig.matchesBlacklist(ElementalISSIntegrationConfig.cachedCasterBlacklist, entityId);
-            double casterChance = ModList.get() != null && ModList.get().isLoaded("irons_spellbooks")
+            double casterChance = ModCompat.iss()
                     ? ElementalISSIntegrationConfig.casterMobChance : 0.0;
             boolean issCaster = !isBlacklisted && attackType == ElementType.THUNDER && ThreadLocalRandom.current().nextDouble() < casterChance;
             boolean natureCaster = !isBlacklisted && !issCaster && attackType == ElementType.NATURE && ThreadLocalRandom.current().nextDouble() < casterChance;
@@ -168,7 +169,7 @@ public class MobAttributeLogic {
                 mob.getPersistentData().putBoolean("EC_ISS_MobCaster", true);
                 mob.getPersistentData().putString("EC_ISS_MobElement", "nature");
                 if (!hasHandItem) {
-                    boolean piglin = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString().equals("minecraft:piglin");
+                    boolean piglin = ElementUtils.getEntityTypeId(mob.getType()).equals("minecraft:piglin");
                     ItemStack weapon = AttributeEquipUtils.createRandomWeapon(piglin);
                     AttributeEquipUtils.applyAttackEnchant(weapon, attackType);
                     AttributeEquipUtils.applyUnbreaking(weapon, 3);
@@ -191,7 +192,7 @@ public class MobAttributeLogic {
                     AttributeEquipUtils.applyUnbreaking(offHand, 3);
                 }
             } else {
-                boolean piglin = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString().equals("minecraft:piglin");
+                boolean piglin = ElementUtils.getEntityTypeId(mob.getType()).equals("minecraft:piglin");
                 ItemStack weapon = AttributeEquipUtils.createRandomWeapon(piglin);
                 AttributeEquipUtils.applyAttackEnchant(weapon, attackType);
                 AttributeEquipUtils.applyUnbreaking(weapon, 3);
@@ -200,7 +201,7 @@ public class MobAttributeLogic {
             }
         }
 
-        boolean forceGold = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString().equals("minecraft:piglin");
+        boolean forceGold = ElementUtils.getEntityTypeId(mob.getType()).equals("minecraft:piglin");
         applyArmorAttributes(mob, enhanceType, enhanceTotalPoints, resistType, resistTotalPoints, forceGold);
 
         CompoundTag dropData = mob.getPersistentData();
@@ -242,10 +243,10 @@ public class MobAttributeLogic {
             boolean hasWeapon = !mainHand.isEmpty() || !offHand.isEmpty();
 
             if (attackType != null && attackType != ElementType.NONE) {
-                String entityId = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString();
-                boolean isBlacklisted = ModList.get() != null && ModList.get().isLoaded("irons_spellbooks")
+                String entityId = ElementUtils.getEntityTypeId(mob.getType());
+                boolean isBlacklisted = ModCompat.iss()
                         && ElementalConfig.matchesBlacklist(ElementalISSIntegrationConfig.cachedCasterBlacklist, entityId);
-                double casterChance = ModList.get() != null && ModList.get().isLoaded("irons_spellbooks")
+                double casterChance = ModCompat.iss()
                         ? ElementalISSIntegrationConfig.casterMobChance : 0.0;
                 boolean issCaster = !isBlacklisted && attackType == ElementType.THUNDER && ThreadLocalRandom.current().nextDouble() < casterChance;
                 boolean natureCaster = !isBlacklisted && !issCaster && attackType == ElementType.NATURE && ThreadLocalRandom.current().nextDouble() < casterChance;
@@ -258,7 +259,7 @@ public class MobAttributeLogic {
                     persistentData.putBoolean("EC_ISS_MobCaster", true);
                     persistentData.putString("EC_ISS_MobElement", "nature");
                     if (!hasWeapon) {
-                        boolean piglin = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString().equals("minecraft:piglin");
+                        boolean piglin = ElementUtils.getEntityTypeId(mob.getType()).equals("minecraft:piglin");
                         ItemStack weapon = AttributeEquipUtils.createRandomWeapon(piglin);
                         AttributeEquipUtils.applyAttackEnchant(weapon, attackType);
                         AttributeEquipUtils.applyUnbreaking(weapon, 3);
@@ -281,7 +282,7 @@ public class MobAttributeLogic {
                         AttributeEquipUtils.applyUnbreaking(offHand, 3);
                     }
                 } else {
-                    boolean piglin = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString().equals("minecraft:piglin");
+                    boolean piglin = ElementUtils.getEntityTypeId(mob.getType()).equals("minecraft:piglin");
                     ItemStack weapon = AttributeEquipUtils.createRandomWeapon(piglin);
                     AttributeEquipUtils.applyAttackEnchant(weapon, attackType);
                     AttributeEquipUtils.applyUnbreaking(weapon, 3);
@@ -290,7 +291,7 @@ public class MobAttributeLogic {
                 }
             }
 
-            boolean forceGold = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()).toString().equals("minecraft:piglin");
+            boolean forceGold = ElementUtils.getEntityTypeId(mob.getType()).equals("minecraft:piglin");
             applyArmorAttributes(mob, enhanceType, enhancePoints, resistType, resistPoints, forceGold);
 
             persistentData.putString("EC_DropElementType", enhanceType != null ? enhanceType.getId() : "");
@@ -358,6 +359,7 @@ public class MobAttributeLogic {
     private static final String NBT_FLEE_STUCK_TICKS = "EC_FleeStuckTicks";
     private static final String NBT_FLEE_LAST_X = "EC_FleeLastX";
     private static final String NBT_FLEE_LAST_Z = "EC_FleeLastZ";
+    private static final String NBT_FLEE_ORIGINAL_NO_AI = "EC_FleeOriginalNoAI";
     private static final int MAX_FLEE_TICKS = 200;
     private static final String NBT_DISORIENTED = "ec_disoriented";
     private static final int DISORIENTED_TICKS = 10;
@@ -452,6 +454,9 @@ public class MobAttributeLogic {
         if (target instanceof Mob mob) {
             mob.setTarget(null);
             mob.setLastHurtByMob(null);
+            if (!data.contains(NBT_FLEE_ORIGINAL_NO_AI)) {
+                data.putBoolean(NBT_FLEE_ORIGINAL_NO_AI, mob.isNoAi());
+            }
             mob.setNoAi(true);
         }
         double moveDx = path[0] - target.getX();
@@ -613,7 +618,11 @@ public class MobAttributeLogic {
         data.remove(NBT_FLEE_LAST_Z);
         data.putBoolean("EC_FleeActive", false);
         if (entity instanceof Mob mob) {
-            mob.setNoAi(false);
+            boolean wasNoAi = data.getBoolean(NBT_FLEE_ORIGINAL_NO_AI);
+            data.remove(NBT_FLEE_ORIGINAL_NO_AI);
+            if (!entity.hasEffect(ModMobEffects.FREEZE.get()) && !entity.hasEffect(ModMobEffects.PARALYSIS.get())) {
+                mob.setNoAi(wasNoAi);
+            }
         }
     }
 

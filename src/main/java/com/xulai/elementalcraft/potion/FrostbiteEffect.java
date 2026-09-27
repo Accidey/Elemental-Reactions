@@ -12,6 +12,9 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 
@@ -24,25 +27,32 @@ public class FrostbiteEffect extends MobEffect {
 
     public FrostbiteEffect() {
         super(MobEffectCategory.HARMFUL, 0x66CCFF);
-        this.addAttributeModifier(
-                Attributes.MOVEMENT_SPEED,
-                SPEED_MODIFIER_UUID.toString(),
-                0.0,
-                AttributeModifier.Operation.MULTIPLY_BASE
-        );
-        this.addAttributeModifier(
-                Attributes.ATTACK_SPEED,
-                ATTACK_SPEED_MODIFIER_UUID.toString(),
-                0.0,
-                AttributeModifier.Operation.MULTIPLY_BASE
-        );
     }
 
     @Override
-    public double getAttributeModifierValue(int amplifier, AttributeModifier modifier) {
-        double reduction = ElementalThunderFrostReactionsConfig.frostbiteSpeedReductionPerStack;
-        if (reduction <= 0) return 0.0;
-        return Math.max(-reduction * (amplifier + 1), -0.9);
+    public void addAttributeModifiers(LivingEntity entity, AttributeMap attributeMap, int amplifier) {
+        applySlowness(attributeMap, Attributes.MOVEMENT_SPEED, SPEED_MODIFIER_UUID,
+                ElementalThunderFrostReactionsConfig.frostbiteSpeedReductionPerStack, amplifier);
+        applySlowness(attributeMap, Attributes.ATTACK_SPEED, ATTACK_SPEED_MODIFIER_UUID,
+                ElementalThunderFrostReactionsConfig.frostbiteAttackSpeedReductionPerStack, amplifier);
+    }
+
+    @Override
+    public void removeAttributeModifiers(LivingEntity entity, AttributeMap attributeMap, int amplifier) {
+        AttributeInstance speedAttr = attributeMap.getInstance(Attributes.MOVEMENT_SPEED);
+        if (speedAttr != null) speedAttr.removeModifier(SPEED_MODIFIER_UUID);
+        AttributeInstance attackAttr = attributeMap.getInstance(Attributes.ATTACK_SPEED);
+        if (attackAttr != null) attackAttr.removeModifier(ATTACK_SPEED_MODIFIER_UUID);
+        entity.setTicksFrozen(0);
+    }
+
+    private static void applySlowness(AttributeMap attributeMap, Attribute attribute, UUID uuid, double reductionPerStack, int amplifier) {
+        AttributeInstance instance = attributeMap.getInstance(attribute);
+        if (instance == null) return;
+        instance.removeModifier(uuid);
+        if (reductionPerStack <= 0) return;
+        double value = Math.max(-reductionPerStack * (amplifier + 1), -0.9);
+        instance.addPermanentModifier(new AttributeModifier(uuid, attribute.getDescriptionId() + " " + amplifier, value, AttributeModifier.Operation.MULTIPLY_BASE));
     }
 
     @Override
@@ -50,7 +60,13 @@ public class FrostbiteEffect extends MobEffect {
         if (entity.level().isClientSide) return;
 
         int damageInterval = ElementalThunderFrostReactionsConfig.frostbiteDamageIntervalTicks;
-        if (entity.tickCount % damageInterval == 0) {
+        if (damageInterval < 1) damageInterval = 1;
+
+        CompoundTag data = entity.getPersistentData();
+        int damageTimer = data.getInt(FrostbiteHandler.NBT_FROSTBITE_DAMAGE_TIMER) + 1;
+
+        if (damageTimer >= damageInterval) {
+            damageTimer = 0;
             float baseDamage = (float) ElementalThunderFrostReactionsConfig.frostbitePeriodicDamage;
             float damage = baseDamage;
             ElementType element = ElementUtils.getConsistentAttackElement(entity);
@@ -66,7 +82,6 @@ public class FrostbiteEffect extends MobEffect {
             }
             damage *= elementMult;
 
-            CompoundTag data = entity.getPersistentData();
             float lastDmg = data.getFloat(FrostbiteHandler.NBT_FROSTBITE_LAST_PERIODIC_DMG);
             if (data.getInt(FrostbiteHandler.NBT_FROSTBITE_PERIODIC_LOGGED) == 0 || damage != lastDmg) {
                 DebugCommand.sendFrostbitePeriodicDamageLog(entity, baseDamage, element, elementMult, damage);
@@ -79,12 +94,8 @@ public class FrostbiteEffect extends MobEffect {
             entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(),
                     SoundEvents.PLAYER_HURT_FREEZE, SoundSource.PLAYERS, 1.0f, 1.0f);
         }
-    }
 
-    @Override
-    public void removeAttributeModifiers(LivingEntity entity, net.minecraft.world.entity.ai.attributes.AttributeMap pAttributeMap, int pAmplifier) {
-        super.removeAttributeModifiers(entity, pAttributeMap, pAmplifier);
-        entity.setTicksFrozen(0);
+        data.putInt(FrostbiteHandler.NBT_FROSTBITE_DAMAGE_TIMER, damageTimer);
     }
 
     @Override

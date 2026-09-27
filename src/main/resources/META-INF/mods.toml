@@ -31,15 +31,15 @@ description='''${mod_description}'''
     ordering="NONE"
     side="BOTH"
 
-# 3. Jade 依赖 (Jade Dependency) - [Added]
-# 强制玩家安装 Jade 11.12.3 或更高版本
-# Mandatory requirement for Jade 11.12.3 or higher
+# 3. Jade 依赖 (Jade Dependency) - [Optional]
+# Jade 仅用于悬浮提示展示（JadePlugin），未安装时本模组功能不受影响
+# Optional: only used for the overlay tooltip (JadePlugin); the mod works without it
 [[dependencies.elementalcraft]]
     modId="jade"
-    mandatory=true         # true = 必须安装，否则游戏无法启动 / true = Game won't start without it
+    mandatory=false        # false = 未安装也能启动 / false = works without it
     versionRange="[11.12.3,)" # 指定版本范围 / Specified version range
     ordering="AFTER"       # 在 Jade 之后加载 / Load after Jade
-    side="BOTH"            # 客户端和服务端都需要 / Required on both client and server
+    side="CLIENT"          # 仅客户端展示 / Client-side display only
 
 # -----------------------------------------------------------------------
 

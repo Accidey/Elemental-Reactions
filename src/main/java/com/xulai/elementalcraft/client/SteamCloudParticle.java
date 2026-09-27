@@ -28,14 +28,13 @@ public class SteamCloudParticle extends TextureSheetParticle {
         this.sprites = sprites;
         this.hasPhysics = false;
         this.gravity = 0;
-        this.lifetime = 50 + level.random.nextInt(31); // 50-80 ticks
+        this.lifetime = 50 + level.random.nextInt(31);
         this.fadeInEnd = (int) (this.lifetime * 0.2);
         this.fadeOutStart = (int) (this.lifetime * 0.6);
 
         this.startSize = 0.2f + level.random.nextFloat() * 0.2f;
         this.quadSize = this.startSize;
 
-        // near-white, slightly blue-tinted for condensing steam
         this.rCol = 0.85f + level.random.nextFloat() * 0.1f;
         this.gCol = 0.88f + level.random.nextFloat() * 0.1f;
         this.bCol = 0.95f + level.random.nextFloat() * 0.05f;
@@ -67,12 +66,9 @@ public class SteamCloudParticle extends TextureSheetParticle {
 
         this.setSpriteFromAge(this.sprites);
 
-        // fade in
         if (this.age < this.fadeInEnd) {
             this.alpha = (float) this.age / this.fadeInEnd;
-        }
-        // fade out
-        else if (this.age >= this.fadeOutStart) {
+        } else if (this.age >= this.fadeOutStart) {
             float progress = (float) (this.age - this.fadeOutStart) / (this.lifetime - this.fadeOutStart);
             this.alpha = 1.0f - progress;
         } else {

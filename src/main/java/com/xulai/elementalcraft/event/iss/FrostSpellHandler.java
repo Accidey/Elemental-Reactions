@@ -41,8 +41,15 @@ import net.minecraftforge.registries.ForgeRegistries;
 @Mod.EventBusSubscriber(modid = ElementalCraft.MODID)
 public class FrostSpellHandler {
 
+    private static boolean chilledResolved;
+    private static net.minecraft.world.effect.MobEffect chilled;
+
     private static net.minecraft.world.effect.MobEffect chilledEffect() {
-        return ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("irons_spellbooks", "chilled"));
+        if (!chilledResolved) {
+            chilledResolved = true;
+            chilled = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("irons_spellbooks", "chilled"));
+        }
+        return chilled;
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

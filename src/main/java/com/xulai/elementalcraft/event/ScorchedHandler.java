@@ -56,6 +56,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -339,6 +340,9 @@ public class ScorchedHandler {
         if (entity instanceof Player player && player.isCreative()) return;
 
         CompoundTag data = entity.getPersistentData();
+        if (data.getBoolean(NBT_FIRE_COUNTER_INVULN) && !activeFireCounters.containsKey(entity.getUUID())) {
+            data.remove(NBT_FIRE_COUNTER_INVULN);
+        }
         if (data.contains(NBT_ATTACKER_SCORCHED_COOLDOWN)) {
             long cd = data.getLong(NBT_ATTACKER_SCORCHED_COOLDOWN);
             if (entity.level().getGameTime() >= cd) {
@@ -763,17 +767,17 @@ public class ScorchedHandler {
 
     public static final String NBT_FIRE_COUNTER_CD = "ec_fire_counter_cd";
     public static final String NBT_FIRE_COUNTER_INVULN = "ec_fire_counter_invuln";
-    private static final String NBT_FIRE_COUNTER_LOCK = "ec_fire_counter_lock";
     private static final String NBT_FIRE_COUNTER_SAVED_SPEED = "ec_fire_counter_saved_speed";
     private static final String NBT_FIRE_COUNTER_SPEED_TIME = "ec_fire_counter_speed_time";
 
-    private static final Map<ResourceKey<Level>, ActiveFireCounter> activeFireCounters = new HashMap<>();
+    private static final Map<UUID, ActiveFireCounter> activeFireCounters = new HashMap<>();
 
     private enum FireCounterPhase { CONTRACT, EXPLODE }
 
     private static class ActiveFireCounter {
         final double x, y, z;
         final UUID ownerUUID;
+        final ResourceKey<Level> dim;
         final double maxRadius;
         final double expansionSpeed;
         final double damage;
@@ -790,6 +794,7 @@ public class ScorchedHandler {
             this.y = owner.getY();
             this.z = owner.getZ();
             this.ownerUUID = owner.getUUID();
+            this.dim = owner.level().dimension();
             this.maxRadius = ElementalFireNatureReactionsConfig.fireCounterRadius;
             this.expansionSpeed = ElementalFireNatureReactionsConfig.fireCounterExpansionSpeed;
             this.damage = ElementalFireNatureReactionsConfig.fireCounterDamage;
@@ -844,8 +849,7 @@ public class ScorchedHandler {
 
     public static void triggerFireCounter(LivingEntity target) {
         if (!(target.level() instanceof ServerLevel)) return;
-        ResourceKey<Level> dim = target.level().dimension();
-        if (activeFireCounters.containsKey(dim)) return;
+        if (activeFireCounters.containsKey(target.getUUID())) return;
         target.getPersistentData().putBoolean(NBT_FIRE_COUNTER_INVULN, true);
         if (target instanceof Mob mob) {
             mob.getNavigation().stop();
@@ -860,7 +864,11 @@ public class ScorchedHandler {
             ElementalCraft.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp),
                     new FireCounterLockPacket(true));
         }
-        activeFireCounters.put(dim, new ActiveFireCounter(target));
+        activeFireCounters.put(target.getUUID(), new ActiveFireCounter(target));
+    }
+
+    public static boolean hasActiveFireCounter(LivingEntity entity) {
+        return activeFireCounters.containsKey(entity.getUUID());
     }
 
     @SubscribeEvent
@@ -870,69 +878,76 @@ public class ScorchedHandler {
         if (!(event.level instanceof ServerLevel sl)) return;
 
         ResourceKey<Level> dim = event.level.dimension();
-        ActiveFireCounter fc = activeFireCounters.get(dim);
-        if (fc == null) return;
+        Iterator<Map.Entry<UUID, ActiveFireCounter>> it = activeFireCounters.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<UUID, ActiveFireCounter> entry = it.next();
+            ActiveFireCounter fc = entry.getValue();
+            if (fc.dim != dim) continue;
 
-        Entity ownerEntity = sl.getEntity(fc.ownerUUID);
-        if (ownerEntity == null || !(ownerEntity instanceof LivingEntity owner) || owner.isDeadOrDying()) {
-            if (ownerEntity instanceof Mob mob) {
-                double savedSpeed = ownerEntity.getPersistentData().getDouble(NBT_FIRE_COUNTER_SAVED_SPEED);
-                if (savedSpeed > 0) {
-                    var attr = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
-                    if (attr != null) attr.setBaseValue(savedSpeed);
-                }
-                ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_SPEED);
-                ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_SPEED_TIME);
-            }
-            if (ownerEntity instanceof net.minecraft.server.level.ServerPlayer sp) {
-                ElementalCraft.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp),
-                        new FireCounterLockPacket(false));
-            }
-            if (ownerEntity != null) {
-                ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
-                ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_LOCK);
-            }
-            activeFireCounters.remove(dim);
-            return;
-        }
-
-        double rate = fc.expansionSpeed / 20.0;
-        fc.phaseTicks++;
-
-        switch (fc.phase) {
-            case CONTRACT:
-                if (!fc.collected) {
-                    collectAndLock(sl, fc, owner);
-                    fc.collected = true;
-                }
-                fc.currentRadius = Math.max(0, fc.maxRadius - fc.phaseTicks * rate);
-                spawnFireRingParticles(sl, fc.x, fc.y, fc.z, fc.currentRadius);
-                pullAndLock(sl, fc, owner);
-                owner.setDeltaMovement(0, 0, 0);
-                if (fc.currentRadius <= 0) {
-                    fc.phase = FireCounterPhase.EXPLODE;
-                    fc.phaseTicks = 0;
-                }
-                break;
-
-            case EXPLODE:
-                doExplosion(sl, fc, owner);
-                owner.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
-                if (owner instanceof net.minecraft.server.level.ServerPlayer sp) {
-                    ElementalCraft.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp),
-                            new FireCounterLockPacket(false));
-                }
-                if (owner instanceof Mob mob) {
-                    double savedSpeed = owner.getPersistentData().getDouble(NBT_FIRE_COUNTER_SAVED_SPEED);
+            Entity ownerEntity = sl.getEntity(entry.getKey());
+            if (ownerEntity == null || !(ownerEntity instanceof LivingEntity owner) || owner.isDeadOrDying()) {
+                if (ownerEntity instanceof Mob mob) {
+                    double savedSpeed = ownerEntity.getPersistentData().getDouble(NBT_FIRE_COUNTER_SAVED_SPEED);
                     if (savedSpeed > 0) {
                         var attr = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
                         if (attr != null) attr.setBaseValue(savedSpeed);
                     }
-                    owner.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_SPEED);
-                    owner.getPersistentData().remove(NBT_FIRE_COUNTER_SPEED_TIME);
+                    ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_SPEED);
+                    ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_SPEED_TIME);
                 }
-                activeFireCounters.remove(dim);
-                break;
+                sendFireCounterLock(sl, entry.getKey(), false);
+                if (ownerEntity != null) {
+                    ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
+                }
+                it.remove();
+                continue;
+            }
+
+            double rate = fc.expansionSpeed / 20.0;
+            fc.phaseTicks++;
+
+            switch (fc.phase) {
+                case CONTRACT:
+                    if (!fc.collected) {
+                        collectAndLock(sl, fc, owner);
+                        fc.collected = true;
+                    }
+                    fc.currentRadius = Math.max(0, fc.maxRadius - fc.phaseTicks * rate);
+                    spawnFireRingParticles(sl, fc.x, fc.y, fc.z, fc.currentRadius);
+                    pullAndLock(sl, fc, owner);
+                    if (!(owner instanceof net.minecraft.server.level.ServerPlayer)) {
+                        owner.setDeltaMovement(0, 0, 0);
+                    }
+                    if (fc.currentRadius <= 0) {
+                        fc.phase = FireCounterPhase.EXPLODE;
+                        fc.phaseTicks = 0;
+                    }
+                    break;
+
+                case EXPLODE:
+                    doExplosion(sl, fc, owner);
+                    owner.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
+                    sendFireCounterLock(sl, entry.getKey(), false);
+                    if (owner instanceof Mob mob) {
+                        double savedSpeed = owner.getPersistentData().getDouble(NBT_FIRE_COUNTER_SAVED_SPEED);
+                        if (savedSpeed > 0) {
+                            var attr = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+                            if (attr != null) attr.setBaseValue(savedSpeed);
+                        }
+                        owner.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_SPEED);
+                        owner.getPersistentData().remove(NBT_FIRE_COUNTER_SPEED_TIME);
+                    }
+                    it.remove();
+                    break;
+            }
+        }
+    }
+
+    private static void sendFireCounterLock(ServerLevel level, UUID playerUUID, boolean locked) {
+        net.minecraft.server.level.ServerPlayer sp = level.getServer().getPlayerList().getPlayer(playerUUID);
+        if (sp != null) {
+            ElementalCraft.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp),
+                    new FireCounterLockPacket(locked));
         }
     }
 

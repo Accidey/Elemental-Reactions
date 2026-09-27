@@ -87,37 +87,31 @@ public class FrozenIceLayer {
         var pose = poseStack.last().pose();
         var normal = poseStack.last().normal();
 
-        // Front (+Z)
         consumer.vertex(pose, -hw, bot, hd).color(1, 1, 1, alpha).uv(0, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 0, 0, 1).endVertex();
         consumer.vertex(pose, -hw, top, hd).color(1, 1, 1, alpha).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 0, 0, 1).endVertex();
         consumer.vertex(pose,  hw, top, hd).color(1, 1, 1, alpha).uv(1, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 0, 0, 1).endVertex();
         consumer.vertex(pose,  hw, bot, hd).color(1, 1, 1, alpha).uv(1, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 0, 0, 1).endVertex();
 
-        // Back (-Z)
         consumer.vertex(pose,  hw, bot, -hd).color(1, 1, 1, alpha).uv(0, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 0, 0, -1).endVertex();
         consumer.vertex(pose,  hw, top, -hd).color(1, 1, 1, alpha).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 0, 0, -1).endVertex();
         consumer.vertex(pose, -hw, top, -hd).color(1, 1, 1, alpha).uv(1, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 0, 0, -1).endVertex();
         consumer.vertex(pose, -hw, bot, -hd).color(1, 1, 1, alpha).uv(1, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 0, 0, -1).endVertex();
 
-        // Left (-X)
         consumer.vertex(pose, -hw, bot, -hd).color(1, 1, 1, alpha).uv(0, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, -1, 0, 0).endVertex();
         consumer.vertex(pose, -hw, top, -hd).color(1, 1, 1, alpha).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, -1, 0, 0).endVertex();
         consumer.vertex(pose, -hw, top,  hd).color(1, 1, 1, alpha).uv(1, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, -1, 0, 0).endVertex();
         consumer.vertex(pose, -hw, bot,  hd).color(1, 1, 1, alpha).uv(1, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, -1, 0, 0).endVertex();
 
-        // Right (+X)
         consumer.vertex(pose, hw, bot,  hd).color(1, 1, 1, alpha).uv(0, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 1, 0, 0).endVertex();
         consumer.vertex(pose, hw, top,  hd).color(1, 1, 1, alpha).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 1, 0, 0).endVertex();
         consumer.vertex(pose, hw, top, -hd).color(1, 1, 1, alpha).uv(1, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 1, 0, 0).endVertex();
         consumer.vertex(pose, hw, bot, -hd).color(1, 1, 1, alpha).uv(1, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 1, 0, 0).endVertex();
 
-        // Top (+Y)
         consumer.vertex(pose, -hw, top,  hd).color(1, 1, 1, alpha).uv(0, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 0, 1, 0).endVertex();
         consumer.vertex(pose, -hw, top, -hd).color(1, 1, 1, alpha).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 0, 1, 0).endVertex();
         consumer.vertex(pose,  hw, top, -hd).color(1, 1, 1, alpha).uv(1, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 0, 1, 0).endVertex();
         consumer.vertex(pose,  hw, top,  hd).color(1, 1, 1, alpha).uv(1, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 0, 1, 0).endVertex();
 
-        // Bottom (-Y)
         consumer.vertex(pose, -hw, bot, -hd).color(1, 1, 1, alpha).uv(0, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 0, -1, 0).endVertex();
         consumer.vertex(pose,  hw, bot, -hd).color(1, 1, 1, alpha).uv(1, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 0, -1, 0).endVertex();
         consumer.vertex(pose,  hw, bot,  hd).color(1, 1, 1, alpha).uv(1, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, 0, -1, 0).endVertex();

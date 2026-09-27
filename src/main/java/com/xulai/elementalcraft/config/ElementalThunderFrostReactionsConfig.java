@@ -77,6 +77,7 @@ public final class ElementalThunderFrostReactionsConfig {
     public static final ForgeConfigSpec.IntValue FROSTBITE_BASE_DURATION_TICKS;
     public static final ForgeConfigSpec.IntValue FROSTBITE_DURATION_PER_EXTRA_STACK_TICKS;
     public static final ForgeConfigSpec.DoubleValue FROSTBITE_SPEED_REDUCTION_PER_STACK;
+    public static final ForgeConfigSpec.DoubleValue FROSTBITE_ATTACK_SPEED_REDUCTION_PER_STACK;
     public static final ForgeConfigSpec.DoubleValue FROSTBITE_PERIODIC_DAMAGE;
     public static final ForgeConfigSpec.IntValue FROSTBITE_DAMAGE_INTERVAL_TICKS;
     public static final ForgeConfigSpec.IntValue FROSTBITE_RESIST_IMMUNITY_THRESHOLD;
@@ -705,10 +706,18 @@ public final class ElementalThunderFrostReactionsConfig {
         BUILDER.comment(" ");
 
         FROSTBITE_SPEED_REDUCTION_PER_STACK = BUILDER
-                .comment("每层霜冻降低的移动速度和攻击速度比例。0.1 = 10%减速。0 = 关闭。上限90%。",
-                         "Movement speed and attack speed reduction per stack of Frostbite. 0.1 = 10% reduction. 0 = disable. Max 90%.",
+                .comment("每层霜冻降低的移动速度比例。0.1 = 10%减速。0 = 关闭。上限90%。",
+                         "Movement speed reduction per stack of Frostbite. 0.1 = 10% reduction. 0 = disable. Max 90%.",
                          "Default: 0.1 (10%) / 默认：0.1（10%）")
                 .defineInRange("frostbite_speed_reduction_per_stack", 0.1, 0.0, 0.9);
+
+        BUILDER.comment(" ");
+
+        FROSTBITE_ATTACK_SPEED_REDUCTION_PER_STACK = BUILDER
+                .comment("每层霜冻降低的攻击速度比例。0.1 = 10%减速。0 = 关闭。上限90%。",
+                         "Attack speed reduction per stack of Frostbite. 0.1 = 10% reduction. 0 = disable. Max 90%.",
+                         "Default: 0.1 (10%) / 默认：0.1（10%）")
+                .defineInRange("frostbite_attack_speed_reduction_per_stack", 0.1, 0.0, 0.9);
 
         BUILDER.comment(" ");
 
@@ -723,8 +732,10 @@ public final class ElementalThunderFrostReactionsConfig {
         FROSTBITE_DAMAGE_INTERVAL_TICKS = BUILDER
                 .comment("霜冻周期性伤害的间隔时间（以刻为单位）。20刻 = 1秒。",
                          "Interval (in ticks) between each Frostbite periodic damage. 20 ticks = 1 second.",
+                         "低于 20 时会被原版无敌帧吞掉伤害，故下限为 20。",
+                         "Values below 20 are swallowed by vanilla invulnerability frames, hence the minimum of 20.",
                          "Default: 100 (5 seconds) / 默认：100（5秒）")
-                .defineInRange("frostbite_damage_interval_ticks", 100, 1, 72000);
+                .defineInRange("frostbite_damage_interval_ticks", 100, 20, 72000);
 
         BUILDER.comment(" ");
 
@@ -1102,123 +1113,124 @@ public final class ElementalThunderFrostReactionsConfig {
         SPEC = BUILDER.build();
     }
 
-    public static int thunderStrengthThreshold;
-    public static double staticBaseChance;
-    public static int staticScalingStep;
-    public static double staticScalingChance;
-    public static double staticWetnessBonusChancePerLevel;
-    public static double staticStackingBonusChance;
-    public static double staticThunderstormBonusChance;
-    public static int staticMaxStacksPerAttack;
-    public static int staticMaxTotalStacks;
-    public static int staticDurationPerStackTicks;
-    public static int staticResistImmunityThreshold;
-    public static double staticDamageMin;
-    public static double staticDamageMax;
-    public static int staticDamageIntervalTicks;
-    public static double staticDamageFireMultiplier;
-    public static double staticDamageNatureMultiplier;
-    public static double staticDamageThunderMultiplier;
-    public static double staticDamageFrostMultiplier;
+    public static volatile int thunderStrengthThreshold;
+    public static volatile double staticBaseChance;
+    public static volatile int staticScalingStep;
+    public static volatile double staticScalingChance;
+    public static volatile double staticWetnessBonusChancePerLevel;
+    public static volatile double staticStackingBonusChance;
+    public static volatile double staticThunderstormBonusChance;
+    public static volatile int staticMaxStacksPerAttack;
+    public static volatile int staticMaxTotalStacks;
+    public static volatile int staticDurationPerStackTicks;
+    public static volatile int staticResistImmunityThreshold;
+    public static volatile double staticDamageMin;
+    public static volatile double staticDamageMax;
+    public static volatile int staticDamageIntervalTicks;
+    public static volatile double staticDamageFireMultiplier;
+    public static volatile double staticDamageNatureMultiplier;
+    public static volatile double staticDamageThunderMultiplier;
+    public static volatile double staticDamageFrostMultiplier;
 
-    public static int staticAuraThreshold;
-    public static double staticAuraBaseRange;
-    public static double staticAuraHeightCeiling;
+    public static volatile int staticAuraThreshold;
+    public static volatile double staticAuraBaseRange;
+    public static volatile double staticAuraHeightCeiling;
 
-    public static double thunderCounterBloodThreshold;
-    public static int thunderCounterStrengthThreshold;
-    public static double thunderCounterHealthRecoveryThreshold;
-    public static double thunderCounterRadius;
-    public static double thunderCounterExpansionSpeed;
-    public static double counterLightningDamage;
+    public static volatile double thunderCounterBloodThreshold;
+    public static volatile int thunderCounterStrengthThreshold;
+    public static volatile double thunderCounterHealthRecoveryThreshold;
+    public static volatile double thunderCounterRadius;
+    public static volatile double thunderCounterExpansionSpeed;
+    public static volatile double counterLightningDamage;
 
     public static List<? extends String> cachedStaticImmunityBlacklist;
     public static List<? extends String> cachedParalysisImmunityBlacklist;
 
-    public static int paralysisMaxStacks;
-    public static int paralysisDurationPerStackTicks;
-    public static double paralysisDamagePercentage;
-    public static int paralysisCooldownTicks;
+    public static volatile int paralysisMaxStacks;
+    public static volatile int paralysisDurationPerStackTicks;
+    public static volatile double paralysisDamagePercentage;
+    public static volatile int paralysisCooldownTicks;
 
 
 
-    public static double staticSporeBlastBaseChance;
-    public static double staticSporeBlastPerStaticStack;
-    public static double staticSporeBlastPerSporeStack;
-    public static double staticCreeperIgniteChance;
+    public static volatile double staticSporeBlastBaseChance;
+    public static volatile double staticSporeBlastPerStaticStack;
+    public static volatile double staticSporeBlastPerSporeStack;
+    public static volatile double staticCreeperIgniteChance;
 
 
-    public static double staticMaxProtCap;
-    public static double staticMaxProjectileProtCap;
+    public static volatile double staticMaxProtCap;
+    public static volatile double staticMaxProjectileProtCap;
 
-    public static double frostStrengthThreshold;
-    public static double frostbiteBaseChance;
-    public static double frostbiteScalingStep;
-    public static double frostbiteScalingChance;
-    public static double frostbiteWetnessBonusChance;
-    public static double frostbiteStackingBonusChance;
-    public static int frostbiteMaxStacksPerAttack;
-    public static int frostbiteMaxTotalStacks;
-    public static int frostbiteBaseDurationTicks;
-    public static int frostbiteDurationPerExtraStackTicks;
-    public static double frostbiteHotBiomeChancePenalty;
-    public static double frostbiteColdBiomeChanceBonus;
-    public static double frostbiteSpeedReductionPerStack;
-    public static double frostbitePeriodicDamage;
-    public static int frostbiteDamageIntervalTicks;
-    public static int frostbiteResistImmunityThreshold;
+    public static volatile double frostStrengthThreshold;
+    public static volatile double frostbiteBaseChance;
+    public static volatile double frostbiteScalingStep;
+    public static volatile double frostbiteScalingChance;
+    public static volatile double frostbiteWetnessBonusChance;
+    public static volatile double frostbiteStackingBonusChance;
+    public static volatile int frostbiteMaxStacksPerAttack;
+    public static volatile int frostbiteMaxTotalStacks;
+    public static volatile int frostbiteBaseDurationTicks;
+    public static volatile int frostbiteDurationPerExtraStackTicks;
+    public static volatile double frostbiteHotBiomeChancePenalty;
+    public static volatile double frostbiteColdBiomeChanceBonus;
+    public static volatile double frostbiteSpeedReductionPerStack;
+    public static volatile double frostbiteAttackSpeedReductionPerStack;
+    public static volatile double frostbitePeriodicDamage;
+    public static volatile int frostbiteDamageIntervalTicks;
+    public static volatile int frostbiteResistImmunityThreshold;
     public static List<? extends String> cachedFrostbiteImmunityBlacklist;
 
 
-    public static double frostbiteDamageFireMultiplier;
-    public static double frostbiteDamageNatureMultiplier;
-    public static double frostbiteDamageThunderMultiplier;
-    public static double frostbiteDamageFrostMultiplier;
+    public static volatile double frostbiteDamageFireMultiplier;
+    public static volatile double frostbiteDamageNatureMultiplier;
+    public static volatile double frostbiteDamageThunderMultiplier;
+    public static volatile double frostbiteDamageFrostMultiplier;
 
-    public static int frostbiteAuraThreshold;
-    public static double frostbiteAuraBaseRange;
-    public static double frostbiteAuraRangePerStack;
+    public static volatile int frostbiteAuraThreshold;
+    public static volatile double frostbiteAuraBaseRange;
+    public static volatile double frostbiteAuraRangePerStack;
 
-    public static int freezeMaxStacks;
-    public static int freezeDurationPerStackTicks;
+    public static volatile int freezeMaxStacks;
+    public static volatile int freezeDurationPerStackTicks;
 
-    public static double freezeSettlementDamagePerStack;
-    public static int freezeCooldownTicks;
+    public static volatile double freezeSettlementDamagePerStack;
+    public static volatile int freezeCooldownTicks;
     public static List<? extends String> cachedFreezeImmunityBlacklist;
-    public static double wetnessColdBiomeFreezeChance;
-    public static double wetnessColdBiomeFreezeLevelBonus;
+    public static volatile double wetnessColdBiomeFreezeChance;
+    public static volatile double wetnessColdBiomeFreezeLevelBonus;
 
-    public static double thunderBreakFreezeChance;
-    public static int thunderBreakFreezeToWetnessRatio;
+    public static volatile double thunderBreakFreezeChance;
+    public static volatile int thunderBreakFreezeToWetnessRatio;
 
-    public static int frostbiteFireSteamThreshold;
-    public static double fireFrostMeltDamageMult;
-    public static int fireFrostMeltWetnessRatio;
+    public static volatile int frostbiteFireSteamThreshold;
+    public static volatile double fireFrostMeltDamageMult;
+    public static volatile int fireFrostMeltWetnessRatio;
 
-    public static double frostbiteSporeDecaySpeed;
-    public static boolean freezeClearSporesEnabled;
-    public static int scorchedFrostbiteToWetnessRatio;
-    public static boolean frostbiteClearByHeatEnabled;
-    public static double frostbiteHeatSearchRadius;
-    public static int frostbiteFireStandClearingTime;
+    public static volatile double frostbiteSporeDecaySpeed;
+    public static volatile boolean freezeClearSporesEnabled;
+    public static volatile int scorchedFrostbiteToWetnessRatio;
+    public static volatile boolean frostbiteClearByHeatEnabled;
+    public static volatile double frostbiteHeatSearchRadius;
+    public static volatile int frostbiteFireStandClearingTime;
 
-    public static double frostbiteHeatAccelerateMultiplier;
-    public static double frostbiteHeatAccelerateRadius;
+    public static volatile double frostbiteHeatAccelerateMultiplier;
+    public static volatile double frostbiteHeatAccelerateRadius;
 
-    public static int staticSteamCloudTriggerStacks;
+    public static volatile int staticSteamCloudTriggerStacks;
 
-    public static double waterElectrificationRangeBase;
-    public static double waterElectrificationRangePerStack;
-    public static int waterElectrificationParalysisDuration;
+    public static volatile double waterElectrificationRangeBase;
+    public static volatile double waterElectrificationRangePerStack;
+    public static volatile int waterElectrificationParalysisDuration;
 
-    public static int frostedSteamCloudTriggerStacks;
+    public static volatile int frostedSteamCloudTriggerStacks;
 
-    public static double frostCounterBloodThreshold;
-    public static int frostCounterStrengthThreshold;
-    public static double frostCounterHealthRecoveryThreshold;
-    public static double frostCounterMaxRadius;
-    public static double frostCounterExpansionSpeed;
-    public static double frostCounterHeightCeiling;
+    public static volatile double frostCounterBloodThreshold;
+    public static volatile int frostCounterStrengthThreshold;
+    public static volatile double frostCounterHealthRecoveryThreshold;
+    public static volatile double frostCounterMaxRadius;
+    public static volatile double frostCounterExpansionSpeed;
+    public static volatile double frostCounterHeightCeiling;
 
     public static void register(String configPath) {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, SPEC, configPath);
@@ -1284,6 +1296,7 @@ public final class ElementalThunderFrostReactionsConfig {
         frostbiteBaseDurationTicks = FROSTBITE_BASE_DURATION_TICKS.get();
         frostbiteDurationPerExtraStackTicks = FROSTBITE_DURATION_PER_EXTRA_STACK_TICKS.get();
         frostbiteSpeedReductionPerStack = FROSTBITE_SPEED_REDUCTION_PER_STACK.get();
+        frostbiteAttackSpeedReductionPerStack = FROSTBITE_ATTACK_SPEED_REDUCTION_PER_STACK.get();
         frostbitePeriodicDamage = FROSTBITE_PERIODIC_DAMAGE.get();
         frostbiteDamageIntervalTicks = FROSTBITE_DAMAGE_INTERVAL_TICKS.get();
         frostbiteResistImmunityThreshold = FROSTBITE_RESIST_IMMUNITY_THRESHOLD.get();

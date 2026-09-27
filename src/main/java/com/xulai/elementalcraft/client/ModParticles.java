@@ -1,6 +1,7 @@
 package com.xulai.elementalcraft.client;
 
 import com.xulai.elementalcraft.ElementalCraft;
+import com.xulai.elementalcraft.util.ModCompat;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -10,10 +11,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.RegistryObject;
 
-@Mod.EventBusSubscriber(modid = ElementalCraft.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = ElementalCraft.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModParticles {
 
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES =
@@ -43,7 +43,7 @@ public class ModParticles {
     public static final RegistryObject<SimpleParticleType> CHERRY_BLOSSOM =
             PARTICLE_TYPES.register("cherry_blossom", () -> new SimpleParticleType(false));
 
-    private static final boolean ISS_LOADED = ModList.get().isLoaded("irons_spellbooks");
+    private static final boolean ISS_LOADED = ModCompat.iss();
 
     public static SimpleParticleType frostSnowflake() {
         return ISS_LOADED ? FROST_SNOWFLAKE_ISS.get() : FROST_SNOWFLAKE.get();

@@ -13,10 +13,12 @@ import com.xulai.elementalcraft.enchantment.ModEnchantments;
 import com.xulai.elementalcraft.event.TooltipEvents;
 import com.xulai.elementalcraft.potion.ModMobEffects;
 import com.xulai.elementalcraft.sound.ModSounds;
+import com.xulai.elementalcraft.util.ConfigReloadRegistry;
 import com.xulai.elementalcraft.util.CustomBiomeBias;
 import com.xulai.elementalcraft.network.FireCounterLockPacket;
 import com.xulai.elementalcraft.util.ForcedAttributeHelper;
 import com.xulai.elementalcraft.util.ForcedItemHelper;
+import com.xulai.elementalcraft.util.ModCompat;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -37,6 +39,7 @@ import org.slf4j.Logger;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 @Mod(ElementalCraft.MODID)
 public class ElementalCraft {
@@ -44,22 +47,26 @@ public class ElementalCraft {
     public static final Logger LOGGER = LogUtils.getLogger();
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(MODID, "main"),
-            () -> "1", s -> true, s -> true);
+            ElementalCraft::channelVersion,
+            NetworkRegistry.acceptMissingOr((java.util.function.Predicate<String>) ElementalCraft::sameChannelVersion),
+            NetworkRegistry.acceptMissingOr((java.util.function.Predicate<String>) ElementalCraft::sameChannelVersion));
 
     public ElementalCraft() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         migrateConfigFiles();
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ElementalConfig.SPEC, "ElementalCraft/elementalcraft-common.toml");
-        ForcedItemConfig.register("ElementalCraft/elementalcraft-forced-items.toml");
-        ElementalFireNatureReactionsConfig.register("ElementalCraft/elementalcraft-fire-nature-reactions.toml");
-        ElementalVisualConfig.register("ElementalCraft/elementalcraft-visuals.toml");
-        ElementalThunderFrostReactionsConfig.register("ElementalCraft/elementalcraft-thunder-frost-reactions.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ElementalConfig.SPEC, ConfigReloadRegistry.COMMON);
+        ForcedItemConfig.register(ConfigReloadRegistry.FORCED_ITEMS);
+        ElementalFireNatureReactionsConfig.register(ConfigReloadRegistry.FIRE_NATURE);
+        ElementalVisualConfig.register(ConfigReloadRegistry.VISUALS);
+        ElementalThunderFrostReactionsConfig.register(ConfigReloadRegistry.THUNDER_FROST);
 
-        if (ModList.get().isLoaded("irons_spellbooks")) {
-            ElementalISSIntegrationConfig.register("ElementalCraft/elementalcraft-iss-integration.toml");
+        if (ModCompat.iss()) {
+            ElementalISSIntegrationConfig.register(ConfigReloadRegistry.ISS_INTEGRATION);
         }
+
+        registerReloadActions();
 
         ModEnchantments.register(modEventBus);
         ModMobEffects.register(modEventBus);
@@ -81,11 +88,41 @@ public class ElementalCraft {
         LOGGER.info("§a[ElementalCraft] Mod Constructed!");
     }
 
+    public static String channelVersion() {
+        return ModList.get().getModContainerById(MODID)
+                .map(container -> container.getModInfo().getVersion().toString())
+                .orElse("");
+    }
+
+    private static boolean sameChannelVersion(String remoteVersion) {
+        String local = channelVersion();
+        return local.isEmpty() || remoteVersion.equals(local);
+    }
+
+    private void registerReloadActions() {
+        ConfigReloadRegistry.register(ElementalConfig.SPEC, ConfigReloadRegistry.COMMON, () -> {
+            ElementalConfig.refreshCache();
+            CustomBiomeBias.clearCache();
+            ForcedAttributeHelper.clearCache();
+        });
+        ConfigReloadRegistry.register(ForcedItemConfig.SPEC, ConfigReloadRegistry.FORCED_ITEMS, ForcedItemHelper::clearCache);
+        ConfigReloadRegistry.register(ElementalFireNatureReactionsConfig.SPEC, ConfigReloadRegistry.FIRE_NATURE,
+                ElementalFireNatureReactionsConfig::refreshCache);
+        ConfigReloadRegistry.register(ElementalVisualConfig.SPEC, ConfigReloadRegistry.VISUALS,
+                ElementalVisualConfig::refreshCache);
+        ConfigReloadRegistry.register(ElementalThunderFrostReactionsConfig.SPEC, ConfigReloadRegistry.THUNDER_FROST,
+                ElementalThunderFrostReactionsConfig::refreshCache);
+        if (ModCompat.iss()) {
+            ConfigReloadRegistry.register(ElementalISSIntegrationConfig.SPEC, ConfigReloadRegistry.ISS_INTEGRATION,
+                    ElementalISSIntegrationConfig::refreshCache);
+        }
+    }
+
     private void migrateConfigFiles() {
         try {
             Path configRoot = FMLPaths.CONFIGDIR.get();
 
-            String[] filesToDelete = {
+            String[] filesToMove = {
                 "elementalcraft-common.toml",
                 "elementalcraft-forced-items.toml",
                 "elementalcraft-reactions.toml",
@@ -96,98 +133,44 @@ public class ElementalCraft {
                 "elementalcraft-iss-integration.toml"
             };
 
-            for (String file : filesToDelete) {
+            for (String file : filesToMove) {
                 Path oldPath = configRoot.resolve(file);
                 if (Files.exists(oldPath)) {
-                    Files.delete(oldPath);
-                    LOGGER.info("[ElementalCraft] 删除旧配置文件: {}", file);
+                    Path backupPath = configRoot.resolve(file + ".bak");
+                    Files.move(oldPath, backupPath, StandardCopyOption.REPLACE_EXISTING);
+                    LOGGER.info("[ElementalCraft] 旧配置文件已备份为 {}（不会被加载）", backupPath.getFileName());
                 }
             }
 
         } catch (Exception e) {
-            LOGGER.warn("[ElementalCraft] 清理旧配置文件失败: {}", e.getMessage());
+            LOGGER.warn("[ElementalCraft] 备份旧配置文件失败: {}", e.getMessage());
         }
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        ElementalConfig.refreshCache();
-        ElementalFireNatureReactionsConfig.refreshCache();
-        ElementalVisualConfig.refreshCache();
-        ElementalThunderFrostReactionsConfig.refreshCache();
-        if (ModList.get().isLoaded("irons_spellbooks")) {
-            ElementalISSIntegrationConfig.refreshCache();
-        }
+        ConfigReloadRegistry.reloadAll();
         LOGGER.info("[ElementalCraft] Common Setup: Config cache initialized.");
     }
 
     public void onConfigLoad(ModConfigEvent.Loading event) {
-        if (event.getConfig().getSpec() == ElementalConfig.SPEC) {
-            ElementalConfig.refreshCache();
-            LOGGER.info("[ElementalCraft] Config Loaded: elementalcraft-common.toml");
-        }
-        if (event.getConfig().getSpec() == ElementalFireNatureReactionsConfig.SPEC) {
-            ElementalFireNatureReactionsConfig.refreshCache();
-            LOGGER.info("[ElementalCraft] Config Loaded: elementalcraft-fire-nature-reactions.toml");
-        }
-        if (event.getConfig().getSpec() == ElementalVisualConfig.SPEC) {
-            ElementalVisualConfig.refreshCache();
-        }
-        if (event.getConfig().getSpec() == ForcedItemConfig.SPEC) {
-            ForcedItemHelper.clearCache();
-            LOGGER.info("[ElementalCraft] Config Loaded: elementalcraft-forced-items.toml");
-        }
-        if (event.getConfig().getSpec() == ElementalThunderFrostReactionsConfig.SPEC) {
-            ElementalThunderFrostReactionsConfig.refreshCache();
-            LOGGER.info("[ElementalCraft] Config Loaded: elementalcraft-thunder-frost-reactions.toml");
-        }
-        if (event.getConfig().getSpec() == ElementalISSIntegrationConfig.SPEC) {
-            ElementalISSIntegrationConfig.refreshCache();
-            LOGGER.info("[ElementalCraft] Config Loaded: elementalcraft-iss-integration.toml");
-        }
+        String path = ConfigReloadRegistry.pathOf(event.getConfig().getSpec());
+        if (path == null) return;
+        ConfigReloadRegistry.reloadByPath(path);
+        LOGGER.info("[ElementalCraft] Config Loaded: {}", path);
     }
 
     public void onConfigReload(ModConfigEvent.Reloading event) {
-        if (event.getConfig().getSpec() == ElementalConfig.SPEC) {
-            ElementalConfig.refreshCache();
-            CustomBiomeBias.clearCache();
-            ForcedAttributeHelper.clearCache();
-            LOGGER.info("[ElementalCraft] Config reloaded from file: elementalcraft-common.toml");
-        }
-        if (event.getConfig().getSpec() == ForcedItemConfig.SPEC) {
-            ForcedItemHelper.clearCache();
-            LOGGER.info("[ElementalCraft] Config reloaded from file: elementalcraft-forced-items.toml");
-        }
-        if (event.getConfig().getSpec() == ElementalFireNatureReactionsConfig.SPEC) {
-            ElementalFireNatureReactionsConfig.refreshCache();
-            LOGGER.info("[ElementalCraft] Config reloaded from file: elementalcraft-fire-nature-reactions.toml");
-        }
-        if (event.getConfig().getSpec() == ElementalVisualConfig.SPEC) {
-            ElementalVisualConfig.refreshCache();
-        }
-        if (event.getConfig().getSpec() == ElementalThunderFrostReactionsConfig.SPEC) {
-            ElementalThunderFrostReactionsConfig.refreshCache();
-            LOGGER.info("[ElementalCraft] Config reloaded from file: elementalcraft-thunder-frost-reactions.toml");
-        }
-        if (event.getConfig().getSpec() == ElementalISSIntegrationConfig.SPEC) {
-            ElementalISSIntegrationConfig.refreshCache();
-            LOGGER.info("[ElementalCraft] Config reloaded from file: elementalcraft-iss-integration.toml");
-        }
+        String path = ConfigReloadRegistry.pathOf(event.getConfig().getSpec());
+        if (path == null) return;
+        ConfigReloadRegistry.reloadByPath(path);
+        LOGGER.info("[ElementalCraft] Config reloaded from file: {}", path);
     }
 
     public void onAddReloadListeners(AddReloadListenerEvent event) {
         event.addListener(new ResourceManagerReloadListener() {
             @Override
             public void onResourceManagerReload(ResourceManager resourceManager) {
-                ElementalConfig.refreshCache();
-                ElementalFireNatureReactionsConfig.refreshCache();
-                ElementalVisualConfig.refreshCache();
-                ElementalThunderFrostReactionsConfig.refreshCache();
-                if (ModList.get().isLoaded("irons_spellbooks")) {
-                    ElementalISSIntegrationConfig.refreshCache();
-                }
-                CustomBiomeBias.clearCache();
-                ForcedAttributeHelper.clearCache();
-                ForcedItemHelper.clearCache();
+                ConfigReloadRegistry.reloadAll();
             }
         });
     }

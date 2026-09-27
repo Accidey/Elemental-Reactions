@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.util.ElementType;
 import com.xulai.elementalcraft.util.ForcedAttributeHelper;
@@ -22,7 +23,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = "elementalcraft")
+@Mod.EventBusSubscriber(modid = ElementalCraft.MODID)
 public class ForcedEntityCommand {
 
     private static final String[] ELEMENTS = {"none", "fire", "frost", "thunder", "nature"};

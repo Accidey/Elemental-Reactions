@@ -58,6 +58,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -85,31 +86,37 @@ public class StaticShockHandler {
     private static final String NBT_AURA_TRACKED = "ec_static_aura_tracked";
     private static final String NBT_LAST_STATIC_DAMAGE = "ec_last_static_damage";
     private static final String NBT_THUNDER_BREAK_FREEZE_CD = "EC_ThunderBreakFreezeCD";
-    private static final String NBT_AURA_SPORE_CD = "ec_static_aura_spore_cd";
+    public static final String NBT_AURA_SPORE_CD = "ec_static_aura_spore_cd";
     private static final String NBT_AURA_SYNC_PHASE = "ec_aura_sync_phase";
     private static final String NBT_LAST_AURA_LOG_DAMAGE = "ec_last_aura_log_damage";
     private static final String NBT_LAST_STATIC_BASE_DAMAGE = "ec_last_static_base_damage";
     private static final String NBT_LAST_STATIC_ELEMENT = "ec_last_static_element";
     private static final String NBT_LAST_STATIC_ELEMENT_MULT = "ec_last_static_element_mult";
     private static final int THUNDER_BREAK_FREEZE_ATTEMPT_INTERVAL = 40;
-    private static final Map<ResourceKey<Level>, ActiveElectrification> activeElectrifications = new HashMap<>();
-    private static final Map<ResourceKey<Level>, Long> waterElectrificationCooldowns = new HashMap<>();
-    private static final Map<ResourceKey<Level>, ActiveThunderStorm> activeThunderStorms = new HashMap<>();
+    private static final int MAX_STORM_CLOUD_PARTICLES = 192;
+    private static final int MAX_STORM_RAIN_PARTICLES = 384;
+
+    private static final Map<UUID, ActiveElectrification> activeElectrifications = new HashMap<>();
+    private static final Map<UUID, Long> waterElectrificationCooldowns = new HashMap<>();
+    private static final Map<UUID, ActiveThunderStorm> activeThunderStorms = new HashMap<>();
 
     private static class ActiveThunderStorm {
         final double x, y, z;
         final UUID ownerUUID;
+        final ResourceKey<Level> dim;
         final double maxRadius;
         final double expansionSpeed;
         final double cloudHeight;
         final int strikeInterval;
+        final Set<UUID> exposedEntities = new HashSet<>();
         double currentRadius;
         long nextStrikeTick;
         int dwellTicks;
 
-        ActiveThunderStorm(double x, double y, double z, UUID ownerUUID) {
+        ActiveThunderStorm(double x, double y, double z, UUID ownerUUID, ResourceKey<Level> dim) {
             this.x = x; this.y = y; this.z = z;
             this.ownerUUID = ownerUUID;
+            this.dim = dim;
             this.maxRadius = ElementalThunderFrostReactionsConfig.thunderCounterRadius;
             this.expansionSpeed = ElementalThunderFrostReactionsConfig.thunderCounterExpansionSpeed;
             this.cloudHeight = 15.0;
@@ -125,17 +132,20 @@ public class StaticShockHandler {
         final long startTick;
         final int duration;
         final float settlementDamage;
+        final ResourceKey<Level> dim;
         final Set<UUID> damagedEntities = new HashSet<>();
+        final Set<UUID> paralyzedEntities = new HashSet<>();
         long lastParticleTick;
-        ActiveElectrification(double x, double y, double z, double range, long startTick, int duration, float settlementDamage) {
+        ActiveElectrification(double x, double y, double z, double range, long startTick, int duration, float settlementDamage, ResourceKey<Level> dim) {
             this.x = x; this.y = y; this.z = z;
             this.range = range; this.startTick = startTick; this.duration = duration;
             this.settlementDamage = settlementDamage;
+            this.dim = dim;
         }
     }
 
     private static boolean isImmuneToStatic(LivingEntity entity) {
-        String entityId = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType()).toString();
+        String entityId = ElementUtils.getEntityTypeId(entity.getType());
         if (ElementalConfig.matchesBlacklist(ElementalThunderFrostReactionsConfig.cachedStaticImmunityBlacklist, entityId)) {
             return true;
         }
@@ -144,7 +154,7 @@ public class StaticShockHandler {
     }
 
     private static boolean isImmuneToParalysis(LivingEntity entity) {
-        String entityId = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType()).toString();
+        String entityId = ElementUtils.getEntityTypeId(entity.getType());
         return ElementalConfig.matchesBlacklist(ElementalThunderFrostReactionsConfig.cachedParalysisImmunityBlacklist, entityId);
     }
 
@@ -416,7 +426,7 @@ public class StaticShockHandler {
                 return;
             }
             if (isInOrOnWater(entity)) {
-                long cd = getWaterElectrificationCooldown(entity.level());
+                long cd = getWaterElectrificationCooldown(entity);
                 if (cd > 0) {
                     DebugCommand.sendReactionCooldownBlock(entity, "water_electrification", cd);
                 }
@@ -431,9 +441,10 @@ public class StaticShockHandler {
         if (interval < 1) interval = 1;
 
         boolean auraActive = ElementalThunderFrostReactionsConfig.staticAuraThreshold > 0 && stacks >= ElementalThunderFrostReactionsConfig.staticAuraThreshold;
+        List<LivingEntity> auraTargets = auraActive ? staticAuraTargets(entity, stacks) : null;
 
         if (auraActive) {
-            applyStaticAuraEffects(entity, stacks);
+            applyStaticAuraEffects(entity, stacks, auraTargets);
         }
 
         damageTimer++;
@@ -448,7 +459,7 @@ public class StaticShockHandler {
 
         if (auraActive && totalTimer > 0) {
             boolean shouldDamage = damageTimer == 0;
-            applyStaticAuraDamage(entity, stacks, shouldDamage);
+            applyStaticAuraDamage(entity, stacks, shouldDamage, auraTargets);
         }
 
         if (totalTimer > 0) {
@@ -477,18 +488,20 @@ public class StaticShockHandler {
 
         if (!(event.level instanceof ServerLevel sl)) return;
 
-        ActiveElectrification elec = activeElectrifications.get(dim);
-        if (elec != null) {
+        Iterator<Map.Entry<UUID, ActiveElectrification>> elecIt = activeElectrifications.entrySet().iterator();
+        while (elecIt.hasNext()) {
+            Map.Entry<UUID, ActiveElectrification> elecEntry = elecIt.next();
+            ActiveElectrification elec = elecEntry.getValue();
+            if (elec.dim != dim) continue;
+
             if (now - elec.startTick >= elec.duration) {
-                AABB area = new AABB(
-                        elec.x - elec.range, elec.y - elec.range, elec.z - elec.range,
-                        elec.x + elec.range, elec.y + elec.range, elec.z + elec.range);
-                for (LivingEntity target : sl.getEntitiesOfClass(LivingEntity.class, area)) {
-                    if (target.hasEffect(ModMobEffects.PARALYSIS.get())) {
+                for (UUID paralysedId : elec.paralyzedEntities) {
+                    Entity paralysed = sl.getEntity(paralysedId);
+                    if (paralysed instanceof LivingEntity target && target.hasEffect(ModMobEffects.PARALYSIS.get())) {
                         target.removeEffect(ModMobEffects.PARALYSIS.get());
                     }
                 }
-                activeElectrifications.remove(dim);
+                elecIt.remove();
             } else {
                 AABB area = new AABB(
                         elec.x - elec.range, elec.y - elec.range, elec.z - elec.range,
@@ -514,6 +527,7 @@ public class StaticShockHandler {
                         long remaining = elec.duration - (now - elec.startTick);
                         if (remaining > 0 && ElementalThunderFrostReactionsConfig.paralysisMaxStacks > 0) {
                             entity.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS.get(), (int)remaining, 0, false, false, true));
+                            elec.paralyzedEntities.add(entity.getUUID());
                         }
                     }
                 }
@@ -544,8 +558,12 @@ public class StaticShockHandler {
             }
         }
 
-        ActiveThunderStorm storm = activeThunderStorms.get(dim);
-        if (storm != null) {
+        Iterator<Map.Entry<UUID, ActiveThunderStorm>> stormIt = activeThunderStorms.entrySet().iterator();
+        while (stormIt.hasNext()) {
+            Map.Entry<UUID, ActiveThunderStorm> stormEntry = stormIt.next();
+            ActiveThunderStorm storm = stormEntry.getValue();
+            if (storm.dim != dim) continue;
+
             if (storm.dwellTicks > 0) {
                 storm.dwellTicks--;
                 if (storm.dwellTicks == 0) {
@@ -553,8 +571,9 @@ public class StaticShockHandler {
                             storm.x - storm.maxRadius, storm.y - storm.cloudHeight, storm.z - storm.maxRadius,
                             storm.x + storm.maxRadius, storm.y + storm.cloudHeight, storm.z + storm.maxRadius);
                     clearStormParalysis(sl, finalArea);
-                    activeThunderStorms.remove(dim);
-                    return;
+                    clearStormExposure(sl, storm);
+                    stormIt.remove();
+                    continue;
                 }
             } else {
                 storm.currentRadius += storm.expansionSpeed / 20.0;
@@ -577,12 +596,12 @@ public class StaticShockHandler {
                 sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, px, storm.y + 0.1, pz, 1, 0, 0, 0, 0);
             }
 
-            int cloudCount = (int) (storm.currentRadius * storm.currentRadius * 3);
+            int cloudCount = Math.min(MAX_STORM_CLOUD_PARTICLES, (int) (storm.currentRadius * storm.currentRadius * 3));
             sl.sendParticles(ModParticles.STORM_CLOUD.get(),
                     storm.x, storm.y + storm.cloudHeight, storm.z,
                     cloudCount, storm.currentRadius * 0.6, 1.0, storm.currentRadius * 0.6, 0);
 
-            int rainCount = (int) (storm.currentRadius * storm.currentRadius * 6);
+            int rainCount = Math.min(MAX_STORM_RAIN_PARTICLES, (int) (storm.currentRadius * storm.currentRadius * 6));
             if (rainCount > 0) {
                 sl.sendParticles(ParticleTypes.RAIN,
                         storm.x, storm.y + storm.cloudHeight, storm.z,
@@ -596,6 +615,7 @@ public class StaticShockHandler {
                 CompoundTag edata = e.getPersistentData();
                 int exposure = edata.getInt(NBT_STORM_EXPOSURE) + 1;
                 edata.putInt(NBT_STORM_EXPOSURE, exposure);
+                storm.exposedEntities.add(e.getUUID());
                 if (edata.contains(NBT_STORM_PARALYSIS)) {
                     WetnessHandler.clearWetnessData(e);
                     e.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS.get(),
@@ -610,12 +630,13 @@ public class StaticShockHandler {
             if (owner != null && stormArea.contains(owner.getX(), owner.getY(), owner.getZ())) {
                 int exposure = owner.getPersistentData().getInt(NBT_STORM_EXPOSURE) + 1;
                 owner.getPersistentData().putInt(NBT_STORM_EXPOSURE, exposure);
+                storm.exposedEntities.add(owner.getUUID());
                 if (exposure >= 40 && WetnessHandler.getWetnessLevel(owner) < maxWetness) {
                     WetnessHandler.updateWetnessLevel(owner, maxWetness);
                 }
             }
 
-            if (now < storm.nextStrikeTick) return;
+            if (now < storm.nextStrikeTick) continue;
             storm.nextStrikeTick = now + storm.strikeInterval;
 
             for (LivingEntity strikeTarget : areaEntities) {
@@ -669,16 +690,18 @@ public class StaticShockHandler {
                 + (stacks - 1) * ElementalThunderFrostReactionsConfig.waterElectrificationRangePerStack;
 
         ResourceKey<Level> wDim = source.level().dimension();
-        ActiveElectrification existing = activeElectrifications.get(wDim);
+        UUID sourceId = source.getUUID();
+        ActiveElectrification existing = activeElectrifications.get(sourceId);
         if (existing != null && source.level().getGameTime() - existing.startTick >= existing.duration) {
-            activeElectrifications.remove(wDim);
+            activeElectrifications.remove(sourceId);
         }
 
-        Long cdEnd = waterElectrificationCooldowns.get(wDim);
+        Long cdEnd = waterElectrificationCooldowns.get(sourceId);
         if (cdEnd != null && source.level().getGameTime() < cdEnd) return false;
+        if (cdEnd != null) waterElectrificationCooldowns.remove(sourceId);
 
         CompoundTag sourceData = source.getPersistentData();
-        boolean firstTrigger = !activeElectrifications.containsKey(wDim);
+        boolean firstTrigger = !activeElectrifications.containsKey(sourceId);
 
         if (firstTrigger) {
             int sourceTimer = sourceData.getInt(NBT_STATIC_TIMER);
@@ -703,14 +726,15 @@ public class StaticShockHandler {
             }
 
             ActiveElectrification newElec = new ActiveElectrification(
-                source.getX(), source.getY(), source.getZ(), range, source.level().getGameTime(), paralysisDuration, (float)baseSettlementDamage);
-            activeElectrifications.put(source.level().dimension(), newElec);
+                source.getX(), source.getY(), source.getZ(), range, source.level().getGameTime(), paralysisDuration, (float)baseSettlementDamage, wDim);
+            activeElectrifications.put(sourceId, newElec);
             int coolTicks = ElementalThunderFrostReactionsConfig.paralysisCooldownTicks;
-            waterElectrificationCooldowns.put(source.level().dimension(), source.level().getGameTime() + paralysisDuration + coolTicks);
+            waterElectrificationCooldowns.put(sourceId, source.level().getGameTime() + paralysisDuration + coolTicks);
             newElec.damagedEntities.add(source.getUUID());
 
             if (paralysisDuration > 0 && ElementalThunderFrostReactionsConfig.paralysisMaxStacks > 0) {
                 source.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS.get(), paralysisDuration, 0, false, false, true));
+                newElec.paralyzedEntities.add(source.getUUID());
             }
 
             AABB area = new AABB(
@@ -727,6 +751,7 @@ public class StaticShockHandler {
 
                 if (paralysisDuration > 0 && ElementalThunderFrostReactionsConfig.paralysisMaxStacks > 0) {
                     target.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS.get(), paralysisDuration, 0, false, false, true));
+                    newElec.paralyzedEntities.add(target.getUUID());
                 }
                 if (source.level() instanceof ServerLevel serverLevel) {
                     EffectHelper.playStaticSplashParticles(serverLevel, source, target);
@@ -760,11 +785,10 @@ public class StaticShockHandler {
         return processWaterElectrification(source, stacks);
     }
 
-    public static long getWaterElectrificationCooldown(Level level) {
-        ResourceKey<Level> dim = level.dimension();
-        Long cdEnd = waterElectrificationCooldowns.get(dim);
+    public static long getWaterElectrificationCooldown(LivingEntity source) {
+        Long cdEnd = waterElectrificationCooldowns.get(source.getUUID());
         if (cdEnd == null) return 0;
-        return Math.max(0, cdEnd - level.getGameTime());
+        return Math.max(0, cdEnd - source.level().getGameTime());
     }
 
     public static boolean tryTriggerWaterElectrification(LivingEntity source, int paralysisDuration) {
@@ -797,7 +821,15 @@ public class StaticShockHandler {
         return maxStacks;
     }
 
-    private static void applyStaticAuraEffects(LivingEntity source, int stacks) {
+    private static List<LivingEntity> staticAuraTargets(LivingEntity source, int stacks) {
+        double range = stacks * ElementalThunderFrostReactionsConfig.staticAuraBaseRange;
+        AABB auraArea = new AABB(
+                source.getX() - range, source.getY() - range, source.getZ() - range,
+                source.getX() + range, source.getY() + range, source.getZ() + range);
+        return source.level().getEntitiesOfClass(LivingEntity.class, auraArea);
+    }
+
+    private static void applyStaticAuraEffects(LivingEntity source, int stacks, List<LivingEntity> nearby) {
         double range = stacks * ElementalThunderFrostReactionsConfig.staticAuraBaseRange;
 
         CompoundTag sourceData = source.getPersistentData();
@@ -808,12 +840,6 @@ public class StaticShockHandler {
                 try { oldTracked.add(UUID.fromString(s)); } catch (Exception ignored) {}
             }
         }
-
-        AABB auraArea = new AABB(
-                source.getX() - range, source.getY() - range, source.getZ() - range,
-                source.getX() + range, source.getY() + range, source.getZ() + range
-        );
-        List<LivingEntity> nearby = source.level().getEntitiesOfClass(LivingEntity.class, auraArea);
 
         Set<UUID> currentTracked = new HashSet<>();
 
@@ -983,7 +1009,7 @@ public class StaticShockHandler {
         sourceData.putString(NBT_AURA_TRACKED, sb.toString());
     }
 
-    private static void applyStaticAuraDamage(LivingEntity source, int stacks, boolean shouldDamage) {
+    private static void applyStaticAuraDamage(LivingEntity source, int stacks, boolean shouldDamage, List<LivingEntity> nearby) {
         double range = stacks * ElementalThunderFrostReactionsConfig.staticAuraBaseRange;
 
         CompoundTag sourceData = source.getPersistentData();
@@ -994,12 +1020,6 @@ public class StaticShockHandler {
                 try { oldTracked.add(UUID.fromString(s)); } catch (Exception ignored) {}
             }
         }
-
-        AABB auraArea = new AABB(
-                source.getX() - range, source.getY() - range, source.getZ() - range,
-                source.getX() + range, source.getY() + range, source.getZ() + range
-        );
-        List<LivingEntity> nearby = source.level().getEntitiesOfClass(LivingEntity.class, auraArea);
 
         Set<UUID> currentTracked = new HashSet<>();
 
@@ -1460,8 +1480,23 @@ public class StaticShockHandler {
     public static void triggerThunderCounter(LivingEntity target) {
         if (!(target.level() instanceof ServerLevel)) return;
         ResourceKey<Level> dim = target.level().dimension();
-        activeThunderStorms.put(dim, new ActiveThunderStorm(
-                target.getX(), target.getY(), target.getZ(), target.getUUID()));
+        activeThunderStorms.put(target.getUUID(), new ActiveThunderStorm(
+                target.getX(), target.getY(), target.getZ(), target.getUUID(), dim));
+    }
+
+    @SubscribeEvent
+    public static void onLevelUnload(net.minecraftforge.event.level.LevelEvent.Unload event) {
+        if (!(event.getLevel() instanceof ServerLevel sl)) return;
+        ResourceKey<Level> dim = sl.dimension();
+        activeElectrifications.entrySet().removeIf(entry -> entry.getValue().dim == dim);
+        activeThunderStorms.entrySet().removeIf(entry -> entry.getValue().dim == dim);
+    }
+
+    @SubscribeEvent
+    public static void onServerStopped(net.minecraftforge.event.server.ServerStoppedEvent event) {
+        activeElectrifications.clear();
+        activeThunderStorms.clear();
+        waterElectrificationCooldowns.clear();
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -1595,6 +1630,16 @@ public class StaticShockHandler {
         for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, area)) {
             e.getPersistentData().remove(NBT_STORM_PARALYSIS);
         }
+    }
+
+    private static void clearStormExposure(ServerLevel sl, ActiveThunderStorm storm) {
+        for (UUID id : storm.exposedEntities) {
+            Entity e = sl.getEntity(id);
+            if (e != null) {
+                e.getPersistentData().remove(NBT_STORM_EXPOSURE);
+            }
+        }
+        storm.exposedEntities.clear();
     }
 
 }

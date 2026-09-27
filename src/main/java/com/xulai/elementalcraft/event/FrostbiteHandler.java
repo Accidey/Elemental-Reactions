@@ -69,10 +69,14 @@ public class FrostbiteHandler {
     public static final String NBT_FROST_HEAT_ACCEL = "EC_FrostbiteHeatAccel";
     public static final String NBT_FROST_HEAT_MULT = "EC_FrostbiteHeatMult";
     public static final String NBT_FROSTBITE_APPLY_TICK = "EC_FrostbiteApplyTick";
+    public static final String NBT_FROSTBITE_DAMAGE_TIMER = "EC_FrostbiteDamageTimer";
     public static final String NBT_FREEZE_COOLDOWN = "EC_FreezeCooldown";
 
     public static final String NBT_FREEZE_ORIGINAL_NO_AI = "EC_FreezeOriginalNoAI";
     public static final String NBT_FREEZE_AI_DISABLED = "EC_FreezeAIDisabled";
+
+    private static final UUID TEMP_FROSTBITE_SPEED_UUID = UUID.fromString("7107DE5E-7CE8-403C-8064-03E786A055CA");
+    private static final UUID TEMP_FROSTBITE_ATTACK_SPEED_UUID = UUID.fromString("7107DE5E-7CE8-403C-8064-03E786A055CB");
 
     public static final String NBT_FROZEN_FROSTBITE_STACKS = "EC_FrozenFrostbiteStacks";
     public static final String NBT_FREEZE_STACKS = "EC_FreezeStacks";
@@ -389,6 +393,10 @@ public class FrostbiteHandler {
 
         int newStacks = Math.min(maxStacks, currentStacks + layersToAdd);
 
+        if (currentStacks <= 0) {
+            data.putInt(NBT_FROSTBITE_DAMAGE_TIMER, 0);
+        }
+
         int baseDuration = ElementalThunderFrostReactionsConfig.frostbiteBaseDurationTicks;
         int perExtraStack = ElementalThunderFrostReactionsConfig.frostbiteDurationPerExtraStackTicks;
         int durationTicks = baseDuration + (newStacks - 1) * perExtraStack;
@@ -587,7 +595,9 @@ public class FrostbiteHandler {
                 }
                 int damageInterval = ElementalThunderFrostReactionsConfig.frostbiteDamageIntervalTicks;
                 if (damageInterval < 1) damageInterval = 1;
-                if (entity.tickCount % damageInterval == 0) {
+                int damageTimer = data.getInt(NBT_FROSTBITE_DAMAGE_TIMER) + 1;
+                if (damageTimer >= damageInterval) {
+                    damageTimer = 0;
                     float baseDamage = (float) ElementalThunderFrostReactionsConfig.frostbitePeriodicDamage;
                     float damage = baseDamage;
                     ElementType targetElement = ElementUtils.getConsistentAttackElement(entity);
@@ -618,6 +628,7 @@ public class FrostbiteHandler {
                         data.putInt(NBT_FROSTBITE_AURA_LOGGED, 1);
                     }
                 }
+                data.putInt(NBT_FROSTBITE_DAMAGE_TIMER, damageTimer);
                 boolean hasWetness = WetnessHandler.getWetnessLevel(entity) > 0;
                 if (hasWetness) {
                     if (isFrozen(entity) || isOnFreezeCooldown(entity)) {
@@ -698,8 +709,6 @@ public class FrostbiteHandler {
             }
         }
 
-
-        // Heat source snap
         double heatMult = checkFrostbiteHeatAccelerator(entity, entity.level(), entity.blockPosition());
         boolean hasHeat = heatMult > 1.0;
         boolean hadHeat = data.getBoolean(NBT_FROST_HEAT_ACCEL);
@@ -726,7 +735,6 @@ public class FrostbiteHandler {
             }
         }
 
-        // Normal per-tick decay
         duration--;
         data.putInt(NBT_FROSTBITE_DURATION, duration);
 
@@ -760,6 +768,7 @@ public class FrostbiteHandler {
         data.remove(NBT_FROST_HEAT_ACCEL);
         data.remove(NBT_FROST_HEAT_MULT);
         data.remove(NBT_FROSTBITE_APPLY_TICK);
+        data.remove(NBT_FROSTBITE_DAMAGE_TIMER);
         data.remove(NBT_FROSTBITE_FIRE_STAND_TIMER);
         data.remove(NBT_FROSTBITE_SOURCE_FROST_POWER);
         data.remove(NBT_FROSTBITE_PERIODIC_LOGGED);
@@ -841,7 +850,7 @@ public class FrostbiteHandler {
     }
 
     public static boolean isFrostbiteImmune(LivingEntity target) {
-        String entityId = ForgeRegistries.ENTITY_TYPES.getKey(target.getType()).toString();
+        String entityId = ElementUtils.getEntityTypeId(target.getType());
         if (ElementalConfig.matchesBlacklist(ElementalThunderFrostReactionsConfig.cachedFrostbiteImmunityBlacklist, entityId)) {
             return true;
         }
@@ -854,7 +863,7 @@ public class FrostbiteHandler {
     }
 
     public static boolean isFreezeImmune(LivingEntity target) {
-        String entityId = ForgeRegistries.ENTITY_TYPES.getKey(target.getType()).toString();
+        String entityId = ElementUtils.getEntityTypeId(target.getType());
         if (ElementalConfig.matchesBlacklist(ElementalThunderFrostReactionsConfig.cachedFreezeImmunityBlacklist, entityId)) {
             return true;
         }
@@ -971,30 +980,30 @@ public class FrostbiteHandler {
         data.remove(NBT_TEMP_FROSTBITE_STACKS);
         data.remove(NBT_TEMP_FROSTBITE_EXPIRE);
         data.remove(NBT_FROSTBITE_AURA_LOGGED);
+        data.remove(NBT_FROSTBITE_DAMAGE_TIMER);
         removeTempFrostbiteSlowness(entity);
     }
 
     private static void applyTempFrostbiteSlowness(LivingEntity entity, int stacks) {
+        removeTempFrostbiteSlowness(entity);
         double reduction = ElementalThunderFrostReactionsConfig.frostbiteSpeedReductionPerStack;
         if (reduction <= 0) return;
         double value = Math.max(-reduction * stacks, -0.9);
         AttributeInstance speedAttr = entity.getAttribute(Attributes.MOVEMENT_SPEED);
         AttributeInstance attackAttr = entity.getAttribute(Attributes.ATTACK_SPEED);
         if (speedAttr != null) {
-            speedAttr.removeModifier(FrostbiteEffect.SPEED_MODIFIER_UUID);
-            speedAttr.addPermanentModifier(new AttributeModifier(FrostbiteEffect.SPEED_MODIFIER_UUID, "temp_frostbite_speed", value, AttributeModifier.Operation.MULTIPLY_BASE));
+            speedAttr.addTransientModifier(new AttributeModifier(TEMP_FROSTBITE_SPEED_UUID, "temp_frostbite_speed", value, AttributeModifier.Operation.MULTIPLY_BASE));
         }
         if (attackAttr != null) {
-            attackAttr.removeModifier(FrostbiteEffect.ATTACK_SPEED_MODIFIER_UUID);
-            attackAttr.addPermanentModifier(new AttributeModifier(FrostbiteEffect.ATTACK_SPEED_MODIFIER_UUID, "temp_frostbite_attack_speed", value, AttributeModifier.Operation.MULTIPLY_BASE));
+            attackAttr.addTransientModifier(new AttributeModifier(TEMP_FROSTBITE_ATTACK_SPEED_UUID, "temp_frostbite_attack_speed", value, AttributeModifier.Operation.MULTIPLY_BASE));
         }
     }
 
     private static void removeTempFrostbiteSlowness(LivingEntity entity) {
         AttributeInstance speedAttr = entity.getAttribute(Attributes.MOVEMENT_SPEED);
         AttributeInstance attackAttr = entity.getAttribute(Attributes.ATTACK_SPEED);
-        if (speedAttr != null) speedAttr.removeModifier(FrostbiteEffect.SPEED_MODIFIER_UUID);
-        if (attackAttr != null) attackAttr.removeModifier(FrostbiteEffect.ATTACK_SPEED_MODIFIER_UUID);
+        if (speedAttr != null) speedAttr.removeModifier(TEMP_FROSTBITE_SPEED_UUID);
+        if (attackAttr != null) attackAttr.removeModifier(TEMP_FROSTBITE_ATTACK_SPEED_UUID);
     }
 
     private static boolean shouldSkipFrostbiteAuraTarget(LivingEntity target, LivingEntity source) {

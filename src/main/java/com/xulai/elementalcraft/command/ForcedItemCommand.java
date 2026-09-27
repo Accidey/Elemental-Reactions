@@ -3,6 +3,7 @@ package com.xulai.elementalcraft.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ForcedItemConfig;
 import com.xulai.elementalcraft.util.ElementType;
 import com.xulai.elementalcraft.util.ForcedItemHelper;
@@ -22,7 +23,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = "elementalcraft")
+@Mod.EventBusSubscriber(modid = ElementalCraft.MODID)
 @SuppressWarnings("null")
 public class ForcedItemCommand {
 

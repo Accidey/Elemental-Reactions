@@ -52,7 +52,6 @@ public class SteamReactionHandler {
     public static final String TAG_STEAM_CLOUD = "EC_SteamCloud";
     public static final String TAG_HIGH_HEAT = "EC_HighHeat";
     public static final String TAG_LEVEL_PREFIX = "EC_Level_";
-    public static final String TAG_SELF_DRYING_PENALTY = "EC_SelfDryingPenalty";
     public static final String TAG_STATIC_CHARGED = "EC_StaticCharged";
     public static final String TAG_FROSTED = "EC_Frosted";
     private static final String TAG_STATIC_DMG_PREFIX = "EC_StaticDmg_";
@@ -82,9 +81,6 @@ public class SteamReactionHandler {
             processTriggerLogic(event, attacker, event.getEntity());
         }
         event.setAmount(originalDamage);
-        if (event.getSource().is(ModDamageTypes.STEAM_SCALDING)) {
-            processDefenseLogic(event);
-        }
     }
 
     @SubscribeEvent
@@ -175,9 +171,6 @@ public class SteamReactionHandler {
             target.getPersistentData().remove(NBT_FIRE_FROST_MELT_RESOLVED);
             return;
         }
-        if (attacker.getPersistentData().getInt(TAG_SELF_DRYING_PENALTY) != 0) {
-            return;
-        }
         int targetWetness = WetnessHandler.getWetnessLevel(target);
         boolean targetIsWet = targetWetness > 0;
 
@@ -240,38 +233,6 @@ public class SteamReactionHandler {
                 }
             }
         }
-    }
-
-    private static void processDefenseLogic(LivingDamageEvent event) {
-        LivingEntity target = event.getEntity();
-        float currentDamage = event.getAmount();
-
-        if (checkImmunity(target)) {
-            event.setAmount(0);
-            event.setCanceled(true);
-            return;
-        }
-
-        float trueRawDamage = currentDamage;
-        int totalFireProtLevel = getTotalEnchantmentLevel(Enchantments.FIRE_PROTECTION, target);
-        int totalProtLevel = getTotalEnchantmentLevel(Enchantments.ALL_DAMAGE_PROTECTION, target);
-
-        double maxFireCap = ElementalFireNatureReactionsConfig.steamMaxFireProtCap;
-        double maxGeneralCap = ElementalFireNatureReactionsConfig.steamMaxGeneralProtCap;
-        double denom = Math.max(1.0, ElementalFireNatureReactionsConfig.enchantmentCalculationDenominator);
-
-        double fireProtFactor = maxFireCap / denom;
-        double protFactor = maxGeneralCap / denom;
-
-        double calculatedFireRed = totalFireProtLevel * fireProtFactor;
-        double calculatedProtRed = totalProtLevel * protFactor;
-
-        double actualFireRed = Math.min(calculatedFireRed, maxFireCap);
-        double actualProtRed = Math.min(calculatedProtRed, maxGeneralCap);
-
-        double totalReduction = Math.min(actualFireRed + actualProtRed, 1.0);
-        float reducedDamage = trueRawDamage * (float) (1.0 - totalReduction);
-        event.setAmount(reducedDamage);
     }
 
     private static int getTotalEnchantmentLevel(Enchantment ench, LivingEntity entity) {

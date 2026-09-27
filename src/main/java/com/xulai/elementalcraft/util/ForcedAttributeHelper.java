@@ -1,6 +1,7 @@
 package com.xulai.elementalcraft.util;
 
 import com.xulai.elementalcraft.ElementalCraft;
+import com.xulai.elementalcraft.util.ElementUtils;
 import com.xulai.elementalcraft.config.ElementalConfig;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -30,7 +31,7 @@ public final class ForcedAttributeHelper {
 
     public static List<ForcedData> getForcedDataList(EntityType<?> type) {
         List<String> lines = CONFIG_CACHE.computeIfAbsent(type, t -> {
-            String id = ForgeRegistries.ENTITY_TYPES.getKey(t).toString();
+            String id = ElementUtils.getEntityTypeId(t);
             return ElementalConfig.FORCED_ENTITIES.get().stream()
                     .map(s -> s.replace("\"", "").trim())
                     .filter(s -> s.startsWith(id + ","))
@@ -122,14 +123,12 @@ public final class ForcedAttributeHelper {
 
         int rangeDiff = max - min;
 
-        double c1 = ElementalConfig.chance0_20;
-        double c2 = ElementalConfig.chance20_50;
-        double c3 = ElementalConfig.chance50_80;
+        double[] thresholds = ElementalConfig.chanceThresholds();
 
         double roll = ThreadLocalRandom.current().nextDouble();
-        double s1 = c1;
-        double s2 = s1 + c2;
-        double s3 = s2 + c3;
+        double s1 = thresholds[0];
+        double s2 = s1 + thresholds[1];
+        double s3 = s2 + thresholds[2];
 
         double minPct, maxPct;
 

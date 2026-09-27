@@ -3,6 +3,7 @@ package com.xulai.elementalcraft.util;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.enchantment.ModEnchantments;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -183,5 +184,14 @@ public class ElementUtils {
             return getDisplayEnhancement(attacker, element) > 0 ? element : ElementType.NONE;
         }
         return getConsistentAttackElement(attacker);
+    }
+
+    public static String getEntityTypeId(Entity entity) {
+        return getEntityTypeId(entity.getType());
+    }
+
+    public static String getEntityTypeId(net.minecraft.world.entity.EntityType<?> type) {
+        ResourceLocation key = net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getKey(type);
+        return key == null ? "" : key.toString();
     }
 }

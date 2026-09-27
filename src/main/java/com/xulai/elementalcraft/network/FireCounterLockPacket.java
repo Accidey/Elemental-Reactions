@@ -5,7 +5,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 public class FireCounterLockPacket {
@@ -24,9 +23,8 @@ public class FireCounterLockPacket {
     }
 
     public static void handle(FireCounterLockPacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            com.xulai.elementalcraft.client.FrozenInputBlocker.fireCounterLocked = msg.locked;
-        });
+        ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                () -> () -> com.xulai.elementalcraft.client.FrozenInputBlocker.fireCounterLocked = msg.locked));
         ctx.get().setPacketHandled(true);
     }
 }
