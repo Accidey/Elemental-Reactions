@@ -93,8 +93,9 @@ public class ScorchedHandler {
                 Field f = Creeper.class.getDeclaredField(name);
                 f.setAccessible(true);
                 return f;
-            } catch (NoSuchFieldException ignored) {}
+            } catch (NoSuchFieldException | RuntimeException ignored) {}
         }
+        ElementalCraft.LOGGER.warn("[ElementalCraft] Creeper field not found, fuse acceleration disabled: {}", mojangName);
         return null;
     }
     public static final String NBT_TEMP_SCORCH_TTL = "ec_temp_scorch_ttl";
@@ -218,7 +219,9 @@ public class ScorchedHandler {
                     creeper.getPersistentData().putInt(NBT_CREEPER_ORIGINAL_MAX_SWELL, originalMax);
                     MAX_SWELL_FIELD.setInt(creeper, CREEPER_ACCELERATED_FUSE_TICKS);
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception e) {
+                ElementalCraft.LOGGER.warn("[ElementalCraft] Failed to accelerate creeper fuse", e);
+            }
         }
     }
 
@@ -228,7 +231,9 @@ public class ScorchedHandler {
         if (data.contains(NBT_CREEPER_ORIGINAL_MAX_SWELL)) {
             try {
                 MAX_SWELL_FIELD.setInt(creeper, data.getIntOr(NBT_CREEPER_ORIGINAL_MAX_SWELL, 0));
-            } catch (Exception ignored) {}
+            } catch (Exception e) {
+                ElementalCraft.LOGGER.warn("[ElementalCraft] Failed to restore creeper max swell", e);
+            }
             data.remove(NBT_CREEPER_ORIGINAL_MAX_SWELL);
         }
     }
