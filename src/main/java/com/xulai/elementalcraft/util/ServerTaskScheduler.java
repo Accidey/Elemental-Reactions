@@ -6,9 +6,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @EventBusSubscriber(modid = ElementalCraft.MODID)
 public final class ServerTaskScheduler {
@@ -16,7 +15,7 @@ public final class ServerTaskScheduler {
     private record ScheduledTask(MinecraftServer server, long runAtTick, Runnable task) {
     }
 
-    private static final List<ScheduledTask> TASKS = new ArrayList<>();
+    private static final Queue<ScheduledTask> TASKS = new ConcurrentLinkedQueue<>();
 
     private ServerTaskScheduler() {
     }
@@ -29,14 +28,29 @@ public final class ServerTaskScheduler {
     public static void onServerTick(ServerTickEvent.Post event) {
         if (TASKS.isEmpty()) return;
         MinecraftServer server = event.getServer();
-        Iterator<ScheduledTask> it = TASKS.iterator();
-        while (it.hasNext()) {
-            ScheduledTask task = it.next();
-            if (task.server() != server) continue;
-            if (server.getTickCount() >= task.runAtTick()) {
-                it.remove();
-                task.task().run();
+        int pending = TASKS.size();
+        for (int i = 0; i < pending; i++) {
+            ScheduledTask task = TASKS.poll();
+            if (task == null) return;
+            if (task.server() != server) {
+                if (task.server().isRunning()) {
+                    TASKS.add(task);
+                }
+                continue;
             }
+            if (server.getTickCount() >= task.runAtTick()) {
+                runTask(task);
+            } else {
+                TASKS.add(task);
+            }
+        }
+    }
+
+    private static void runTask(ScheduledTask task) {
+        try {
+            task.task().run();
+        } catch (Exception e) {
+            ElementalCraft.LOGGER.error("[ElementalCraft] Scheduled task failed", e);
         }
     }
 }
