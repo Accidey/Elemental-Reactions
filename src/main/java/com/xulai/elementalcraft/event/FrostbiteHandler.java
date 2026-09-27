@@ -43,6 +43,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -59,6 +60,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber(modid = ElementalCraft.MODID)
 public class FrostbiteHandler {
@@ -88,7 +90,7 @@ public class FrostbiteHandler {
     public static final String NBT_FROSTBITE_AURA_LOGGED = "EC_FrostbiteAuraLogged";
     public static final String NBT_FROST_AURA_TRACKED = "EC_FrostAuraTracked";
 
-    private static final Set<UUID> removedByClear = new HashSet<>();
+    private static final Set<UUID> removedByClear = ConcurrentHashMap.newKeySet();
     private static volatile boolean suppressRemoveCleanup = false;
 
     private static final java.util.Map<net.minecraft.resources.ResourceKey<Level>, ActiveFrostBurst> activeFrostBursts = new java.util.HashMap<>();
@@ -814,6 +816,12 @@ duration--;
                 sp.connection.send(new ClientboundRemoveMobEffectPacket(sp.getId(), ModMobEffects.FROSTBITE));
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onEntityLeaveLevel(EntityLeaveLevelEvent event) {
+        if (removedByClear.isEmpty()) return;
+        removedByClear.remove(event.getEntity().getUUID());
     }
 
     @SubscribeEvent
