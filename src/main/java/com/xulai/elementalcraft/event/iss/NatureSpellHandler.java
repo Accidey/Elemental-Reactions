@@ -51,6 +51,7 @@ public class NatureSpellHandler {
             int cd = mob.getHealth() / mob.getMaxHealth() < ElementalISSIntegrationConfig.mobLowHealthThreshold
                     ? ElementalISSIntegrationConfig.mobAggressiveCastCooldown
                     : ElementalISSIntegrationConfig.mobNormalCastCooldown;
+            mobData.putLong(ISSCore.NBT_MOB_CAST_CD, mob.level().getGameTime() + cd);
             mob.getPersistentData().putBoolean("EC_ISS_SpellHit", true);
         }
     }
