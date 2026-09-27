@@ -2,6 +2,7 @@ package com.xulai.elementalcraft.event;
 
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.potion.ModMobEffects;
+import com.xulai.elementalcraft.util.DebugMode;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -19,6 +20,11 @@ public class NbtCleanupHandler {
     @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         cleanupStaleData(event.getEntity());
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        DebugMode.remove(event.getEntity());
     }
 
     private static void cleanupStaleData(Player player) {
