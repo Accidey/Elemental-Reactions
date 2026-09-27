@@ -1158,7 +1158,7 @@ public final class ElementalThunderFrostReactionsConfig {
     public static double frostbiteWetnessBonusChance;
     public static double frostbiteStackingBonusChance;
     public static int frostbiteMaxStacksPerAttack;
-    public static int frostbiteMaxTotalStacks;
+    public static volatile int frostbiteMaxTotalStacks;
     public static int frostbiteBaseDurationTicks;
     public static int frostbiteDurationPerExtraStackTicks;
     public static double frostbiteHotBiomeChancePenalty;

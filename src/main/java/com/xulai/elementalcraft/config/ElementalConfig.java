@@ -762,8 +762,8 @@ public final class ElementalConfig {
     public static double elementalDamageMultiplier = 1.0;
     public static double elementalResistanceMultiplier = 1.0;
     public static int maxStatCap = 25;
-    public static int strengthPerLevel = 5;
-    public static int resistPerLevel = 5;
+    public static volatile int strengthPerLevel = 5;
+    public static volatile int resistPerLevel = 5;
     public static int strengthPerHalfDamage = 10;
     public static int resistPerHalfReduction = 10;
 

@@ -224,30 +224,30 @@ public class ElementalVisualConfig {
     public static final ModConfigSpec.DoubleValue THUNDER_IMPACT_EXTRA_END_ROD_HORIZONTAL_SPREAD;
     public static final ModConfigSpec.BooleanValue THUNDER_IMPACT_EXTRA_END_ROD_VERTICAL_RANDOM;
 
-    public static boolean fireMeleeEnabled = true;
+    public static volatile boolean fireMeleeEnabled = true;
     public static boolean fireRangedEnabled = true;
-    public static boolean natureMeleeEnabled = true;
+    public static volatile boolean natureMeleeEnabled = true;
     public static boolean natureRangedEnabled = true;
-    public static boolean thunderMeleeEnabled = true;
+    public static volatile boolean thunderMeleeEnabled = true;
     public static boolean thunderRangedEnabled = true;
 
     public static boolean globalVisibilityCheckEnabled = true;
     public static double globalViewDistanceMultiplier = 1.0;
 
-    public static double fireMeleeRadius = 2.2;
-    public static double fireMeleeBaseAngleDegrees = 50.0;
-    public static double fireMeleeAngleMultiplierBase = 0.3;
-    public static double fireMeleeAngleMultiplierPerTier = 0.2;
-    public static int fireMeleeParticleCountBase = 15;
-    public static int fireMeleeParticleCountOffset = 3;
-    public static double fireMeleeWaveAmplitude = 0.1;
-    public static double fireMeleeWaveFrequency = 4.0;
-    public static double fireMeleeSoulFlameChance = 0.4;
-    public static double fireMeleeLavaChance = 0.3;
-    public static double fireMeleeSoulChance = 0.25;
-    public static boolean fireMeleeEnableSoulFlame = true;
-    public static boolean fireMeleeEnableLava = true;
-    public static boolean fireMeleeEnableSoul = true;
+    public static volatile double fireMeleeRadius = 2.2;
+    public static volatile double fireMeleeBaseAngleDegrees = 50.0;
+    public static volatile double fireMeleeAngleMultiplierBase = 0.3;
+    public static volatile double fireMeleeAngleMultiplierPerTier = 0.2;
+    public static volatile int fireMeleeParticleCountBase = 15;
+    public static volatile int fireMeleeParticleCountOffset = 3;
+    public static volatile double fireMeleeWaveAmplitude = 0.1;
+    public static volatile double fireMeleeWaveFrequency = 4.0;
+    public static volatile double fireMeleeSoulFlameChance = 0.4;
+    public static volatile double fireMeleeLavaChance = 0.3;
+    public static volatile double fireMeleeSoulChance = 0.25;
+    public static volatile boolean fireMeleeEnableSoulFlame = true;
+    public static volatile boolean fireMeleeEnableLava = true;
+    public static volatile boolean fireMeleeEnableSoul = true;
 
     public static double fireRangedConeMaxRadius = 2.4;
     public static double fireRangedBackOffsetStart = 0.3;
@@ -280,21 +280,21 @@ public class ElementalVisualConfig {
     public static double fireImpactSmokeSpreadXZ = 0.2;
     public static double fireImpactSmokeSpreadY = 0.5;
 
-    public static double natureMeleeRadius = 2.2;
-    public static double natureMeleeBaseAngleDegrees = 50.0;
-    public static double natureMeleeAngleMultiplierBase = 0.3;
-    public static double natureMeleeAngleMultiplierPerTier = 0.2;
-    public static int natureMeleeParticleCountBase = 15;
-    public static int natureMeleeParticleCountOffset = 3;
-    public static double natureMeleeWaveAmplitude = 0.1;
-    public static double natureMeleeWaveFrequency = 4.0;
-    public static double natureMeleeComposterSpeedXZ = 0.1;
-    public static double natureMeleeSporeBlossomChance = 0.4;
-    public static boolean natureMeleeCherryLeavesEnabled = true;
-    public static double natureMeleeCherryLeavesChance = 0.5;
-    public static double natureMeleeCherryLeavesMinProgress = 0.3;
-    public static boolean natureMeleeWaxOnEnabled = true;
-    public static double natureMeleeWaxOnMinProgress = 0.8;
+    public static volatile double natureMeleeRadius = 2.2;
+    public static volatile double natureMeleeBaseAngleDegrees = 50.0;
+    public static volatile double natureMeleeAngleMultiplierBase = 0.3;
+    public static volatile double natureMeleeAngleMultiplierPerTier = 0.2;
+    public static volatile int natureMeleeParticleCountBase = 15;
+    public static volatile int natureMeleeParticleCountOffset = 3;
+    public static volatile double natureMeleeWaveAmplitude = 0.1;
+    public static volatile double natureMeleeWaveFrequency = 4.0;
+    public static volatile double natureMeleeComposterSpeedXZ = 0.1;
+    public static volatile double natureMeleeSporeBlossomChance = 0.4;
+    public static volatile boolean natureMeleeCherryLeavesEnabled = true;
+    public static volatile double natureMeleeCherryLeavesChance = 0.5;
+    public static volatile double natureMeleeCherryLeavesMinProgress = 0.3;
+    public static volatile boolean natureMeleeWaxOnEnabled = true;
+    public static volatile double natureMeleeWaxOnMinProgress = 0.8;
 
     public static double natureRangedConeMaxRadius = 2.4;
     public static double natureRangedBackOffsetStart = 0.3;
@@ -325,18 +325,18 @@ public class ElementalVisualConfig {
     public static double natureImpactCherryLeavesSpreadY = 0.1;
     public static double natureImpactCherryLeavesSpeed = 0.05;
 
-    public static double thunderMeleeRadius = 2.2;
-    public static double thunderMeleeBaseAngleDegrees = 50.0;
-    public static double thunderMeleeAngleMultiplierBase = 0.3;
-    public static double thunderMeleeAngleMultiplierPerTier = 0.2;
-    public static int thunderMeleeParticleCountBase = 15;
-    public static int thunderMeleeParticleCountOffset = 3;
-    public static double thunderMeleeForwardOffsetFactor = 0.5;
-    public static double thunderMeleeFallSpeed = -0.01;
-    public static double thunderMeleeGlowChanceTier2 = 0.4;
-    public static double thunderMeleeReversePortalChanceTier3 = 0.3;
-    public static boolean thunderMeleeArcLineEnabled = true;
-    public static double thunderMeleeArcLineStepFactor = 4.0;
+    public static volatile double thunderMeleeRadius = 2.2;
+    public static volatile double thunderMeleeBaseAngleDegrees = 50.0;
+    public static volatile double thunderMeleeAngleMultiplierBase = 0.3;
+    public static volatile double thunderMeleeAngleMultiplierPerTier = 0.2;
+    public static volatile int thunderMeleeParticleCountBase = 15;
+    public static volatile int thunderMeleeParticleCountOffset = 3;
+    public static volatile double thunderMeleeForwardOffsetFactor = 0.5;
+    public static volatile double thunderMeleeFallSpeed = -0.01;
+    public static volatile double thunderMeleeGlowChanceTier2 = 0.4;
+    public static volatile double thunderMeleeReversePortalChanceTier3 = 0.3;
+    public static volatile boolean thunderMeleeArcLineEnabled = true;
+    public static volatile double thunderMeleeArcLineStepFactor = 4.0;
 
     public static double thunderRangedConeMaxRadius = 2.4;
     public static double thunderRangedBackOffsetStart = 0.3;
@@ -383,23 +383,23 @@ public class ElementalVisualConfig {
     public static double paralysisSparkChance = 0.35;
     public static int paralysisSparkCount = 4;
 
-    public static boolean frostMeleeEnabled = true;
+    public static volatile boolean frostMeleeEnabled = true;
     public static boolean frostRangedEnabled = true;
 
-    public static double frostMeleeRadius = 2.4;
-    public static double frostMeleeBaseAngleDegrees = 50.0;
-    public static double frostMeleeAngleMultiplierBase = 0.3;
-    public static double frostMeleeAngleMultiplierPerTier = 0.2;
-    public static int frostMeleeParticleCountBase = 15;
-    public static int frostMeleeParticleCountOffset = 3;
-    public static double frostMeleeWaveAmplitude = 0.12;
-    public static double frostMeleeWaveFrequency = 4.0;
-    public static double frostMeleeGlowChanceTier2 = 0.35;
-    public static double frostMeleeShardChanceTier3 = 0.3;
-    public static double frostMeleeMistChanceTier3 = 0.25;
-    public static double frostMeleeAshChanceTier4 = 0.4;
-    public static boolean frostMeleeMistLineEnabled = true;
-    public static double frostMeleeMistLineStepFactor = 3.0;
+    public static volatile double frostMeleeRadius = 2.4;
+    public static volatile double frostMeleeBaseAngleDegrees = 50.0;
+    public static volatile double frostMeleeAngleMultiplierBase = 0.3;
+    public static volatile double frostMeleeAngleMultiplierPerTier = 0.2;
+    public static volatile int frostMeleeParticleCountBase = 15;
+    public static volatile int frostMeleeParticleCountOffset = 3;
+    public static volatile double frostMeleeWaveAmplitude = 0.12;
+    public static volatile double frostMeleeWaveFrequency = 4.0;
+    public static volatile double frostMeleeGlowChanceTier2 = 0.35;
+    public static volatile double frostMeleeShardChanceTier3 = 0.3;
+    public static volatile double frostMeleeMistChanceTier3 = 0.25;
+    public static volatile double frostMeleeAshChanceTier4 = 0.4;
+    public static volatile boolean frostMeleeMistLineEnabled = true;
+    public static volatile double frostMeleeMistLineStepFactor = 3.0;
 
     public static double frostRangedConeMaxRadius = 2.4;
     public static double frostRangedBackOffsetStart = 0.3;
