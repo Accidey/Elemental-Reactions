@@ -15,7 +15,7 @@ public final class ForcedItemHelper {
 
     private static final Map<Item, WeaponData> WEAPON_CACHE = new ConcurrentHashMap<>();
 
-    private static final Map<Item, ArmorTemplate> ARMOR_CACHE = new ConcurrentHashMap<>();
+    private static final Map<Item, ArmorData> ARMOR_CACHE = new ConcurrentHashMap<>();
 
     private static volatile boolean weaponsParsed = false;
     private static volatile boolean armorParsed = false;
@@ -32,8 +32,6 @@ public final class ForcedItemHelper {
     public record WeaponData(ElementType attackType) {}
 
     public record ArmorData(ElementType enhanceType, int enhancePoints, ElementType resistType, int resistPoints) {}
-
-    private record ArmorTemplate(ElementType enhanceType, RangeValue enhanceRange, ElementType resistType, RangeValue resistRange) {}
 
     private record RangeValue(int min, int max, boolean isFixed) {
         public int roll() {
@@ -54,13 +52,7 @@ public final class ForcedItemHelper {
             parseArmor();
         }
 
-        ArmorTemplate template = ARMOR_CACHE.get(item);
-        if (template == null) return null;
-
-        int enhancePts = template.enhanceRange().roll();
-        int resistPts = template.resistRange().roll();
-
-        return new ArmorData(template.enhanceType(), enhancePts, template.resistType(), resistPts);
+        return ARMOR_CACHE.get(item);
     }
 
     @SuppressWarnings("deprecation")
@@ -109,7 +101,7 @@ public final class ForcedItemHelper {
                 RangeValue resistRange = parsePointsRange(parts[4]);
 
                 if (enhanceRange.max > 0 || resistRange.max > 0) {
-                    ARMOR_CACHE.put(item, new ArmorTemplate(enhance, enhanceRange, resist, resistRange));
+                    ARMOR_CACHE.put(item, new ArmorData(enhance, enhanceRange.roll(), resist, resistRange.roll()));
                 }
             } catch (Exception e) {
                 ElementalCraft.LOGGER.warn("[ElementalCraft] Skipped invalid forced armor entry: {}", line, e);
