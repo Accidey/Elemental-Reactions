@@ -629,7 +629,10 @@ public class ReactionHandler {
                         double dz = entity.getZ() - target.getZ();
                         double hDist = Math.sqrt(dx * dx + dz * dz);
                         if (hDist <= 0.01) { dx = 0; dz = 0; } else { dx /= hDist; dz /= hDist; }
-                        double scale = blastRadius * (1.0 - entity.distanceTo(target) / blastRadius) * 0.3;
+                        double scale = 0.0;
+                        if (blastRadius > 0) {
+                            scale = blastRadius * Math.max(0.0, 1.0 - hDist / blastRadius) * 0.3;
+                        }
                         entity.setDeltaMovement(entity.getDeltaMovement().add(dx * scale, 0.1 + scale * 0.5, dz * scale));
                         entity.hurtMarked = true;
                         affectedCount++;
