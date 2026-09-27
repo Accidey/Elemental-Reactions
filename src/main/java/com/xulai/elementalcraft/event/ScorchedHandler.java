@@ -772,7 +772,6 @@ public class ScorchedHandler {
 
     public static final String NBT_FIRE_COUNTER_CD = "ec_fire_counter_cd";
     public static final String NBT_FIRE_COUNTER_INVULN = "ec_fire_counter_invuln";
-    private static final String NBT_FIRE_COUNTER_LOCK = "ec_fire_counter_lock";
     private static final String NBT_FIRE_COUNTER_SAVED_SPEED = "ec_fire_counter_saved_speed";
     private static final String NBT_FIRE_COUNTER_SPEED_TIME = "ec_fire_counter_speed_time";
 
@@ -882,6 +881,9 @@ public class ScorchedHandler {
         if (fc == null) return;
 
         Entity ownerEntity = sl.getEntity(fc.ownerUUID);
+        if (ownerEntity == null) {
+            ownerEntity = sl.getServer().getPlayerList().getPlayer(fc.ownerUUID);
+        }
         if (ownerEntity == null || !(ownerEntity instanceof LivingEntity owner) || owner.isDeadOrDying()) {
             if (ownerEntity instanceof Mob mob) {
                 double savedSpeed = ownerEntity.getPersistentData().getDoubleOr(NBT_FIRE_COUNTER_SAVED_SPEED, 0.0);
@@ -898,7 +900,6 @@ public class ScorchedHandler {
             }
             if (ownerEntity != null) {
                 ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
-                ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_LOCK);
             }
             activeFireCounters.remove(dim);
             return;

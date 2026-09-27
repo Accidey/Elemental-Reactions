@@ -71,6 +71,8 @@ public class NbtCleanupHandler {
             data.remove(ScorchedHandler.NBT_WETNESS_STEAM_COOLDOWN);
         }
 
+        data.remove(ScorchedHandler.NBT_FIRE_COUNTER_INVULN);
+
         data.remove("EC_SteamCondensationTimer");
         data.remove("EC_SteamAttackerCooldown");
         if (data.contains(SteamReactionHandler.NBT_STEAM_BLINDNESS)) {
