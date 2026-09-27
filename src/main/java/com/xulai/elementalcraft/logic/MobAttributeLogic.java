@@ -5,10 +5,12 @@ import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.event.FrostbiteHandler;
 import com.xulai.elementalcraft.event.ScorchedHandler;
 import com.xulai.elementalcraft.event.StaticShockHandler;
+import com.xulai.elementalcraft.potion.ModMobEffects;
 import com.xulai.elementalcraft.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
@@ -439,6 +441,11 @@ public class MobAttributeLogic {
         if (entity.level().isClientSide()) return;
         CompoundTag data = entity.getPersistentData();
         if (!data.getBooleanOr("EC_FleeActive", false)) return;
+        if (isRootImmobilized(entity)) {
+            stopFlee(entity);
+            return;
+        }
+        if (entity.hasEffect(ModMobEffects.FREEZE) || entity.hasEffect(ModMobEffects.PARALYSIS)) return;
         int ticks = data.getIntOr(NBT_FLEE_TICKS, 0) + 1;
         data.putInt(NBT_FLEE_TICKS, ticks);
         if (ticks >= MAX_FLEE_TICKS) {
@@ -529,6 +536,13 @@ public class MobAttributeLogic {
         }
     }
 
+    private static boolean isRootImmobilized(LivingEntity entity) {
+        Entity vehicle = entity.getVehicle();
+        if (vehicle == null) return false;
+        Identifier key = BuiltInRegistries.ENTITY_TYPE.getKey(vehicle.getType());
+        return key != null && "irons_spellbooks".equals(key.getNamespace()) && "root".equals(key.getPath());
+    }
+
     public static void stopFlee(LivingEntity entity) {
         CompoundTag data = entity.getPersistentData();
         data.remove(NBT_FLEE_TARGET_X);
@@ -541,7 +555,11 @@ public class MobAttributeLogic {
         data.remove(NBT_FLEE_LAST_Z);
         data.putBoolean("EC_FleeActive", false);
         if (entity instanceof Mob mob) {
-            mob.setNoAi(false);
+            boolean aiLocked = entity.hasEffect(ModMobEffects.FREEZE) || entity.hasEffect(ModMobEffects.PARALYSIS);
+            if (!aiLocked) {
+                mob.setNoAi(data.getBooleanOr("EC_SharedOriginalNoAi", false));
+                data.remove("EC_SharedOriginalNoAi");
+            }
         }
     }
 

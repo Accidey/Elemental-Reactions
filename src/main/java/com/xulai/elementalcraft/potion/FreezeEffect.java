@@ -85,7 +85,7 @@ public class FreezeEffect extends MobEffect {
         CompoundTag data = entity.getPersistentData();
         if (data.getBooleanOr(FrostbiteHandler.NBT_FREEZE_AI_DISABLED, false)) return;
         if (!data.contains(NBT_SHARED_ORIGINAL_NO_AI)) {
-            data.putBoolean(NBT_SHARED_ORIGINAL_NO_AI, mob.isNoAi());
+            data.putBoolean(NBT_SHARED_ORIGINAL_NO_AI, mob.isNoAi() && !data.getBooleanOr("EC_FleeActive", false));
         }
         mob.setNoAi(true);
         data.putBoolean(FrostbiteHandler.NBT_FREEZE_AI_DISABLED, true);
@@ -97,6 +97,7 @@ public class FreezeEffect extends MobEffect {
         if (!data.getBooleanOr(FrostbiteHandler.NBT_FREEZE_AI_DISABLED, false)) return;
         data.remove(FrostbiteHandler.NBT_FREEZE_AI_DISABLED);
         if (entity.hasEffect(ModMobEffects.PARALYSIS)) return;
+        if (data.getBooleanOr("EC_FleeActive", false)) return;
         boolean wasNoAi = data.getBooleanOr(NBT_SHARED_ORIGINAL_NO_AI, false);
         mob.setNoAi(wasNoAi);
         data.remove(NBT_SHARED_ORIGINAL_NO_AI);
