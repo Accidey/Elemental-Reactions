@@ -433,6 +433,8 @@
   "death.attack.spores.player": "%1$s was consumed by flammable spores while fighting %2$s",
   "death.attack.frostbite_thermal_shock": "%1$s was killed by thermal shock steam",
   "death.attack.frostbite_thermal_shock.player": "%1$s was killed by thermal shock steam while fighting %2$s",
+  "death.attack.frostbite": "%1$s froze to death",
+  "death.attack.frostbite.player": "%1$s froze to death while fighting %2$s",
   "death.attack.toxic_blast": "%1$s was killed by a toxic blast",
   "death.attack.toxic_blast.player": "%1$s was killed by a toxic blast triggered by %2$s",
 
