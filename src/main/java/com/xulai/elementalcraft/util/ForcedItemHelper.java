@@ -60,7 +60,10 @@ public final class ForcedItemHelper {
         for (String line : ForcedItemConfig.FORCED_WEAPONS.get()) {
             try {
                 String[] parts = line.split(",");
-                if (parts.length < 2) continue;
+                if (parts.length < 2) {
+                    ElementalCraft.LOGGER.warn("[ElementalCraft] Skipped forced weapon entry with too few fields: {}", line);
+                    continue;
+                }
 
                 Identifier itemId = Identifier.parse(parts[0].trim());
                 Item item = BuiltInRegistries.ITEM.getValue(itemId);
@@ -85,7 +88,10 @@ public final class ForcedItemHelper {
         for (String line : ForcedItemConfig.FORCED_ARMOR.get()) {
             try {
                 String[] parts = line.split(",");
-                if (parts.length < 5) continue;
+                if (parts.length < 5) {
+                    ElementalCraft.LOGGER.warn("[ElementalCraft] Skipped forced armor entry with too few fields: {}", line);
+                    continue;
+                }
 
                 Identifier itemId = Identifier.parse(parts[0].trim());
                 Item item = BuiltInRegistries.ITEM.getValue(itemId);
