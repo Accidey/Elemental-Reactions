@@ -101,9 +101,10 @@ public class ElementalBookDropHandler {
         ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
         Holder<Enchantment> ench = getEnchantment(candidate.type, candidate.element);
         if (ench != null) {
+            int level = Math.max(1, Math.min(candidate.level, ench.value().getMaxLevel()));
             ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(
                     book.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY));
-            mutable.set(ench, candidate.level);
+            mutable.set(ench, level);
             book.set(DataComponents.STORED_ENCHANTMENTS, mutable.toImmutable());
         }
         return book;
