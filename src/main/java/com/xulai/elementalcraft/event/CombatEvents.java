@@ -156,7 +156,7 @@ public class CombatEvents {
                                         firePower,
                                         ElementalFireNatureReactionsConfig.steamLowHeatTriggerThreshold);
                             } else if (SteamReactionHandler.isOnSteamCooldown(attacker)) {
-                                long remaining = DebugCommand.getRemainingCooldown(attacker, SteamReactionHandler.NBT_STEAM_ATTACKER_COOLDOWN);
+                                long remaining = DebugCommand.getRemainingCooldownCountdown(attacker, SteamReactionHandler.NBT_STEAM_ATTACKER_COOLDOWN);
                                 DebugCommand.sendReactionCooldownBlock(attacker, "steam", remaining);
                             } else {
                                 int steamLevel = Math.max(1, Math.min(actuallyRemoved, ElementalFireNatureReactionsConfig.steamLowHeatMaxLevel));
