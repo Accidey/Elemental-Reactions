@@ -13,7 +13,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -74,10 +73,10 @@ public class BiomeBiasCommand {
         );
     }
 
+    @Nullable
     private static String getCurrentBiomeId(ServerPlayer player) {
         Holder<Biome> biomeHolder = player.level().getBiome(player.blockPosition());
-        Identifier loc = biomeHolder.unwrapKey().orElseThrow().identifier();
-        return loc.toString();
+        return biomeHolder.unwrapKey().map(key -> key.identifier().toString()).orElse(null);
     }
 
     private static int addBiomeBias(CommandContext<CommandSourceStack> ctx, String elementStr, double probability) {
@@ -88,6 +87,10 @@ public class BiomeBiasCommand {
         }
 
         String biomeId = getCurrentBiomeId(player);
+        if (biomeId == null) {
+            player.sendSystemMessage(Component.translatable("command.elementalcraft.biomebias.unknown_biome"));
+            return 0;
+        }
         boolean isAll = elementStr.equalsIgnoreCase("all");
         @Nullable ElementType type = isAll ? null : ElementType.fromId(elementStr.toLowerCase());
 
@@ -142,6 +145,10 @@ public class BiomeBiasCommand {
         }
 
         String biomeId = getCurrentBiomeId(player);
+        if (biomeId == null) {
+            player.sendSystemMessage(Component.translatable("command.elementalcraft.biomebias.unknown_biome"));
+            return 0;
+        }
         boolean isAll = elementStr.equalsIgnoreCase("all");
         @Nullable ElementType type = isAll ? null : ElementType.fromId(elementStr.toLowerCase());
 
@@ -195,6 +202,10 @@ public class BiomeBiasCommand {
         }
 
         String biomeId = getCurrentBiomeId(player);
+        if (biomeId == null) {
+            player.sendSystemMessage(Component.translatable("command.elementalcraft.biomebias.unknown_biome"));
+            return 0;
+        }
         List<? extends String> allLines = ElementalConfig.CUSTOM_BIOME_ATTRIBUTE_BIAS.get();
 
         List<String> relevant = new ArrayList<>();

@@ -22,6 +22,7 @@
   "command.elementalcraft.biomebias.removed_all": "§aRemoved §lall §aattribute biases for biome §e%s",
   "command.elementalcraft.biomebias.removed_single": "§aRemoved attribute §r%s §abias from biome §e%s",
   "command.elementalcraft.biomebias.saved": "§7Configuration file saved, cache refreshed, effective immediately",
+  "command.elementalcraft.biomebias.unknown_biome": "§cCurrent biome has no registry id, cannot configure attribute bias",
   "command.elementalcraft.biomebias.use_remove_first": "§cBiome ID already exists in bias configuration.",
 
   "command.elementalcraft.entity.blacklist.added": "§aSuccessfully added §e%s §ato entity attribute blacklist.",

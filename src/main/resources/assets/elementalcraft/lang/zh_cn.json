@@ -22,6 +22,7 @@
   "command.elementalcraft.biomebias.removed_all": "§a已移除群系 §e%s §a的 §l全部 §a属性偏向",
   "command.elementalcraft.biomebias.removed_single": "§a已从群系 §e%s §a移除属性 §r%s §a的偏向",
   "command.elementalcraft.biomebias.saved": "§7配置文件已保存，缓存已刷新，立即生效",
+  "command.elementalcraft.biomebias.unknown_biome": "§c当前群系没有注册表 ID，无法配置属性偏向",
   "command.elementalcraft.biomebias.use_remove_first": "§c群系ID已在偏向配置中。",
 
   "command.elementalcraft.entity.blacklist.added": "§a成功将 §e%s §a加入属性生物黑名单。",
