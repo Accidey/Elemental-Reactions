@@ -16,6 +16,7 @@ import com.xulai.elementalcraft.sound.ModSounds;
 import com.xulai.elementalcraft.util.CustomBiomeBias;
 import com.xulai.elementalcraft.util.ForcedAttributeHelper;
 import com.xulai.elementalcraft.util.ForcedItemHelper;
+import com.xulai.elementalcraft.util.UpdateChecker;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.bus.api.IEventBus;
@@ -99,6 +100,7 @@ public class ElementalCraft {
         ElementalVisualConfig.refreshCache();
         ElementalThunderFrostReactionsConfig.refreshCache();
         LOGGER.info("[ElementalCraft] Common Setup: Config cache initialized.");
+        UpdateChecker.checkForUpdate();
     }
 
     public void onConfigLoad(ModConfigEvent.Loading event) {

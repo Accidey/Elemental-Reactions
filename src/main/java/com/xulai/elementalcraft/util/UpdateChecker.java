@@ -16,10 +16,29 @@ import java.util.concurrent.CompletableFuture;
 
 public class UpdateChecker {
     public static final String MODRINTH_URL = "https://modrinth.com/mod/elementalcraft-reactions/versions";
-    public static final String CURSEFORGE_URL = "https://www.curseforge.com/minecraft/mc-mods/elementalcraft-reactions/files/all?page=1&pageSize=20&version=1.21.1&showAlphaFiles=hide";
+    private static final String CURSEFORGE_BASE_URL =
+            "https://www.curseforge.com/minecraft/mc-mods/elementalcraft-reactions/files/all?page=1&pageSize=20&showAlphaFiles=hide";
+    private static final String LOADER_NAME = "neoforge";
 
     private static volatile boolean hasUpdate = false;
     private static volatile String latestVersion = "";
+
+    public static String getModVersion() {
+        return ModList.get().getModContainerById(ElementalCraft.MODID)
+                .map(container -> container.getModInfo().getVersion().toString())
+                .orElse("");
+    }
+
+    public static String getMinecraftVersion() {
+        return ModList.get().getModContainerById("minecraft")
+                .map(container -> container.getModInfo().getVersion().toString())
+                .orElse("");
+    }
+
+    public static String getCurseforgeUrl() {
+        String mcVersion = getMinecraftVersion();
+        return mcVersion.isEmpty() ? CURSEFORGE_BASE_URL : CURSEFORGE_BASE_URL + "&version=" + mcVersion;
+    }
 
     public static void checkForUpdate() {
         HttpClient client = HttpClient.newBuilder()
@@ -29,7 +48,7 @@ public class UpdateChecker {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.modrinth.com/v2/project/elementalcraft-reactions/version"))
                 .timeout(Duration.ofSeconds(15))
-                .header("User-Agent", "elementalcraft-reactions/1.0")
+                .header("User-Agent", "elementalcraft-reactions/" + getModVersion())
                 .build();
 
         CompletableFuture.supplyAsync(() -> {
@@ -44,28 +63,27 @@ public class UpdateChecker {
         }).thenAccept(body -> {
             if (body == null) return;
             try {
-                String currentVersion = ModList.get().getModContainerById(ElementalCraft.MODID)
-                        .map(container -> container.getModInfo().getVersion().toString())
-                        .orElse(null);
-                if (currentVersion == null) return;
+                String currentVersion = getModVersion();
+                if (currentVersion.isEmpty()) return;
 
                 JsonArray versions = JsonParser.parseString(body).getAsJsonArray();
                 String newest = null;
+                String mcVersion = getMinecraftVersion();
 
                 for (JsonElement el : versions) {
                     JsonObject versionObj = el.getAsJsonObject();
                     JsonArray loaders = versionObj.getAsJsonArray("loaders");
                     JsonArray gameVersions = versionObj.getAsJsonArray("game_versions");
 
-                    boolean hasNeoForge = false;
-                    boolean hasMC1211 = false;
+                    boolean hasLoader = false;
+                    boolean matchesMcVersion = mcVersion.isEmpty();
                     for (JsonElement l : loaders) {
-                        if (l.getAsString().equals("neoforge")) { hasNeoForge = true; break; }
+                        if (l.getAsString().equals(LOADER_NAME)) { hasLoader = true; break; }
                     }
                     for (JsonElement g : gameVersions) {
-                        if (g.getAsString().equals("1.21.1")) { hasMC1211 = true; break; }
+                        if (g.getAsString().equals(mcVersion)) { matchesMcVersion = true; break; }
                     }
-                    if (!hasNeoForge || !hasMC1211) continue;
+                    if (!hasLoader || !matchesMcVersion) continue;
 
                     String ver = versionObj.get("version_number").getAsString();
                     if (newest == null || compareVersions(ver, newest) > 0) {
