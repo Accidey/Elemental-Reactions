@@ -61,6 +61,7 @@ public class WetnessHandler {
     private static int lastHeatCheckX = Integer.MIN_VALUE;
     private static int lastHeatCheckY = Integer.MIN_VALUE;
     private static int lastHeatCheckZ = Integer.MIN_VALUE;
+    private static net.minecraft.resources.ResourceKey<Level> lastHeatCheckDim;
     private static boolean lastHeatResult = false;
     private static double lastHeatCheckRadius = 0;
 
@@ -289,11 +290,13 @@ public class WetnessHandler {
         int cy = center.getY();
         int cz = center.getZ();
         if (gt - lastHeatCheckGameTime < 20
+                && java.util.Objects.equals(level.dimension(), lastHeatCheckDim)
                 && cx == lastHeatCheckX && cy == lastHeatCheckY && cz == lastHeatCheckZ
                 && configRadius == lastHeatCheckRadius) {
             return lastHeatResult;
         }
         lastHeatCheckGameTime = gt;
+        lastHeatCheckDim = level.dimension();
         lastHeatCheckX = cx;
         lastHeatCheckY = cy;
         lastHeatCheckZ = cz;
