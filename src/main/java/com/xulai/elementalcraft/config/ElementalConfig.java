@@ -790,7 +790,7 @@ public final class ElementalConfig {
     public static double mobBottleEquipChance = 0.35;
     public static int mobBottleThrowCooldown = 200;
 
-    public static double enchantedBookDropChance = 0.05;
+    public static double enchantedBookDropChance = 0.5;
     public static double enchantedBookLootingBonus = 0.10;
     public static double enchantedBookLevelSpread = 1.0;
 

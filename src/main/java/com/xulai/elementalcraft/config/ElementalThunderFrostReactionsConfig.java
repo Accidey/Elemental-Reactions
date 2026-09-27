@@ -1132,8 +1132,8 @@ public final class ElementalThunderFrostReactionsConfig {
     public static double thunderCounterExpansionSpeed;
     public static double counterLightningDamage;
 
-    public static List<? extends String> cachedStaticImmunityBlacklist;
-    public static List<? extends String> cachedParalysisImmunityBlacklist;
+    public static List<? extends String> cachedStaticImmunityBlacklist = List.of();
+    public static List<? extends String> cachedParalysisImmunityBlacklist = List.of();
 
     public static int paralysisMaxStacks;
     public static int paralysisDurationPerStackTicks;
@@ -1167,7 +1167,7 @@ public final class ElementalThunderFrostReactionsConfig {
     public static double frostbitePeriodicDamage;
     public static int frostbiteDamageIntervalTicks;
     public static int frostbiteResistImmunityThreshold;
-    public static List<? extends String> cachedFrostbiteImmunityBlacklist;
+    public static List<? extends String> cachedFrostbiteImmunityBlacklist = List.of();
 
 
     public static double frostbiteDamageFireMultiplier;
@@ -1184,7 +1184,7 @@ public final class ElementalThunderFrostReactionsConfig {
 
     public static double freezeSettlementDamagePerStack;
     public static int freezeCooldownTicks;
-    public static List<? extends String> cachedFreezeImmunityBlacklist;
+    public static List<? extends String> cachedFreezeImmunityBlacklist = List.of();
     public static double wetnessColdBiomeFreezeChance;
     public static double wetnessColdBiomeFreezeLevelBonus;
 

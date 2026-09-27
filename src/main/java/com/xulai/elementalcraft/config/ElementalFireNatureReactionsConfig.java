@@ -1226,7 +1226,7 @@ public class ElementalFireNatureReactionsConfig {
 
     public static boolean wetnessWaterAnimalImmune;
     public static boolean wetnessNetherDimensionImmune;
-    public static List<? extends String> cachedWetnessBlacklist;
+    public static List<? extends String> cachedWetnessBlacklist = List.of();
     public static int sporeMaxStacks;
     public static boolean sporeEnvironmentalBlastEnabled;
     public static boolean sporeHeatBlastEnabled;
@@ -1241,7 +1241,7 @@ public class ElementalFireNatureReactionsConfig {
     public static double sporeFrostDurationMultiplier;
     public static double sporeColdBiomeDurationMultiplier;
     public static double sporeColdBiomeChanceMultiplier;
-    public static List<? extends String> cachedSporeBlacklist;
+    public static List<? extends String> cachedSporeBlacklist = List.of();
     public static double sporeDurabilityPercent = 0.1;
     public static int contagionTransferBase;
     public static double contagionBaseRadius;
@@ -1303,7 +1303,7 @@ public class ElementalFireNatureReactionsConfig {
     public static double steamScaldingMultiplierThunder;
     public static double steamScaldingMultiplierFrost;
     public static int steamImmunityThreshold;
-    public static List<? extends String> cachedSteamBlacklist;
+    public static List<? extends String> cachedSteamBlacklist = List.of();
     public static int steamHighHeatTriggerThreshold;
     public static int steamLowHeatTriggerThreshold;
     public static int steamTriggerCooldown;
@@ -1329,7 +1329,7 @@ public class ElementalFireNatureReactionsConfig {
     public static double scorchedFrostDurationMultiplier;
     public static double poisonScorchDurationMultiplier;
     public static double poisonScorchDamageMultiplier;
-    public static List<? extends String> cachedScorchedBlacklist;
+    public static List<? extends String> cachedScorchedBlacklist = List.of();
     public static int scorchedAuraFirePowerThreshold;
     public static double scorchedAuraRadius;
     public static boolean scorchedAuraSteamEnabled;
