@@ -94,11 +94,12 @@ public class StaticShockHandler {
     private static final int THUNDER_BREAK_FREEZE_ATTEMPT_INTERVAL = 40;
     private static final Map<UUID, ActiveElectrification> activeElectrifications = new HashMap<>();
     private static final Map<UUID, Long> waterElectrificationCooldowns = new HashMap<>();
-    private static final Map<ResourceKey<Level>, ActiveThunderStorm> activeThunderStorms = new HashMap<>();
+    private static final Map<UUID, ActiveThunderStorm> activeThunderStorms = new HashMap<>();
 
     private static class ActiveThunderStorm {
         final double x, y, z;
         final UUID ownerUUID;
+        final ResourceKey<Level> dimension;
         final double maxRadius;
         final double expansionSpeed;
         final double cloudHeight;
@@ -107,9 +108,10 @@ public class StaticShockHandler {
         long nextStrikeTick;
         int dwellTicks;
 
-        ActiveThunderStorm(double x, double y, double z, UUID ownerUUID) {
-            this.x = x; this.y = y; this.z = z;
-            this.ownerUUID = ownerUUID;
+        ActiveThunderStorm(LivingEntity source) {
+            this.x = source.getX(); this.y = source.getY(); this.z = source.getZ();
+            this.ownerUUID = source.getUUID();
+            this.dimension = source.level().dimension();
             this.maxRadius = ElementalThunderFrostReactionsConfig.thunderCounterRadius;
             this.expansionSpeed = ElementalThunderFrostReactionsConfig.thunderCounterExpansionSpeed;
             this.cloudHeight = 15.0;
@@ -553,8 +555,11 @@ public class StaticShockHandler {
             }
         }
 
-        ActiveThunderStorm storm = activeThunderStorms.get(dim);
-        if (storm != null) {
+        List<ActiveThunderStorm> storms = new ArrayList<>();
+        for (ActiveThunderStorm candidate : activeThunderStorms.values()) {
+            if (candidate.dimension.equals(dim)) storms.add(candidate);
+        }
+        for (ActiveThunderStorm storm : storms) {
             if (storm.dwellTicks > 0) {
                 storm.dwellTicks--;
                 if (storm.dwellTicks == 0) {
@@ -562,8 +567,8 @@ public class StaticShockHandler {
                             storm.x - storm.maxRadius, storm.y - storm.cloudHeight, storm.z - storm.maxRadius,
                             storm.x + storm.maxRadius, storm.y + storm.cloudHeight, storm.z + storm.maxRadius);
                     clearStormParalysis(sl, finalArea);
-                    activeThunderStorms.remove(dim);
-                    return;
+                    activeThunderStorms.remove(storm.ownerUUID);
+                    continue;
                 }
             } else {
                 storm.currentRadius += storm.expansionSpeed / 20.0;
@@ -624,7 +629,7 @@ public class StaticShockHandler {
                 }
             }
 
-            if (now < storm.nextStrikeTick) return;
+            if (now < storm.nextStrikeTick) continue;
             storm.nextStrikeTick = now + storm.strikeInterval;
 
             for (LivingEntity strikeTarget : areaEntities) {
@@ -1466,9 +1471,7 @@ public class StaticShockHandler {
 
     public static void triggerThunderCounter(LivingEntity target) {
         if (!(target.level() instanceof ServerLevel)) return;
-        ResourceKey<Level> dim = target.level().dimension();
-        activeThunderStorms.put(dim, new ActiveThunderStorm(
-                target.getX(), target.getY(), target.getZ(), target.getUUID()));
+        activeThunderStorms.put(target.getUUID(), new ActiveThunderStorm(target));
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
