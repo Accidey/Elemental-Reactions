@@ -42,6 +42,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.resources.ResourceKey;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -891,6 +892,11 @@ public class ScorchedHandler {
         for (ActiveFireCounter fc : active) {
             tickActiveFireCounter(sl, fc);
         }
+    }
+
+    @SubscribeEvent
+    public static void onServerStopped(ServerStoppedEvent event) {
+        activeFireCounters.clear();
     }
 
     private static void tickActiveFireCounter(ServerLevel sl, ActiveFireCounter fc) {

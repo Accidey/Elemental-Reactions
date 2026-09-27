@@ -47,6 +47,7 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 
@@ -191,6 +192,12 @@ public class FrostbiteHandler {
         for (ActiveFrostBurst burst : active) {
             tickFrostBurst(sl, burst);
         }
+    }
+
+    @SubscribeEvent
+    public static void onServerStopped(ServerStoppedEvent event) {
+        activeFrostBursts.clear();
+        removedByClear.clear();
     }
 
     private static void releaseFrostBurstTargets(ServerLevel sl, ActiveFrostBurst burst) {

@@ -46,6 +46,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
@@ -663,6 +664,13 @@ public class StaticShockHandler {
                     SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, 1.0f, 1.0f);
         }
 
+    }
+
+    @SubscribeEvent
+    public static void onServerStopped(ServerStoppedEvent event) {
+        activeElectrifications.clear();
+        activeThunderStorms.clear();
+        waterElectrificationCooldowns.clear();
     }
 
     private static boolean processWaterElectrification(LivingEntity source, int stacks) {
