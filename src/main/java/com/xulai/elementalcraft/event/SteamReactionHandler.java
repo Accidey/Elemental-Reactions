@@ -351,7 +351,7 @@ public class SteamReactionHandler {
                         settlementDamage += StaticShockHandler.getRandomStaticDamage(entity);
                     }
                     cloud.addTag(TAG_STATIC_CHARGED);
-                    cloud.addTag(TAG_STATIC_DMG_PREFIX + String.format("%.2f", settlementDamage));
+                    cloud.addTag(TAG_STATIC_DMG_PREFIX + String.format(java.util.Locale.ROOT, "%.2f", settlementDamage));
                     isStaticCharged = true;
                     if (!entity.level().isClientSide()) {
                         entity.level().playSound(null, cloud.getX(), cloud.getY(), cloud.getZ(),
@@ -534,7 +534,7 @@ public class SteamReactionHandler {
                         if (!isEntityInCloud(entity, cloud)) continue;
                         if (!cloud.entityTags().contains(TAG_HIGH_HEAT) && !cloud.entityTags().contains(TAG_STATIC_CHARGED) && !cloud.entityTags().contains(TAG_FROSTED)) {
                             cloud.addTag(TAG_STATIC_CHARGED);
-                            cloud.addTag(TAG_STATIC_DMG_PREFIX + String.format("%.2f", settlementDamage));
+                            cloud.addTag(TAG_STATIC_DMG_PREFIX + String.format(java.util.Locale.ROOT, "%.2f", settlementDamage));
                             anyCharged = true;
                         }
                     }
