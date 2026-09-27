@@ -3,10 +3,12 @@ package com.xulai.elementalcraft.client;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalVisualConfig;
+import com.xulai.elementalcraft.event.StaticShockHandler;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -86,12 +88,18 @@ public class StaticShockVisuals {
 
         for (LivingEntity target : nearby) {
             if (target == source) continue;
-            if (target.isDeadOrDying()) continue;
+            if (StaticShockHandler.shouldSkipAuraTarget(target)) continue;
 
             double dx = target.getX() - source.getX();
+            double dy = target.getY() - source.getY();
             double dz = target.getZ() - source.getZ();
             double dist = Math.sqrt(dx * dx + dz * dz);
             if (dist > range) continue;
+            if (dy > ElementalThunderFrostReactionsConfig.staticAuraHeightCeiling) continue;
+
+            if (StaticShockHandler.isImmuneToStatic(target)) continue;
+            if (target instanceof Mob && target.getPersistentData().getBoolean("EC_FleeActive")) continue;
+            if (target.getPersistentData().getInt(StaticShockHandler.NBT_STATIC_STACKS) > 0) continue;
 
             double tCenterX = target.getX();
             double tCenterY = target.getY() + target.getBbHeight() * 0.5;

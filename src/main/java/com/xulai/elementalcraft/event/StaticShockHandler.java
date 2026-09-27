@@ -135,7 +135,7 @@ public class StaticShockHandler {
         }
     }
 
-    private static boolean isImmuneToStatic(LivingEntity entity) {
+    public static boolean isImmuneToStatic(LivingEntity entity) {
         String entityId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString();
         if (ElementalConfig.matchesBlacklist(ElementalThunderFrostReactionsConfig.cachedStaticImmunityBlacklist, entityId)) {
             return true;
@@ -161,7 +161,7 @@ public class StaticShockHandler {
         return entity.level().getFluidState(entity.blockPosition()).is(FluidTags.WATER);
     }
 
-    private static boolean shouldSkipAuraTarget(LivingEntity target) {
+    public static boolean shouldSkipAuraTarget(LivingEntity target) {
         if (target instanceof Player player && player.isCreative()) return true;
         if (target.isDeadOrDying()) return true;
         return false;

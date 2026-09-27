@@ -8,6 +8,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -138,12 +139,19 @@ public class FrostbiteVisuals {
 
         for (LivingEntity target : nearby) {
             if (target == source) continue;
+            if (target instanceof Player player && player.isCreative()) continue;
             if (target.isDeadOrDying()) continue;
 
             double dx = target.getX() - source.getX();
+            double dy = target.getY() - source.getY();
             double dz = target.getZ() - source.getZ();
             double dist = Math.sqrt(dx * dx + dz * dz);
             if (dist > range) continue;
+            if (dy > 2.0) continue;
+
+            if (FrostbiteHandler.hasFrostbite(target)) continue;
+            if (FrostbiteHandler.isFrostbiteImmune(target)) continue;
+            if (target instanceof Mob && target.getPersistentData().getBoolean("EC_FleeActive")) continue;
 
             double tCenterX = target.getX();
             double tCenterY = target.getY() + target.getBbHeight() * 0.5;
