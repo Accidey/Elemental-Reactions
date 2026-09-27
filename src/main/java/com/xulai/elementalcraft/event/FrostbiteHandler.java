@@ -55,6 +55,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.core.registries.BuiltInRegistries;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -95,12 +96,13 @@ public class FrostbiteHandler {
     private static final Set<UUID> removedByClear = new HashSet<>();
     private static volatile boolean suppressRemoveCleanup = false;
 
-    private static final java.util.Map<net.minecraft.resources.ResourceKey<Level>, ActiveFrostBurst> activeFrostBursts = new java.util.HashMap<>();
+    private static final java.util.Map<UUID, ActiveFrostBurst> activeFrostBursts = new java.util.HashMap<>();
 
     static class ActiveFrostBurst {
         final double x, y, z;
         final long startTick;
         final UUID ownerUUID;
+        final net.minecraft.resources.ResourceKey<Level> dimension;
         final double heightCeiling;
         final double maxRadius;
         final double expansionSpeed;
@@ -109,10 +111,11 @@ public class FrostbiteHandler {
         int dwellTicks;
         final Set<UUID> hitEntities = new HashSet<>();
 
-        ActiveFrostBurst(double x, double y, double z, long startTick, UUID ownerUUID) {
-            this.x = x; this.y = y; this.z = z;
-            this.startTick = startTick;
-            this.ownerUUID = ownerUUID;
+        ActiveFrostBurst(LivingEntity source) {
+            this.x = source.getX(); this.y = source.getY(); this.z = source.getZ();
+            this.startTick = source.level().getGameTime();
+            this.ownerUUID = source.getUUID();
+            this.dimension = source.level().dimension();
             this.heightCeiling = ElementalThunderFrostReactionsConfig.frostCounterHeightCeiling;
             this.maxRadius = ElementalThunderFrostReactionsConfig.frostCounterMaxRadius;
             this.expansionSpeed = ElementalThunderFrostReactionsConfig.frostCounterExpansionSpeed;
@@ -124,10 +127,8 @@ public class FrostbiteHandler {
 
     public static void triggerFrostBurst(LivingEntity source) {
         if (!(source.level() instanceof ServerLevel sl)) return;
-        net.minecraft.resources.ResourceKey<Level> dim = source.level().dimension();
-        activeFrostBursts.put(dim, new ActiveFrostBurst(
-            source.getX(), source.getY(), source.getZ(),
-            source.level().getGameTime(), source.getUUID()));
+        ActiveFrostBurst replaced = activeFrostBursts.put(source.getUUID(), new ActiveFrostBurst(source));
+        if (replaced != null) releaseFrostBurstTargets(sl, replaced);
 
         AreaEffectCloud cloud = SteamReactionHandler.spawnSteamCloud(source, false, 1);
         if (cloud != null) {
@@ -177,24 +178,36 @@ public class FrostbiteHandler {
 
         if (activeFrostBursts.isEmpty()) return;
 
-        net.minecraft.resources.ResourceKey<Level> dim = event.getLevel().dimension();
-        ActiveFrostBurst burst = activeFrostBursts.get(dim);
-        if (burst == null) return;
-
         if (!(event.getLevel() instanceof ServerLevel sl)) return;
 
+        net.minecraft.resources.ResourceKey<Level> dim = event.getLevel().dimension();
+        List<ActiveFrostBurst> active = new ArrayList<>();
+        for (ActiveFrostBurst burst : activeFrostBursts.values()) {
+            if (burst.dimension.equals(dim)) active.add(burst);
+        }
+        for (ActiveFrostBurst burst : active) {
+            tickFrostBurst(sl, burst);
+        }
+    }
+
+    private static void releaseFrostBurstTargets(ServerLevel sl, ActiveFrostBurst burst) {
+        for (UUID trackedId : burst.hitEntities) {
+            Entity tracked = sl.getEntity(trackedId);
+            if (tracked instanceof LivingEntity le) {
+                le.getPersistentData().remove(NBT_FROST_BURST_FROZEN);
+            }
+        }
+        burst.hitEntities.clear();
+    }
+
+    private static void tickFrostBurst(ServerLevel sl, ActiveFrostBurst burst) {
         burst.tickCount++;
 
         if (burst.dwellTicks > 0) {
             burst.dwellTicks--;
             if (burst.dwellTicks == 0) {
-                for (UUID trackedId : burst.hitEntities) {
-                    Entity tracked = sl.getEntity(trackedId);
-                    if (tracked instanceof LivingEntity le) {
-                        le.getPersistentData().remove(NBT_FROST_BURST_FROZEN);
-                    }
-                }
-                activeFrostBursts.remove(dim);
+                releaseFrostBurstTargets(sl, burst);
+                activeFrostBursts.remove(burst.ownerUUID);
                 return;
             }
         } else {
@@ -225,7 +238,6 @@ public class FrostbiteHandler {
             if (Math.abs(target.getY() - burst.y) > burst.heightCeiling) continue;
 
             UUID targetId = target.getUUID();
-            boolean wasNew = !burst.hitEntities.contains(targetId);
             currentlyInRange.add(targetId);
             target.getPersistentData().putBoolean(NBT_FROST_BURST_FROZEN, true);
             burst.hitEntities.add(targetId);
