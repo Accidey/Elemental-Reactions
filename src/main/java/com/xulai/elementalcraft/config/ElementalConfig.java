@@ -517,7 +517,7 @@ public final class ElementalConfig {
                         "    → Creeper: No attack, Fire strength 0-150, Fire resistance 50-200",
                         "    → 苦力怕：无攻击属性，赤焰强化0~150随机，赤焰抗性50~200随机",
                         "",
-                        "  \"minecraft:blaze,,,fire,300\"",
+                        "  \"minecraft:blaze,,,,fire,300\"",
                         "    → Blaze: No attack, no strength, Fire resistance 300 only",
                         "    → 烈焰人：无攻击无强化，仅赤焰抗性300",
                         "",
