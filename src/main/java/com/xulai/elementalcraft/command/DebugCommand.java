@@ -299,9 +299,8 @@ public class DebugCommand {
     }
 
     public static void sendCombatLog(CombatLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
         if (ctx.target == null || ctx.attacker == null) return;
-        if (!(ctx.target.level() instanceof ServerLevel serverLevel)) return;
+        if (!isWatchedByAnyone(ctx.attacker)) return;
 
         String sourceName = (ctx.directEntity instanceof ThrownTrident) ? "Trident" : ctx.attacker.getDisplayName().getString();
         String relationKey = ctx.restraintMult > 1.0f ? "debug.elementalcraft.relation.restrain" : ctx.restraintMult < 1.0f ? "debug.elementalcraft.relation.weak" : "debug.elementalcraft.relation.neutral";
@@ -1146,6 +1145,14 @@ public class DebugCommand {
 
         ElementalCraft.LOGGER.info("[EC Debug] " + message.getString());
         recipients.forEach(p -> p.sendSystemMessage(message));
+    }
+
+    private static boolean isWatchedByAnyone(LivingEntity contextEntity) {
+        if (contextEntity == null) return false;
+        if (!DebugMode.hasAnyDebugEnabled()) return false;
+        if (!(contextEntity.level() instanceof ServerLevel serverLevel)) return false;
+        return serverLevel.getServer().getPlayerList().getPlayers().stream()
+                .anyMatch(p -> DebugMode.isEnabled(p) && isRelatedTo(contextEntity, p));
     }
 
     private static boolean isRelatedTo(LivingEntity contextEntity, Player player) {
