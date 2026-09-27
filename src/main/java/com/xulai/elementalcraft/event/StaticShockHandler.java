@@ -89,6 +89,9 @@ public class StaticShockHandler {
     private static final String NBT_LAST_STATIC_ELEMENT_MULT = "ec_last_static_element_mult";
     private static final int THUNDER_BREAK_FREEZE_ATTEMPT_INTERVAL = 40;
     private static final int MAX_STRIKE_BOLTS_PER_STRIKE = 4;
+    private static final int MAX_STORM_RING_POINTS = 128;
+    private static final int MAX_STORM_CLOUD_PARTICLES = 256;
+    private static final int MAX_STORM_RAIN_PARTICLES = 512;
     private static final Map<UUID, ActiveElectrification> activeElectrifications = new HashMap<>();
     private static final Map<UUID, Long> waterElectrificationCooldowns = new HashMap<>();
     private static final Map<UUID, ActiveThunderStorm> activeThunderStorms = new HashMap<>();
@@ -565,7 +568,7 @@ public class StaticShockHandler {
                     storm.x - storm.currentRadius, storm.y - storm.cloudHeight, storm.z - storm.currentRadius,
                     storm.x + storm.currentRadius, storm.y + storm.cloudHeight, storm.z + storm.currentRadius);
 
-            int points = (int) Math.max(8, storm.currentRadius * 12);
+            int points = Math.min(MAX_STORM_RING_POINTS, (int) Math.max(8, storm.currentRadius * 12));
             double step = (Math.PI * 2) / points;
             for (int i = 0; i < points; i++) {
                 double angle = step * i;
@@ -574,12 +577,12 @@ public class StaticShockHandler {
                 sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, px, storm.y + 0.1, pz, 1, 0, 0, 0, 0);
             }
 
-            int cloudCount = (int) (storm.currentRadius * storm.currentRadius * 3);
+            int cloudCount = Math.min(MAX_STORM_CLOUD_PARTICLES, (int) (storm.currentRadius * storm.currentRadius * 3));
             sl.sendParticles(ModParticles.STORM_CLOUD.get(),
                     storm.x, storm.y + storm.cloudHeight, storm.z,
                     cloudCount, storm.currentRadius * 0.6, 1.0, storm.currentRadius * 0.6, 0);
 
-            int rainCount = (int) (storm.currentRadius * storm.currentRadius * 6);
+            int rainCount = Math.min(MAX_STORM_RAIN_PARTICLES, (int) (storm.currentRadius * storm.currentRadius * 6));
             if (rainCount > 0) {
                 sl.sendParticles(ParticleTypes.RAIN,
                         storm.x, storm.y + storm.cloudHeight, storm.z,
