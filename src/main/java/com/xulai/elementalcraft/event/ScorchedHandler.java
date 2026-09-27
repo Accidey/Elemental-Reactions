@@ -88,6 +88,9 @@ public class ScorchedHandler {
     static {
         MAX_SWELL_FIELD = findCreeperField("maxSwell", "f_32271_");
         SWELL_DIR_FIELD = findCreeperField("DATA_SWELL_DIR", "f_32268_");
+        if (MAX_SWELL_FIELD == null || SWELL_DIR_FIELD == null) {
+            ElementalCraft.LOGGER.warn("[ElementalCraft] Creeper maxSwell/swellDir fields not found by reflection; the poison-enhanced fuse acceleration is disabled");
+        }
     }
 
     private static Field findCreeperField(String mojangName, String srgName) {
