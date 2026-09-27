@@ -203,6 +203,7 @@ public class ThunderSpellHandler {
             CompoundTag data = event.getEntity().getPersistentData();
             saveAndClearEnchantments(attacker.getMainHandItem(), data, NBT_ISS_MAINHAND_ENCH);
             saveAndClearEnchantments(attacker.getOffhandItem(), data, NBT_ISS_OFFHAND_ENCH);
+            data.putBoolean(NBT_ISS_ATTACKER + "Most", true);
             data.putBoolean(NBT_ISS_ACTIVE, true);
             data.putUUID(NBT_ISS_ATTACKER, attacker.getUUID());
             if (ElementUtils.getDisplayEnhancement(attacker, ElementType.THUNDER) > 0) {
