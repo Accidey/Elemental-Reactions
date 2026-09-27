@@ -67,6 +67,7 @@ public class WetnessHandler {
     private static int lastHeatCheckZ = Integer.MIN_VALUE;
     private static boolean lastHeatResult = false;
     private static double lastHeatCheckRadius = 0;
+    private static net.minecraft.resources.ResourceKey<Level> lastHeatCheckDimension = null;
 
     public static int getWetnessLevel(LivingEntity entity) {
         CompoundTag data = entity.getPersistentData();
@@ -301,9 +302,10 @@ public class WetnessHandler {
         int cx = center.getX();
         int cy = center.getY();
         int cz = center.getZ();
-        if (gt - lastHeatCheckGameTime < 20
+        if (gt >= lastHeatCheckGameTime && gt - lastHeatCheckGameTime < 20
                 && cx == lastHeatCheckX && cy == lastHeatCheckY && cz == lastHeatCheckZ
-                && configRadius == lastHeatCheckRadius) {
+                && configRadius == lastHeatCheckRadius
+                && level.dimension().equals(lastHeatCheckDimension)) {
             return lastHeatResult;
         }
         lastHeatCheckGameTime = gt;
@@ -311,6 +313,7 @@ public class WetnessHandler {
         lastHeatCheckY = cy;
         lastHeatCheckZ = cz;
         lastHeatCheckRadius = configRadius;
+        lastHeatCheckDimension = level.dimension();
         int lavaRange = (int) Math.ceil(configRadius);
         int magmaRange = Math.max(1, lavaRange - 1);
 
