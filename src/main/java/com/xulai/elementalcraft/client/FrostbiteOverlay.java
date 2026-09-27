@@ -53,9 +53,13 @@ public class FrostbiteOverlay {
 
         if (currentDisplayAlpha <= 0.01f) return;
 
+        float vanillaAlpha = player.getTicksFrozen() > 0 ? player.getPercentFrozen() : 0.0f;
+        if (vanillaAlpha >= 1.0f || currentDisplayAlpha - vanillaAlpha <= 0.01f) return;
+        float drawAlpha = (currentDisplayAlpha - vanillaAlpha) / (1.0f - vanillaAlpha);
+
         GuiGraphicsExtractor guiGraphics = event.getGuiGraphics();
 
-        int color = ARGB.white(currentDisplayAlpha);
+        int color = ARGB.white(drawAlpha);
         guiGraphics.blit(
                 RenderPipelines.GUI_TEXTURED,
                 POWDER_SNOW_OUTLINE,
