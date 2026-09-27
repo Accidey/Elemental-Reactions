@@ -89,6 +89,7 @@ public class StaticShockHandler {
     private static final int MAX_STORM_RING_POINTS = 128;
     private static final int MAX_STORM_CLOUD_PARTICLES = 256;
     private static final int MAX_STORM_RAIN_PARTICLES = 512;
+    private static final double MAX_ELECTRIFICATION_VISUAL_RANGE = 16.0;
     private static final Map<UUID, ActiveElectrification> activeElectrifications = new HashMap<>();
     private static final Map<UUID, ActiveThunderStorm> activeThunderStorms = new HashMap<>();
 
@@ -514,7 +515,8 @@ public class StaticShockHandler {
                 long elapsed = now - elec.startTick;
                 if (elapsed % 60 == 0 && elec.lastParticleTick != now) {
                     elec.lastParticleTick = now;
-                    double ex = elec.x, ey = elec.y, ez = elec.z, er = elec.range;
+                    double ex = elec.x, ey = elec.y, ez = elec.z;
+                    double er = Math.min(elec.range, MAX_ELECTRIFICATION_VISUAL_RANGE);
                     int mX = (int)Math.floor(ex - er), MX = (int)Math.ceil(ex + er);
                     int mY = (int)Math.floor(ey - er), MY = (int)Math.ceil(ey + er);
                     int mZ = (int)Math.floor(ez - er), MZ = (int)Math.ceil(ez + er);
