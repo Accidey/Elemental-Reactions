@@ -473,7 +473,7 @@ public class SteamReactionHandler {
                 damage *= elementMultiplier;
 
                 if (entity.hasEffect(ModMobEffects.SPORES)) {
-                    ReactionHandler.triggerToxicBlast(entity.level(), null, entity, (double) cloudLevel);
+                    ReactionHandler.triggerToxicBlast(entity.level(), entity, entity, (double) cloudLevel);
                 }
                 boolean fireImmune = entity.fireImmune();
                 if (fireImmune) {
