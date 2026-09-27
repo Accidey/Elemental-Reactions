@@ -65,6 +65,7 @@ public class FrozenInputBlocker {
     @SubscribeEvent
     public static void onMouseButton(InputEvent.MouseButton.Pre event) {
         Minecraft mc = Minecraft.getInstance();
+        if (mc.gui.screen() != null) return;
         if (!isAffected(mc)) return;
 
         event.setCanceled(true);
