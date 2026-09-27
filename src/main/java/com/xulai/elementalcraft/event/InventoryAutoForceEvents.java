@@ -194,6 +194,18 @@ public class InventoryAutoForceEvents {
             stack.set(componentType, mutable.toImmutable());
         }
 
+        writeForcedTag(stack, forcedData);
+    }
+
+    private static void writeForcedTag(ItemStack stack, CompoundTag forcedData) {
+        CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+        CompoundTag tag = customData != null ? customData.copyTag() : new CompoundTag();
+
+        boolean marked = tag.getBooleanOr(TAG_FORCED, false);
+        boolean dataUpToDate = forcedData.isEmpty()
+                || (tag.contains(TAG_FORCED_DATA) && tag.getCompoundOrEmpty(TAG_FORCED_DATA).equals(forcedData));
+        if (marked && dataUpToDate) return;
+
         stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY,
                 cd -> cd.update(t -> {
                     t.putBoolean(TAG_FORCED, true);
