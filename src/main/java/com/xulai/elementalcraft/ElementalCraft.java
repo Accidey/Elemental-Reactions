@@ -91,8 +91,10 @@ public class ElementalCraft {
             for (String file : filesToDelete) {
                 Path oldPath = configRoot.resolve(file);
                 if (Files.exists(oldPath)) {
-                    Files.delete(oldPath);
-                    LOGGER.info("[ElementalCraft] 删除旧配置文件: {}", file);
+                    Path backupPath = configRoot.resolve(file + ".migrated.bak");
+                    if (Files.exists(backupPath)) Files.delete(backupPath);
+                    Files.move(oldPath, backupPath);
+                    LOGGER.info("[ElementalCraft] 旧配置文件已备份为 {}: {}", backupPath.getFileName(), file);
                 }
             }
 
