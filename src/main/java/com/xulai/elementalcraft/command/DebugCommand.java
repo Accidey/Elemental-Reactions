@@ -1135,13 +1135,18 @@ public class DebugCommand {
     }
 
     public static void sendDebugMessage(LivingEntity contextEntity, Component message) {
+        if (contextEntity == null) return;
         if (!DebugMode.hasAnyDebugEnabled()) return;
         if (!(contextEntity.level() instanceof ServerLevel serverLevel)) return;
-        ElementalCraft.LOGGER.info("[EC Debug] " + message.getString());
-        serverLevel.getServer().getPlayerList().getPlayers().stream()
+
+        var recipients = serverLevel.getServer().getPlayerList().getPlayers().stream()
                 .filter(DebugMode::isEnabled)
                 .filter(p -> isRelatedTo(contextEntity, p))
-                .forEach(p -> p.sendSystemMessage(message));
+                .toList();
+        if (recipients.isEmpty()) return;
+
+        ElementalCraft.LOGGER.info("[EC Debug] " + message.getString());
+        recipients.forEach(p -> p.sendSystemMessage(message));
     }
 
     private static boolean isRelatedTo(LivingEntity contextEntity, Player player) {
