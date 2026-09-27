@@ -7,7 +7,6 @@ import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalVisualConfig;
 import com.xulai.elementalcraft.config.ForcedItemConfig;
-import com.xulai.elementalcraft.enchantment.ModEnchantments;
 import com.xulai.elementalcraft.network.FireCounterLockPacket;
 import com.xulai.elementalcraft.potion.ModMobEffects;
 import com.xulai.elementalcraft.sound.ModSounds;
