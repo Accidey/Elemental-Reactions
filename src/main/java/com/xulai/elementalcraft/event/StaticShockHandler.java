@@ -83,6 +83,7 @@ public class StaticShockHandler {
     private static final String NBT_AURA_TRACKED = "ec_static_aura_tracked";
     private static final String NBT_LAST_STATIC_DAMAGE = "ec_last_static_damage";
     private static final String NBT_THUNDER_BREAK_FREEZE_CD = "EC_ThunderBreakFreezeCD";
+    private static final String NBT_WATER_ELECTRIFICATION_CD = "ec_water_electrification_cd";
     private static final String NBT_AURA_SPORE_CD = "ec_static_aura_spore_cd";
     private static final String NBT_AURA_SYNC_PHASE = "ec_aura_sync_phase";
     private static final String NBT_LAST_AURA_LOG_DAMAGE = "ec_last_aura_log_damage";
@@ -95,7 +96,6 @@ public class StaticShockHandler {
     private static final int MAX_STORM_CLOUD_PARTICLES = 256;
     private static final int MAX_STORM_RAIN_PARTICLES = 512;
     private static final Map<UUID, ActiveElectrification> activeElectrifications = new HashMap<>();
-    private static final Map<UUID, Long> waterElectrificationCooldowns = new HashMap<>();
     private static final Map<UUID, ActiveThunderStorm> activeThunderStorms = new HashMap<>();
 
     private static class ActiveThunderStorm {
@@ -671,7 +671,6 @@ public class StaticShockHandler {
     public static void onServerStopped(ServerStoppedEvent event) {
         activeElectrifications.clear();
         activeThunderStorms.clear();
-        waterElectrificationCooldowns.clear();
     }
 
     public static void clearSessionState(LivingEntity entity) {
@@ -680,6 +679,7 @@ public class StaticShockHandler {
         data.remove(NBT_STORM_EXPOSURE);
         data.remove(NBT_STORM_PARALYSIS);
         data.remove(NBT_THUNDER_BREAK_FREEZE_CD);
+        data.remove(NBT_WATER_ELECTRIFICATION_CD);
     }
 
     private static boolean processWaterElectrification(LivingEntity source, int stacks) {
@@ -695,10 +695,10 @@ public class StaticShockHandler {
             activeElectrifications.remove(source.getUUID());
         }
 
-        Long cdEnd = waterElectrificationCooldowns.get(source.getUUID());
-        if (cdEnd != null && source.level().getGameTime() < cdEnd) return false;
-
         CompoundTag sourceData = source.getPersistentData();
+        long gameTime = source.level().getGameTime();
+        if (gameTime < sourceData.getLongOr(NBT_WATER_ELECTRIFICATION_CD, 0L)) return false;
+
         boolean firstTrigger = !activeElectrifications.containsKey(source.getUUID());
 
         if (firstTrigger) {
@@ -727,7 +727,7 @@ public class StaticShockHandler {
                 source, range, paralysisDuration, (float)baseSettlementDamage);
             activeElectrifications.put(source.getUUID(), newElec);
             int coolTicks = ElementalThunderFrostReactionsConfig.paralysisCooldownTicks;
-            waterElectrificationCooldowns.put(source.getUUID(), source.level().getGameTime() + paralysisDuration + coolTicks);
+            sourceData.putLong(NBT_WATER_ELECTRIFICATION_CD, gameTime + paralysisDuration + coolTicks);
             newElec.damagedEntities.add(source.getUUID());
 
             if (paralysisDuration > 0 && ElementalThunderFrostReactionsConfig.paralysisMaxStacks > 0) {
@@ -782,8 +782,8 @@ public class StaticShockHandler {
     }
 
     public static long getWaterElectrificationCooldown(LivingEntity entity) {
-        Long cdEnd = waterElectrificationCooldowns.get(entity.getUUID());
-        if (cdEnd == null) return 0;
+        long cdEnd = entity.getPersistentData().getLongOr(NBT_WATER_ELECTRIFICATION_CD, 0L);
+        if (cdEnd == 0L) return 0;
         return Math.max(0, cdEnd - entity.level().getGameTime());
     }
 

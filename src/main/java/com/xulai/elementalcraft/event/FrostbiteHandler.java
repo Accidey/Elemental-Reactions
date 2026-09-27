@@ -829,7 +829,9 @@ duration--;
         CompoundTag data = entity.getPersistentData();
         if (!data.contains(NBT_FROSTBITE_STACKS) && !data.contains(NBT_FROSTBITE_DURATION)) return;
         cleanupFrostbitePersistentData(entity);
-        removedByClear.add(entity.getUUID());
+        if (entity instanceof ServerPlayer sp) {
+            removedByClear.add(sp.getUUID());
+        }
     }
 
     @SubscribeEvent
