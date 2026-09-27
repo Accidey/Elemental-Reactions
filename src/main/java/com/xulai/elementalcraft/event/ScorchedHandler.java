@@ -768,8 +768,6 @@ public class ScorchedHandler {
     }
 
     public static final String NBT_FIRE_COUNTER_CD = "ec_fire_counter_cd";
-    public static final String NBT_FIRE_COUNTER_INVULN = "ec_fire_counter_invuln";
-    private static final String NBT_FIRE_COUNTER_LOCK = "ec_fire_counter_lock";
     private static final String NBT_FIRE_COUNTER_SAVED_SPEED = "ec_fire_counter_saved_speed";
     private static final String NBT_FIRE_COUNTER_SPEED_TIME = "ec_fire_counter_speed_time";
 
@@ -850,10 +848,13 @@ public class ScorchedHandler {
                 target.getMaxHealth(), ElementalFireNatureReactionsConfig.fireCounterHealthRecoveryThreshold);
     }
 
+    public static boolean isFireCounterActive(LivingEntity entity) {
+        return entity != null && activeFireCounters.containsKey(entity.getUUID());
+    }
+
     public static void triggerFireCounter(LivingEntity target) {
         if (!(target.level() instanceof ServerLevel)) return;
         if (activeFireCounters.containsKey(target.getUUID())) return;
-        target.getPersistentData().putBoolean(NBT_FIRE_COUNTER_INVULN, true);
         if (target instanceof Mob mob) {
             mob.getNavigation().stop();
             var attr = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
@@ -910,10 +911,6 @@ public class ScorchedHandler {
             if (lockOwner != null) {
                 PacketDistributor.sendToPlayer(lockOwner, new FireCounterLockPacket(false));
             }
-            if (ownerEntity != null) {
-                ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
-                ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_LOCK);
-            }
             activeFireCounters.remove(fc.ownerUUID);
             return;
         }
@@ -939,7 +936,6 @@ public class ScorchedHandler {
 
             case EXPLODE:
                 doExplosion(sl, fc, owner);
-                owner.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
                 if (owner instanceof net.minecraft.server.level.ServerPlayer sp) {
                     PacketDistributor.sendToPlayer(sp,
                             new FireCounterLockPacket(false));
