@@ -84,7 +84,11 @@ public final class ForcedAttributeHelper {
 
     private static ElementType parseElement(String s) {
         if (s == null || s.isBlank()) return ElementType.NONE;
-        return ElementType.fromId(s.toLowerCase());
+        ElementType type = ElementType.fromId(s.toLowerCase());
+        if (type == null) {
+            ElementalCraft.LOGGER.error("[ElementalCraft] Unknown element id '{}' in forced attribute config, this slot is ignored", s);
+        }
+        return type;
     }
 
     private static int parsePoints(String s) {
