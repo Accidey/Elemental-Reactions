@@ -1,6 +1,4 @@
-license="All Rights Reserved"
-
-issueTrackerURL="https://change.me.to.your.issue.tracker.example.invalid/" #optional
+license="${mod_license}"
 
 [[mods]]
 modId="elementalcraft"
