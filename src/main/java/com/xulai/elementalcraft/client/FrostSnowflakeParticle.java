@@ -136,26 +136,4 @@ public class FrostSnowflakeParticle extends SingleQuadParticle {
                     level, x, y, z, xSpeed, ySpeed, zSpeed, sprites, lifetime);
         }
     }
-
-    @OnlyIn(Dist.CLIENT)
-    public static class LongLivedFactory implements ParticleProvider<SimpleParticleType> {
-
-        private final SpriteSet sprites;
-
-        public LongLivedFactory(SpriteSet sprites) {
-            this.sprites = sprites;
-        }
-
-        @Override
-        public Particle createParticle(
-                SimpleParticleType type,
-                ClientLevel level,
-                double x, double y, double z,
-                double xSpeed, double ySpeed, double zSpeed, RandomSource random) {
-
-            int lifetime = 40 + level.getRandom().nextInt(101);
-            return new FrostSnowflakeParticle(
-                    level, x, y, z, xSpeed, ySpeed, zSpeed, sprites, lifetime);
-        }
-    }
 }

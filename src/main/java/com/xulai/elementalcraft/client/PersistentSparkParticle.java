@@ -106,25 +106,4 @@ public class PersistentSparkParticle extends SingleQuadParticle {
                     level, x, y, z, xSpeed, ySpeed, zSpeed, sprites);
         }
     }
-
-    @OnlyIn(Dist.CLIENT)
-    public static class ShortLivedFactory implements ParticleProvider<SimpleParticleType> {
-
-        private final SpriteSet sprites;
-
-        public ShortLivedFactory(SpriteSet sprites) {
-            this.sprites = sprites;
-        }
-
-        @Override
-        public Particle createParticle(
-                SimpleParticleType type,
-                ClientLevel level,
-                double x, double y, double z,
-                double xSpeed, double ySpeed, double zSpeed, RandomSource random) {
-
-            return new PersistentSparkParticle(
-                    level, x, y, z, xSpeed, ySpeed, zSpeed, sprites, 5 + level.getRandom().nextInt(5));
-        }
-    }
 }
