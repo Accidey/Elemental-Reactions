@@ -24,8 +24,8 @@ public class BiomeBiasCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
                 Commands.literal("elementalcraft")
-                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.literal("biome")
+                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                                 .then(Commands.literal("add")
                                         .then(Commands.argument("element", StringArgumentType.word())
                                                 .suggests((ctx, builder) -> {
