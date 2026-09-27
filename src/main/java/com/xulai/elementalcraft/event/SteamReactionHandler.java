@@ -497,13 +497,13 @@ public class SteamReactionHandler {
                 double actualGeneralRed = Math.min(calculatedGeneralRed, maxGeneralCap);
 
                 float enchReduction = (float) Math.min(actualFireRed + actualGeneralRed, 1.0);
-                damage *= (1.0f - enchReduction);
+                float finalDamage = damage * (1.0f - enchReduction);
 
-                if (damage > 0 && !checkImmunity(entity)) {
+                if (finalDamage > 0 && !checkImmunity(entity)) {
                     ElementDamageHelper.applyDamage(entity, damage, ModDamageTypes.source(entity.level(), ModDamageTypes.STEAM_SCALDING, heatSource));
                     ScorchedHandler.igniteCreeperIfScorched(entity);
                     if (!entity.getPersistentData().getBoolean(NBT_STEAM_SCALDING_LOGGED)) {
-                        DebugCommand.sendSteamScaldingTickLog(entity, baseDamage, levelMultiplier, type, elementMultiplier, preEnchDamage, fireProtLevel, genProtLevel, enchReduction, damage);
+                        DebugCommand.sendSteamScaldingTickLog(entity, baseDamage, levelMultiplier, type, elementMultiplier, preEnchDamage, fireProtLevel, genProtLevel, enchReduction, finalDamage);
                         entity.getPersistentData().putBoolean(NBT_STEAM_SCALDING_LOGGED, true);
                     }
                 } else if (damage > 0) {
