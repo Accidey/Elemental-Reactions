@@ -32,10 +32,17 @@ public final class ServerTaskScheduler {
         Iterator<ScheduledTask> it = TASKS.iterator();
         while (it.hasNext()) {
             ScheduledTask task = it.next();
-            if (task.server() != server) continue;
+            if (task.server() != server) {
+                if (!task.server().isRunning()) it.remove();
+                continue;
+            }
             if (server.getTickCount() >= task.runAtTick()) {
                 it.remove();
-                task.task().run();
+                try {
+                    task.task().run();
+                } catch (Exception e) {
+                    ElementalCraft.LOGGER.error("[ElementalCraft] Scheduled server task failed", e);
+                }
             }
         }
     }
