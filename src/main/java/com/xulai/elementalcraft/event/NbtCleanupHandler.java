@@ -82,5 +82,8 @@ public class NbtCleanupHandler {
         data.remove("EC_SelfDryingPenalty");
         data.remove("EC_LastSelfDryTick");
         data.remove("EC_NatureAttackCooldown");
+
+        data.remove(StaticShockHandler.NBT_STORM_PARALYSIS);
+        data.remove(StaticShockHandler.NBT_STORM_EXPOSURE);
     }
 }

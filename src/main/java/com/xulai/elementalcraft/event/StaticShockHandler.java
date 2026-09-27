@@ -106,6 +106,8 @@ public class StaticShockHandler {
         double currentRadius;
         long nextStrikeTick;
         int dwellTicks;
+        final Set<UUID> touchedEntities = new HashSet<>();
+        final Set<UUID> paralyzedEntities = new HashSet<>();
 
         ActiveThunderStorm(double x, double y, double z, UUID ownerUUID) {
             this.x = x; this.y = y; this.z = z;
@@ -549,10 +551,7 @@ public class StaticShockHandler {
             if (storm.dwellTicks > 0) {
                 storm.dwellTicks--;
                 if (storm.dwellTicks == 0) {
-                    AABB finalArea = new AABB(
-                            storm.x - storm.maxRadius, storm.y - storm.cloudHeight, storm.z - storm.maxRadius,
-                            storm.x + storm.maxRadius, storm.y + storm.cloudHeight, storm.z + storm.maxRadius);
-                    clearStormParalysis(sl, finalArea);
+                    endStormTrackingEffects(sl, storm);
                     activeThunderStorms.remove(dim);
                     return;
                 }
@@ -594,22 +593,44 @@ public class StaticShockHandler {
                     e -> !e.getUUID().equals(storm.ownerUUID) && !(e instanceof Player p && p.isCreative()));
             for (LivingEntity e : areaEntities) {
                 CompoundTag edata = e.getPersistentData();
-                int exposure = edata.getIntOr(NBT_STORM_EXPOSURE, 0) + 1;
+                int exposure = edata.getIntOr(NBT_STORM_EXPOSURE, 0);
+                if (storm.touchedEntities.contains(e.getUUID())) {
+                    exposure++;
+                } else {
+                    storm.touchedEntities.add(e.getUUID());
+                    edata.remove(NBT_STORM_PARALYSIS);
+                    storm.paralyzedEntities.remove(e.getUUID());
+                    exposure = 1;
+                }
                 edata.putInt(NBT_STORM_EXPOSURE, exposure);
                 if (edata.contains(NBT_STORM_PARALYSIS)) {
-                    WetnessHandler.clearWetnessData(e);
-                    e.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS,
-                            edata.getIntOr(NBT_STORM_PARALYSIS, 0),
-                            ElementalThunderFrostReactionsConfig.paralysisMaxStacks - 1,
-                            false, false, true));
+                    int paralysisStacks = ElementalThunderFrostReactionsConfig.paralysisMaxStacks;
+                    int storedDuration = edata.getIntOr(NBT_STORM_PARALYSIS, 0);
+                    if (paralysisStacks <= 0 || storedDuration <= 0 || isImmuneToParalysis(e)) {
+                        edata.remove(NBT_STORM_PARALYSIS);
+                        storm.paralyzedEntities.remove(e.getUUID());
+                    } else {
+                        WetnessHandler.clearWetnessData(e);
+                        e.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS,
+                                storedDuration,
+                                paralysisStacks - 1,
+                                false, false, true));
+                    }
                 } else if (exposure >= 40 && WetnessHandler.getWetnessLevel(e) < maxWetness) {
                     WetnessHandler.updateWetnessLevel(e, maxWetness);
                 }
             }
             Player owner = sl.getPlayerByUUID(storm.ownerUUID);
             if (owner != null && stormArea.contains(owner.getX(), owner.getY(), owner.getZ())) {
-                int exposure = owner.getPersistentData().getIntOr(NBT_STORM_EXPOSURE, 0) + 1;
-                owner.getPersistentData().putInt(NBT_STORM_EXPOSURE, exposure);
+                CompoundTag ownerData = owner.getPersistentData();
+                int exposure = ownerData.getIntOr(NBT_STORM_EXPOSURE, 0);
+                if (storm.touchedEntities.contains(storm.ownerUUID)) {
+                    exposure++;
+                } else {
+                    storm.touchedEntities.add(storm.ownerUUID);
+                    exposure = 1;
+                }
+                ownerData.putInt(NBT_STORM_EXPOSURE, exposure);
                 if (exposure >= 40 && WetnessHandler.getWetnessLevel(owner) < maxWetness) {
                     WetnessHandler.updateWetnessLevel(owner, maxWetness);
                 }
@@ -634,13 +655,24 @@ public class StaticShockHandler {
 
                 CompoundTag data = strikeTarget.getPersistentData();
                 int maxParalysisStacks = ElementalThunderFrostReactionsConfig.paralysisMaxStacks;
-                int paralysisDuration = ElementalThunderFrostReactionsConfig.paralysisDurationPerStackTicks
-                        * maxParalysisStacks;
-                if (!data.contains(NBT_STORM_PARALYSIS)) {
-                    data.putInt(NBT_STORM_PARALYSIS, paralysisDuration);
+                UUID strikeId = strikeTarget.getUUID();
+                if (maxParalysisStacks > 0 && !isImmuneToParalysis(strikeTarget)) {
+                    int storedDuration = storm.paralyzedEntities.contains(strikeId)
+                            ? data.getIntOr(NBT_STORM_PARALYSIS, 0)
+                            : ElementalThunderFrostReactionsConfig.paralysisDurationPerStackTicks * maxParalysisStacks;
+                    if (storedDuration > 0) {
+                        data.putInt(NBT_STORM_PARALYSIS, storedDuration);
+                        storm.paralyzedEntities.add(strikeId);
+                        strikeTarget.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS,
+                                storedDuration, maxParalysisStacks - 1, false, false, true));
+                    } else {
+                        data.remove(NBT_STORM_PARALYSIS);
+                        storm.paralyzedEntities.remove(strikeId);
+                    }
+                } else {
+                    data.remove(NBT_STORM_PARALYSIS);
+                    storm.paralyzedEntities.remove(strikeId);
                 }
-                strikeTarget.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS,
-                        data.getIntOr(NBT_STORM_PARALYSIS, 0), maxParalysisStacks - 1, false, false, true));
 
                 int currentStacks = data.getIntOr(NBT_STATIC_STACKS, 0);
                 int maxStacks = ElementalThunderFrostReactionsConfig.staticMaxTotalStacks;
@@ -1458,8 +1490,12 @@ public class StaticShockHandler {
     }
 
     public static void triggerThunderCounter(LivingEntity target) {
-        if (!(target.level() instanceof ServerLevel)) return;
+        if (!(target.level() instanceof ServerLevel sl)) return;
         ResourceKey<Level> dim = target.level().dimension();
+        ActiveThunderStorm previous = activeThunderStorms.remove(dim);
+        if (previous != null) {
+            endStormTrackingEffects(sl, previous);
+        }
         activeThunderStorms.put(dim, new ActiveThunderStorm(
                 target.getX(), target.getY(), target.getZ(), target.getUUID()));
     }
@@ -1591,9 +1627,15 @@ public class StaticShockHandler {
         DebugCommand.sendParalysisLog(pCtx);
     }
 
-    private static void clearStormParalysis(ServerLevel sl, AABB area) {
-        for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, area)) {
-            e.getPersistentData().remove(NBT_STORM_PARALYSIS);
+    private static void endStormTrackingEffects(ServerLevel sl, ActiveThunderStorm storm) {
+        storm.touchedEntities.add(storm.ownerUUID);
+        for (UUID id : storm.paralyzedEntities) {
+            Entity e = sl.getEntity(id);
+            if (e != null) e.getPersistentData().remove(NBT_STORM_PARALYSIS);
+        }
+        for (UUID id : storm.touchedEntities) {
+            Entity e = sl.getEntity(id);
+            if (e != null) e.getPersistentData().remove(NBT_STORM_EXPOSURE);
         }
     }
 
