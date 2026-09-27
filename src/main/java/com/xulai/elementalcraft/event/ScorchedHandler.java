@@ -46,6 +46,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
@@ -868,6 +869,13 @@ public class ScorchedHandler {
     }
 
     @SubscribeEvent
+    public static void onPlayerLoginClearFireLock(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof net.minecraft.server.level.ServerPlayer sp) {
+            PacketDistributor.sendToPlayer(sp, new FireCounterLockPacket(false));
+        }
+    }
+
+    @SubscribeEvent
     public static void onLevelTickFireCounter(LevelTickEvent.Post event) {
         if (event.getLevel().isClientSide()) return;
         if (!(event.getLevel() instanceof ServerLevel sl)) return;
@@ -887,9 +895,11 @@ public class ScorchedHandler {
                 ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_SAVED_SPEED);
                 ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_SPEED_TIME);
             }
-            if (ownerEntity instanceof net.minecraft.server.level.ServerPlayer sp) {
-                PacketDistributor.sendToPlayer(sp,
-                            new FireCounterLockPacket(false));
+            net.minecraft.server.level.ServerPlayer lockOwner = ownerEntity instanceof net.minecraft.server.level.ServerPlayer sp
+                    ? sp
+                    : sl.getServer().getPlayerList().getPlayer(fc.ownerUUID);
+            if (lockOwner != null) {
+                PacketDistributor.sendToPlayer(lockOwner, new FireCounterLockPacket(false));
             }
             if (ownerEntity != null) {
                 ownerEntity.getPersistentData().remove(NBT_FIRE_COUNTER_INVULN);
