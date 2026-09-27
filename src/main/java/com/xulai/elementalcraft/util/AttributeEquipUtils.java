@@ -1,5 +1,6 @@
 package com.xulai.elementalcraft.util;
 
+import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.enchantment.ModEnchantments;
 import net.minecraft.core.Holder;
@@ -11,10 +12,12 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AttributeEquipUtils {
 
     private static final Random RANDOM = new Random();
+    private static final Set<String> WARNED_UNKNOWN_RESTRAINTS = ConcurrentHashMap.newKeySet();
 
     public static int[] distributePointsToLevels(int totalPoints, int pointsPerLevel, int pieceCount) {
         if (pointsPerLevel <= 0) pointsPerLevel = 1;
@@ -144,7 +147,15 @@ public class AttributeEquipUtils {
                 String victimId = split[1].trim();
 
                 if (victimId.equalsIgnoreCase(type.getId())) {
-                    return ElementType.fromId(attackerId);
+                    ElementType counter = ElementType.fromId(attackerId);
+                    if (counter != null) {
+                        return counter;
+                    }
+                    if (WARNED_UNKNOWN_RESTRAINTS.add(attackerId.toLowerCase(java.util.Locale.ROOT))) {
+                        ElementalCraft.LOGGER.warn(
+                                "[ElementalCraft] Unknown element id '{}' in element_restraints, this entry is ignored",
+                                attackerId);
+                    }
                 }
             }
         }
