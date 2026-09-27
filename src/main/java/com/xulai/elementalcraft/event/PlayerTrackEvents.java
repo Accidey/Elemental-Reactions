@@ -19,7 +19,7 @@ public class PlayerTrackEvents {
         ServerLevel level = player.level();
 
         level.getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(20, 5, 20),
-                mob -> mob.isAlive() && !mob.getPersistentData().getBooleanOr("ElementalCraft_AttributesSet", false)
+                mob -> mob.isAlive() && !mob.getPersistentData().getBooleanOr(MobAttributeLogic.NBT_ATTRIBUTES_SET, false)
         ).forEach(MobAttributeLogic::processMob);
     }
 }

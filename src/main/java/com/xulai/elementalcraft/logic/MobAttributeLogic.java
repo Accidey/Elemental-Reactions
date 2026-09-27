@@ -37,20 +37,22 @@ public class MobAttributeLogic {
             EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
     };
 
+    public static final String NBT_ATTRIBUTES_SET = "ElementalCraft_AttributesSet";
+
     public static void processMob(Mob mob) {
         CompoundTag data = mob.getPersistentData();
-        if (data.getBooleanOr("ElementalCraft_AttributesSet", false)) return;
+        if (data.getBooleanOr(NBT_ATTRIBUTES_SET, false)) return;
 
         String entityId = net.minecraft.world.entity.EntityType.getKey(mob.getType()).toString();
 
         if (ElementalConfig.matchesBlacklist(ElementalConfig.cachedBlacklist, entityId)) {
-            data.putBoolean("ElementalCraft_AttributesSet", true);
+            data.putBoolean(NBT_ATTRIBUTES_SET, true);
             return;
         }
 
         java.util.Set<ElementType> blockedElements = ElementalConfig.getBlockedElements(ElementalConfig.cachedBlacklist, entityId);
         if (blockedElements.size() >= 4) {
-            data.putBoolean("ElementalCraft_AttributesSet", true);
+            data.putBoolean(NBT_ATTRIBUTES_SET, true);
             return;
         }
 
@@ -87,7 +89,7 @@ public class MobAttributeLogic {
         boolean isMonster = (mob instanceof Monster);
 
         if (!isMonster && !isNeutral) {
-            data.putBoolean("ElementalCraft_AttributesSet", true);
+            data.putBoolean(NBT_ATTRIBUTES_SET, true);
             return;
         }
 
@@ -95,12 +97,12 @@ public class MobAttributeLogic {
         boolean willGenerate = ThreadLocalRandom.current().nextDouble() < chance;
 
         if (!willGenerate) {
-            data.putBoolean("ElementalCraft_AttributesSet", true);
+            data.putBoolean(NBT_ATTRIBUTES_SET, true);
             return;
         }
 
         applyRandomAttributes(mob, blockedElements);
-        data.putBoolean("ElementalCraft_AttributesSet", true);
+        data.putBoolean(NBT_ATTRIBUTES_SET, true);
     }
 
     private static ElementType pickBiasedElement(ServerLevel level, BlockPos pos, java.util.Set<ElementType> blocked) {
@@ -188,6 +190,8 @@ public class MobAttributeLogic {
         MinecraftServer server = mob.level().getServer();
         if (server == null) return;
 
+        persistentData.putBoolean(NBT_ATTRIBUTES_SET, true);
+
         com.xulai.elementalcraft.util.ServerTaskScheduler.schedule(server, 1, () -> {
             if (!mob.isAlive()) return;
 
@@ -200,7 +204,6 @@ public class MobAttributeLogic {
             boolean anyForced = data.attackType() != ElementType.NONE || data.enhanceType() != ElementType.NONE
                     || data.resistType() != ElementType.NONE;
             if (anyForced && attackType == ElementType.NONE && enhanceType == ElementType.NONE && resistType == ElementType.NONE) {
-                persistentData.putBoolean("ElementalCraft_AttributesSet", true);
                 return;
             }
 
@@ -238,8 +241,6 @@ public class MobAttributeLogic {
             persistentData.putInt("EC_DropEnhancePoints", enhancePoints);
             persistentData.putInt("EC_DropResistPoints", resistPoints);
             persistentData.putString("EC_DropResistType", resistType != null ? resistType.getId() : "");
-
-            persistentData.putBoolean("ElementalCraft_AttributesSet", true);
 
             for (EquipmentSlot slot : EquipmentSlot.values()) {
                 mob.setDropChance(slot, 0.0F);

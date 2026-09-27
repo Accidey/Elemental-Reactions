@@ -48,7 +48,7 @@ public class MobPotionThrowLogic {
         if (!(event.getEntity() instanceof Mob mob)) return;
 
         CompoundTag data = mob.getPersistentData();
-        if (!data.getBooleanOr("ElementalCraft_AttributesSet", false)) return;
+        if (!data.getBooleanOr(MobAttributeLogic.NBT_ATTRIBUTES_SET, false)) return;
 
         if (!data.getBooleanOr(NBT_BOTTLE_ROLLED, false)) {
             tryEquip(mob, data);
