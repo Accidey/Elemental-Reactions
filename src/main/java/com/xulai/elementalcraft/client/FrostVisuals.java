@@ -40,7 +40,7 @@ public class FrostVisuals {
 
     private static final Random RANDOM = new Random();
 
-    private static final Set<Projectile> ACTIVE_PROJECTILES = Collections.synchronizedSet(new HashSet<>());
+    private static final Set<Projectile> ACTIVE_PROJECTILES = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
     public static int calculateVisualTier(LivingEntity entity, ElementType type) {
         if (type != ElementType.FROST) return 0;
