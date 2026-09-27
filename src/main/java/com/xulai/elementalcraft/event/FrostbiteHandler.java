@@ -836,7 +836,10 @@ public class FrostbiteHandler {
         if (entity.level().isClientSide) return;
         CompoundTag data = entity.getPersistentData();
         if (!data.contains(NBT_FROSTBITE_STACKS) && !data.contains(NBT_FROSTBITE_DURATION)) return;
-        clearFrostbite(entity);
+        cleanupFrostbitePersistentData(entity);
+        if (entity instanceof ServerPlayer sp) {
+            sp.connection.send(new ClientboundRemoveMobEffectPacket(sp.getId(), ModMobEffects.FROSTBITE));
+        }
     }
 
     @SubscribeEvent
