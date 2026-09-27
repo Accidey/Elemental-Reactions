@@ -50,8 +50,7 @@ public class FrostbiteEffect extends MobEffect {
     public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         if (entity.level().isClientSide) return true;
 
-        int damageInterval = ElementalThunderFrostReactionsConfig.frostbiteDamageIntervalTicks;
-        if (entity.tickCount % damageInterval == 0) {
+        {
             float baseDamage = (float) ElementalThunderFrostReactionsConfig.frostbitePeriodicDamage;
             float damage = baseDamage;
             ElementType element = ElementUtils.getConsistentAttackElement(entity);
@@ -89,6 +88,8 @@ public class FrostbiteEffect extends MobEffect {
 
     @Override
     public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
-        return true;
+        int interval = ElementalThunderFrostReactionsConfig.frostbiteDamageIntervalTicks;
+        if (interval < 1) interval = 1;
+        return duration % interval == 0;
     }
 }
