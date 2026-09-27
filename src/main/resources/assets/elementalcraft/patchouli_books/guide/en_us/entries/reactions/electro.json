@@ -1,0 +1,27 @@
+{
+  "name": "Electrified Water",
+  "category": "elementalcraft:reactions",
+  "icon": "minecraft:conduit",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Carrying $(thing)Static Shock$() into water electrifies it. Everything swimming in the pool is hit at once.$(br2)$(li)Radius $(thing)3 blocks$(), +1 per static stack$(li)Every victim instantly takes $(thing)50% of your remaining static damage$()$(li)Every victim is $(thing)Paralysed$() for $(thing)5 seconds$()$(br2)Charge yourself, then jump in. Against a group of swimming mobs this is a mass disable."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Charged steam",
+      "text": "Walk into a $(thing)Low-Heat Steam Cloud$() while carrying static charge and the cloud becomes a $(thing)Static Steam Cloud$().$(br2)Anyone inside is paralysed and takes the full remaining static damage settlement, and the cloud keeps that charge until it dissipates. A steam cloud is an area denial tool. A charged one is a trap."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Charged creepers",
+      "text": "Static arcs into creepers. A charged creeper has a chance to become a $(thing)powered creeper$() on the spot - doubled explosion radius. If it was already powered, the charge detonates it immediately.$(br2)A charged creeper that the mod sets $(thing)Scorched$() also explodes with a shortened fuse and deals elemental damage instead of ordinary blast damage."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Breaking ice with lightning",
+      "text": "At $(thing)3 or more static stacks$() a frozen target can free itself: every 2 seconds there is a $(thing)20% chance per stack$() that the ice shatters, converting all of the Freeze into an equal number of $(thing)Wetness$() levels.$(br2)At 5 stacks this is guaranteed. One disable becomes another, and the wet target is now open to steam and to being frozen again."
+    }
+  ]
+}

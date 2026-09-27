@@ -1,0 +1,6 @@
+{
+  "name": "生物与群系",
+  "description": "生物如何获得元素属性、各元素分布在哪些地方，以及怎样刷取附魔书。",
+  "icon": "minecraft:zombie_spawn_egg",
+  "sortnum": 5
+}

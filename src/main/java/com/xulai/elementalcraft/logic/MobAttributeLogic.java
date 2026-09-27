@@ -52,6 +52,12 @@ public class MobAttributeLogic {
             return;
         }
 
+        java.util.Set<ElementType> blockedElements = ElementalConfig.getBlockedElements(ElementalConfig.cachedBlacklist, entityId);
+        if (blockedElements.size() >= 4) {
+            data.putBoolean("ElementalCraft_AttributesSet", true);
+            return;
+        }
+
         java.util.List<ForcedAttributeHelper.ForcedData> forcedList = ForcedAttributeHelper.getForcedDataList(mob.getType());
         ForcedAttributeHelper.ForcedData forced = null;
         if (!forcedList.isEmpty()) {
@@ -77,7 +83,7 @@ public class MobAttributeLogic {
         }
 
         if (forced != null) {
-            applyForcedAttributes(mob, data, forced);
+            applyForcedAttributes(mob, data, forced, blockedElements);
             return;
         }
 
@@ -97,16 +103,34 @@ public class MobAttributeLogic {
             return;
         }
 
-        applyRandomAttributes(mob);
+        applyRandomAttributes(mob, blockedElements);
         data.putBoolean("ElementalCraft_AttributesSet", true);
     }
 
-    private static void applyRandomAttributes(Mob mob) {
+    private static ElementType pickBiasedElement(ServerLevel level, BlockPos pos, java.util.Set<ElementType> blocked) {
+        if (blocked.isEmpty()) {
+            return BiomeAttributeBias.getBiasedElement(level, pos);
+        }
+        for (int i = 0; i < 8; i++) {
+            ElementType candidate = BiomeAttributeBias.getBiasedElement(level, pos);
+            if (!blocked.contains(candidate)) {
+                return candidate;
+            }
+        }
+        return AttributeEquipUtils.randomNonNoneElement(blocked);
+    }
+
+    private static ElementType filterBlocked(ElementType type, java.util.Set<ElementType> blocked) {
+        if (type == null) return ElementType.NONE;
+        return blocked.contains(type) ? ElementType.NONE : type;
+    }
+
+    private static void applyRandomAttributes(Mob mob, java.util.Set<ElementType> blocked) {
         ItemStack mainHand = mob.getMainHandItem();
         ItemStack offHand = mob.getOffhandItem();
         boolean hasHandItem = !mainHand.isEmpty() || !offHand.isEmpty();
 
-        ElementType mainType = BiomeAttributeBias.getBiasedElement((ServerLevel) mob.level(), mob.blockPosition());
+        ElementType mainType = pickBiasedElement((ServerLevel) mob.level(), mob.blockPosition(), blocked);
 
         ElementType attackType = null;
         if (ThreadLocalRandom.current().nextDouble() < ElementalConfig.attackChance) {
@@ -119,8 +143,11 @@ public class MobAttributeLogic {
         ElementType resistType;
         if (attackType != null && ThreadLocalRandom.current().nextDouble() < ElementalConfig.counterResistChance) {
             resistType = AttributeEquipUtils.getCounterElement(attackType);
+            if (blocked.contains(resistType)) {
+                resistType = AttributeEquipUtils.randomNonNoneElement(blocked);
+            }
         } else {
-            resistType = AttributeEquipUtils.randomNonNoneElement();
+            resistType = AttributeEquipUtils.randomNonNoneElement(blocked);
         }
         int resistTotalPoints = ElementalConfig.rollMonsterResist();
 
@@ -190,18 +217,25 @@ public class MobAttributeLogic {
         }
     }
 
-    private static void applyForcedAttributes(Mob mob, CompoundTag persistentData, ForcedAttributeHelper.ForcedData data) {
+    private static void applyForcedAttributes(Mob mob, CompoundTag persistentData, ForcedAttributeHelper.ForcedData data, java.util.Set<ElementType> blocked) {
         MinecraftServer server = mob.level().getServer();
         if (server == null) return;
 
         server.tell(new TickTask(server.getTickCount() + 1, () -> {
             if (!mob.isAlive()) return;
 
-            ElementType attackType = data.attackType();
-            ElementType enhanceType = data.enhanceType();
-            int enhancePoints = data.enhancePoints();
-            ElementType resistType = data.resistType();
-            int resistPoints = data.resistPoints();
+            ElementType attackType = filterBlocked(data.attackType(), blocked);
+            ElementType enhanceType = filterBlocked(data.enhanceType(), blocked);
+            int enhancePoints = enhanceType == data.enhanceType() ? data.enhancePoints() : 0;
+            ElementType resistType = filterBlocked(data.resistType(), blocked);
+            int resistPoints = resistType == data.resistType() ? data.resistPoints() : 0;
+
+            boolean anyForced = data.attackType() != ElementType.NONE || data.enhanceType() != ElementType.NONE
+                    || data.resistType() != ElementType.NONE;
+            if (anyForced && attackType == ElementType.NONE && enhanceType == ElementType.NONE && resistType == ElementType.NONE) {
+                persistentData.putBoolean("ElementalCraft_AttributesSet", true);
+                return;
+            }
 
             ItemStack mainHand = mob.getMainHandItem();
             ItemStack offHand = mob.getOffhandItem();

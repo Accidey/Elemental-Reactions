@@ -991,10 +991,10 @@ public class ElementalFireNatureReactionsConfig {
                      "例如设为 0.1：每秒减少该装备最大耐久的 0.1%（不足 1 点时按 1 点计）。",
                      "层数决定侵蚀几件装备：1层→1件，2层→2件，5层→全部护甲+主手。",
                      "Durability damage per second to worn equipment, as a percentage of each item's max durability.",
-                     "Example 0.1 = 0.1% of max durability per second (minimum 1 point). 0 = disable.",
+                     "Example 1.0 = 1.0% of max durability per second (minimum 1 point). 0 = disable.",
                      "Stacks determine how many pieces are affected: 1→1, 2→2, 5→all armor+mainhand.",
-                     "Default: 0.1 (0.1%) / 默认：0.1（0.1%）")
-            .defineInRange("spore_durability_percent", 0.1, 0.0, 100.0);
+                     "Default: 1.0 (1.0%) / 默认：1.0（1.0%）")
+            .defineInRange("spore_durability_percent", 1.0, 0.0, 100.0);
     BUILDER.pop();
 
     BUILDER.push("contagion_system");

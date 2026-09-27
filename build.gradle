@@ -54,9 +54,6 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    // 如需外部依赖可在此添加仓库
-    // mavenCentral()
-    // maven { url = "https://maven.minecraftforge.net" }
 }
 
 dependencies {

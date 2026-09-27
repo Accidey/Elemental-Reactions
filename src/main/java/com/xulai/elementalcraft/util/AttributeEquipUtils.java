@@ -168,8 +168,17 @@ public class AttributeEquipUtils {
     }
 
     public static ElementType randomNonNoneElement() {
-        ElementType[] valid = {ElementType.FIRE, ElementType.NATURE, ElementType.FROST, ElementType.THUNDER};
-        return valid[RANDOM.nextInt(valid.length)];
+        return randomNonNoneElement(Set.of());
+    }
+
+    public static ElementType randomNonNoneElement(Set<ElementType> excluded) {
+        ElementType[] all = {ElementType.FIRE, ElementType.NATURE, ElementType.FROST, ElementType.THUNDER};
+        List<ElementType> valid = new ArrayList<>(all.length);
+        for (ElementType type : all) {
+            if (!excluded.contains(type)) valid.add(type);
+        }
+        if (valid.isEmpty()) return ElementType.NONE;
+        return valid.get(RANDOM.nextInt(valid.size()));
     }
 
     private static Enchantment getAttackEnchantment(ElementType type) {

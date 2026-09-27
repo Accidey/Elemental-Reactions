@@ -1,6 +1,10 @@
 {
   "itemGroup.elementalcraft": "§6Elemental Forging: Reactions",
 
+  "elementalcraft.book.guide.name": "Elemental Forging: Reactions",
+  "elementalcraft.book.guide.subtitle": "Forge 1.20.1 Handbook",
+  "elementalcraft.book.guide.landing": "Welcome.$(br2)This mod adds four elements, twelve enchantments, six status effects and dozens of reactions between them.$(br2)Read $(l:elementalcraft:basics/overview)Overview$(/l) first if you are new, or jump straight to $(l:elementalcraft:basics/restraint)The Restraint Cycle$(/l) if you are looking for an edge in a fight.",
+
   "element.none": "None",
   "element.nature": "§2🌿 Nature",
   "element.thunder": "§5⚡ Thunder",

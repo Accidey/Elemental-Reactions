@@ -1,0 +1,27 @@
+{
+  "name": "强制物品与强制属性",
+  "category": "elementalcraft:config",
+  "icon": "minecraft:smithing_table",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "强制系统让整合包作者可以声明某个物品或生物$(l)始终$()带元素属性，无需经过附魔台。$(br2)对物品而言，强制属性会以真实附魔的形式落地：物品进入玩家背包后自动附魔，并写入物品的自定义数据以便后续更新或剥离。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "forced_weapons",
+      "text": "在 $(thing)elementalcraft-forced-items.toml$() 中：$(br2)$(thing)\"模组:物品ID,元素\"$()$(br2)例如：$(br2)$(thing)\"minecraft:golden_sword,thunder\"$()$(br2)玩家携带该物品时，它会获得 I 级对应属性附魔。删除该行后，下次背包检查会移除附魔。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "forced_armor",
+      "text": "同一个文件中：$(br2)$(thing)\"模组:物品ID,强化元素,强化点数,抗性元素,抗性点数\"$()$(br2)例如：$(br2)$(thing)\"minecraft:iron_chestplate,frost,50,fire,25\"$()$(br2)点数可以是单个数字或区间，例如 $(thing)20-60$()；区间会按主配置中的分档权重抽取。玩家物品单件上限为 $(thing)V 级$()。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "forced_entities",
+      "text": "在 $(thing)elementalcraft-common.toml$() 的 $(thing)forced_attributes.forced_entities$() 中：$(br2)$(thing)\"模组:实体ID,攻击,强化元素,强化点数,抗性元素,抗性点数\"$()$(br2)例如：$(br2)$(thing)\"minecraft:zombie,fire,fire,60,frost,40\"$()$(br2)这会替该生物跳过随机生成。注意：没有强制条目的生物会被$(thing)下界$()与$(thing)末地$()的维度强制覆盖，想例外就得给它加条目。"
+    }
+  ]
+}

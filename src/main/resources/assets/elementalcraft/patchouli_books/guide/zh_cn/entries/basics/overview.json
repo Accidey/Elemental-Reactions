@@ -1,0 +1,33 @@
+{
+  "name": "总览",
+  "category": "elementalcraft:basics",
+  "icon": "minecraft:knowledge_book",
+  "sortnum": 0,
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "本模组$(l)不添加任何新物品$()。它只是在原版之上叠加了一套$(thing)元素战斗系统$()：四大元素、十二种附魔、六种状态效果，以及它们之间数十种元素反应。所有内容都由你熟悉的附魔来驱动。$(br2)每一场战斗只需要问两个问题：你带的是$(thing)哪个元素$()，以及目标身上已经有$(thing)什么状态$()。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "读懂界面",
+      "text": "$(li)物品名以带颜色的标签开头（例如 $(#c00)[赤焰]$()）就说明它是属性物品。$(li)名字下方会显示$(thing)属性强化 +N$()与$(thing)属性抗性 +N$()，这些点数才是本系统的真正货币，而不是附魔等级。$(li)装有$(thing)Jade$()时，对准生物即可查看它的攻击属性、强化、抗性，以及你与它谁克制谁。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "力量看得见",
+      "text": "数值不必死记，它会直接画在屏幕上。同一元素的总强化点数越高，你的近战挥砍与箭矢外观就越强：$(br2)$(li)$(thing)25 点$()：挥砍出现火焰弧$(li)$(thing)50 点$()：加入灵魂火，箭矢拖出螺旋尾迹$(li)$(thing)75 点$()：出现岩浆颗粒$(br2)单件护甲满级正好 25 点，所以每一档外观大约等于多一件满级护甲。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "接下来读什么",
+      "text": "新手请按顺序阅读：$(l:elementalcraft:basics/elements)四大元素$(/l) → $(l:elementalcraft:enchant/guide)元素附魔$(/l) → $(l:elementalcraft:effects/wetness)状态效果$(/l)。$(br2)整合包作者可直接跳到 $(l:elementalcraft:config/commands)命令与配置$(/l)。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "如何获得本书",
+      "text": "本手册是一本 Patchouli 书籍。在默认设置下，你首次进入世界时会自动获得一本。$(br2)你也可以在创造模式的$(thing)工具与实用物品$()标签页找到它，或用它发给任何人：$(br2)$(thing)/give @p patchouli:guide_book{patchouli:book:\"elementalcraft:guide\"}$()"
+    }
+  ]
+}

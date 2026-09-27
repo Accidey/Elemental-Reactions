@@ -17,11 +17,20 @@ public final class ForcedItemHelper {
 
     private static final Map<Item, ArmorTemplate> ARMOR_CACHE = new ConcurrentHashMap<>();
 
+    private static final Map<Item, ArmorData> ARMOR_ROLLED_CACHE = new ConcurrentHashMap<>();
+
+    private static volatile boolean weaponsParsed;
+
+    private static volatile boolean armorParsed;
+
     private ForcedItemHelper() {}
 
     public static void clearCache() {
         WEAPON_CACHE.clear();
         ARMOR_CACHE.clear();
+        ARMOR_ROLLED_CACHE.clear();
+        weaponsParsed = false;
+        armorParsed = false;
     }
 
     public record WeaponData(ElementType attackType) {}
@@ -38,24 +47,27 @@ public final class ForcedItemHelper {
     }
 
     public static WeaponData getForcedWeapon(Item item) {
-        if (WEAPON_CACHE.isEmpty() && !ForcedItemConfig.FORCED_WEAPONS.get().isEmpty()) {
+        if (!weaponsParsed) {
             parseWeapons();
         }
         return WEAPON_CACHE.get(item);
     }
 
     public static ArmorData getForcedArmor(Item item) {
-        if (ARMOR_CACHE.isEmpty() && !ForcedItemConfig.FORCED_ARMOR.get().isEmpty()) {
+        if (!armorParsed) {
             parseArmor();
         }
 
         ArmorTemplate template = ARMOR_CACHE.get(item);
         if (template == null) return null;
 
-        int enhancePts = template.enhanceRange().roll();
-        int resistPts = template.resistRange().roll();
-
-        return new ArmorData(template.enhanceType(), enhancePts, template.resistType(), resistPts);
+        ArmorData rolled = ARMOR_ROLLED_CACHE.get(item);
+        if (rolled == null) {
+            rolled = new ArmorData(template.enhanceType(), template.enhanceRange().roll(),
+                    template.resistType(), template.resistRange().roll());
+            ARMOR_ROLLED_CACHE.put(item, rolled);
+        }
+        return rolled;
     }
 
     @SuppressWarnings("deprecation")
@@ -76,6 +88,7 @@ public final class ForcedItemHelper {
             } catch (Exception ignored) {
             }
         }
+        weaponsParsed = true;
     }
 
     @SuppressWarnings("deprecation")
@@ -101,6 +114,7 @@ public final class ForcedItemHelper {
             } catch (Exception ignored) {
             }
         }
+        armorParsed = true;
     }
 
     private static ElementType parseElement(String s) {

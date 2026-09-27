@@ -8,6 +8,7 @@ import com.xulai.elementalcraft.util.ElementUtils;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -60,7 +61,7 @@ public class NatureVisuals {
             if (!entity.level().isClientSide) return;
             if (!ElementalVisualConfig.natureMeleeEnabled) return;
 
-            if (entity.swinging && entity.swingTime == 1) {
+            if (entity.swinging && entity.swingingArm == InteractionHand.MAIN_HAND && entity.swingTime == 1) {
                 ItemStack stack = entity.getMainHandItem();
                 if (!stack.getAttributeModifiers(EquipmentSlot.MAINHAND).containsKey(Attributes.ATTACK_DAMAGE)) {
                     return;

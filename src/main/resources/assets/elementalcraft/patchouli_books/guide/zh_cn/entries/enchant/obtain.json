@@ -1,0 +1,27 @@
+{
+  "name": "获取附魔",
+  "category": "elementalcraft:enchant",
+  "icon": "minecraft:enchanting_table",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "十二种附魔都注册为普通附魔，因此会出现在$(thing)附魔台$()中，也可以用$(thing)铁砧$()与附魔书打造。$(br2)属性附魔很便宜（权重 5，仅 I 级）；强化与抗性最高 V 级，经验消耗更高。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "生物掉落",
+      "text": "中期最稳定的来源是$(thing)属性生物$()本身。属性生物死亡时可能掉落$(thing)附魔书$()：$(br2)$(li)基础概率$(thing)50%$()$(li)每级$(thing)抢夺 +10%$()$(br2)掉落的书在三族中随机，等级随该生物自身的属性强度浮动——强化越高的精英，掉的书等级越高。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "不会掉落的东西",
+      "text": "属性生物的装备由模组发放，掉落率被设为$(thing)零$()。你无法从冰霜僵尸身上扒下它的附魔胸甲。$(br2)它们值得你打的理由是$(l)附魔书$()，不是装备。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "整合包作者",
+      "text": "如果希望某个固定物品（模组武器、Boss 护甲）始终带属性，请使用$(thing)强制物品$()系统，而不是手动附魔。参见 $(l:elementalcraft:config/forced)强制物品与强制属性$(/l)。"
+    }
+  ]
+}

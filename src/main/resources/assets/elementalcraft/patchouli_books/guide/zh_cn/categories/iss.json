@@ -1,0 +1,7 @@
+{
+  "name": "法术书联动",
+  "description": "《Iron's Spells 'n Spellbooks》的法术如何映射到四元素，以及由此解锁的反应。",
+  "icon": "irons_spellbooks:scroll",
+  "sortnum": 7,
+  "flag": "mod:irons_spellbooks"
+}

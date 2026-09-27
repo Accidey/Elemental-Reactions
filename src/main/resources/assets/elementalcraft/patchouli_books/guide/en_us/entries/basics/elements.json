@@ -1,0 +1,22 @@
+{
+  "name": "The Four Elements",
+  "category": "elementalcraft:basics",
+  "icon": "minecraft:blaze_powder",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Four elements exist, and every elemental item carries exactly one of them.$(br2)$(li)$(#c00)$(l)Fire$() - burns, dries, boils. Applies $(thing)Scorched$() and turns wet targets into $(thing)steam$().$(li)$(#00f)$(l)Frost$() - slows, freezes. Applies $(thing)Frostbite$() and, with Wetness, $(thing)Freeze$().$(li)$(#a0f)$(l)Thunder$() - shocks, stuns. Applies $(thing)Static Shock$() and, with Wetness, $(thing)Paralysis$().$(li)$(#2a2)$(l)Nature$() - poisons, spreads. Applies $(thing)Flammable Spores$() that detonate into $(thing)Toxic Blasts$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "What an element does for you",
+      "text": "An element gives you three things:$(br2)$(li)$(thing)Elemental damage$() added on top of your physical damage.$(li)$(thing)Reactions$() - the real payoff. Cold damage is decent; freezing a target solid is a win condition.$(li)$(thing)Restraint$() - a flat damage multiplier against the right element.$(br2)Damage alone will never carry you. Reactions will."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "A note on bows",
+      "text": "Attribute enchantments work on bows, crossbows and tridents too. Shoot a wet mob with a Fire-aspect bow and you get the same steam explosion a sword would produce.$(br2)Projectiles read the element of the $(thing)weapon that fired them$(), not the projectile itself."
+    }
+  ]
+}

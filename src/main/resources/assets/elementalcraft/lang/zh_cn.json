@@ -1,6 +1,10 @@
 {
   "itemGroup.elementalcraft": "§6属性锻造：元素反应",
 
+  "elementalcraft.book.guide.name": "属性锻造：元素反应",
+  "elementalcraft.book.guide.subtitle": "Forge 1.20.1 手册",
+  "elementalcraft.book.guide.landing": "欢迎。$(br2)本模组添加了四大元素、十二种附魔、六种状态效果，以及它们之间数十种元素反应。$(br2)新手请先看 $(l:elementalcraft:basics/overview)总览$(/l)；想在战斗中占上风，直接翻到 $(l:elementalcraft:basics/restraint)属性克制环$(/l)。",
+
   "element.none": "无属性",
   "element.nature": "§2🌿 自然",
   "element.thunder": "§5⚡ 雷霆",

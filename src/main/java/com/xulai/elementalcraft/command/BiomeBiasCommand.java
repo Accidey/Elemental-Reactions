@@ -24,8 +24,8 @@ public class BiomeBiasCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
                 Commands.literal("elementalcraft")
-                        .requires(source -> source.hasPermission(2))
                         .then(Commands.literal("biome")
+                                .requires(source -> source.hasPermission(2))
                                 .then(Commands.literal("add")
                                         .then(Commands.argument("element", StringArgumentType.word())
                                                 .suggests((ctx, builder) -> {
@@ -54,7 +54,7 @@ public class BiomeBiasCommand {
                                                     for (String line : lines) {
                                                         String trimmed = line.trim();
                                                         if (trimmed.isEmpty() || trimmed.startsWith("#")) continue;
-                                                        if (trimmed.startsWith(biomeId + ":")) {
+                                                        if (trimmed.startsWith(biomeId + ",")) {
                                                             String elem = trimmed.substring(biomeId.length() + 1).split(",")[0];
                                                             builder.suggest(elem);
                                                         }
@@ -83,7 +83,7 @@ public class BiomeBiasCommand {
     private static int addBiomeBias(CommandContext<CommandSourceStack> ctx, String elementStr, double probability) {
         CommandSourceStack source = ctx.getSource();
         if (!(source.getEntity() instanceof ServerPlayer player)) {
-            source.sendFailure(Component.translatable("command.elementalcraft.player_only"));
+            source.sendFailure(Component.translatable("command.elementalcraft.only_players"));
             return 0;
         }
 
@@ -97,7 +97,7 @@ public class BiomeBiasCommand {
         }
 
         List<String> currentList = new ArrayList<>(ElementalConfig.CUSTOM_BIOME_ATTRIBUTE_BIAS.get());
-        String prefix = biomeId + ":";
+        String prefix = biomeId + ",";
 
         boolean hasAll = currentList.stream().anyMatch(l -> l.trim().startsWith(prefix + "all,"));
         boolean hasTarget = currentList.stream().anyMatch(l -> l.trim().startsWith(prefix + (isAll ? "all," : type.getId() + ",")));
@@ -116,7 +116,7 @@ public class BiomeBiasCommand {
             return 0;
         }
 
-        String newEntry = biomeId + ":" + (isAll ? "all" : type.getId()) + "," + String.format("%.1f", probability);
+        String newEntry = biomeId + "," + (isAll ? "all" : type.getId()) + "," + String.format("%.1f", probability);
         currentList.add(newEntry);
 
         ElementalConfig.CUSTOM_BIOME_ATTRIBUTE_BIAS.set(currentList);
@@ -137,7 +137,7 @@ public class BiomeBiasCommand {
     private static int removeBiomeBias(CommandContext<CommandSourceStack> ctx, String elementStr) {
         CommandSourceStack source = ctx.getSource();
         if (!(source.getEntity() instanceof ServerPlayer player)) {
-            source.sendFailure(Component.translatable("command.elementalcraft.player_only"));
+            source.sendFailure(Component.translatable("command.elementalcraft.only_players"));
             return 0;
         }
 
@@ -151,14 +151,14 @@ public class BiomeBiasCommand {
         }
 
         List<String> currentList = new ArrayList<>(ElementalConfig.CUSTOM_BIOME_ATTRIBUTE_BIAS.get());
-        String prefix = biomeId + ":";
+        String prefix = biomeId + ",";
 
         boolean removed = false;
 
         if (isAll) {
             removed = currentList.removeIf(l -> l.trim().startsWith(prefix));
         } else {
-            String target = biomeId + ":" + type.getId() + ",";
+            String target = biomeId + "," + type.getId() + ",";
             removed = currentList.removeIf(l -> l.trim().startsWith(target));
         }
 
@@ -190,7 +190,7 @@ public class BiomeBiasCommand {
         ServerPlayer player = source.getPlayer();
 
         if (player == null) {
-            source.sendFailure(Component.translatable("command.elementalcraft.player_only"));
+            source.sendFailure(Component.translatable("command.elementalcraft.only_players"));
             return 0;
         }
 
@@ -201,7 +201,7 @@ public class BiomeBiasCommand {
         for (String line : allLines) {
             String trimmed = line.trim();
             if (trimmed.isEmpty() || trimmed.startsWith("#")) continue;
-            if (trimmed.startsWith(biomeId + ":")) {
+            if (trimmed.startsWith(biomeId + ",")) {
                 relevant.add(trimmed.substring(biomeId.length() + 1));
             }
         }

@@ -84,8 +84,11 @@ public class FrostbiteHandler {
 
     public static final String NBT_TEMP_FROSTBITE = "EC_TempFrostbite";
     public static final String NBT_TEMP_FROSTBITE_STACKS = "EC_TempFrostbiteStacks";
+    public static final String NBT_TEMP_FROSTBITE_EXPIRE = "EC_TempFrostbiteExpire";
     public static final String NBT_FROSTBITE_AURA_LOGGED = "EC_FrostbiteAuraLogged";
     public static final String NBT_FROST_AURA_TRACKED = "EC_FrostAuraTracked";
+
+    private static final int TEMP_FROSTBITE_TTL_TICKS = 40;
 
     private static final Set<UUID> removedByClear = new HashSet<>();
     private static volatile boolean suppressRemoveCleanup = false;
@@ -578,6 +581,10 @@ public class FrostbiteHandler {
 
         if (!data.contains(NBT_FROSTBITE_STACKS)) {
             if (isTempFrostbite(entity)) {
+                if (gameTime >= data.getLong(NBT_TEMP_FROSTBITE_EXPIRE)) {
+                    clearTempFrostbite(entity);
+                    return;
+                }
                 int damageInterval = ElementalThunderFrostReactionsConfig.frostbiteDamageIntervalTicks;
                 if (damageInterval < 1) damageInterval = 1;
                 if (entity.tickCount % damageInterval == 0) {
@@ -763,8 +770,7 @@ public class FrostbiteHandler {
         }
 
         data.remove(NBT_FROST_AURA_TRACKED);
-        data.remove(NBT_TEMP_FROSTBITE);
-        data.remove(NBT_TEMP_FROSTBITE_STACKS);
+        clearTempFrostbite(entity);
         entity.setTicksFrozen(0);
     }
 
@@ -951,6 +957,7 @@ public class FrostbiteHandler {
         boolean isNew = !data.getBoolean(NBT_TEMP_FROSTBITE);
         data.putBoolean(NBT_TEMP_FROSTBITE, true);
         data.putInt(NBT_TEMP_FROSTBITE_STACKS, stacks);
+        data.putLong(NBT_TEMP_FROSTBITE_EXPIRE, target.level().getGameTime() + TEMP_FROSTBITE_TTL_TICKS);
         if (isNew) data.putInt(NBT_FROSTBITE_AURA_LOGGED, 0);
         applyTempFrostbiteSlowness(target, stacks);
         if (WetnessHandler.getWetnessLevel(target) > 0 && !isFrostbiteImmune(target) && !isFreezeImmune(target)) {
@@ -962,6 +969,7 @@ public class FrostbiteHandler {
         CompoundTag data = entity.getPersistentData();
         data.remove(NBT_TEMP_FROSTBITE);
         data.remove(NBT_TEMP_FROSTBITE_STACKS);
+        data.remove(NBT_TEMP_FROSTBITE_EXPIRE);
         data.remove(NBT_FROSTBITE_AURA_LOGGED);
         removeTempFrostbiteSlowness(entity);
     }

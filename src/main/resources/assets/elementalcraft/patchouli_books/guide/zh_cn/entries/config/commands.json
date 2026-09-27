@@ -1,0 +1,33 @@
+{
+  "name": "命令",
+  "category": "elementalcraft:config",
+  "icon": "minecraft:command_block",
+  "sortnum": 0,
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "所有功能都在 $(thing)/elementalcraft$() 下。$(br2)$(li)$(thing)/elementalcraft debug$()：为当前玩家开启调试模式。开启后，每次攻击都会打印伤害公式，每个反应都会说明为何触发或为何失败。这是理解本系统最快的方式。$(li)$(thing)/elementalcraft reload$()：立即重载全部配置文件。$(br2)除 $(thing)debug$() 以外的所有子命令都需要权限等级 2。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "免疫黑名单",
+      "text": "手持$(thing)刷怪蛋$()执行：$(br2)$(thing)/elementalcraft blacklist <类型> add$()$(br2)$(li)$(l)类型$()：$(thing)frostbite、paralysis、static、scorched、spore、steam、wetness、freeze$()（装钢铁法术书时另有 $(thing)caster$()）$(li)$(thing)remove$() 配合同一个刷怪蛋可撤销$(li)$(thing)list$() 打印当前名单$(br2)需要权限等级 2。条目会写入对应配置文件并立即生效。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "强制物品",
+      "text": "手持物品执行：$(br2)$(li)$(thing)/elementalcraft item weapon add <元素>$()$(br2)要求手持物品自带攻击伤害与攻击速度，把它标记为始终携带该属性附魔。$(br2)$(li)$(thing)/elementalcraft item armor add <元素> [点数] [抗性元素] [抗性点数]$()$(br2)要求手持护甲（必须有护甲值）。例如：$(thing)armor add fire 50 frost 25$()。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "强制生物",
+      "text": "手持$(thing)刷怪蛋$()执行：$(br2)$(thing)/elementalcraft entity add <攻击元素> [强化元素] [强化点数] [抗性元素] [抗性点数]$()$(br2)该类型生物下次在玩家附近生成时会应用这套配置。$(br2)$(li)$(thing)entity remove$() 删除条目——已存在的生物保留装备。$(li)$(thing)/elementalcraft biome$() 查看你所在群系的元素偏向，并可增删条目。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "属性黑名单",
+      "text": "手持刷怪蛋执行：$(br2)$(thing)/elementalcraft entity blacklist add <元素|all>$()$(br2)$(li)$(thing)all$()：该生物永不获得任何属性。$(li)单个元素（如 $(thing)fire$()）：该生物仍可为冰霜、雷霆或自然，但永不为赤焰——无论作为攻击、强化还是抗性。$(li)$(thing)entity blacklist remove <元素|all>$()$(li)$(thing)entity blacklist list$()$(br2)在配置文件中写作 $(thing)\"minecraft:zombie:fire\"$()。"
+    }
+  ]
+}

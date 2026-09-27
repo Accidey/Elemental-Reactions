@@ -2,7 +2,9 @@ package com.xulai.elementalcraft.config;
 
 import com.xulai.elementalcraft.util.ElementType;
 import net.minecraftforge.common.ForgeConfigSpec;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class ElementalConfig {
@@ -37,6 +39,7 @@ public final class ElementalConfig {
 
     public static final ForgeConfigSpec.BooleanValue MOB_FLEE_ENABLED;
     public static final ForgeConfigSpec.BooleanValue POTION_STACK_64;
+    public static final ForgeConfigSpec.BooleanValue GUIDE_BOOK_ON_FIRST_JOIN;
 
     public static final ForgeConfigSpec.BooleanValue MOB_POTION_THROW_ENABLED;
     public static final ForgeConfigSpec.DoubleValue MOB_BOTTLE_EQUIP_CHANCE;
@@ -243,6 +246,18 @@ public final class ElementalConfig {
                         "",
                         "Default: true / 默认：true")
                 .define("potion_stack_64", true);
+
+        GUIDE_BOOK_ON_FIRST_JOIN = BUILDER
+                .comment("玩家首次进入世界时，自动给予一本本模组的指引手册。",
+                        "需要安装 Patchouli，否则不会给予任何物品。",
+                        "每名玩家在世界中只给予一次（死亡后不会重复给予）。",
+                        "",
+                        "Give the mod's Patchouli guide book to a player the first time they join the world.",
+                        "Requires Patchouli to be installed, otherwise nothing is given.",
+                        "Each player receives it once per world (it will not be given again after death).",
+                        "",
+                        "Default: true / 默认：true")
+                .define("guide_book_on_first_join", true);
 
         BUILDER.pop();
 
@@ -606,6 +621,9 @@ public final class ElementalConfig {
                          "",
                          "也支持模组命名空间格式：[\"iceandfire\"] 会屏蔽该模组全部实体。 / Also supports mod namespace format: [\"iceandfire\"] to blacklist all entities from that mod.",
                          "",
+                         "单元素屏蔽格式：[\"minecraft:zombie:fire\"] 仅屏蔽该实体的赤焰属性，其它属性仍可生成。",
+                         "Per-element format: [\"minecraft:zombie:fire\"] blocks only Fire for that entity; other elements still generate.",
+                         "",
                          "Examples / 示例：",
                          "  \"minecraft:creeper\"      - Creeper never gains attributes / 苦力怕永不获得属性",
                          "  \"minecraft:ghast\"        - Ghast never gains attributes / 恶魂永不获得属性",
@@ -744,7 +762,7 @@ public final class ElementalConfig {
                         "  \"minecraft:jungle,nature,60\"",
                         "    → Jungle: Nature gets 60% weight / 丛林：自然权重 60%")
                 .defineListAllowEmpty("custom_biome_attribute_bias", List.of(),
-                        obj -> obj instanceof String s && s.matches("^[a-z_]+:[a-z_]+,[a-z]+,\\d{1,3}(\\.\\d+)?$"));
+                        obj -> obj instanceof String s && s.matches("^[a-z0-9_.-]+:[a-z0-9_./-]+,[a-z]+,\\d{1,3}(\\.\\d+)?$"));
 
         BUILDER.pop();
 
@@ -780,12 +798,13 @@ public final class ElementalConfig {
 
     public static boolean mobFleeEnabled = true;
     public static boolean potionStack64Enabled = true;
+    public static boolean guideBookOnFirstJoin = true;
 
     public static boolean mobPotionThrowEnabled = true;
     public static double mobBottleEquipChance = 0.35;
     public static int mobBottleThrowCooldown = 200;
 
-    public static double enchantedBookDropChance = 0.05;
+    public static double enchantedBookDropChance = 0.5;
     public static double enchantedBookLootingBonus = 0.10;
     public static double enchantedBookLevelSpread = 1.0;
 
@@ -827,6 +846,7 @@ public final class ElementalConfig {
 
         mobFleeEnabled = MOB_FLEE_ENABLED.get();
         potionStack64Enabled = POTION_STACK_64.get();
+        guideBookOnFirstJoin = GUIDE_BOOK_ON_FIRST_JOIN.get();
 
         mobPotionThrowEnabled = MOB_POTION_THROW_ENABLED.get();
         mobBottleEquipChance = MOB_BOTTLE_EQUIP_CHANCE.get();
@@ -839,6 +859,10 @@ public final class ElementalConfig {
 
     public static int getStrengthPerHalfDamage() {
         return strengthPerHalfDamage;
+    }
+
+    public static boolean isGuideBookOnFirstJoin() {
+        return guideBookOnFirstJoin;
     }
 
     public static int getResistPerHalfReduction() {
@@ -922,5 +946,28 @@ public final class ElementalConfig {
                 return true;
         }
         return false;
+    }
+
+    public static Set<ElementType> getBlockedElements(List<? extends String> blacklist, String entityId) {
+        if (blacklist == null || blacklist.isEmpty()) return Set.of();
+
+        Set<ElementType> blocked = null;
+        for (String raw : blacklist) {
+            if (raw == null) continue;
+            String entry = raw.replace("\"", "").trim();
+            int last = entry.lastIndexOf(':');
+            if (last <= 0 || entry.indexOf(':') == last) continue;
+            if (!entry.substring(0, last).equals(entityId)) continue;
+
+            String elementId = entry.substring(last + 1).toLowerCase();
+            if (elementId.equals("all")) {
+                return EnumSet.of(ElementType.FIRE, ElementType.NATURE, ElementType.FROST, ElementType.THUNDER);
+            }
+            ElementType type = ElementType.fromId(elementId);
+            if (type == null || type == ElementType.NONE) continue;
+            if (blocked == null) blocked = EnumSet.noneOf(ElementType.class);
+            blocked.add(type);
+        }
+        return blocked == null ? Set.of() : blocked;
     }
 }

@@ -1,0 +1,27 @@
+{
+  "name": "Forced Items & Attributes",
+  "category": "elementalcraft:config",
+  "icon": "minecraft:smithing_table",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The forced systems let a pack maker declare that a specific item or mob is $(l)always$() elemental, without touching the enchanting table.$(br2)On items, a forced element is realised as a real enchantment: it is applied automatically once the item is in a player's inventory, and tracked in the item's custom data so it can be updated or stripped later."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "forced_weapons",
+      "text": "In $(thing)elementalcraft-forced-items.toml$():$(br2)$(thing)\"modid:item_id,element\"$()$(br2)Example:$(br2)$(thing)\"minecraft:golden_sword,thunder\"$()$(br2)The item gains that Aspect at level I whenever a player carries it. Removing the line strips the enchantment again on the next inventory check."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "forced_armor",
+      "text": "In the same file:$(br2)$(thing)\"modid:item_id,enh_element,enh_points,res_element,res_points\"$()$(br2)Example:$(br2)$(thing)\"minecraft:iron_chestplate,frost,50,fire,25\"$()$(br2)Points may be a single number or a range such as $(thing)20-60$(); ranges are rolled from the tier weights in the common config. Player items are capped at $(thing)level V per piece$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "forced_entities",
+      "text": "In $(thing)elementalcraft-common.toml$() -> $(thing)forced_attributes.forced_entities$():$(br2)$(thing)\"modid:entity_id,attack,enh_element,enh_points,res_element,res_points\"$()$(br2)Example:$(br2)$(thing)\"minecraft:zombie,fire,fire,60,frost,40\"$()$(br2)This replaces random generation for that mob. Note that the $(thing)Nether$() and $(thing)End$() dimension overrides are applied to any mob that has no forced entry, so add entries there if you want exceptions."
+    }
+  ]
+}

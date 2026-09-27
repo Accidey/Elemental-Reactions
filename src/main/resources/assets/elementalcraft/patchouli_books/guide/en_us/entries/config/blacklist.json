@@ -1,0 +1,37 @@
+{
+  "name": "Blacklists & Biome Bias",
+  "category": "elementalcraft:config",
+  "icon": "minecraft:barrier",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Blacklists exempt entities from a mechanic, or stop them becoming elemental at all. In $(thing)elementalcraft-common.toml$():$(br2)$(thing)blacklisted_entities$() - entities that never receive attributes. One entry per line, written as a full id such as $(thing)\"minecraft:zombie\"$(). Writing only a namespace, e.g. $(thing)\"cataclysm\"$(), excludes every entity from that mod."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Blocking one element",
+      "text": "An entity can be blocked from a $(l)single$() element instead of all of them. Add a third part to the entry, separated by a colon:$(br2)$(thing)\"minecraft:zombie:fire\"$()$(br2)Zombies will still be Frost, Thunder or Nature, but never Fire - not as an attack, an enhancement or a resistance, and not in the enchanted book they drop.$(br2)Use $(thing)all$() as the third part to block everything. In game this is the $(thing)/elementalcraft entity blacklist$() command."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Per-mechanic blacklists",
+      "text": "Each reaction family has its own list in the reaction config files: $(thing)wetness_entity_blacklist$(), $(thing)spore_entity_blacklist$(), $(thing)scorched_entity_blacklist$(), $(thing)steam_immunity_blacklist$(), $(thing)static_immunity_blacklist$(), $(thing)paralysis_immunity_blacklist$(), $(thing)frostbite_immunity_blacklist$(), $(thing)freeze_immunity_blacklist$().$(br2)They accept the same id-or-namespace format, and can also be edited in game with $(thing)/elementalcraft blacklist$() while holding a spawn egg."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Elemental immunity by resistance",
+      "text": "Blacklists are not the only immunity. Every reaction also has a resistance threshold - typically $(thing)80 points$() in the relevant element - at which the target becomes completely immune:$(br2)$(li)80 Nature Resistance $(#888)->$() immune to spores$(li)80 Fire Resistance $(#888)->$() immune to Scorched and steam scalding$(li)80 Thunder Resistance $(#888)->$() immune to Static Shock$(li)80 Frost Resistance $(#888)->$() immune to Frostbite$(br2)A set of maxed resistance enchantments is genuinely better than a blacklist entry."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Biome bias",
+      "text": "Biome bias decides which element a newly generated mob is likely to have. The defaults live in the common config:$(br2)$(li)$(thing)hot_fire_bias$() = 60$(li)$(thing)cold_frost_bias$() = 60$(li)$(thing)forest_nature_bias$() = 60$(li)$(thing)thunderstorm_thunder_bias$() = 80$(br2)Each one is an independent percentage roll, not a normalised weight."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Custom biome bias",
+      "text": "For finer control, add lines to $(thing)custom_biome_attribute_bias$() in the form:$(br2)$(thing)\"biome_id,element,weight\"$()$(br2)For example:$(br2)$(thing)\"minecraft:desert,fire,80\"$()$(br2)Use $(thing)all$() as the element to bias every element at once, and repeat the line for the same biome to stack weights. Custom entries override the default biome rules for that biome."
+    }
+  ]
+}

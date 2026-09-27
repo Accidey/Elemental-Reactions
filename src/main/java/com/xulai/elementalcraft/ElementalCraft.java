@@ -132,6 +132,10 @@ public class ElementalCraft {
         if (event.getConfig().getSpec() == ElementalVisualConfig.SPEC) {
             ElementalVisualConfig.refreshCache();
         }
+        if (event.getConfig().getSpec() == ForcedItemConfig.SPEC) {
+            ForcedItemHelper.clearCache();
+            LOGGER.info("[ElementalCraft] Config Loaded: elementalcraft-forced-items.toml");
+        }
         if (event.getConfig().getSpec() == ElementalThunderFrostReactionsConfig.SPEC) {
             ElementalThunderFrostReactionsConfig.refreshCache();
             LOGGER.info("[ElementalCraft] Config Loaded: elementalcraft-thunder-frost-reactions.toml");

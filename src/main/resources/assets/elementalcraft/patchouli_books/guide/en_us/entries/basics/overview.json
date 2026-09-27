@@ -1,0 +1,33 @@
+{
+  "name": "Overview",
+  "category": "elementalcraft:basics",
+  "icon": "minecraft:knowledge_book",
+  "sortnum": 0,
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "This mod adds $(l)no new items$(). Instead it layers an $(thing)elemental combat system$() on top of vanilla Minecraft: four elements, twelve enchantments, six status effects and dozens of reactions between them. Everything is driven by enchantments you already know how to apply.$(br2)In every fight only two questions matter: which $(thing)element$() you carry, and what state your target is already in."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Reading the screen",
+      "text": "$(li)An item whose name starts with a coloured tag such as $(#c00)[Fire]$() is elemental.$(li)Below the name you will find $(thing)Enhancement +N$() and $(thing)Resistance +N$() lines. Those numbers are the real currency of this system, not the enchantment levels.$(li)With $(thing)Jade$() installed, look at any mob to see its attack element, its enhancements, its resistances, and whether you restrain it or it restrains you."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The numbers are visible",
+      "text": "You do not have to memorise anything: power is drawn on screen. As your total enhancement in one element rises, your melee swings and your arrows change appearance.$(br2)$(li)$(thing)25 points$() - flame arcs on melee swings$(li)$(thing)50 points$() - soul flames, arrow helix trails$(li)$(thing)75 points$() - lava droplets, stronger impacts$(br2)One armour piece at maximum level gives 25 points, so each visual step is roughly one more maxed piece."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Where to go next",
+      "text": "If you are new, read $(l:elementalcraft:basics/elements)The Four Elements$(/l), then $(l:elementalcraft:enchant/guide)Elemental Enchantments$(/l), then the $(l:elementalcraft:effects/wetness)status effects$(/l).$(br2)If you are a pack maker, jump to $(l:elementalcraft:config/commands)Commands & Configuration$(/l)."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Getting this book",
+      "text": "The guide is a Patchouli book. On the default settings it is handed to you the first time you join a world.$(br2)You can also find it in the creative $(thing)Tools & Utilities$() tab, or give it to anyone with:$(br2)$(thing)/give @p patchouli:guide_book{patchouli:book:\"elementalcraft:guide\"}$()"
+    }
+  ]
+}

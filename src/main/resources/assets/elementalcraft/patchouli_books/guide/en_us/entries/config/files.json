@@ -1,0 +1,27 @@
+{
+  "name": "Config Files",
+  "category": "elementalcraft:config",
+  "icon": "minecraft:writable_book",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "All settings live in $(thing)config/ElementalCraft/$(). Every file is bilingual (English and Chinese comments) and every one is hot-reloadable: save the file and the mod reloads it within about five seconds, or force it with $(thing)/elementalcraft reload$().$(br2)There is no need to restart the server to retune a reaction."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The files",
+      "text": "$(li)$(thing)elementalcraft-common.toml$() - mob generation, points per level, damage and restraint multipliers, dimension forcing, book drop rates, biome bias, and the $(thing)guide_book_on_first_join$() gift.$(li)$(thing)elementalcraft-fire-nature-reactions.toml$() - Wetness, Steam, Scorched, Spores, Toxic Blast, Nature Counter.$(li)$(thing)elementalcraft-thunder-frost-reactions.toml$() - Static, Paralysis, Frostbite, Freeze, counters, electrified water."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "More files",
+      "text": "$(li)$(thing)elementalcraft-forced-items.toml$() - fixed elements for specific items.$(li)$(thing)elementalcraft-visuals.toml$() - every particle, trail and spiral effect, all toggleable.$(li)$(thing)elementalcraft-iss-integration.toml$() - created only when Iron's Spells is installed: caster chance, cooldowns, blacklists.$(br2)Deleting a file regenerates it with defaults on the next launch."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Turning things off",
+      "text": "Nearly every mechanic can be disabled by setting its threshold to $(thing)0$():$(br2)$(li)Wetness: $(thing)wetness_max_level = 0$()$(li)Freeze: $(thing)freeze_max_stacks = 0$()$(li)Scorched: $(thing)scorched_trigger_threshold = 0$()$(li)Static aura: $(thing)static_aura_threshold = 0$()$(li)Restraint cycle: empty the $(thing)element_restraints$() list$(br2)Useful when dropping this mod into an existing pack."
+    }
+  ]
+}

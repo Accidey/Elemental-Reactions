@@ -1,0 +1,27 @@
+{
+  "name": "Elemental Auras",
+  "category": "elementalcraft:reactions",
+  "icon": "minecraft:beacon",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Three of the effects radiate their damage to everything around the host once they reach $(thing)3 stacks$() or more. Auras are how one infected mob becomes a regional problem.$(br2)Auras $(l)do not distinguish friend from foe$(). They hit pets, villagers, teammates and you. Only creative-mode players are exempt."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Scorched Aura",
+      "text": "Triggered when a Scorched victim was set alight by $(thing)50 or more Fire power$().$(br2)Everything within $(thing)3 blocks$() takes the same burn damage, gets $(thing)temporary Scorched$(), and mobs flee in panic.$(br2)If the host is wet, the aura immediately consumes the wetness into a $(thing)High-Heat Steam Cloud$() instead."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Static Aura",
+      "text": "At $(thing)3 or more static stacks$() the charge arcs out to everything within $(thing)1 block per stack$() - 3 to 5 blocks.$(br2)Every victim is shocked for a random $(thing)1-5 damage$() on the host's damage cycle, plus a follow-up arc, and any spores or creepers nearby are detonated.$(br2)Targets that already carry real Static Shock only take a marker, not the damage."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Frostbite Aura",
+      "text": "At $(thing)3 or more Frostbite stacks$() everything within $(thing)3 blocks$(), plus 1 more block per extra stack, receives $(thing)temporary Frostbite$(): the same slow and the same periodic damage.$(br2)Temporary Frostbite counts for $(thing)Freeze$() - so a frostbitten mob standing in water will start freezing its own neighbours one by one. Anything already Scorched is cleared instead of chilled."
+    }
+  ]
+}

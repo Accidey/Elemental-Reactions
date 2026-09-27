@@ -1,0 +1,32 @@
+{
+  "name": "Elemental Counters",
+  "category": "elementalcraft:reactions",
+  "icon": "minecraft:shield",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Any elemental creature - mob or player - that is knocked below $(thing)50% health$() while carrying $(thing)50 or more points$() in its own element releases a $(thing)Counter$(): a desperate area attack.$(br2)Afterwards it must heal back to $(thing)80% health$() before it can counter again. Finishing a wounded elemental enemy quickly is worth the effort."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Fire Counter",
+      "text": "$(#c00)Fire$() locks itself in place, becomes $(thing)90% resistant to all damage$(), and drags everything within $(thing)8 blocks$() toward it for four seconds.$(br2)Then it detonates: $(thing)8 damage$(), heavy knockback, and everything caught is set $(thing)Scorched$().$(br2)Do not stand in the ring. You cannot out-damage it, and you cannot outrun the pull."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Nature Counter",
+      "text": "$(#2a2)Nature$() erupts in a spore tornado. Everything within $(thing)3 blocks$() is thrown outward, and $(thing)2 stacks of Flammable Spores$() are planted on each victim.$(br2)Its own burning is extinguished in the process. The knockback is the dangerous part: it scatters a group and infects everyone at once."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Thunder Counter",
+      "text": "$(#a0f)Thunder$() raises a storm ring around itself, expanding to $(thing)8 blocks$() over four seconds. Everything inside is struck for $(thing)2 damage every second$(), is $(thing)Paralysed$(), and gains $(thing)Static Shock$() charge.$(br2)Back off and wait it out - the ring does not follow you."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Frost Counter",
+      "text": "$(#6cf)Frost$() emits an expanding $(thing)Ice Burst$() ring. Everything it catches is $(thing)Frozen$() on the spot.$(br2)This freeze $(l)cannot$() be broken with Static Shock, unlike a normal freeze - plan on breaking it with Fire, with a steam cloud, or simply waiting. Mobs caught in the burst also tend to lose interest and flee."
+    }
+  ]
+}

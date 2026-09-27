@@ -1,0 +1,27 @@
+{
+  "name": "Mob Tactics & Loot",
+  "category": "elementalcraft:mobs",
+  "icon": "minecraft:splash_potion",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Elemental mobs fight differently from ordinary ones.$(br2)$(li)They carry $(thing)splash potions$() and throw them at you.$(li)They $(thing)flee$() from steam clouds and auras instead of standing in them.$(li)They can trigger $(l:elementalcraft:reactions/counters)Elemental Counters$(/l) when badly hurt."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "What they throw",
+      "text": "About $(thing)35%$() of elemental mobs are given a potion in their off hand. Which potion depends on their element, and it is always designed to set up their own reaction:$(br2)$(li)$(#c00)Fire$() mobs throw $(thing)splash Poison$(). Poison makes Scorched last 50% longer and hit 50% harder.$(li)Everyone else throws $(thing)splash Water$(), to wet you before Frost, Thunder or their own element lands.$(br2)They only throw when they have line of sight and you are within 12 blocks, up to three bottles per volley."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Farming enchanted books",
+      "text": "Killing elemental mobs is the intended way to build your own elemental gear:$(br2)$(li)Base drop chance $(thing)50%$(), $(thing)+10%$() per Looting level.$(li)The book is randomly an Aspect, an Enhancement or a Resistance book.$(li)Its level roughly matches the mob's own power - hunt the 80-100 point elites for level IV-V books.$(br2)Their armour never drops, so books are the only reward."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Fighting them",
+      "text": "$(li)Match your element to theirs using the $(l:elementalcraft:basics/restraint)restraint cycle$(/l) - a Frost mob resists Fire, so bring Nature or Thunder.$(li)Get wet before fighting a Frost mob and you are handing it a Freeze.$(li)Do not let a spore-infected friend stand next to you: the blast chains.$(li)Mobs that are fleeing a steam cloud are free hits - steam clears their aggro entirely."
+    }
+  ]
+}
