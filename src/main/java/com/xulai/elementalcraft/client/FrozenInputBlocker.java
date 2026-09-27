@@ -68,13 +68,7 @@ public class FrozenInputBlocker {
         Minecraft mc = Minecraft.getInstance();
         if (!isAffected(mc)) return;
 
-        for (var key : mc.options.keyMappings) {
-            var boundKey = key.getKey();
-            if (boundKey.getType() == InputConstants.Type.MOUSE && boundKey.getValue() == event.getButton()) {
-                key.setDown(false);
-                break;
-            }
-        }
+        event.setCanceled(true);
     }
 
     @SubscribeEvent
