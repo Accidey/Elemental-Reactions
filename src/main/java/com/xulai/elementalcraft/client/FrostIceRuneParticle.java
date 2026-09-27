@@ -30,8 +30,8 @@ public class FrostIceRuneParticle extends TextureSheetParticle {
 
 
         this.lifetime = 10;
-        this.fadeInTicks = 6;
-        this.fadeOutTicks = 6;
+        this.fadeInTicks = 3;
+        this.fadeOutTicks = 4;
 
 
         this.rCol = 1.0f;
