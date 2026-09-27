@@ -83,7 +83,7 @@ public class BiomeBiasCommand {
     private static int addBiomeBias(CommandContext<CommandSourceStack> ctx, String elementStr, double probability) {
         CommandSourceStack source = ctx.getSource();
         if (!(source.getEntity() instanceof ServerPlayer player)) {
-            source.sendFailure(Component.translatable("command.elementalcraft.player_only"));
+            source.sendFailure(Component.translatable("command.elementalcraft.only_players"));
             return 0;
         }
 
@@ -137,7 +137,7 @@ public class BiomeBiasCommand {
     private static int removeBiomeBias(CommandContext<CommandSourceStack> ctx, String elementStr) {
         CommandSourceStack source = ctx.getSource();
         if (!(source.getEntity() instanceof ServerPlayer player)) {
-            source.sendFailure(Component.translatable("command.elementalcraft.player_only"));
+            source.sendFailure(Component.translatable("command.elementalcraft.only_players"));
             return 0;
         }
 
@@ -190,7 +190,7 @@ public class BiomeBiasCommand {
         ServerPlayer player = source.getPlayer();
 
         if (player == null) {
-            source.sendFailure(Component.translatable("command.elementalcraft.player_only"));
+            source.sendFailure(Component.translatable("command.elementalcraft.only_players"));
             return 0;
         }
 

@@ -160,7 +160,7 @@ public class ForcedEntityCommand {
             String resistInput
     ) {
         if (!(ctx.getSource().getEntity() instanceof ServerPlayer player)) {
-            ctx.getSource().sendFailure(Component.translatable("command.elementalcraft.player_only"));
+            ctx.getSource().sendFailure(Component.translatable("command.elementalcraft.only_players"));
             return 0;
         }
 
@@ -220,7 +220,7 @@ public class ForcedEntityCommand {
 
     private static int executeEntityRemove(CommandSourceStack source) {
         if (!(source.getEntity() instanceof ServerPlayer player)) {
-            source.sendFailure(Component.translatable("command.elementalcraft.player_only"));
+            source.sendFailure(Component.translatable("command.elementalcraft.only_players"));
             return 0;
         }
 
@@ -263,7 +263,7 @@ public class ForcedEntityCommand {
     private static int executeBlacklistAdd(CommandContext<CommandSourceStack> ctx, String elementStr) {
         CommandSourceStack source = ctx.getSource();
         if (!(source.getEntity() instanceof ServerPlayer player)) {
-            source.sendFailure(Component.translatable("command.elementalcraft.player_only"));
+            source.sendFailure(Component.translatable("command.elementalcraft.only_players"));
             return 0;
         }
 
@@ -323,7 +323,7 @@ public class ForcedEntityCommand {
     private static int executeBlacklistRemove(CommandContext<CommandSourceStack> ctx, String elementStr) {
         CommandSourceStack source = ctx.getSource();
         if (!(source.getEntity() instanceof ServerPlayer player)) {
-            source.sendFailure(Component.translatable("command.elementalcraft.player_only"));
+            source.sendFailure(Component.translatable("command.elementalcraft.only_players"));
             return 0;
         }
 

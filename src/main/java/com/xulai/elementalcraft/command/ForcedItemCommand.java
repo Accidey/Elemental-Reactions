@@ -123,7 +123,7 @@ public class ForcedItemCommand {
 
     private static int addWeaponForced(CommandContext<CommandSourceStack> ctx, String elementRaw) {
         if (!(ctx.getSource().getEntity() instanceof ServerPlayer player)) {
-            ctx.getSource().sendFailure(Component.translatable("command.elementalcraft.player_only"));
+            ctx.getSource().sendFailure(Component.translatable("command.elementalcraft.only_players"));
             return 0;
         }
 
@@ -178,7 +178,7 @@ public class ForcedItemCommand {
 
     private static int removeWeaponForced(CommandContext<CommandSourceStack> ctx) {
         if (!(ctx.getSource().getEntity() instanceof ServerPlayer player)) {
-            ctx.getSource().sendFailure(Component.translatable("command.elementalcraft.player_only"));
+            ctx.getSource().sendFailure(Component.translatable("command.elementalcraft.only_players"));
             return 0;
         }
 
@@ -213,7 +213,7 @@ public class ForcedItemCommand {
                                       String enhanceRaw, String enhanceInput,
                                       String resistRaw, String resistInput) {
         if (!(ctx.getSource().getEntity() instanceof ServerPlayer player)) {
-            ctx.getSource().sendFailure(Component.translatable("command.elementalcraft.player_only"));
+            ctx.getSource().sendFailure(Component.translatable("command.elementalcraft.only_players"));
             return 0;
         }
 
@@ -270,7 +270,7 @@ public class ForcedItemCommand {
 
     private static int removeArmorForced(CommandContext<CommandSourceStack> ctx) {
         if (!(ctx.getSource().getEntity() instanceof ServerPlayer player)) {
-            ctx.getSource().sendFailure(Component.translatable("command.elementalcraft.player_only"));
+            ctx.getSource().sendFailure(Component.translatable("command.elementalcraft.only_players"));
             return 0;
         }
 
