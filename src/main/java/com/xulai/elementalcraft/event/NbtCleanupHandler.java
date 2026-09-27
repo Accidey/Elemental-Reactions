@@ -1,6 +1,7 @@
 package com.xulai.elementalcraft.event;
 
 import com.xulai.elementalcraft.ElementalCraft;
+import com.xulai.elementalcraft.potion.DrownHelper;
 import com.xulai.elementalcraft.potion.ModMobEffects;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -56,7 +57,7 @@ public class NbtCleanupHandler {
             data.remove(FrostbiteHandler.NBT_FREEZE_AI_DISABLED);
             data.remove(FrostbiteHandler.NBT_FREEZE_ORIGINAL_NO_AI);
             data.remove("EC_SharedOriginalNoAI");
-            data.remove("EC_DrownTimer");
+            DrownHelper.clearTimers(player);
             player.setTicksFrozen(0);
         }
 

@@ -12,8 +12,6 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.phys.Vec3;
 
 public class FreezeEffect extends MobEffect {
 
@@ -47,21 +45,7 @@ public class FreezeEffect extends MobEffect {
                         SoundEvents.PLAYER_HURT_FREEZE, SoundSource.PLAYERS, 1.0f, 1.0f);
             }
 
-            if (entity.isInWater()) {
-                entity.move(MoverType.SELF, new Vec3(0, -0.1, 0));
-                entity.setDeltaMovement(0, 0, 0);
-
-                CompoundTag data = entity.getPersistentData();
-                int drownTimer = data.getIntOr("EC_DrownTimer", 0) + 1;
-                if (drownTimer >= 20) {
-                    drownTimer = 0;
-                    entity.hurt(entity.damageSources().drown(), 2.0F);
-                }
-                data.putInt("EC_DrownTimer", drownTimer);
-            } else {
-                entity.setDeltaMovement(0, entity.getDeltaMovement().y, 0);
-                entity.getPersistentData().remove("EC_DrownTimer");
-            }
+            DrownHelper.tickWaterSink(entity, DrownHelper.SinkMode.FREEZE);
 
             if (entity.tickCount % 5 == 0) {
                 EffectHelper.playFreezeAmbient(entity);

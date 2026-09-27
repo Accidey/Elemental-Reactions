@@ -6,8 +6,6 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.phys.Vec3;
 
 public class ParalysisEffect extends MobEffect {
     private static final String NBT_AI_DISABLED = "EC_AIDisabled";
@@ -24,21 +22,7 @@ public class ParalysisEffect extends MobEffect {
 
             EffectHelper.playParalysisAmbient(pLivingEntity, pAmplifier);
 
-            if (pLivingEntity.isInWater()) {
-                pLivingEntity.move(MoverType.SELF, new Vec3(0, -0.05, 0));
-                pLivingEntity.setDeltaMovement(
-                    pLivingEntity.getDeltaMovement().x, 0, pLivingEntity.getDeltaMovement().z);
-
-                CompoundTag data = pLivingEntity.getPersistentData();
-                int drownTimer = data.getIntOr("EC_DrownTimer", 0) + 1;
-                if (drownTimer >= 20) {
-                    drownTimer = 0;
-                    pLivingEntity.hurt(pLivingEntity.damageSources().drown(), 2.0F);
-                }
-                data.putInt("EC_DrownTimer", drownTimer);
-            } else {
-                pLivingEntity.getPersistentData().remove("EC_DrownTimer");
-            }
+            DrownHelper.tickWaterSink(pLivingEntity, DrownHelper.SinkMode.PARALYSIS);
         }
         return true;
     }

@@ -12,6 +12,7 @@ import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.config.ElementalFireNatureReactionsConfig;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import com.xulai.elementalcraft.init.ModDamageTypes;
+import com.xulai.elementalcraft.potion.DrownHelper;
 import com.xulai.elementalcraft.potion.ModMobEffects;
 import com.xulai.elementalcraft.sound.ModSounds;
 import com.xulai.elementalcraft.util.ElementType;
@@ -870,7 +871,7 @@ public class StaticShockHandler {
                             fd.remove(FrostbiteHandler.NBT_FREEZE_STACKS);
                             fd.remove(FrostbiteHandler.NBT_FREEZE_AI_DISABLED);
                             fd.remove("EC_SharedOriginalNoAI");
-                            fd.remove("EC_DrownTimer");
+                            DrownHelper.clearTimers(target);
                             fd.putLong(FrostbiteHandler.NBT_FREEZE_COOLDOWN,
                                     target.level().getGameTime() + ElementalThunderFrostReactionsConfig.freezeCooldownTicks);
                             if (!WetnessHandler.blockWetnessIfParalyzed(target) && !SteamReactionHandler.isInCondensingCloud(target)) {
@@ -1432,7 +1433,7 @@ public class StaticShockHandler {
         fd.remove(FrostbiteHandler.NBT_FREEZE_STACKS);
         fd.remove(FrostbiteHandler.NBT_FREEZE_AI_DISABLED);
         fd.remove("EC_SharedOriginalNoAI");
-        fd.remove("EC_DrownTimer");
+        DrownHelper.clearTimers(entity);
         fd.putLong(FrostbiteHandler.NBT_FREEZE_COOLDOWN,
                 entity.level().getGameTime() + ElementalThunderFrostReactionsConfig.freezeCooldownTicks);
         if (!WetnessHandler.blockWetnessIfParalyzed(entity) && !SteamReactionHandler.isInCondensingCloud(entity)) {
