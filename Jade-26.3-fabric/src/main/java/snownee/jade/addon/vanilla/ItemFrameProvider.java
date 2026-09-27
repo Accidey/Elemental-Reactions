@@ -1,0 +1,29 @@
+package snownee.jade.addon.vanilla;
+
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.item.ItemStack;
+import snownee.jade.api.EntityAccessor;
+import snownee.jade.api.IEntityComponentProvider;
+import snownee.jade.api.ITooltip;
+import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.IDisplayHelper;
+
+public class ItemFrameProvider implements IEntityComponentProvider {
+	public static final ItemFrameProvider INSTANCE = new ItemFrameProvider();
+
+	@Override
+	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+		ItemFrame itemFrame = (ItemFrame) accessor.getEntity();
+		ItemStack stack = itemFrame.getItem();
+		if (!stack.isEmpty()) {
+			tooltip.add(IDisplayHelper.get().stripColor(stack.getHoverName()));
+		}
+	}
+
+	@Override
+	public Identifier getUid() {
+		return JadeIds.MC_ITEM_FRAME;
+	}
+}

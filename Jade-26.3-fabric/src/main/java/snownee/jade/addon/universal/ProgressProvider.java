@@ -1,0 +1,102 @@
+package snownee.jade.addon.universal;
+
+import java.util.List;
+import java.util.Map;
+
+import org.jspecify.annotations.Nullable;
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
+import snownee.jade.api.Accessor;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.EntityAccessor;
+import snownee.jade.api.IComponentProvider;
+import snownee.jade.api.ITooltip;
+import snownee.jade.api.JadeIds;
+import snownee.jade.api.StreamServerDataProvider;
+import snownee.jade.api.TooltipPosition;
+import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.JadeUI;
+import snownee.jade.api.ui.ScreenDirection;
+import snownee.jade.api.view.ClientViewGroup;
+import snownee.jade.api.view.IServerExtensionProvider;
+import snownee.jade.api.view.ProgressView;
+import snownee.jade.api.view.ViewGroup;
+import snownee.jade.impl.WailaClientRegistration;
+import snownee.jade.impl.WailaCommonRegistration;
+import snownee.jade.util.ClientProxy;
+import snownee.jade.util.CommonProxy;
+
+public class ProgressProvider<T extends Accessor<?>> implements StreamServerDataProvider<T, Map.Entry<Identifier, List<ViewGroup<ProgressView.Data>>>> {
+
+	private static final StreamCodec<RegistryFriendlyByteBuf, Map.Entry<Identifier, List<ViewGroup<ProgressView.Data>>>> STREAM_CODEC = ViewGroup.listCodec(
+			ProgressView.Data.STREAM_CODEC).cast();
+
+	public static final ProgressProvider<BlockAccessor> BLOCK = new ProgressProvider<>();
+	public static final ProgressProvider<EntityAccessor> ENTITY = new ProgressProvider<>();
+
+	public static class Client<T extends Accessor<?>> extends ProgressProvider<T> implements IComponentProvider<T> {
+		public static final Client<BlockAccessor> BLOCK = new Client<>();
+		public static final Client<EntityAccessor> ENTITY = new Client<>();
+
+		@Override
+		public void appendTooltip(ITooltip tooltip, T accessor, IPluginConfig config) {
+			List<ClientViewGroup<ProgressView>> groups = ClientProxy.mapToClientGroups(
+					accessor,
+					JadeIds.UNIVERSAL_PROGRESS,
+					STREAM_CODEC,
+					WailaClientRegistration.instance().progressProviders::get,
+					tooltip);
+			if (groups == null || groups.isEmpty()) {
+				return;
+			}
+
+			boolean renderGroup = groups.size() > 1 || groups.getFirst().shouldRenderGroup();
+			ClientViewGroup.tooltip(
+					tooltip, groups, renderGroup, (theTooltip, group) -> {
+						if (renderGroup) {
+							group.renderHeader(theTooltip);
+						}
+						for (var view : group.views) {
+							if (view.text != null) {
+								theTooltip.add(JadeUI.text(view.text).scale(0.75F));
+								theTooltip.setLineMargin(-1, ScreenDirection.DOWN, 0);
+								view.text = null;
+							}
+							theTooltip.add(JadeUI.progress(view));
+						}
+					});
+		}
+
+		@Override
+		public boolean isRequired() {
+			return true;
+		}
+	}
+
+	@Override
+	public Map.@Nullable Entry<Identifier, List<ViewGroup<ProgressView.Data>>> streamData(T accessor) {
+		return CommonProxy.getServerExtensionData(accessor, WailaCommonRegistration.instance().progressProviders);
+	}
+
+	@Override
+	public StreamCodec<RegistryFriendlyByteBuf, Map.Entry<Identifier, List<ViewGroup<ProgressView.Data>>>> streamCodec() {
+		return STREAM_CODEC;
+	}
+
+	@Override
+	public boolean shouldRequestData(T accessor) {
+		return WailaCommonRegistration.instance().progressProviders.hitsAny(accessor, IServerExtensionProvider::shouldRequestData);
+	}
+
+	@Override
+	public Identifier getUid() {
+		return JadeIds.UNIVERSAL_PROGRESS;
+	}
+
+	@Override
+	public int getDefaultPriority() {
+		return TooltipPosition.BODY + 1000;
+	}
+}

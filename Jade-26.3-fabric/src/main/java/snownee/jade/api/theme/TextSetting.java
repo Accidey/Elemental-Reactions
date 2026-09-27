@@ -1,0 +1,18 @@
+package snownee.jade.api.theme;
+
+import java.util.Optional;
+
+import net.minecraft.network.chat.Style;
+import snownee.jade.api.ui.ColorPalette;
+
+/**
+ * Text colors and styling flags for a theme.
+ */
+public record TextSetting(ColorPalette colors, boolean shadow, Style modNameStyle, int itemAmountColor) {
+	public static final TextSetting DEFAULT = new TextSetting(ColorPalette.DEFAULT, true, Optional.empty(), 0xFFFFFFFF);
+
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+	public TextSetting(ColorPalette colors, boolean shadow, Optional<Style> modNameStyle, int itemAmountColor) {
+		this(colors, shadow, modNameStyle.orElse(Style.EMPTY), itemAmountColor);
+	}
+}

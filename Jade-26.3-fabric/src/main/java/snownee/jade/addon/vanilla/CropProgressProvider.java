@@ -1,0 +1,87 @@
+package snownee.jade.addon.vanilla;
+
+import org.jspecify.annotations.Nullable;
+
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.FarmlandBlock;
+import net.minecraft.world.level.block.NetherWartBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.IBlockComponentProvider;
+import snownee.jade.api.ITooltip;
+import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.JadeUI;
+
+public class CropProgressProvider implements IBlockComponentProvider {
+	public static final CropProgressProvider INSTANCE = new CropProgressProvider();
+
+	@Override
+	public @Nullable Element getIcon(BlockAccessor accessor, IPluginConfig config, @Nullable Element currentIcon) {
+		if (accessor.getBlock() == Blocks.WHEAT) {
+			return JadeUI.item(new ItemStack(Items.WHEAT));
+		}
+
+		if (accessor.getBlock() == Blocks.BEETROOTS) {
+			return JadeUI.item(new ItemStack(Items.BEETROOT));
+		}
+
+		return null;
+	}
+
+	@Override
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+		BlockState state = accessor.getBlockState();
+		Block block = state.getBlock();
+
+		if (block instanceof CropBlock crop) {
+			addMaturityTooltip(tooltip, crop.getAge(state) / (float) crop.getMaxAge());
+		} else if (block instanceof NetherWartBlock || block instanceof BonemealableBlock) {
+			if (state.hasProperty(BlockStateProperties.AGE_2)) {
+				addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_2) / 2F);
+			} else if (state.hasProperty(BlockStateProperties.AGE_3)) {
+				addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_3) / 3F);
+			} else if (state.hasProperty(BlockStateProperties.AGE_4)) {
+				addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_4) / 4F);
+			} else if (state.hasProperty(BlockStateProperties.AGE_5)) {
+				addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_5) / 5F);
+			} else if (state.hasProperty(BlockStateProperties.AGE_7)) {
+				addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_7) / 7F);
+			} else if (state.hasProperty(BlockStateProperties.AGE_15)) {
+				addMaturityTooltip(tooltip, state.getValue(BlockStateProperties.AGE_15) / 15F);
+			} else if (state.is(BlockTags.MAINTAINS_FARMLAND) && accessor.getLevel()
+					.getBlockState(accessor.getPosition().below())
+					.getBlock() instanceof FarmlandBlock) {
+				addMaturityTooltip(tooltip, 1);
+			}
+		}
+	}
+
+	private static void addMaturityTooltip(ITooltip tooltip, float growthValue) {
+		MutableComponent component;
+		if (growthValue < 1) {
+			component = IThemeHelper.get().info(String.format("%.0f%%", growthValue * 100));
+		} else {
+			component = IThemeHelper.get().success(Component.translatable("tooltip.jade.crop_mature"));
+		}
+		tooltip.add(Component.translatable("tooltip.jade.crop_growth", component));
+	}
+
+	@Override
+	public Identifier getUid() {
+		return JadeIds.MC_CROP_PROGRESS;
+	}
+
+}

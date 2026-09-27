@@ -1,0 +1,284 @@
+package snownee.jade.impl;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import org.jspecify.annotations.Nullable;
+
+import com.google.common.base.Suppliers;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import snownee.jade.Jade;
+import snownee.jade.api.AccessorImpl;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.IServerDataProvider;
+import snownee.jade.network.RequestBlockPacket;
+import snownee.jade.network.ServerPayloadContext;
+import snownee.jade.util.CommonProxy;
+import snownee.jade.util.WailaExceptionHandler;
+
+/**
+ * Class to get information of block target and context.
+ */
+public class BlockAccessorImpl extends AccessorImpl<BlockHitResult> implements BlockAccessor {
+
+	private final BlockState blockState;
+	private final @Nullable Supplier<@Nullable BlockEntity> blockEntity;
+
+	private BlockAccessorImpl(Builder builder) {
+		super(
+				Objects.requireNonNull(builder.level),
+				Objects.requireNonNull(builder.player),
+				builder.serverData,
+				() -> Objects.requireNonNull(builder.hit),
+				builder.connected,
+				builder.showDetails);
+		blockState = builder.blockState;
+		blockEntity = builder.blockEntity;
+		serversideRep = builder.serversideRep;
+	}
+
+	public static void handleRequest(RequestBlockPacket message, ServerPayloadContext context, Consumer<CompoundTag> responseSender) {
+		ServerPlayer player = context.player();
+		context.execute(() -> {
+			BlockPos pos = message.data().hit().getBlockPos();
+			CompoundTag tag = message.data().data();
+			tag.putInt("x", pos.getX());
+			tag.putInt("y", pos.getY());
+			tag.putInt("z", pos.getZ());
+
+			if (Jade.isOutOfReach(player, pos, player.blockInteractionRange()) || !player.level().isLoaded(pos)) {
+				responseSender.accept(tag);
+				return;
+			}
+
+			BlockAccessor accessor = message.data().unpack(player);
+			if (accessor == null) {
+				return;
+			}
+
+			tag.putString("BlockId", CommonProxy.getId(accessor.getBlock()).toString());
+
+			List<IServerDataProvider<BlockAccessor>> providers = WailaCommonRegistration.instance()
+					.blockDataProvidersOf(accessor.getBlockState(), accessor.getBlockEntity(), true);
+			for (IServerDataProvider<BlockAccessor> provider : providers) {
+				if (!message.dataProviders().contains(provider)) {
+					continue;
+				}
+				try {
+					provider.appendServerData(tag, accessor);
+				} catch (Exception e) {
+					WailaExceptionHandler.handleErr(e, provider, null);
+				}
+			}
+
+			responseSender.accept(tag);
+		});
+	}
+
+	@Override
+	public Block getBlock() {
+		return getBlockState().getBlock();
+	}
+
+	@Override
+	public BlockState getBlockState() {
+		return blockState;
+	}
+
+	@Override
+	public @Nullable BlockEntity getBlockEntity() {
+		return blockEntity == null ? null : blockEntity.get();
+	}
+
+	@Override
+	public BlockPos getPosition() {
+		return getHitResult().getBlockPos();
+	}
+
+	@Override
+	public Direction getSide() {
+		return getHitResult().getDirection();
+	}
+
+	@Override
+	public ItemStack getPickedResult() {
+		if (isServersideContent()) {
+			return getServersideRep();
+		}
+		return CommonProxy.getBlockPickedResult(blockState, getPlayer(), getHitResult());
+	}
+
+	@Nullable
+	@Override
+	public Object getTarget() {
+		return getBlockEntity();
+	}
+
+	@Override
+	public boolean verifyData(CompoundTag data) {
+		if (!verify) {
+			return true;
+		}
+		int x = data.getIntOr("x", 0);
+		int y = data.getIntOr("y", 0);
+		int z = data.getIntOr("z", 0);
+		BlockPos hitPos = getPosition();
+		return x == hitPos.getX() && y == hitPos.getY() && z == hitPos.getZ();
+	}
+
+	public static class Builder implements BlockAccessor.Builder {
+
+		private @Nullable Level level;
+		private @Nullable Player player;
+		private @Nullable CompoundTag serverData;
+		private boolean connected;
+		private boolean showDetails;
+		private @Nullable BlockHitResult hit;
+		private BlockState blockState = Blocks.AIR.defaultBlockState();
+		private @Nullable Supplier<@Nullable BlockEntity> blockEntity;
+		private ItemStack serversideRep = ItemStack.EMPTY;
+		private boolean verify;
+
+		@Override
+		public Builder level(Level level) {
+			this.level = level;
+			return this;
+		}
+
+		@Override
+		public Builder player(Player player) {
+			this.player = player;
+			return this;
+		}
+
+		@Override
+		public Builder serverData(@Nullable CompoundTag serverData) {
+			this.serverData = serverData;
+			return this;
+		}
+
+		@Override
+		public Builder serverConnected(boolean connected) {
+			this.connected = connected;
+			return this;
+		}
+
+		@Override
+		public Builder showDetails(boolean showDetails) {
+			this.showDetails = showDetails;
+			return this;
+		}
+
+		@Override
+		public Builder hit(BlockHitResult hit) {
+			this.hit = hit;
+			return this;
+		}
+
+		@Override
+		public Builder blockState(BlockState blockState) {
+			this.blockState = blockState;
+			return this;
+		}
+
+		@Override
+		public Builder blockEntity(@Nullable Supplier<@Nullable BlockEntity> blockEntity) {
+			this.blockEntity = blockEntity;
+			return this;
+		}
+
+		@Override
+		public Builder serversideRep(ItemStack stack) {
+			serversideRep = stack;
+			return this;
+		}
+
+		@Override
+		public Builder from(BlockAccessor accessor) {
+			level = accessor.getLevel();
+			player = accessor.getPlayer();
+			serverData = accessor.getServerData().copy();
+			connected = accessor.isServerConnected();
+			showDetails = accessor.showDetails();
+			hit = accessor.getHitResult();
+			blockEntity = accessor::getBlockEntity;
+			blockState = accessor.getBlockState();
+			serversideRep = accessor.getServersideRep();
+			verify = accessor.shouldVerifyData();
+			return this;
+		}
+
+		@Override
+		public BlockAccessor.Builder requireVerification(boolean verify) {
+			this.verify = verify;
+			return this;
+		}
+
+		@Override
+		public BlockAccessor build() {
+			BlockAccessorImpl accessor = new BlockAccessorImpl(this);
+			if (verify) {
+				accessor.requireVerification();
+			}
+			return accessor;
+		}
+	}
+
+	public record SyncData(boolean showDetails, BlockHitResult hit, ItemStack serversideRep, CompoundTag data) {
+		public static final StreamCodec<RegistryFriendlyByteBuf, SyncData> STREAM_CODEC = StreamCodec.composite(
+				ByteBufCodecs.BOOL,
+				SyncData::showDetails,
+				BlockHitResult.STREAM_CODEC,
+				SyncData::hit,
+				ItemStack.OPTIONAL_STREAM_CODEC,
+				SyncData::serversideRep,
+				ByteBufCodecs.COMPOUND_TAG,
+				SyncData::data,
+				SyncData::new
+		);
+
+		public SyncData(BlockAccessor accessor) {
+			this(
+					accessor.showDetails(),
+					accessor.getHitResult(),
+					accessor.getServersideRep(),
+					accessor.getServerData());
+		}
+
+		@SuppressWarnings("DataFlowIssue")
+		public @Nullable BlockAccessor unpack(ServerPlayer player) {
+			Supplier<@Nullable BlockEntity> blockEntity = null;
+			BlockState blockState = player.level().getBlockState(hit.getBlockPos());
+			if (blockState.hasBlockEntity()) {
+				blockEntity = Suppliers.memoize(() -> player.level().getBlockEntity(hit.getBlockPos()));
+			}
+			return new Builder()
+					.level(player.level())
+					.player(player)
+					.showDetails(showDetails)
+					.hit(hit)
+					.blockState(blockState)
+					.blockEntity(blockEntity)
+					.serversideRep(serversideRep)
+					.serverData(data)
+					.build();
+		}
+	}
+}

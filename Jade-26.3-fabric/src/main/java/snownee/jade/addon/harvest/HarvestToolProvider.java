@@ -1,0 +1,170 @@
+package snownee.jade.addon.harvest;
+
+import java.time.Duration;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import snownee.jade.Jade;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.IBlockComponentProvider;
+import snownee.jade.api.ITooltip;
+import snownee.jade.api.JadeIds;
+import snownee.jade.api.TooltipPosition;
+import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.harvest.ToolResult;
+import snownee.jade.api.harvest.ToolType;
+import snownee.jade.api.theme.IThemeHelper;
+import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.JadeUI;
+import snownee.jade.util.ClientProxy;
+import snownee.jade.util.CommonProxy;
+import snownee.jade.util.KeyedResourceManagerReloadListener;
+
+public class HarvestToolProvider implements IBlockComponentProvider, KeyedResourceManagerReloadListener {
+	public static final HarvestToolProvider INSTANCE = new HarvestToolProvider();
+
+	private static final Component CHECK = Component.literal("✔");
+	private static final Component X = Component.literal("✕");
+	private final Cache<BlockState, ImmutableList<ItemStack>> resultCache = CacheBuilder.newBuilder()
+			.expireAfterAccess(Duration.ofMinutes(5))
+			.build();
+
+	static {
+		CommonProxy.registerTagsUpdatedListener((_, _) -> apply());
+	}
+
+	public static ImmutableList<ItemStack> getTool(BlockState state, Level level, BlockPos pos) {
+		ImmutableList.Builder<ItemStack> tools = ImmutableList.builder();
+		for (ToolType handler : ToolTypeRegistryImpl.registeredTypes().values()) {
+			ToolResult result = handler.test(state, level, pos);
+			if (result.isSuccess()) {
+				tools.add(result.displayStack());
+			}
+		}
+		return tools.build();
+	}
+
+	private static void apply() {
+		ToolTypeRegistryImpl.apply();
+		INSTANCE.resultCache.invalidateAll();
+	}
+
+	@Override
+	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+		Player player = accessor.getPlayer();
+		if (!config.get(JadeIds.MC_HARVEST_TOOL_CREATIVE) && (player.isCreative() || player.isSpectator())) {
+			return;
+		}
+		Level level = accessor.getLevel();
+		BlockPos pos = accessor.getPosition();
+		GameType gameType = ClientProxy.getGameMode();
+		if (gameType == GameType.ADVENTURE && player.blockActionRestricted(level, pos, gameType)) {
+			return;
+		}
+		BlockState state = accessor.getBlockState();
+		try {
+			if (state.getDestroyProgress(player, level, pos) <= 0) {
+				if (!accessor.isServersideContent() && config.get(JadeIds.MC_SHOW_UNBREAKABLE)) {
+					Component text = IThemeHelper.get().failure(Component.translatable("jade.harvest_tool.unbreakable"));
+					tooltip.add(JadeUI.text(text).narration(""));
+				}
+				//TODO: high priority handlers?
+				return;
+			}
+		} catch (Exception ignored) {
+			return;
+		}
+
+		boolean newLine = config.get(JadeIds.MC_HARVEST_TOOL_NEW_LINE);
+		List<Element> elements = getText(accessor, config);
+		if (elements.isEmpty()) {
+			return;
+		}
+		elements.forEach(e -> e.narration(""));
+		if (newLine) {
+			tooltip.add(elements);
+		} else {
+			tooltip.append(0, elements);
+		}
+	}
+
+	public List<Element> getText(BlockAccessor accessor, IPluginConfig config) {
+		BlockState state = accessor.getBlockState();
+		if (!state.requiresCorrectToolForDrops() && !config.get(JadeIds.MC_EFFECTIVE_TOOL)) {
+			return List.of();
+		}
+		List<ItemStack> tools = List.of();
+		try {
+			tools = resultCache.get(state, () -> getTool(state, accessor.getLevel(), accessor.getPosition()));
+		} catch (ExecutionException e) {
+			Jade.LOGGER.error("Failed to get harvest tool", e);
+		}
+		if (tools.isEmpty()) {
+			return List.of();
+		}
+
+		int offsetY = -3;
+		boolean newLine = config.get(JadeIds.MC_HARVEST_TOOL_NEW_LINE);
+		List<Element> elements = Lists.newArrayList();
+		for (ItemStack tool : tools) {
+			elements.add(JadeUI.item(tool, 0.75f).offset(-1, offsetY).size(10, 0).narration(""));
+		}
+
+		if (!elements.isEmpty()) {
+			elements.addFirst(JadeUI.spacer(newLine ? -2 : 5, newLine ? 10 : 0).flexGrow(1000));
+			Player player = accessor.getPlayer();
+			boolean canHarvest = CommonProxy.isCorrectToolForDrops(state, player, accessor.getLevel(), accessor.getPosition());
+			if (state.requiresCorrectToolForDrops() || !canHarvest) {
+				IThemeHelper t = IThemeHelper.get();
+				Component text = canHarvest ? t.success(CHECK) : t.danger(X);
+				elements.add(JadeUI.text(text)
+						.scale(0.75F)
+						.size(0, 0)
+						.offset(-3, 6 + offsetY)
+				);
+			}
+		}
+
+		return elements;
+	}
+
+	@Override
+	public void onResourceManagerReload(ResourceManager resourceManager) {
+		invalidateCache();
+	}
+
+	public void invalidateCache() {
+		resultCache.invalidateAll();
+	}
+
+	public void setShearableBlocks(Collection<Block> blocks) {
+		ToolTypeRegistryImpl.DEFAULT_SHEARS_TIER.get().replaceExtraBlocks(blocks);
+		invalidateCache();
+	}
+
+	@Override
+	public Identifier getUid() {
+		return JadeIds.MC_HARVEST_TOOL;
+	}
+
+	@Override
+	public int getDefaultPriority() {
+		return TooltipPosition.TAIL - 2000;
+	}
+}

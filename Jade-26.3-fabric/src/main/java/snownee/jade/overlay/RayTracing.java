@@ -1,0 +1,214 @@
+package snownee.jade.overlay;
+
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
+
+import org.jspecify.annotations.Nullable;
+
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.HitResult.Type;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.impl.WailaCommonRegistration;
+import snownee.jade.util.CommonProxy;
+
+public class RayTracing {
+
+	public static final RayTracing INSTANCE = new RayTracing();
+	private final Minecraft mc = Minecraft.getInstance();
+	public Predicate<Entity> entityFilter = entity -> true;
+	@Nullable
+	private HitResult target;
+	private Vec3 hitLocation = Vec3.ZERO;
+
+	public RayTracing() {
+	}
+
+	// from ProjectileUtil
+	@Nullable
+	public static EntityHitResult getEntityHitResult(
+			Level worldIn,
+			Entity except,
+			Vec3 startVec,
+			Vec3 endVec,
+			AABB boundingBox,
+			Predicate<Entity> filter) {
+		double d0 = Double.MAX_VALUE;
+		Entity entity = null;
+		Vec3 hitLocation = startVec;
+
+		for (Entity entity1 : worldIn.getEntities(except, boundingBox, filter)) {
+			AABB axisalignedbb = entity1.getBoundingBox();
+			if (axisalignedbb.getSize() < 0.3) {
+				axisalignedbb = axisalignedbb.inflate(0.3);
+			}
+			if (axisalignedbb.contains(startVec)) {
+				entity = entity1;
+				break;
+			}
+			Optional<Vec3> optional = axisalignedbb.clip(startVec, endVec);
+			if (optional.isPresent()) {
+				double d1 = startVec.distanceToSqr(optional.get());
+				if (d1 < d0) {
+					entity = entity1;
+					d0 = d1;
+					hitLocation = optional.get();
+				}
+			}
+		}
+
+		return entity == null ? null : new EntityHitResult(entity, hitLocation);
+	}
+
+	public void fire() {
+		Entity viewEntity = mc.getCameraEntity();
+		Player viewPlayer = viewEntity instanceof Player ? (Player) viewEntity : mc.player;
+		if (viewEntity == null || viewPlayer == null) {
+			return;
+		}
+
+		if (mc.hitResult != null && mc.hitResult.getType() == Type.ENTITY) {
+			Entity targetEntity = ((EntityHitResult) mc.hitResult).getEntity();
+			if (canBeTarget(targetEntity, viewEntity)) {
+				target = mc.hitResult;
+				return;
+			}
+		}
+
+		float extendedReach = IWailaConfig.get().general().getExtendedReach();
+		double blockReach = viewPlayer.blockInteractionRange() + extendedReach;
+		double entityReach = viewPlayer.entityInteractionRange() + extendedReach;
+		rayTrace(viewEntity, blockReach, entityReach);
+		if (target != null) {
+			hitLocation = target.getLocation();
+		}
+	}
+
+	@Nullable
+	public HitResult getTarget() {
+		return target;
+	}
+
+	public Vec3 getHitLocation() {
+		return hitLocation;
+	}
+
+	public void rayTrace(Entity entity, double blockReach, double entityReach) {
+		Camera camera = mc.gameRenderer.mainCamera();
+		float partialTick = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
+		Vec3 eyePosition = entity.getEyePosition(partialTick);
+		boolean startFromEye = IWailaConfig.get().general().getPerspectiveMode() == IWailaConfig.PerspectiveMode.EYE;
+		Vec3 traceStart = startFromEye ? eyePosition : camera.position();
+		double distance = startFromEye ? 0 : eyePosition.distanceToSqr(traceStart);
+		boolean isInvalidHit = mc.hitResult == null;
+		if (distance > 1e8) {
+			isInvalidHit = true;
+		} else if (distance > 1e-5) {
+			distance = Math.sqrt(distance);
+			blockReach += distance;
+			entityReach += distance;
+		}
+
+		Vec3 traceEnd;
+		Vec3 lookVector;
+		if (isInvalidHit) {
+			lookVector = startFromEye ? entity.getViewVector(partialTick) : new Vec3(camera.forwardVector());
+			traceEnd = traceStart.add(lookVector.scale(entityReach));
+		} else {
+			traceEnd = mc.hitResult.getLocation().subtract(traceStart);
+			lookVector = startFromEye ? entity.getViewVector(partialTick) : traceEnd.normalize();
+			traceEnd = traceStart.add(lookVector.scale(entityReach));
+		}
+
+		Level world = entity.level();
+		AABB bound = new AABB(traceStart, traceEnd);
+		Predicate<Entity> predicate = e -> canBeTarget(e, entity);
+		EntityHitResult entityResult = getEntityHitResult(world, entity, traceStart, traceEnd, bound, predicate);
+
+		if (blockReach != entityReach) {
+			traceEnd = traceStart.add(lookVector.scale(blockReach * 1.001));
+		}
+
+		BlockState eyeBlock = world.getBlockState(BlockPos.containing(eyePosition));
+		ClipContext.Fluid fluidView = ClipContext.Fluid.NONE;
+		IWailaConfig.FluidMode fluidMode = IWailaConfig.get().general().getDisplayFluids();
+		if (eyeBlock.getFluidState().isEmpty()) {
+			fluidView = fluidMode.ctx;
+		}
+		CollisionContext collisionContext = CollisionContext.of(entity);
+		ClipContext context = new ClipContext(traceStart, traceEnd, ClipContext.Block.OUTLINE, fluidView, collisionContext);
+
+		BlockHitResult blockResult = world.clip(context);
+		hitLocation = blockResult.getLocation();
+		if (entityResult != null) {
+			ClipContext occlusionContext = new ClipContext(traceStart, entityResult.getLocation(), ClipContext.Block.COLLIDER, fluidView, collisionContext);
+			BlockHitResult occluder = world.clip(occlusionContext);
+			if (occluder.getType() != Type.BLOCK || occluder.getLocation().distanceToSqr(traceStart) >= entityResult.getLocation().distanceToSqr(traceStart)) {
+				target = entityResult;
+				return;
+			}
+		}
+		if (blockResult.getType() == Type.MISS && mc.hitResult instanceof BlockHitResult hit) {
+			// weird, we didn't hit a block in our way. try the vanilla result
+			blockResult = hit;
+		}
+		if (blockResult.getType() != Type.BLOCK) {
+			blockResult = null;
+		}
+		if (blockResult == null && fluidMode == IWailaConfig.FluidMode.FALLBACK) {
+			context = new ClipContext(traceStart, traceEnd, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, collisionContext);
+			blockResult = world.clip(context);
+			hitLocation = blockResult.getLocation();
+		}
+
+		target = blockResult;
+	}
+
+	private boolean canBeTarget(Entity target, Entity viewEntity) {
+		if (target.isRemoved()) {
+			return false;
+		}
+		if (target.isSpectator()) {
+			return false;
+		}
+		if (target == viewEntity.getVehicle()) {
+			return false;
+		}
+		if (target instanceof Projectile projectile && projectile.tickCount <= 10 &&
+				!target.level().tickRateManager().isEntityFrozen(target)) {
+			return false;
+		}
+		if (CommonProxy.isMultipartEntity(target) && !target.isPickable()) {
+			return false;
+		}
+		if (viewEntity instanceof Player player) {
+			if (target.isInvisibleTo(player)) {
+				return false;
+			}
+			if (Objects.requireNonNull(mc.gameMode).isDestroying() && target.getType() == EntityTypes.ITEM) {
+				return false;
+			}
+		} else {
+			if (target.isInvisible()) {
+				return false;
+			}
+		}
+		return !WailaCommonRegistration.instance().entityTypeOperations().shouldHide(target) && entityFilter.test(target);
+	}
+
+}

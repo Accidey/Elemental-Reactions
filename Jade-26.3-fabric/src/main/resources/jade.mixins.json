@@ -1,0 +1,26 @@
+{
+	"required": true,
+	"package": "snownee.jade.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"AbstractHorseAccess",
+		"EntityAccess",
+		"LivingEntityMixin",
+		"MobEffectInstanceMixin",
+		"ServerPlayerMixin"
+	],
+	"client": [
+		"BossHealthOverlayMixin",
+		"CreativeModeInventoryScreenMixin",
+		"FogRendererMixin",
+		"GuiGraphicsExtractorMixin",
+		"LanguageManagerMixin",
+		"PreparedTextBuilderMixin",
+		"key_extension.KeyBindsListMixin",
+		"key_extension.KeyMappingMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"minVersion": "0.8"
+}

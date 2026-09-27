@@ -1,0 +1,47 @@
+package snownee.jade.addon.vanilla;
+
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.monster.zombie.ZombieVillager;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.villager.VillagerData;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import snownee.jade.api.EntityAccessor;
+import snownee.jade.api.IEntityComponentProvider;
+import snownee.jade.api.ITooltip;
+import snownee.jade.api.JadeIds;
+import snownee.jade.api.config.IPluginConfig;
+
+// @MerchantScreen / Villager.getTypeName
+public class VillagerProfessionProvider implements IEntityComponentProvider {
+	public static final VillagerProfessionProvider INSTANCE = new VillagerProfessionProvider();
+
+	private static final Component LEVEL_SEPARATOR = Component.literal(" - ");
+
+	@Override
+	public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+		VillagerData data = null;
+		if (accessor.getEntity() instanceof Villager) {
+			data = ((Villager) accessor.getEntity()).getVillagerData();
+		} else if (accessor.getEntity() instanceof ZombieVillager) {
+			data = ((ZombieVillager) accessor.getEntity()).getVillagerData();
+		}
+		if (data == null) {
+			return;
+		}
+		int level = data.level();
+		VillagerProfession profession = data.profession().value();
+		MutableComponent component = profession.name().copy();
+		if (profession.workSound() != null && level >= VillagerData.MIN_VILLAGER_LEVEL && level <= VillagerData.MAX_VILLAGER_LEVEL) {
+			component.append(LEVEL_SEPARATOR).append(Component.translatable("merchant.level." + level));
+		}
+		tooltip.add(component);
+	}
+
+	@Override
+	public Identifier getUid() {
+		return JadeIds.MC_VILLAGER_PROFESSION;
+	}
+
+}
