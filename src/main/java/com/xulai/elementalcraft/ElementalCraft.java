@@ -108,6 +108,10 @@ public class ElementalCraft {
             ElementalConfig.refreshCache();
             LOGGER.info("[ElementalCraft] Config Loaded: elementalcraft-common.toml");
         }
+        if (event.getConfig().getSpec() == ForcedItemConfig.SPEC) {
+            ForcedItemHelper.clearCache();
+            LOGGER.info("[ElementalCraft] Config Loaded: elementalcraft-forced-items.toml");
+        }
         if (event.getConfig().getSpec() == ElementalFireNatureReactionsConfig.SPEC) {
             ElementalFireNatureReactionsConfig.refreshCache();
             LOGGER.info("[ElementalCraft] Config Loaded: elementalcraft-fire-nature-reactions.toml");
