@@ -160,7 +160,6 @@ public class MobPotionThrowLogic {
         bottle.set(DataComponents.POTION_CONTENTS, new PotionContents(poison ? Potions.POISON : Potions.WATER));
 
         ThrownSplashPotion potion = new ThrownSplashPotion(mob.level(), mob, bottle);
-        potion.setXRot(potion.getXRot() - -20.0F);
 
         Vec3 vel = target.getDeltaMovement();
         double d0 = target.getX() + vel.x - mob.getX();
