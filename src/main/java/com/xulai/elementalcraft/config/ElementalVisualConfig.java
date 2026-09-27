@@ -1484,7 +1484,7 @@ public class ElementalVisualConfig {
         THUNDER_RANGED_MAIN_PARTICLE_COUNT = BUILDER
                 .comment("Number of particles spawned per helix point (Thunder Spark particle).",
                         "每个螺旋线点生成的粒子数量（雷电火花粒子）。",
-                        "Default: 48 / 默认：48")
+                        "Default: 1 / 默认：1")
                 .defineInRange("main_particle_count", 1, 1, 100);
 
         BUILDER.pop();
