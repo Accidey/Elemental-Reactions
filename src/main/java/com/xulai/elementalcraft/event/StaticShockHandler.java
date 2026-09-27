@@ -92,8 +92,8 @@ public class StaticShockHandler {
     private static final String NBT_LAST_STATIC_ELEMENT = "ec_last_static_element";
     private static final String NBT_LAST_STATIC_ELEMENT_MULT = "ec_last_static_element_mult";
     private static final int THUNDER_BREAK_FREEZE_ATTEMPT_INTERVAL = 40;
-    private static final Map<ResourceKey<Level>, ActiveElectrification> activeElectrifications = new HashMap<>();
-    private static final Map<ResourceKey<Level>, Long> waterElectrificationCooldowns = new HashMap<>();
+    private static final Map<UUID, ActiveElectrification> activeElectrifications = new HashMap<>();
+    private static final Map<UUID, Long> waterElectrificationCooldowns = new HashMap<>();
     private static final Map<ResourceKey<Level>, ActiveThunderStorm> activeThunderStorms = new HashMap<>();
 
     private static class ActiveThunderStorm {
@@ -125,12 +125,18 @@ public class StaticShockHandler {
         final long startTick;
         final int duration;
         final float settlementDamage;
+        final UUID ownerUUID;
+        final ResourceKey<Level> dimension;
         final Set<UUID> damagedEntities = new HashSet<>();
         long lastParticleTick;
-        ActiveElectrification(double x, double y, double z, double range, long startTick, int duration, float settlementDamage) {
-            this.x = x; this.y = y; this.z = z;
-            this.range = range; this.startTick = startTick; this.duration = duration;
+        ActiveElectrification(LivingEntity source, double range, int duration, float settlementDamage) {
+            this.x = source.getX(); this.y = source.getY(); this.z = source.getZ();
+            this.range = range;
+            this.startTick = source.level().getGameTime();
+            this.duration = duration;
             this.settlementDamage = settlementDamage;
+            this.ownerUUID = source.getUUID();
+            this.dimension = source.level().dimension();
         }
     }
 
@@ -416,7 +422,7 @@ public class StaticShockHandler {
                 return;
             }
             if (isInOrOnWater(entity)) {
-                long cd = getWaterElectrificationCooldown(entity.level());
+                long cd = getWaterElectrificationCooldown(entity);
                 if (cd > 0) {
                     DebugCommand.sendReactionCooldownBlock(entity, "water_electrification", cd);
                 }
@@ -477,8 +483,11 @@ public class StaticShockHandler {
 
         if (!(event.getLevel() instanceof ServerLevel sl)) return;
 
-        ActiveElectrification elec = activeElectrifications.get(dim);
-        if (elec != null) {
+        List<ActiveElectrification> electrifications = new ArrayList<>();
+        for (ActiveElectrification candidate : activeElectrifications.values()) {
+            if (candidate.dimension.equals(dim)) electrifications.add(candidate);
+        }
+        for (ActiveElectrification elec : electrifications) {
             if (now - elec.startTick >= elec.duration) {
                 AABB area = new AABB(
                         elec.x - elec.range, elec.y - elec.range, elec.z - elec.range,
@@ -488,7 +497,7 @@ public class StaticShockHandler {
                         target.removeEffect(ModMobEffects.PARALYSIS);
                     }
                 }
-                activeElectrifications.remove(dim);
+                activeElectrifications.remove(elec.ownerUUID);
             } else {
                 AABB area = new AABB(
                         elec.x - elec.range, elec.y - elec.range, elec.z - elec.range,
@@ -668,17 +677,16 @@ public class StaticShockHandler {
         double range = ElementalThunderFrostReactionsConfig.waterElectrificationRangeBase
                 + (stacks - 1) * ElementalThunderFrostReactionsConfig.waterElectrificationRangePerStack;
 
-        ResourceKey<Level> wDim = source.level().dimension();
-        ActiveElectrification existing = activeElectrifications.get(wDim);
+        ActiveElectrification existing = activeElectrifications.get(source.getUUID());
         if (existing != null && source.level().getGameTime() - existing.startTick >= existing.duration) {
-            activeElectrifications.remove(wDim);
+            activeElectrifications.remove(source.getUUID());
         }
 
-        Long cdEnd = waterElectrificationCooldowns.get(wDim);
+        Long cdEnd = waterElectrificationCooldowns.get(source.getUUID());
         if (cdEnd != null && source.level().getGameTime() < cdEnd) return false;
 
         CompoundTag sourceData = source.getPersistentData();
-        boolean firstTrigger = !activeElectrifications.containsKey(wDim);
+        boolean firstTrigger = !activeElectrifications.containsKey(source.getUUID());
 
         if (firstTrigger) {
             int sourceTimer = sourceData.getIntOr(NBT_STATIC_TIMER, 0);
@@ -703,10 +711,10 @@ public class StaticShockHandler {
             }
 
             ActiveElectrification newElec = new ActiveElectrification(
-                source.getX(), source.getY(), source.getZ(), range, source.level().getGameTime(), paralysisDuration, (float)baseSettlementDamage);
-            activeElectrifications.put(source.level().dimension(), newElec);
+                source, range, paralysisDuration, (float)baseSettlementDamage);
+            activeElectrifications.put(source.getUUID(), newElec);
             int coolTicks = ElementalThunderFrostReactionsConfig.paralysisCooldownTicks;
-            waterElectrificationCooldowns.put(source.level().dimension(), source.level().getGameTime() + paralysisDuration + coolTicks);
+            waterElectrificationCooldowns.put(source.getUUID(), source.level().getGameTime() + paralysisDuration + coolTicks);
             newElec.damagedEntities.add(source.getUUID());
 
             if (paralysisDuration > 0 && ElementalThunderFrostReactionsConfig.paralysisMaxStacks > 0) {
@@ -760,11 +768,10 @@ public class StaticShockHandler {
         return processWaterElectrification(source, stacks);
     }
 
-    public static long getWaterElectrificationCooldown(Level level) {
-        ResourceKey<Level> dim = level.dimension();
-        Long cdEnd = waterElectrificationCooldowns.get(dim);
+    public static long getWaterElectrificationCooldown(LivingEntity entity) {
+        Long cdEnd = waterElectrificationCooldowns.get(entity.getUUID());
         if (cdEnd == null) return 0;
-        return Math.max(0, cdEnd - level.getGameTime());
+        return Math.max(0, cdEnd - entity.level().getGameTime());
     }
 
     public static boolean tryTriggerWaterElectrification(LivingEntity source, int paralysisDuration) {
