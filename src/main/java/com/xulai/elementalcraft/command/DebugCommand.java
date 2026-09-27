@@ -8,7 +8,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.xulai.elementalcraft.util.ConfigAutoSync;
 import com.xulai.elementalcraft.util.DebugMode;
 import com.xulai.elementalcraft.util.ElementType;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -308,9 +307,9 @@ public class DebugCommand {
         String relationKey = ctx.restraintMult > 1.0f ? "debug.elementalcraft.relation.restrain" : ctx.restraintMult < 1.0f ? "debug.elementalcraft.relation.weak" : "debug.elementalcraft.relation.neutral";
 
         MutableComponent prefix = Component.translatable(relationKey, sourceName, ctx.target.getDisplayName().getString());
-        if (ctx.restraintMult > 1.0f) prefix.withStyle(ChatFormatting.RED);
-        else if (ctx.restraintMult < 1.0f) prefix.withStyle(ChatFormatting.BLUE);
-        else prefix.withStyle(ChatFormatting.GRAY);
+        if (ctx.restraintMult > 1.0f) prefix = prefix.withStyle(ChatFormatting.RED);
+        else if (ctx.restraintMult < 1.0f) prefix = prefix.withStyle(ChatFormatting.BLUE);
+        else prefix = prefix.withStyle(ChatFormatting.GRAY);
 
         MutableComponent overview = Component.translatable("debug.elementalcraft.damage_overview",
                 String.format("%.2f", ctx.totalDamage),
