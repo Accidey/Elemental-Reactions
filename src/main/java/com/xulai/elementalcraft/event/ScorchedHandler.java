@@ -876,6 +876,9 @@ public class ScorchedHandler {
         if (fc == null) return;
 
         Entity ownerEntity = sl.getEntity(fc.ownerUUID);
+        if (ownerEntity == null && sl.getServer() != null) {
+            ownerEntity = sl.getServer().getPlayerList().getPlayer(fc.ownerUUID);
+        }
         if (ownerEntity == null || !(ownerEntity instanceof LivingEntity owner) || owner.isDeadOrDying()) {
             if (ownerEntity instanceof Mob mob) {
                 double savedSpeed = ownerEntity.getPersistentData().getDouble(NBT_FIRE_COUNTER_SAVED_SPEED);
