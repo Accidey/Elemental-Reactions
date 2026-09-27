@@ -277,6 +277,7 @@
   "debug.elementalcraft.reaction.nature_parasite.failed.immune": "§7[Nature Parasite] §f%s §7→ §f%s §7blocked: nature resist §e%s §7≥ immunity §c%s",
   "debug.elementalcraft.reaction.nature_parasite.failed.frozen": "§7[Nature Parasite] §f%s §7→ §f%s §7blocked: target frozen",
   "debug.elementalcraft.reaction.nature_parasite.failed.max_stacks": "§7[Nature Parasite] §f%s §7→ §f%s §7blocked: spore stacks already at max",
+  "debug.elementalcraft.reaction.nature_parasite.failed.unknown": "§7[Nature Parasite] §f%s §7→ §f%s §7blocked: infection effect unavailable",
 
   "debug.elementalcraft.reaction.wildfire.failed.cooldown": "§6[Nature Counter] §7blocked: cooldown active",
   "debug.elementalcraft.reaction.wildfire.failed.power_low": "§6[Nature Counter] §f%s §7blocked: nature §e%s §7< threshold §c%s",

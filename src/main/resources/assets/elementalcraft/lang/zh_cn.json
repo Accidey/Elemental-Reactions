@@ -278,6 +278,7 @@
   "debug.elementalcraft.reaction.nature_parasite.failed.immune": "§7[自然寄生] §f%s §7→ §f%s §7被阻止: 自然抗性 §e%s §7≥ 免疫阈值 §c%s",
   "debug.elementalcraft.reaction.nature_parasite.failed.frozen": "§7[自然寄生] §f%s §7→ §f%s §7被阻止: 目标被冰冻",
   "debug.elementalcraft.reaction.nature_parasite.failed.max_stacks": "§7[自然寄生] §f%s §7→ §f%s §7被阻止: 易燃孢子层数已达最大值",
+  "debug.elementalcraft.reaction.nature_parasite.failed.unknown": "§7[自然寄生] §f%s §7→ §f%s §7被阻止: 感染效果不可用",
 
   "debug.elementalcraft.reaction.wildfire.failed.cooldown": "§6[自然反击] §7被阻止: 冷却中",
   "debug.elementalcraft.reaction.wildfire.failed.power_low": "§6[自然反击] §f%s §7被阻止: 自然属性强化 §e%s §7< 阈值 §c%s",
