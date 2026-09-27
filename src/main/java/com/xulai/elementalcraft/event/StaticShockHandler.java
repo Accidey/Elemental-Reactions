@@ -512,7 +512,7 @@ public class StaticShockHandler {
                         }
                     }
 
-                    if (!isImmuneToStatic(entity)) {
+                    if (!isImmuneToStatic(entity) && !isImmuneToParalysis(entity)) {
                         long remaining = elec.duration - (now - elec.startTick);
                         if (remaining > 0 && ElementalThunderFrostReactionsConfig.paralysisMaxStacks > 0) {
                             entity.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS, (int)remaining, 0, false, false, true));
@@ -741,7 +741,8 @@ public class StaticShockHandler {
             waterElectrificationCooldowns.put(source.level().dimension(), source.level().getGameTime() + paralysisDuration + coolTicks);
             newElec.damagedEntities.add(source.getUUID());
 
-            if (paralysisDuration > 0 && ElementalThunderFrostReactionsConfig.paralysisMaxStacks > 0) {
+            if (paralysisDuration > 0 && ElementalThunderFrostReactionsConfig.paralysisMaxStacks > 0
+                    && !isImmuneToParalysis(source)) {
                 source.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS, paralysisDuration, 0, false, false, true));
             }
 
@@ -757,7 +758,8 @@ public class StaticShockHandler {
                 if (!isInOrOnWater(target)) continue;
                 if (isImmuneToStatic(target)) continue;
 
-                if (paralysisDuration > 0 && ElementalThunderFrostReactionsConfig.paralysisMaxStacks > 0) {
+                if (paralysisDuration > 0 && ElementalThunderFrostReactionsConfig.paralysisMaxStacks > 0
+                        && !isImmuneToParalysis(target)) {
                     target.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS, paralysisDuration, 0, false, false, true));
                 }
                 if (source.level() instanceof ServerLevel serverLevel) {
