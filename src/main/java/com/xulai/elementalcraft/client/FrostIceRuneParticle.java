@@ -29,9 +29,9 @@ public class FrostIceRuneParticle extends SingleQuadParticle {
         this.gravity = 0;
 
 
-        this.lifetime = 10;
         this.fadeInTicks = 6;
         this.fadeOutTicks = 6;
+        this.lifetime = this.fadeInTicks + this.fadeOutTicks;
 
 
         this.rCol = 1.0f;
