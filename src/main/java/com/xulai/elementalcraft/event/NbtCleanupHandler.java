@@ -3,6 +3,7 @@ package com.xulai.elementalcraft.event;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.potion.ModMobEffects;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -72,7 +73,10 @@ public class NbtCleanupHandler {
 
         data.remove("EC_SteamCondensationTimer");
         data.remove("EC_SteamAttackerCooldown");
-        data.remove("EC_SteamBlindness");
+        if (data.contains(SteamReactionHandler.NBT_STEAM_BLINDNESS)) {
+            player.removeEffect(MobEffects.BLINDNESS);
+            data.remove(SteamReactionHandler.NBT_STEAM_BLINDNESS);
+        }
         data.remove("EC_SteamScaldingLogged");
         data.remove("EC_FrostedCloudUUID");
         data.remove("EC_StaticCloudUUID");

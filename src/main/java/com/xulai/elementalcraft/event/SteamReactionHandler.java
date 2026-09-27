@@ -64,7 +64,7 @@ public class SteamReactionHandler {
 
     private static final String NBT_CONDENSATION_TIMER = "EC_SteamCondensationTimer";
     public static final String NBT_STEAM_ATTACKER_COOLDOWN = "EC_SteamAttackerCooldown";
-    private static final String NBT_STEAM_BLINDNESS = "EC_SteamBlindness";
+    public static final String NBT_STEAM_BLINDNESS = "EC_SteamBlindness";
     private static final String NBT_STEAM_SCALDING_LOGGED = "EC_SteamScaldingLogged";
     public static final String NBT_FROSTED_CLOUD_UUID = "EC_FrostedCloudUUID";
     private static final String NBT_STATIC_CLOUD_UUID = "EC_StaticCloudUUID";
