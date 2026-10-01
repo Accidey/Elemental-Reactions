@@ -1242,7 +1242,7 @@ public class ElementalFireNatureReactionsConfig {
     public static double sporeColdBiomeDurationMultiplier;
     public static double sporeColdBiomeChanceMultiplier;
     public static List<? extends String> cachedSporeBlacklist;
-    public static double sporeDurabilityPercent = 0.1;
+    public static double sporeDurabilityPercent = 1.0;
     public static int contagionTransferBase;
     public static double contagionBaseRadius;
     public static double contagionRadiusPerStack;

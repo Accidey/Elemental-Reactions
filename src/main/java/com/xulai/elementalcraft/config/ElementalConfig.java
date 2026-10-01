@@ -784,13 +784,12 @@ public final class ElementalConfig {
     public static List<? extends String> cachedBlacklist = List.of();
 
     public static boolean mobFleeEnabled = true;
-    public static boolean potionStack64Enabled = true;
 
     public static boolean mobPotionThrowEnabled = true;
     public static double mobBottleEquipChance = 0.35;
     public static int mobBottleThrowCooldown = 200;
 
-    public static double enchantedBookDropChance = 0.05;
+    public static double enchantedBookDropChance = 0.5;
     public static double enchantedBookLootingBonus = 0.10;
     public static double enchantedBookLevelSpread = 1.0;
 
@@ -831,7 +830,6 @@ public final class ElementalConfig {
         cachedBlacklist = BLACKLISTED_ENTITIES.get();
 
         mobFleeEnabled = MOB_FLEE_ENABLED.get();
-        potionStack64Enabled = POTION_STACK_64.get();
 
         mobPotionThrowEnabled = MOB_POTION_THROW_ENABLED.get();
         mobBottleEquipChance = MOB_BOTTLE_EQUIP_CHANCE.get();
