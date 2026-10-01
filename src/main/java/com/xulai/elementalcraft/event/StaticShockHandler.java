@@ -517,7 +517,8 @@ public class StaticShockHandler {
                     double dz = entity.getZ() - elec.z;
                     if (dx * dx + dy * dy + dz * dz > elec.range * elec.range) continue;
 
-                    if (!isImmuneToStatic(entity) && !elec.damagedEntities.contains(entity.getUUID())) {
+                    boolean immuneToStatic = isImmuneToStatic(entity);
+                    if (!immuneToStatic && !elec.damagedEntities.contains(entity.getUUID())) {
                         elec.damagedEntities.add(entity.getUUID());
                         float dmg = applyEnchantmentReduction(entity, elec.settlementDamage);
                         if (dmg > 0) {
@@ -525,7 +526,7 @@ public class StaticShockHandler {
                         }
                     }
 
-                    if (!isImmuneToStatic(entity) && !isImmuneToParalysis(entity)) {
+                    if (!immuneToStatic && !isImmuneToParalysis(entity)) {
                         long remaining = elec.duration - (now - elec.startTick);
                         if (remaining > 0 && ElementalThunderFrostReactionsConfig.paralysisMaxStacks > 0) {
                             entity.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS, (int)remaining, 0, false, false, true));
