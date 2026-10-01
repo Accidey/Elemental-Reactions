@@ -103,6 +103,7 @@ public class FireVisuals {
 
             int particleCount = (int) (ElementalVisualConfig.fireMeleeParticleCountBase * angleMultiplier)
                     + ElementalVisualConfig.fireMeleeParticleCountOffset;
+            if (particleCount < 1) particleCount = 1;
 
             for (int i = 0; i <= particleCount; i++) {
                 double progress = (double) i / particleCount;

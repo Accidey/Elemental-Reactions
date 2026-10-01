@@ -100,6 +100,7 @@ public class NatureVisuals {
 
             int particleCount = (int) (ElementalVisualConfig.natureMeleeParticleCountBase * angleMultiplier)
                     + ElementalVisualConfig.natureMeleeParticleCountOffset;
+            if (particleCount < 1) particleCount = 1;
 
             for (int i = 0; i <= particleCount; i++) {
                 double progress = (double) i / particleCount;

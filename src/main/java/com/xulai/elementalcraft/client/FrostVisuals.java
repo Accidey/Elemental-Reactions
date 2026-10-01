@@ -100,6 +100,7 @@ public class FrostVisuals {
 
             int particleCount = (int) (ElementalVisualConfig.frostMeleeParticleCountBase * angleMultiplier)
                     + ElementalVisualConfig.frostMeleeParticleCountOffset;
+            if (particleCount < 1) particleCount = 1;
 
             Vec3 startPos = null;
             Vec3 endPos = null;
