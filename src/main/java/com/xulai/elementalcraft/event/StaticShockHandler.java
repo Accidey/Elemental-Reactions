@@ -730,7 +730,7 @@ public class StaticShockHandler {
             int sourceTimer = sourceData.getIntOr(NBT_STATIC_TIMER, 0);
             int interval = ElementalThunderFrostReactionsConfig.staticDamageIntervalTicks;
             if (interval < 1) interval = 1;
-            int remainingHits = (sourceTimer + interval - 1) / interval;
+            int remainingHits = Math.max(1, (sourceTimer + interval - 1) / interval);
 
             double baseSettlementDamage = 0;
             for (int i = 0; i < remainingHits; i++) {
@@ -1588,7 +1588,7 @@ public class StaticShockHandler {
         int interval = ElementalThunderFrostReactionsConfig.staticDamageIntervalTicks;
         if (interval < 1) interval = 1;
         int remainingTicks = totalTimer;
-        int remainingHits = (remainingTicks + interval - 1) / interval;
+        int remainingHits = Math.max(1, (remainingTicks + interval - 1) / interval);
 
         double totalDamage = 0;
         for (int i = 0; i < remainingHits; i++) {
