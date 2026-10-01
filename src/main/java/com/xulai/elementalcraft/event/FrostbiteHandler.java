@@ -128,9 +128,10 @@ public class FrostbiteHandler {
     public static void triggerFrostBurst(LivingEntity source) {
         if (!(source.level() instanceof ServerLevel sl)) return;
         net.minecraft.resources.ResourceKey<Level> dim = source.level().dimension();
-        activeFrostBursts.put(dim, new ActiveFrostBurst(
+        ActiveFrostBurst replaced = activeFrostBursts.put(dim, new ActiveFrostBurst(
             source.getX(), source.getY(), source.getZ(),
             source.level().getGameTime(), source.getUUID()));
+        if (replaced != null) releaseFrostBurstTargets(sl, replaced);
 
         AreaEffectCloud cloud = SteamReactionHandler.spawnSteamCloud(source, false, 1);
         if (cloud != null) {
@@ -142,6 +143,15 @@ public class FrostbiteHandler {
             cloud.setRadius(0.5F);
             int duration = (int) (ElementalThunderFrostReactionsConfig.frostCounterMaxRadius / ElementalThunderFrostReactionsConfig.frostCounterExpansionSpeed * 20);
             cloud.setDuration(duration);
+        }
+    }
+
+    private static void releaseFrostBurstTargets(ServerLevel sl, ActiveFrostBurst burst) {
+        for (UUID trackedId : burst.hitEntities) {
+            Entity tracked = sl.getEntity(trackedId);
+            if (tracked instanceof LivingEntity le) {
+                le.getPersistentData().remove(NBT_FROST_BURST_FROZEN);
+            }
         }
     }
 
