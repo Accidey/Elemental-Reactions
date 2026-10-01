@@ -135,8 +135,10 @@ public class MobPotionThrowLogic {
             throwSplashBottle(mob, target, true);
         } else {
             if (!WetnessHandler.canGainWetness(target)) return;
+            int wetnessMaxLevel = ElementalFireNatureReactionsConfig.wetnessMaxLevel;
+            if (wetnessMaxLevel <= 0) return;
             int wetnessLevel = WetnessHandler.getWetnessLevel(target);
-            if (wetnessLevel >= ElementalFireNatureReactionsConfig.wetnessMaxLevel) {
+            if (wetnessLevel >= wetnessMaxLevel) {
                 data.putInt(NBT_BOTTLE_ROUND, 0);
                 data.putBoolean(NBT_BOTTLE_WAIT, true);
                 return;
