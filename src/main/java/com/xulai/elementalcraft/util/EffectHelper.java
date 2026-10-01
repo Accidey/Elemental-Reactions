@@ -171,6 +171,7 @@ public class EffectHelper {
     private static void spawnSmokeBatch(ServerLevel serverLevel, double x, double y, double z,
                                          double radius, int totalParticles, int batches, int currentTick) {
         if (currentTick >= batches) return;
+        if (!serverLevel.getServer().isRunning()) return;
         int batchCount = totalParticles / batches;
         if (currentTick < totalParticles % batches) batchCount++;
         for (int i = 0; i < batchCount; i++) {
@@ -201,6 +202,7 @@ public class EffectHelper {
 
     private static void spawnNatureAnimation(ServerLevel level, Vec3 pos, double radius, int tick) {
         if (tick > 18) return;
+        if (!level.getServer().isRunning()) return;
         if (tick <= 3) {
             spawnNatureCore(level, pos);
         } else if (tick <= 10) {
@@ -304,6 +306,7 @@ public class EffectHelper {
         int expandTicks = 20;
         int maxTick = expandTicks + 10;
         if (tick > maxTick) return;
+        if (!level.getServer().isRunning()) return;
         double progress = Math.min((double) tick / expandTicks, 1.0);
         double currentR = 0.5 + (radius - 0.5) * progress;
         int totalHelices = 6;

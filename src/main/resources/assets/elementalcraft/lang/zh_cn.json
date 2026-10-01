@@ -63,6 +63,7 @@
   "command.elementalcraft.forceditem.armor.need_points": "§c至少一个点数必须大于 0，未写入任何内容。",
   "command.elementalcraft.forceditem.armor.not_found": "§f%s §7没有强制强化+抗性属性",
   "command.elementalcraft.forceditem.armor.remove_success": "§a已移除 §f%s §a的强制强化+抗性属性",
+  "command.elementalcraft.forceditem.invalid_points": "点数格式无效。请使用数字或范围，例如 50 或 20-80。",
   "command.elementalcraft.forceditem.invalid_element": "§c无效的属性ID：%s",
   "command.elementalcraft.forceditem.no_item": "§c请手持一个物品！",
   "command.elementalcraft.forceditem.saved": "§7配置文件已保存，缓存已刷新，立即生效",
@@ -451,4 +452,3 @@
   "effect.elementalcraft.freeze": "冻结",
   "effect.elementalcraft.freeze.description": "你被完全冻结！无法移动和攻击，受到的元素伤害增加，但物理伤害被冰壳格挡。赤焰属性攻击会立即解除冻结并转化为潮湿（伤害降低50%）。"
 }
-

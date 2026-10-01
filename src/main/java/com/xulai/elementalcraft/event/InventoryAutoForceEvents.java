@@ -66,6 +66,7 @@ public class InventoryAutoForceEvents {
 
     public static void applyForcedAttributes(ItemStack stack, boolean isTracked) {
         if (stack.isEmpty()) return;
+        if (isTracked) return;
 
         boolean changed = false;
         var componentType = EnchantmentHelper.getComponentType(stack);
@@ -90,17 +91,9 @@ public class InventoryAutoForceEvents {
                     }
                 }
 
-                if (isTracked) {
-                    if (currentAttackEnchant != targetEnchant) {
-                        if (currentAttackEnchant != null) mutable.set(currentAttackEnchant, 0);
-                        mutable.set(targetEnchant, 1);
-                        changed = true;
-                    }
-                } else {
-                    if (currentAttackEnchant == null) {
-                        mutable.set(targetEnchant, 1);
-                        changed = true;
-                    }
+                if (currentAttackEnchant == null) {
+                    mutable.set(targetEnchant, 1);
+                    changed = true;
                 }
             }
         }
@@ -116,33 +109,18 @@ public class InventoryAutoForceEvents {
                 if (targetEnhance != null) {
                     forcedData.putString("enhance", armorData.enhanceType().getId());
 
-                    if (isTracked) {
-                        for (ElementType type : ElementType.values()) {
-                            if (type == ElementType.NONE) continue;
-                            Holder<Enchantment> e = getEnhancementEnchantment(type);
-                            if (e != null && e != targetEnhance && mutable.getLevel(e) > 0) {
-                                mutable.set(e, 0);
-                                changed = true;
-                            }
+                    boolean hasEnhance = false;
+                    for (ElementType type : ElementType.values()) {
+                        if (type == ElementType.NONE) continue;
+                        Holder<Enchantment> e = getEnhancementEnchantment(type);
+                        if (e != null && mutable.getLevel(e) > 0) {
+                            hasEnhance = true;
+                            break;
                         }
-                        if (mutable.getLevel(targetEnhance) != level) {
-                            mutable.set(targetEnhance, level);
-                            changed = true;
-                        }
-                    } else {
-                        boolean hasEnhance = false;
-                        for (ElementType type : ElementType.values()) {
-                            if (type == ElementType.NONE) continue;
-                            Holder<Enchantment> e = getEnhancementEnchantment(type);
-                            if (e != null && mutable.getLevel(e) > 0) {
-                                hasEnhance = true;
-                                break;
-                            }
-                        }
-                        if (!hasEnhance) {
-                            mutable.set(targetEnhance, level);
-                            changed = true;
-                        }
+                    }
+                    if (!hasEnhance) {
+                        mutable.set(targetEnhance, level);
+                        changed = true;
                     }
                 }
             }
@@ -156,33 +134,18 @@ public class InventoryAutoForceEvents {
                 if (targetResist != null) {
                     forcedData.putString("resist", armorData.resistType().getId());
 
-                    if (isTracked) {
-                        for (ElementType type : ElementType.values()) {
-                            if (type == ElementType.NONE) continue;
-                            Holder<Enchantment> e = getResistanceEnchantment(type);
-                            if (e != null && e != targetResist && mutable.getLevel(e) > 0) {
-                                mutable.set(e, 0);
-                                changed = true;
-                            }
+                    boolean hasResist = false;
+                    for (ElementType type : ElementType.values()) {
+                        if (type == ElementType.NONE) continue;
+                        Holder<Enchantment> e = getResistanceEnchantment(type);
+                        if (e != null && mutable.getLevel(e) > 0) {
+                            hasResist = true;
+                            break;
                         }
-                        if (mutable.getLevel(targetResist) != level) {
-                            mutable.set(targetResist, level);
-                            changed = true;
-                        }
-                    } else {
-                        boolean hasResist = false;
-                        for (ElementType type : ElementType.values()) {
-                            if (type == ElementType.NONE) continue;
-                            Holder<Enchantment> e = getResistanceEnchantment(type);
-                            if (e != null && mutable.getLevel(e) > 0) {
-                                hasResist = true;
-                                break;
-                            }
-                        }
-                        if (!hasResist) {
-                            mutable.set(targetResist, level);
-                            changed = true;
-                        }
+                    }
+                    if (!hasResist) {
+                        mutable.set(targetResist, level);
+                        changed = true;
                     }
                 }
             }

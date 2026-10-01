@@ -30,7 +30,7 @@ public class ForcedItemCommand {
     public static void register(RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
 
-        dispatcher.register(Commands.literal("elementalcraft")
+        dispatcher.register(Commands.literal("element")
                 .then(Commands.literal("item")
                         .requires(source -> source.hasPermission(2))
                         .then(Commands.literal("weapon")
@@ -106,6 +106,11 @@ public class ForcedItemCommand {
         } catch (Exception e) {
             return "";
         }
+    }
+
+    private static boolean isValidPointsInput(String input) {
+        if (input == null || input.isBlank()) return true;
+        return input.matches("\\d+(-\\d+)?");
     }
 
     private static ElementType parse(String input) {
@@ -242,6 +247,11 @@ public class ForcedItemCommand {
 
         String enhanceStr = enhanceInput.isBlank() ? "0" : enhanceInput.trim();
         String resistStr = resistInput.isBlank() ? "0" : resistInput.trim();
+
+        if (!isValidPointsInput(enhanceStr) || !isValidPointsInput(resistStr)) {
+            player.sendSystemMessage(Component.translatable("command.elementalcraft.forceditem.invalid_points"));
+            return 0;
+        }
 
         if (ForcedItemHelper.maxPointsOf(enhanceStr) <= 0 && ForcedItemHelper.maxPointsOf(resistStr) <= 0) {
             player.sendSystemMessage(Component.translatable("command.elementalcraft.forceditem.armor.need_points"));

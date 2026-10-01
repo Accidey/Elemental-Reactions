@@ -292,6 +292,17 @@ public class ScorchedHandler {
         }
     }
 
+    public static void clearFireCounterState(LivingEntity entity) {
+        CompoundTag data = entity.getPersistentData();
+        data.remove(NBT_FIRE_COUNTER_INVULN);
+        data.remove(NBT_FIRE_COUNTER_LOCK);
+        data.remove(NBT_FIRE_COUNTER_SAVED_SPEED);
+        data.remove(NBT_FIRE_COUNTER_SPEED_TIME);
+        if (entity instanceof net.minecraft.server.level.ServerPlayer sp) {
+            PacketDistributor.sendToPlayer(sp, new FireCounterLockPacket(false));
+        }
+    }
+
     public static boolean isTempScorched(LivingEntity entity) {
         CompoundTag data = entity.getPersistentData();
         return data.getBoolean(NBT_TEMP_SCORCH);
@@ -1025,6 +1036,7 @@ public class ScorchedHandler {
         int expandTicks = 20;
         int maxTick = expandTicks + 10;
         if (tick > maxTick) return;
+        if (!level.getServer().isRunning()) return;
         double progress = Math.min((double) tick / expandTicks, 1.0);
         double currentR = 0.5 + (radius - 0.5) * progress;
         int totalHelices = 6;

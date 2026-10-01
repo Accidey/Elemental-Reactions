@@ -37,6 +37,7 @@ public class MobPotionThrowLogic {
     private static final String NBT_BOTTLE_VERDICT = "EC_BottleVerdict";
     private static final String NBT_BOTTLE_ROUND = "EC_BottleRound";
     private static final String NBT_BOTTLE_WAIT = "EC_BottleWait";
+    private static final String NBT_BOTTLE_TARGET = "EC_BottleTarget";
 
     @SubscribeEvent
     public static void onLivingTick(EntityTickEvent.Post event) {
@@ -90,21 +91,27 @@ public class MobPotionThrowLogic {
         if (verdict > 0) {
             if (gameTime < verdict) return;
             LivingEntity target = mob.getTarget();
-            boolean hit = target != null && target.isAlive()
+            boolean sameTarget = target != null && target.isAlive()
+                    && data.hasUUID(NBT_BOTTLE_TARGET)
+                    && target.getUUID().equals(data.getUUID(NBT_BOTTLE_TARGET));
+            boolean hit = sameTarget
                     && (isFire ? target.hasEffect(MobEffects.POISON) : WetnessHandler.getWetnessLevel(target) > 0);
             if (hit) {
                 data.putInt(NBT_BOTTLE_MISS, 0);
                 data.remove(NBT_BOTTLE_VERDICT);
+                data.remove(NBT_BOTTLE_TARGET);
             } else {
                 int miss = data.getInt(NBT_BOTTLE_MISS) + 1;
                 if (miss >= MAX_MISSES) {
                     data.putLong(NBT_BOTTLE_CD, gameTime + ElementalConfig.mobBottleThrowCooldown);
                     data.putInt(NBT_BOTTLE_MISS, 0);
                     data.remove(NBT_BOTTLE_VERDICT);
+                    data.remove(NBT_BOTTLE_TARGET);
                     return;
                 }
                 data.putInt(NBT_BOTTLE_MISS, miss);
                 data.remove(NBT_BOTTLE_VERDICT);
+                data.remove(NBT_BOTTLE_TARGET);
             }
         }
 
@@ -153,5 +160,6 @@ public class MobPotionThrowLogic {
         }
         data.putLong(NBT_BOTTLE_VERDICT, gameTime + ATTEMPT_INTERVAL);
         data.putInt(NBT_BOTTLE_ROUND, data.getInt(NBT_BOTTLE_ROUND) + 1);
+        data.putUUID(NBT_BOTTLE_TARGET, target.getUUID());
     }
 }

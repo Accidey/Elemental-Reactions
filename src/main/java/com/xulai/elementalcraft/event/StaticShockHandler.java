@@ -627,12 +627,16 @@ public class StaticShockHandler {
             if (now < storm.nextStrikeTick) return;
             storm.nextStrikeTick = now + storm.strikeInterval;
 
+            boolean spawnedVisual = false;
             for (LivingEntity strikeTarget : areaEntities) {
-                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(sl);
-                if (lightning != null) {
-                    lightning.moveTo(strikeTarget.getX(), strikeTarget.getY(), strikeTarget.getZ());
-                    lightning.setVisualOnly(true);
-                    sl.addFreshEntity(lightning);
+                if (!spawnedVisual) {
+                    LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(sl);
+                    if (lightning != null) {
+                        lightning.moveTo(strikeTarget.getX(), strikeTarget.getY(), strikeTarget.getZ());
+                        lightning.setVisualOnly(true);
+                        sl.addFreshEntity(lightning);
+                    }
+                    spawnedVisual = true;
                 }
 
                 ElementDamageHelper.applyDamage(strikeTarget,

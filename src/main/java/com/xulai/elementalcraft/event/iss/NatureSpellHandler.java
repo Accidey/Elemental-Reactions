@@ -81,7 +81,7 @@ public class NatureSpellHandler {
                     int natureEnhancement = ElementUtils.getDisplayEnhancement(owner, ElementType.NATURE);
                     int amount = natureEnhancement / perStack;
                     if (amount > 0) {
-                        ElementalCraft.LOGGER.info("[EC ROOT DEBUG] Tick applying {} spores to {}", amount, target.getName().getString());
+                        ElementalCraft.LOGGER.debug("[EC ROOT DEBUG] Tick applying {} spores to {}", amount, target.getName().getString());
                         ReactionHandler.stackSporeEffect(target, amount, null);
                     }
                 }
@@ -91,7 +91,7 @@ public class NatureSpellHandler {
 
         if (!ScorchedHandler.isScorched(target)) return;
 
-        ElementalCraft.LOGGER.info("[EC ROOT DEBUG] Tick detected scorched ROOT target, removing ROOT!");
+        ElementalCraft.LOGGER.debug("[EC ROOT DEBUG] Tick detected scorched ROOT target, removing ROOT!");
 
         vehicle.ejectPassengers();
         vehicle.discard();

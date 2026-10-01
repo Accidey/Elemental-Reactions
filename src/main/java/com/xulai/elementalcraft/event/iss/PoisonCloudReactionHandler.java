@@ -29,7 +29,8 @@ public class PoisonCloudReactionHandler {
     @SubscribeEvent
     public static void onLevelTick(LevelTickEvent.Post event) {
         if (event.getLevel().isClientSide()) return;
-        
+        if (event.getLevel().getGameTime() % 20 != 0) return;
+
         if (ElementalFireNatureReactionsConfig.scorchedTriggerThreshold <= 0) return;
 
         if (!cacheInitialized) {

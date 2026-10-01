@@ -224,7 +224,10 @@ public class MobAttributeLogic {
         if (server == null) return;
 
         server.tell(new TickTask(server.getTickCount() + 1, () -> {
-            if (!mob.isAlive()) return;
+            if (!mob.isAlive()) {
+                persistentData.putBoolean("ElementalCraft_AttributesSet", true);
+                return;
+            }
 
             ElementType attackType = filterBlocked(data.attackType(), blocked);
             ElementType enhanceType = filterBlocked(data.enhanceType(), blocked);

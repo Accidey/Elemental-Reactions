@@ -66,8 +66,8 @@ public class ElementalBookDropHandler {
         int enhancePoints = data.getInt(NBT_DROP_ENHANCE_POINTS);
         int resistPoints = data.getInt(NBT_DROP_RESIST_POINTS);
 
-        int strengthPerLevel = ElementalConfig.getStrengthPerLevel();
-        int resistPerLevel = ElementalConfig.getResistPerLevel();
+        int strengthPerLevel = Math.max(1, ElementalConfig.getStrengthPerLevel());
+        int resistPerLevel = Math.max(1, ElementalConfig.getResistPerLevel());
         int maxEnhanceLevel = Math.max(1, ElementalConfig.getMaxStatCap() / strengthPerLevel);
         int maxResistLevel = Math.max(1, ElementalConfig.getMaxStatCap() / resistPerLevel);
 

@@ -15,6 +15,7 @@ public class NbtCleanupHandler {
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         cleanupStaleData(event.getEntity());
+        ScorchedHandler.clearFireCounterState(event.getEntity());
     }
 
     @SubscribeEvent

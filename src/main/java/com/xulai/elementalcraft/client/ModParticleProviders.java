@@ -23,7 +23,7 @@ public class ModParticleProviders {
 
         event.registerSpriteSet(
                 ModParticles.FROST_SNOWFLAKE_ISS.get(),
-                FrostSnowflakeParticle.Factory::new
+                FrostSnowflakeParticle.LongLivedFactory::new
         );
 
         event.registerSpriteSet(

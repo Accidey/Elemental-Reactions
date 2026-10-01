@@ -53,7 +53,7 @@ public class CombatEvents {
     public static void onLivingDamageFireCounterReduction(LivingDamageEvent.Pre event) {
         if (event.getEntity().level().isClientSide) return;
         if (event.getEntity().getPersistentData().getBoolean(ScorchedHandler.NBT_FIRE_COUNTER_INVULN)) {
-            float reduction = (float) ElementalFireNatureReactionsConfig.fireCounterDamageReduction;
+            float reduction = (float) Math.min(0.99, Math.max(0.0, ElementalFireNatureReactionsConfig.fireCounterDamageReduction));
             event.setNewDamage(event.getNewDamage() * (1.0f - reduction));
         }
     }
@@ -205,8 +205,8 @@ public class CombatEvents {
             }
         }
 
-        int strengthPerHalfDamage = ElementalConfig.getStrengthPerHalfDamage();
-        int resistPerHalfReduction = ElementalConfig.getResistPerHalfReduction();
+        int strengthPerHalfDamage = Math.max(1, ElementalConfig.getStrengthPerHalfDamage());
+        int resistPerHalfReduction = Math.max(1, ElementalConfig.getResistPerHalfReduction());
 
         float baseEnhancementDamage = enhancementPoints / (float) strengthPerHalfDamage * 0.5f;
         float baseResistReduction = resistancePoints / (float) resistPerHalfReduction * 0.5f;

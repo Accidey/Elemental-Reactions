@@ -11,12 +11,12 @@
     {
       "type": "patchouli:text",
       "title": "Blocking one element",
-      "text": "An entity can be blocked from a $(l)single$() element instead of all of them. Add a third part to the entry, separated by a colon:$(br2)$(thing)\"minecraft:zombie:fire\"$()$(br2)Zombies will still be Frost, Thunder or Nature, but never Fire - not as an attack, an enhancement or a resistance, and not in the enchanted book they drop.$(br2)Use $(thing)all$() as the third part to block everything. In game this is the $(thing)/elementalcraft entity blacklist$() command."
+      "text": "An entity can be blocked from a $(l)single$() element instead of all of them. Add a third part to the entry, separated by a colon:$(br2)$(thing)\"minecraft:zombie:fire\"$()$(br2)Zombies will still be Frost, Thunder or Nature, but never Fire - not as an attack, an enhancement or a resistance, and not in the enchanted book they drop.$(br2)Use $(thing)all$() as the third part to block everything. In game this is the $(thing)/element entity blacklist$() command."
     },
     {
       "type": "patchouli:text",
       "title": "Per-mechanic blacklists",
-      "text": "Each reaction family has its own list in the reaction config files: $(thing)wetness_entity_blacklist$(), $(thing)spore_entity_blacklist$(), $(thing)scorched_entity_blacklist$(), $(thing)steam_immunity_blacklist$(), $(thing)static_immunity_blacklist$(), $(thing)paralysis_immunity_blacklist$(), $(thing)frostbite_immunity_blacklist$(), $(thing)freeze_immunity_blacklist$().$(br2)They accept the same id-or-namespace format, and can also be edited in game with $(thing)/elementalcraft blacklist$() while holding a spawn egg."
+      "text": "Each reaction family has its own list in the reaction config files: $(thing)wetness_entity_blacklist$(), $(thing)spore_entity_blacklist$(), $(thing)scorched_entity_blacklist$(), $(thing)steam_immunity_blacklist$(), $(thing)static_immunity_blacklist$(), $(thing)paralysis_immunity_blacklist$(), $(thing)frostbite_immunity_blacklist$(), $(thing)freeze_immunity_blacklist$().$(br2)They accept the same id-or-namespace format, and can also be edited in game with $(thing)/element blacklist$() while holding a spawn egg."
     },
     {
       "type": "patchouli:text",

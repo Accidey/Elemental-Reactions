@@ -51,7 +51,7 @@ public class ForcedEntityCommand {
     public static void register(RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
 
-        dispatcher.register(Commands.literal("elementalcraft")
+        dispatcher.register(Commands.literal("element")
                 .then(Commands.literal("entity")
                         .requires(source -> source.hasPermission(2))
                         .then(Commands.literal("add")
@@ -182,6 +182,11 @@ public class ForcedEntityCommand {
 
         String enhanceStr = enhanceInput.isBlank() ? "0" : enhanceInput.trim();
         String resistStr = resistInput.isBlank() ? "0" : resistInput.trim();
+
+        if (!isValidPointsInput(enhanceStr) || !isValidPointsInput(resistStr)) {
+            player.sendSystemMessage(Component.translatable("command.elementalcraft.forceditem.invalid_points"));
+            return 0;
+        }
 
         String newLine = String.format(
                 "%s,%s,%s,%s,%s,%s",
@@ -398,6 +403,11 @@ public class ForcedEntityCommand {
         } catch (IllegalArgumentException e) {
             return "";
         }
+    }
+
+    private static boolean isValidPointsInput(String input) {
+        if (input == null || input.isBlank()) return true;
+        return input.matches("\\d+(-\\d+)?");
     }
 
     private static ElementType parseElement(String input) {

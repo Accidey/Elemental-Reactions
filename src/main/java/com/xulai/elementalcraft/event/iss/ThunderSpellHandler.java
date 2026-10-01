@@ -206,9 +206,10 @@ public class ThunderSpellHandler {
             mob.getPersistentData().putBoolean("EC_ISS_SpellHit", true);
 
             CompoundTag data = event.getEntity().getPersistentData();
-            saveAndClearEnchantments(attacker.level(), attacker.getMainHandItem(), data, NBT_ISS_MAINHAND_ENCH);
-            saveAndClearEnchantments(attacker.level(), attacker.getOffhandItem(), data, NBT_ISS_OFFHAND_ENCH);
-            data.putBoolean(NBT_ISS_ATTACKER + "Most", true);
+            String enchSuffix = "_" + attacker.getUUID();
+            saveAndClearEnchantments(attacker.level(), attacker.getMainHandItem(), data, NBT_ISS_MAINHAND_ENCH + enchSuffix);
+            saveAndClearEnchantments(attacker.level(), attacker.getOffhandItem(), data, NBT_ISS_OFFHAND_ENCH + enchSuffix);
+            data.putBoolean(NBT_ISS_ATTACKER + "Most" + enchSuffix, true);
             data.putBoolean(NBT_ISS_ACTIVE, true);
             data.putUUID(NBT_ISS_ATTACKER, attacker.getUUID());
             if (ElementUtils.getDisplayEnhancement(attacker, ElementType.THUNDER) > 0) {
@@ -572,10 +573,12 @@ public class ThunderSpellHandler {
     }
 
     private static void restoreAttackerEnchantments(LivingEntity target, CompoundTag data) {
-        if (!data.contains(NBT_ISS_ATTACKER + "Most")) return;
+        if (!data.hasUUID(NBT_ISS_ATTACKER)) return;
         UUID attackerId = data.getUUID(NBT_ISS_ATTACKER);
-        data.remove(NBT_ISS_ATTACKER + "Most");
-        data.remove(NBT_ISS_ATTACKER + "Least");
+        String enchSuffix = "_" + attackerId;
+        if (!data.getBoolean(NBT_ISS_ATTACKER + "Most" + enchSuffix)) return;
+        data.remove(NBT_ISS_ATTACKER + "Most" + enchSuffix);
+        data.remove(NBT_ISS_ATTACKER + "Least" + enchSuffix);
 
         Entity attackerEntity = target.level().getPlayerByUUID(attackerId);
         if (attackerEntity == null && target.level() instanceof ServerLevel serverLevel) {
@@ -583,8 +586,8 @@ public class ThunderSpellHandler {
         }
         if (!(attackerEntity instanceof LivingEntity attacker)) return;
 
-        restoreEnchantments(attacker.level(), attacker.getMainHandItem(), data, NBT_ISS_MAINHAND_ENCH);
-        restoreEnchantments(attacker.level(), attacker.getOffhandItem(), data, NBT_ISS_OFFHAND_ENCH);
+        restoreEnchantments(attacker.level(), attacker.getMainHandItem(), data, NBT_ISS_MAINHAND_ENCH + enchSuffix);
+        restoreEnchantments(attacker.level(), attacker.getOffhandItem(), data, NBT_ISS_OFFHAND_ENCH + enchSuffix);
     }
 
     private static void restoreEnchantments(Level level, ItemStack stack, CompoundTag data, String key) {

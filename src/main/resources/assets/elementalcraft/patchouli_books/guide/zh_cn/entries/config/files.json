@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "所有设置都位于 $(thing)config/ElementalCraft/$()。$(br2)每个文件都是双语的（中英文注释齐全），并且都支持热重载：保存后约 5 秒自动生效，也可以用 $(thing)/elementalcraft reload$() 强制刷新。$(br2)调整反应数值不需要重启服务器。"
+      "text": "所有设置都位于 $(thing)config/ElementalCraft/$()。$(br2)每个文件都是双语的（中英文注释齐全），并且都支持热重载：保存后约 5 秒自动生效，也可以用 $(thing)/element reload$() 强制刷新。$(br2)调整反应数值不需要重启服务器。"
     },
     {
       "type": "patchouli:text",

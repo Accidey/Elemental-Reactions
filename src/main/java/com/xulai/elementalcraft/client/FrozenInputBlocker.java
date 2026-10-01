@@ -67,7 +67,7 @@ public class FrozenInputBlocker {
     public static void onMouseButton(InputEvent.MouseButton.Pre event) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen != null) return;
-        if (!isAffected(mc)) return;
+        if (!isAffected(mc) && !fireCounterLocked) return;
 
         event.setCanceled(true);
     }
@@ -75,9 +75,10 @@ public class FrozenInputBlocker {
     @SubscribeEvent
     public static void onMouseScroll(InputEvent.MouseScrollingEvent event) {
         Minecraft mc = Minecraft.getInstance();
-        if (isAffected(mc)) {
-            event.setCanceled(true);
-        }
+        if (mc.screen != null) return;
+        if (!isAffected(mc) && !fireCounterLocked) return;
+
+        event.setCanceled(true);
     }
 
     @SubscribeEvent
