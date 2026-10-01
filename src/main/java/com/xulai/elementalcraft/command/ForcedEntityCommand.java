@@ -183,6 +183,15 @@ public class ForcedEntityCommand {
         String enhanceStr = enhanceInput.isBlank() ? "0" : enhanceInput.trim();
         String resistStr = resistInput.isBlank() ? "0" : resistInput.trim();
 
+        if (!com.xulai.elementalcraft.util.ForcedItemHelper.isValidPointsSpec(enhanceInput)) {
+            player.sendSystemMessage(Component.translatable("command.elementalcraft.invalid_points", enhanceInput));
+            return 0;
+        }
+        if (!com.xulai.elementalcraft.util.ForcedItemHelper.isValidPointsSpec(resistInput)) {
+            player.sendSystemMessage(Component.translatable("command.elementalcraft.invalid_points", resistInput));
+            return 0;
+        }
+
         String newLine = String.format(
                 "%s,%s,%s,%s,%s,%s",
                 entityKey,

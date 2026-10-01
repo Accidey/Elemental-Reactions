@@ -56,6 +56,7 @@ public class SteamReactionHandler {
     public static final String TAG_HIGH_HEAT = "EC_HighHeat";
     public static final String TAG_LEVEL_PREFIX = "EC_Level_";
     public static final String TAG_SELF_DRYING_PENALTY = "EC_SelfDryingPenalty";
+    public static final String TAG_SELF_DRYING_STEAM_GUARD = "EC_SelfDryingSteamGuard";
     public static final String TAG_STATIC_CHARGED = "EC_StaticCharged";
     public static final String TAG_FROSTED = "EC_Frosted";
     private static final String TAG_STATIC_DMG_PREFIX = "EC_StaticDmg_";
@@ -177,7 +178,8 @@ public class SteamReactionHandler {
             target.getPersistentData().remove(NBT_FIRE_FROST_MELT_RESOLVED);
             return;
         }
-        if (attacker.getPersistentData().getIntOr(TAG_SELF_DRYING_PENALTY, 0) != 0) {
+        if (attacker.getPersistentData().getIntOr(TAG_SELF_DRYING_STEAM_GUARD, 0) != 0) {
+            attacker.getPersistentData().putInt(TAG_SELF_DRYING_STEAM_GUARD, 0);
             return;
         }
         int targetWetness = WetnessHandler.getWetnessLevel(target);

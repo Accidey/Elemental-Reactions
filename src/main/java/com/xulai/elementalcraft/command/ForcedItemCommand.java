@@ -244,6 +244,15 @@ public class ForcedItemCommand {
         String enhanceStr = enhanceInput.isBlank() ? "0" : enhanceInput.trim();
         String resistStr = resistInput.isBlank() ? "0" : resistInput.trim();
 
+        if (!ForcedItemHelper.isValidPointsSpec(enhanceInput)) {
+            player.sendSystemMessage(Component.translatable("command.elementalcraft.invalid_points", enhanceInput));
+            return 0;
+        }
+        if (!ForcedItemHelper.isValidPointsSpec(resistInput)) {
+            player.sendSystemMessage(Component.translatable("command.elementalcraft.invalid_points", resistInput));
+            return 0;
+        }
+
         if (ForcedItemHelper.maxPointsOf(enhanceStr) <= 0 && ForcedItemHelper.maxPointsOf(resistStr) <= 0) {
             player.sendSystemMessage(Component.translatable("command.elementalcraft.forceditem.armor.need_points"));
             return 0;

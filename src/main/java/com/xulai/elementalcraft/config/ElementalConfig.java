@@ -433,7 +433,8 @@ public final class ElementalConfig {
                         "  \"frost->fire\"     (Frost restrains Fire / 冰霜克制赤焰)")
                 .defineList("element_restraints",
                         List.of("fire->nature", "nature->thunder", "thunder->frost", "frost->fire"),
-                        obj -> obj instanceof String s && s.matches("^[a-z]+->[a-z]+$"));
+                        obj -> obj instanceof String s && s.matches("^[a-z]+->[a-z]+$")
+                                && !s.substring(0, s.indexOf("->")).equals(s.substring(s.indexOf("->") + 2)));
 
         BUILDER.pop();
 
@@ -879,13 +880,13 @@ public final class ElementalConfig {
             min = 1;
             max = (int) (cap * 0.20);
         } else if (roll < s2) {
-            min = (int) (cap * 0.20);
+            min = (int) (cap * 0.20) + 1;
             max = (int) (cap * 0.50);
         } else if (roll < s3) {
-            min = (int) (cap * 0.50);
+            min = (int) (cap * 0.50) + 1;
             max = (int) (cap * 0.80);
         } else {
-            min = (int) (cap * 0.80);
+            min = (int) (cap * 0.80) + 1;
             max = cap;
         }
 

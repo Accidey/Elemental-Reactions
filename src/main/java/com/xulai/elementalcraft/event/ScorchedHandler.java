@@ -46,6 +46,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
@@ -62,6 +63,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber(modid = ElementalCraft.MODID)
 public class ScorchedHandler {
@@ -776,7 +778,7 @@ public class ScorchedHandler {
     private static final String NBT_FIRE_COUNTER_SAVED_SPEED = "ec_fire_counter_saved_speed";
     private static final String NBT_FIRE_COUNTER_SPEED_TIME = "ec_fire_counter_speed_time";
 
-    private static final Map<UUID, ActiveFireCounter> activeFireCounters = new HashMap<>();
+    private static final Map<UUID, ActiveFireCounter> activeFireCounters = new ConcurrentHashMap<>();
 
     private enum FireCounterPhase { CONTRACT, EXPLODE }
 
@@ -874,6 +876,31 @@ public class ScorchedHandler {
     }
 
     @SubscribeEvent
+    public static void onEntityLeaveLevel(EntityLeaveLevelEvent event) {
+        if (event.getLevel().isClientSide()) return;
+        releaseFireCounterFor(event.getEntity());
+    }
+
+    public static void releaseFireCounterFor(Entity entity) {
+        ActiveFireCounter fc = activeFireCounters.remove(entity.getUUID());
+        if (fc == null) return;
+        CompoundTag data = entity.getPersistentData();
+        data.remove(NBT_FIRE_COUNTER_INVULN);
+        if (entity instanceof Mob mob) {
+            double savedSpeed = data.getDoubleOr(NBT_FIRE_COUNTER_SAVED_SPEED, 0.0);
+            if (savedSpeed > 0) {
+                var attr = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+                if (attr != null) attr.setBaseValue(savedSpeed);
+            }
+            data.remove(NBT_FIRE_COUNTER_SAVED_SPEED);
+            data.remove(NBT_FIRE_COUNTER_SPEED_TIME);
+        }
+        if (entity instanceof net.minecraft.server.level.ServerPlayer sp) {
+            PacketDistributor.sendToPlayer(sp, new FireCounterLockPacket(false));
+        }
+    }
+
+    @SubscribeEvent
     public static void onLevelTickFireCounter(LevelTickEvent.Post event) {
         if (event.getLevel().isClientSide()) return;
         if (!(event.getLevel() instanceof ServerLevel sl)) return;
@@ -891,7 +918,8 @@ public class ScorchedHandler {
     private static void tickActiveFireCounter(ServerLevel sl, ActiveFireCounter fc) {
         Entity ownerEntity = sl.getEntity(fc.ownerUUID);
         if (ownerEntity == null) {
-            ownerEntity = sl.getServer().getPlayerList().getPlayer(fc.ownerUUID);
+            net.minecraft.server.level.ServerPlayer sp = sl.getServer().getPlayerList().getPlayer(fc.ownerUUID);
+            if (sp != null && sp.level() == sl) ownerEntity = sp;
         }
         if (ownerEntity == null || !(ownerEntity instanceof LivingEntity owner) || owner.isDeadOrDying()) {
             if (ownerEntity instanceof Mob mob) {

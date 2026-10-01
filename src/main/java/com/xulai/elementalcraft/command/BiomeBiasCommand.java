@@ -76,7 +76,9 @@ public class BiomeBiasCommand {
 
     private static String getCurrentBiomeId(ServerPlayer player) {
         Holder<Biome> biomeHolder = player.level().getBiome(player.blockPosition());
-        Identifier loc = biomeHolder.unwrapKey().orElseThrow().identifier();
+        Identifier loc = biomeHolder.unwrapKey()
+                .orElseThrow(() -> new IllegalStateException("Biome has no registry key: " + biomeHolder))
+                .identifier();
         return loc.toString();
     }
 

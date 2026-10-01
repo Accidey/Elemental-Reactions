@@ -175,6 +175,7 @@ public class CombatEvents {
                             }
                         }
                         attackerData.putInt(NBT_SELF_DRYING_PENALTY, 1);
+                        attackerData.putInt(SteamReactionHandler.TAG_SELF_DRYING_STEAM_GUARD, 1);
 
                         DebugCommand.DryLogContext dryCtx = new DebugCommand.DryLogContext();
                         dryCtx.entity = attacker;
@@ -187,6 +188,7 @@ public class CombatEvents {
                     }
                 } else {
                     attackerData.putInt(NBT_SELF_DRYING_PENALTY, 1);
+                    attackerData.putInt(SteamReactionHandler.TAG_SELF_DRYING_STEAM_GUARD, 1);
                 }
             }
         }

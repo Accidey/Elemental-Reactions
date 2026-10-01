@@ -684,11 +684,10 @@ public class ReactionHandler {
         return mitigation;
     }
 
-    private static boolean wildfireRunning = false;
+    private static final Set<UUID> wildfireInProgress = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     public static void triggerWildfireEjection(LivingEntity victim, Entity attacker) {
-        if (wildfireRunning) return;
-        wildfireRunning = true;
+        if (!wildfireInProgress.add(victim.getUUID())) return;
         try {
         double radius = ElementalFireNatureReactionsConfig.wildfireRadius;
         EffectHelper.playWildfireEjection(victim, radius);
@@ -736,7 +735,7 @@ public class ReactionHandler {
 
         setHealthRecoveryThreshold(victim, NBT_WILDFIRE_COOLDOWN, victim.getMaxHealth(), ElementalFireNatureReactionsConfig.wildfireHealthRecoveryThreshold);
         } finally {
-            wildfireRunning = false;
+            wildfireInProgress.remove(victim.getUUID());
         }
     }
 

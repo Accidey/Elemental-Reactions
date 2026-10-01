@@ -98,9 +98,10 @@ public class FrostbiteHandler {
     private static final Identifier TEMP_SPEED_MODIFIER_ID = Identifier.fromNamespaceAndPath(ElementalCraft.MODID, "temp_frostbite_speed");
     private static final Identifier TEMP_ATTACK_SPEED_MODIFIER_ID = Identifier.fromNamespaceAndPath(ElementalCraft.MODID, "temp_frostbite_attack_speed");
 
-    private static final java.util.Map<net.minecraft.resources.ResourceKey<Level>, ActiveFrostBurst> activeFrostBursts = new java.util.HashMap<>();
+    private static final java.util.Map<UUID, ActiveFrostBurst> activeFrostBursts = new java.util.HashMap<>();
 
     static class ActiveFrostBurst {
+        final net.minecraft.resources.ResourceKey<Level> dim;
         final double x, y, z;
         final long startTick;
         final UUID ownerUUID;
@@ -112,7 +113,8 @@ public class FrostbiteHandler {
         int dwellTicks;
         final Set<UUID> hitEntities = new HashSet<>();
 
-        ActiveFrostBurst(double x, double y, double z, long startTick, UUID ownerUUID) {
+        ActiveFrostBurst(net.minecraft.resources.ResourceKey<Level> dim, double x, double y, double z, long startTick, UUID ownerUUID) {
+            this.dim = dim;
             this.x = x; this.y = y; this.z = z;
             this.startTick = startTick;
             this.ownerUUID = ownerUUID;
@@ -128,7 +130,7 @@ public class FrostbiteHandler {
     public static void triggerFrostBurst(LivingEntity source) {
         if (!(source.level() instanceof ServerLevel sl)) return;
         net.minecraft.resources.ResourceKey<Level> dim = source.level().dimension();
-        ActiveFrostBurst replaced = activeFrostBursts.put(dim, new ActiveFrostBurst(
+        ActiveFrostBurst replaced = activeFrostBursts.put(source.getUUID(), new ActiveFrostBurst(dim,
             source.getX(), source.getY(), source.getZ(),
             source.level().getGameTime(), source.getUUID()));
         if (replaced != null) releaseFrostBurstTargets(sl, replaced);
@@ -187,15 +189,22 @@ public class FrostbiteHandler {
     @SubscribeEvent
     public static void onLevelTick(LevelTickEvent.Post event) {
         if (event.getLevel().isClientSide()) return;
-
         if (activeFrostBursts.isEmpty()) return;
-
-        net.minecraft.resources.ResourceKey<Level> dim = event.getLevel().dimension();
-        ActiveFrostBurst burst = activeFrostBursts.get(dim);
-        if (burst == null) return;
-
         if (!(event.getLevel() instanceof ServerLevel sl)) return;
 
+        net.minecraft.resources.ResourceKey<Level> dim = event.getLevel().dimension();
+        java.util.List<UUID> owners = new java.util.ArrayList<>();
+        for (java.util.Map.Entry<UUID, ActiveFrostBurst> entry : activeFrostBursts.entrySet()) {
+            if (dim.equals(entry.getValue().dim)) owners.add(entry.getKey());
+        }
+        for (UUID owner : owners) {
+            ActiveFrostBurst burst = activeFrostBursts.get(owner);
+            if (burst == null) continue;
+            if (tickFrostBurst(sl, burst)) activeFrostBursts.remove(owner);
+        }
+    }
+
+    private static boolean tickFrostBurst(ServerLevel sl, ActiveFrostBurst burst) {
         burst.tickCount++;
 
         if (burst.dwellTicks > 0) {
@@ -207,8 +216,7 @@ public class FrostbiteHandler {
                         le.getPersistentData().remove(NBT_FROST_BURST_FROZEN);
                     }
                 }
-                activeFrostBursts.remove(dim);
-                return;
+                return true;
             }
         } else {
             burst.currentRadius += burst.expansionSpeed / 20.0;
@@ -238,7 +246,6 @@ public class FrostbiteHandler {
             if (Math.abs(target.getY() - burst.y) > burst.heightCeiling) continue;
 
             UUID targetId = target.getUUID();
-            boolean wasNew = !burst.hitEntities.contains(targetId);
             currentlyInRange.add(targetId);
             target.getPersistentData().putBoolean(NBT_FROST_BURST_FROZEN, true);
             burst.hitEntities.add(targetId);
@@ -253,6 +260,7 @@ public class FrostbiteHandler {
             }
         }
         burst.hitEntities.retainAll(currentlyInRange);
+        return false;
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
@@ -713,7 +721,7 @@ public class FrostbiteHandler {
             }
         }
 
-double heatMult = checkFrostbiteHeatAccelerator(entity, entity.level(), entity.blockPosition());
+        double heatMult = checkFrostbiteHeatAccelerator(entity, entity.level(), entity.blockPosition());
         boolean hasHeat = heatMult > 1.0;
         boolean hadHeat = data.getBooleanOr(NBT_FROST_HEAT_ACCEL, false);
         if (hasHeat != hadHeat) {
@@ -1049,11 +1057,11 @@ duration--;
         AttributeInstance attackAttr = entity.getAttribute(Attributes.ATTACK_SPEED);
         if (speedAttr != null) {
             speedAttr.removeModifier(TEMP_SPEED_MODIFIER_ID);
-            speedAttr.addPermanentModifier(new AttributeModifier(TEMP_SPEED_MODIFIER_ID, value, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+            speedAttr.addTransientModifier(new AttributeModifier(TEMP_SPEED_MODIFIER_ID, value, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
         if (attackAttr != null) {
             attackAttr.removeModifier(TEMP_ATTACK_SPEED_MODIFIER_ID);
-            attackAttr.addPermanentModifier(new AttributeModifier(TEMP_ATTACK_SPEED_MODIFIER_ID, value, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+            attackAttr.addTransientModifier(new AttributeModifier(TEMP_ATTACK_SPEED_MODIFIER_ID, value, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
     }
 

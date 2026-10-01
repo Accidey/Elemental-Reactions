@@ -53,27 +53,25 @@ public class JadePlugin implements IWailaPlugin {
                         .withStyle(c));
             }
 
-            int totalEnhance = 0;
-            ElementType enhanceType = ElementType.NONE;
+            boolean strengthHeaderAdded = false;
 
             for (ElementType t : ElementType.values()) {
                 if (t == ElementType.NONE) continue;
                 int val = ElementUtils.getDisplayEnhancement(living, t);
-                if (val > 0) {
-                    totalEnhance = val;
-                    enhanceType = t;
-                    break;
-                }
-            }
+                if (val <= 0) continue;
 
-            if (totalEnhance > 0) {
-                ChatFormatting c = enhanceType.getColor();
-                tooltip.add(Component.translatable("jade.elementalcraft.strengths_title")
-                        .withStyle(ChatFormatting.BOLD, c));
+                ChatFormatting c = t.getColor();
+
+                if (!strengthHeaderAdded) {
+                    tooltip.add(Component.translatable("jade.elementalcraft.strengths_title")
+                            .withStyle(ChatFormatting.BOLD, c));
+                    strengthHeaderAdded = true;
+                }
+
                 tooltip.add(Component.literal("  ")
-                        .append(enhanceType.getDisplayName())
+                        .append(t.getDisplayName())
                         .append(Component.translatable("jade.elementalcraft.strength_prefix"))
-                        .append(Component.literal(String.valueOf(totalEnhance)))
+                        .append(Component.literal(String.valueOf(val)))
                         .withStyle(c));
             }
 

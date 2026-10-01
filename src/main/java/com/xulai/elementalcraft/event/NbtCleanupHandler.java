@@ -86,6 +86,7 @@ public class NbtCleanupHandler {
 
         data.remove("EC_FireFrostMeltResolved");
         data.remove("EC_SelfDryingPenalty");
+        data.remove(SteamReactionHandler.TAG_SELF_DRYING_STEAM_GUARD);
         data.remove("EC_LastSelfDryTick");
         data.remove("EC_NatureAttackCooldown");
 

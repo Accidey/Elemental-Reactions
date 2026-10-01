@@ -76,6 +76,7 @@
 
   "command.elementalcraft.only_players": "§c此命令仅限玩家执行",
   "command.elementalcraft.save_failed": "§c配置文件保存失败，请检查服务器权限或控制台日志。",
+  "command.elementalcraft.invalid_points": "§c点数格式无效：%s（应为 0、正整数，或形如 1-3 的区间）",
 
   "command.elementalcraft.scorched.blacklist.added": "§a成功将 §e%s §a加入灼烧免疫黑名单。",
   "command.elementalcraft.scorched.blacklist.already_exists": "§e%s §7已在灼烧免疫黑名单中。",

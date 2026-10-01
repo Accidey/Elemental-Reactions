@@ -482,7 +482,6 @@ public class StaticShockHandler {
     @SubscribeEvent
     public static void onLevelTick(LevelTickEvent.Post event) {
         if (event.getLevel().isClientSide()) return;
-        
 
         ResourceKey<Level> dim = event.getLevel().dimension();
         long now = event.getLevel().getGameTime();

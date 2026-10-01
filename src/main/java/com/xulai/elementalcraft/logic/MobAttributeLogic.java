@@ -191,6 +191,8 @@ public class MobAttributeLogic {
         MinecraftServer server = mob.level().getServer();
         if (server == null) return;
 
+        persistentData.putBoolean("ElementalCraft_AttributesSet", true);
+
         com.xulai.elementalcraft.util.ServerTaskScheduler.schedule(server, 1, () -> {
             if (!mob.isAlive()) return;
 

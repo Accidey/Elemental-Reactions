@@ -145,6 +145,11 @@ public final class ForcedItemHelper {
         return parsePointsRange(raw).max();
     }
 
+    public static boolean isValidPointsSpec(String raw) {
+        if (raw == null || raw.isBlank()) return true;
+        return raw.trim().matches("\\d+(-\\d+)?");
+    }
+
     private static RangeValue parsePointsRange(String s) {
         if (s == null || s.isBlank()) return new RangeValue(0, 0, true);
         String val = s.trim();

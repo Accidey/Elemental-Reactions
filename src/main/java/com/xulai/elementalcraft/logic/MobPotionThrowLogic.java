@@ -38,6 +38,7 @@ public class MobPotionThrowLogic {
     private static final String NBT_BOTTLE_CD = "EC_BottleCd";
     private static final String NBT_BOTTLE_MISS = "EC_BottleMiss";
     private static final String NBT_BOTTLE_VERDICT = "EC_BottleVerdict";
+    private static final String NBT_BOTTLE_VERDICT_TARGET = "EC_BottleVerdictTarget";
     private static final String NBT_BOTTLE_ROUND = "EC_BottleRound";
     private static final String NBT_BOTTLE_WAIT = "EC_BottleWait";
 
@@ -90,22 +91,22 @@ public class MobPotionThrowLogic {
         long verdict = data.getLongOr(NBT_BOTTLE_VERDICT, 0L);
         if (verdict > 0) {
             if (gameTime < verdict) return;
-            LivingEntity target = mob.getTarget();
+            LivingEntity target = resolveVerdictTarget(mob, data);
             boolean hit = target != null && target.isAlive()
                     && (isFire ? target.hasEffect(MobEffects.POISON) : WetnessHandler.getWetnessLevel(target) > 0);
             if (hit) {
                 data.putInt(NBT_BOTTLE_MISS, 0);
-                data.remove(NBT_BOTTLE_VERDICT);
+                clearVerdict(data);
             } else {
                 int miss = data.getIntOr(NBT_BOTTLE_MISS, 0) + 1;
                 if (miss >= MAX_MISSES) {
                     data.putLong(NBT_BOTTLE_CD, gameTime + ElementalConfig.mobBottleThrowCooldown);
                     data.putInt(NBT_BOTTLE_MISS, 0);
-                    data.remove(NBT_BOTTLE_VERDICT);
+                    clearVerdict(data);
                     return;
                 }
                 data.putInt(NBT_BOTTLE_MISS, miss);
-                data.remove(NBT_BOTTLE_VERDICT);
+                clearVerdict(data);
             }
         }
 
@@ -153,7 +154,25 @@ public class MobPotionThrowLogic {
             throwSplashBottle(mob, target, false);
         }
         data.putLong(NBT_BOTTLE_VERDICT, gameTime + ATTEMPT_INTERVAL);
+        data.putString(NBT_BOTTLE_VERDICT_TARGET, target.getUUID().toString());
         data.putInt(NBT_BOTTLE_ROUND, data.getIntOr(NBT_BOTTLE_ROUND, 0) + 1);
+    }
+
+    private static void clearVerdict(CompoundTag data) {
+        data.remove(NBT_BOTTLE_VERDICT);
+        data.remove(NBT_BOTTLE_VERDICT_TARGET);
+    }
+
+    private static LivingEntity resolveVerdictTarget(Mob mob, CompoundTag data) {
+        String uuidStr = data.getStringOr(NBT_BOTTLE_VERDICT_TARGET, "");
+        if (!uuidStr.isEmpty() && mob.level() instanceof net.minecraft.server.level.ServerLevel sl) {
+            try {
+                var entity = sl.getEntity(java.util.UUID.fromString(uuidStr));
+                if (entity instanceof LivingEntity le) return le;
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        return mob.getTarget();
     }
     private static void throwSplashBottle(Mob mob, LivingEntity target, boolean poison) {
         ItemStack bottle = new ItemStack(Items.SPLASH_POTION);
