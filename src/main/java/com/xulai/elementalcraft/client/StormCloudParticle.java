@@ -30,7 +30,6 @@ public class StormCloudParticle extends SingleQuadParticle {
         this.fadeInEnd = (int) (this.lifetime * 0.15);
         this.fadeOutStart = (int) (this.lifetime * 0.7);
 
-        int texIndex = this.random.nextInt(12);
         float sizeMult = 1.5f + this.random.nextFloat() * 2.0f;
         this.quadSize = 0.5f * sizeMult;
 
@@ -39,7 +38,7 @@ public class StormCloudParticle extends SingleQuadParticle {
         this.yd = 0;
         this.zd = 0;
 
-        this.setSprite(sprites.get(texIndex, 12));
+        this.setSprite(sprites.get(this.random));
     }
 
     @Override
