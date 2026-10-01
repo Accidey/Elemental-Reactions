@@ -3,6 +3,7 @@ package com.xulai.elementalcraft.util;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -185,8 +186,11 @@ public class EffectHelper {
                     0, vx, vy, vz, 1.0);
         }
         final int nextTick = currentTick + 1;
-        serverLevel.getServer().execute(() ->
-                spawnSmokeBatch(serverLevel, x, y, z, radius, totalParticles, batches, nextTick));
+        MinecraftServer server = serverLevel.getServer();
+        if (server.isRunning()) {
+            server.execute(() ->
+                    spawnSmokeBatch(serverLevel, x, y, z, radius, totalParticles, batches, nextTick));
+        }
     }
 
     public static void playWildfireEjection(Entity center, double radius) {
@@ -217,7 +221,10 @@ public class EffectHelper {
             spawnNatureFade(level, pos, radius);
         }
         final int nextTick = tick + 1;
-        level.getServer().execute(() -> spawnNatureAnimation(level, pos, radius, nextTick));
+        MinecraftServer server = level.getServer();
+        if (server.isRunning()) {
+            server.execute(() -> spawnNatureAnimation(level, pos, radius, nextTick));
+        }
     }
 
     private static void spawnNatureCore(ServerLevel level, Vec3 pos) {
