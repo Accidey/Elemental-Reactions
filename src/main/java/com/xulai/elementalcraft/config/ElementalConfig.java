@@ -885,9 +885,9 @@ public final class ElementalConfig {
         int cap = Math.max(1, maxValue);
 
         double roll = ThreadLocalRandom.current().nextDouble();
-        double s1 = c1;
-        double s2 = s1 + c2;
-        double s3 = s2 + c3;
+        double s1 = Math.min(1.0, c1);
+        double s2 = Math.min(1.0, s1 + c2);
+        double s3 = Math.min(1.0, s2 + c3);
 
         int min, max;
 
