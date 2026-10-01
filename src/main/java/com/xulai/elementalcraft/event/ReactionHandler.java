@@ -63,6 +63,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Locale;
 
 @EventBusSubscriber(modid = ElementalCraft.MODID)
 public class ReactionHandler {
@@ -283,7 +284,7 @@ public class ReactionHandler {
                             DebugCommand.sendReactionFailed(target, "nature_parasite", reasonKey,
                                     attacker.getDisplayName(),
                                     target.getDisplayName(),
-                                    String.format("%.0f", res),
+                                    String.format(Locale.ROOT, "%.0f", res),
                                     String.valueOf(ElementalFireNatureReactionsConfig.natureImmunityThreshold));
                         } else {
                             DebugCommand.sendReactionFailed(target, "nature_parasite", reasonKey,
@@ -299,8 +300,8 @@ public class ReactionHandler {
                 DebugCommand.sendReactionFailed(target, "nature_parasite", "threshold",
                         attacker.getDisplayName(),
                         target.getDisplayName(),
-                        String.format("%.0f", naturePower),
-                        String.format("%.0f", ElementalFireNatureReactionsConfig.natureParasiteBaseThreshold));
+                        String.format(Locale.ROOT, "%.0f", naturePower),
+                        String.format(Locale.ROOT, "%.0f", ElementalFireNatureReactionsConfig.natureParasiteBaseThreshold));
             }
         }
     }
@@ -335,7 +336,7 @@ public class ReactionHandler {
             if (threshold > 0) {
                 DebugCommand.sendReactionFailed(target, "wildfire", "power_low",
                         target.getDisplayName(),
-                        String.format("%.0f", naturePower),
+                        String.format(Locale.ROOT, "%.0f", naturePower),
                         String.valueOf(threshold));
             }
             return;
@@ -433,10 +434,10 @@ public class ReactionHandler {
             }
             if (DebugMode.hasAnyDebugEnabled()) {
                 String elementSuffix = "";
-                if (isFire) elementSuffix = "(" + Component.translatable("element.fire.bracket").getString() + " ×" + String.format("%.1f", ElementalFireNatureReactionsConfig.sporeFireDurationReduction) + ")";
-                else if (isThunder) elementSuffix = "(" + Component.translatable("element.thunder.bracket").getString() + " ×" + String.format("%.1f", ElementalFireNatureReactionsConfig.sporeThunderMultiplier) + ")";
-                else if (isNature) elementSuffix = "(" + Component.translatable("element.nature.bracket").getString() + " ×" + String.format("%.1f", ElementalFireNatureReactionsConfig.sporeNatureDurationMultiplier) + ")";
-                else if (isFrost) elementSuffix = "(" + Component.translatable("element.frost.bracket").getString() + " ×" + String.format("%.1f", ElementalFireNatureReactionsConfig.sporeFrostDurationMultiplier) + ")";
+                if (isFire) elementSuffix = "(" + Component.translatable("element.fire.bracket").getString() + " ×" + String.format(Locale.ROOT, "%.1f", ElementalFireNatureReactionsConfig.sporeFireDurationReduction) + ")";
+                else if (isThunder) elementSuffix = "(" + Component.translatable("element.thunder.bracket").getString() + " ×" + String.format(Locale.ROOT, "%.1f", ElementalFireNatureReactionsConfig.sporeThunderMultiplier) + ")";
+                else if (isNature) elementSuffix = "(" + Component.translatable("element.nature.bracket").getString() + " ×" + String.format(Locale.ROOT, "%.1f", ElementalFireNatureReactionsConfig.sporeNatureDurationMultiplier) + ")";
+                else if (isFrost) elementSuffix = "(" + Component.translatable("element.frost.bracket").getString() + " ×" + String.format(Locale.ROOT, "%.1f", ElementalFireNatureReactionsConfig.sporeFrostDurationMultiplier) + ")";
                 DebugCommand.sendReactionSuccess(target, "spore_stacks",
                         target.getDisplayName(),
                         currentStacks, newStacks,
@@ -805,8 +806,8 @@ public class ReactionHandler {
         result = Math.min(1.0, result);
         if (modified && DebugMode.hasAnyDebugEnabled()) {
             MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.static_spore_blast.biome",
-                    Component.literal(String.format("%.0f", Math.min(1.0, chance) * 100)).withStyle(ChatFormatting.GRAY),
-                    Component.literal(String.format("%.0f", result * 100)).withStyle(ChatFormatting.GOLD));
+                    Component.literal(String.format(Locale.ROOT, "%.0f", Math.min(1.0, chance) * 100)).withStyle(ChatFormatting.GRAY),
+                    Component.literal(String.format(Locale.ROOT, "%.0f", result * 100)).withStyle(ChatFormatting.GOLD));
             DebugCommand.sendDebugMessage(target, msg);
         }
         return result;

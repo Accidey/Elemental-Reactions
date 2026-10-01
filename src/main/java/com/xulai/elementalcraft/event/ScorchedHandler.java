@@ -63,6 +63,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Locale;
 
 @EventBusSubscriber(modid = ElementalCraft.MODID)
 public class ScorchedHandler {
@@ -848,7 +849,7 @@ public class ScorchedHandler {
             if (threshold > 0) {
                 DebugCommand.sendReactionFailed(target, "fire_counter", "power_low",
                         target.getDisplayName(),
-                        String.format("%.0f", firePower),
+                        String.format(Locale.ROOT, "%.0f", firePower),
                         String.valueOf((int) threshold));
             }
             return;

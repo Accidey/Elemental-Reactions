@@ -41,6 +41,7 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import net.minecraft.util.RandomSource;
 import net.minecraft.core.registries.BuiltInRegistries;
+import java.util.Locale;
 
 @EventBusSubscriber(modid = ElementalCraft.MODID)
 public class WetnessHandler {
@@ -439,10 +440,10 @@ public class WetnessHandler {
                 boolean precipitating = level.isRaining() && level.canSeeSky(pos);
                 DebugCommand.sendDebugMessage(entity,
                         Component.translatable("debug.elementalcraft.reaction.cold_freeze.frozen",
-                                String.format("%.1f", dbTemp),
+                                String.format(Locale.ROOT, "%.1f", dbTemp),
                                 String.valueOf(wetnessLevel),
                                 precipitating ? "✓" : "✗",
-                                String.format("%.0f", effectiveChance * 100)));
+                                String.format(Locale.ROOT, "%.0f", effectiveChance * 100)));
             }
             entity.addEffect(new MobEffectInstance(ModMobEffects.FREEZE,
                     freezeDuration, freezeAmplifier));

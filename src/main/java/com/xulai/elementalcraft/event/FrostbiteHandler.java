@@ -62,6 +62,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Locale;
 
 @EventBusSubscriber(modid = ElementalCraft.MODID)
 public class FrostbiteHandler {
@@ -293,8 +294,8 @@ public class FrostbiteHandler {
         if (!thresholdMet) {
             DebugCommand.sendReactionFailed(target, "frostbite", "threshold",
                     attacker.getDisplayName(), target.getDisplayName(),
-                    Component.literal(String.format("%.1f", frostPower)).withStyle(ChatFormatting.AQUA),
-                    Component.literal(String.format("%.1f", threshold)).withStyle(ChatFormatting.GOLD));
+                    Component.literal(String.format(Locale.ROOT, "%.1f", frostPower)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format(Locale.ROOT, "%.1f", threshold)).withStyle(ChatFormatting.GOLD));
             return;
         }
 

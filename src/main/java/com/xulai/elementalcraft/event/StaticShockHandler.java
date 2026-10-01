@@ -58,6 +58,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import net.minecraft.resources.ResourceKey;
+import java.util.Locale;
 
 @EventBusSubscriber(modid = ElementalCraft.MODID)
 public class StaticShockHandler {
@@ -898,7 +899,7 @@ public class StaticShockHandler {
                         } else {
                             DebugCommand.sendReactionFailed(target, "thunder_break_freeze", "chance",
                                     target.getDisplayName(),
-                                    Component.literal(String.format("%.1f", totalChance * 100)).withStyle(ChatFormatting.YELLOW));
+                                    Component.literal(String.format(Locale.ROOT, "%.1f", totalChance * 100)).withStyle(ChatFormatting.YELLOW));
                         }
                     }
                 }
@@ -1425,7 +1426,7 @@ public class StaticShockHandler {
         if (roll >= totalChance) {
             DebugCommand.sendReactionFailed(entity, "thunder_break_freeze", "chance",
                     entity.getDisplayName(),
-                    Component.literal(String.format("%.1f", totalChance * 100)).withStyle(ChatFormatting.YELLOW));
+                    Component.literal(String.format(Locale.ROOT, "%.1f", totalChance * 100)).withStyle(ChatFormatting.YELLOW));
             return false;
         }
         MobEffectInstance freezeEffect = entity.getEffect(ModMobEffects.FREEZE);

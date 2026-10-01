@@ -9,6 +9,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import java.util.Locale;
 
 public final class ForcedAttributeHelper {
 
@@ -84,7 +85,7 @@ public final class ForcedAttributeHelper {
 
     private static ElementType parseElement(String s) {
         if (s == null || s.isBlank()) return ElementType.NONE;
-        return ElementType.fromId(s.toLowerCase());
+        return ElementType.fromId(s.toLowerCase(Locale.ROOT));
     }
 
     private static int parsePoints(String s) {

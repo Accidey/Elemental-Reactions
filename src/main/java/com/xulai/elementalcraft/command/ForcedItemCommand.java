@@ -21,6 +21,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @EventBusSubscriber(modid = "elementalcraft")
 @SuppressWarnings("null")
@@ -110,7 +111,7 @@ public class ForcedItemCommand {
 
     private static ElementType parse(String input) {
         if (input == null || input.isBlank()) return null;
-        return ElementType.fromId(input.toLowerCase());
+        return ElementType.fromId(input.toLowerCase(Locale.ROOT));
     }
 
     private static boolean isValidPoints(String input) {

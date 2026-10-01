@@ -6,6 +6,7 @@ import net.minecraft.resources.Identifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.Locale;
 
 public final class CustomBiomeBias {
 
@@ -30,7 +31,7 @@ public final class CustomBiomeBias {
                 if (parts.length != 3) continue;
 
                 String biomeId = parts[0].trim();
-                String elementId = parts[1].trim().toLowerCase();
+                String elementId = parts[1].trim().toLowerCase(Locale.ROOT);
                 String probStr = parts[2].trim();
 
                 if (!biomeId.equals(id.toString())) continue;

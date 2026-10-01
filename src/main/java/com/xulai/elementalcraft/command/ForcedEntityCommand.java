@@ -21,6 +21,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @EventBusSubscriber(modid = "elementalcraft")
 public class ForcedEntityCommand {
@@ -188,7 +189,7 @@ public class ForcedEntityCommand {
             return 0;
         }
 
-        String newLine = String.format(
+        String newLine = String.format(Locale.ROOT,
                 "%s,%s,%s,%s,%s,%s",
                 entityKey,
                 attack != ElementType.NONE ? attack.getId() : "",
@@ -279,7 +280,7 @@ public class ForcedEntityCommand {
         }
 
         boolean isAll = elementStr.equalsIgnoreCase("all");
-        ElementType type = isAll ? null : ElementType.fromId(elementStr.toLowerCase());
+        ElementType type = isAll ? null : ElementType.fromId(elementStr.toLowerCase(Locale.ROOT));
 
         if (!isAll && (type == null || type == ElementType.NONE)) {
             player.sendSystemMessage(Component.translatable("command.elementalcraft.blacklist.invalid_attribute", elementStr));
@@ -339,7 +340,7 @@ public class ForcedEntityCommand {
         }
 
         boolean isAll = elementStr.equalsIgnoreCase("all");
-        ElementType type = isAll ? null : ElementType.fromId(elementStr.toLowerCase());
+        ElementType type = isAll ? null : ElementType.fromId(elementStr.toLowerCase(Locale.ROOT));
 
         if (!isAll && (type == null || type == ElementType.NONE)) {
             player.sendSystemMessage(Component.translatable("command.elementalcraft.blacklist.invalid_attribute", elementStr));
@@ -422,7 +423,7 @@ public class ForcedEntityCommand {
         if (input == null || input.isBlank() || "none".equalsIgnoreCase(input)) {
             return ElementType.NONE;
         }
-        ElementType type = ElementType.fromId(input.toLowerCase());
+        ElementType type = ElementType.fromId(input.toLowerCase(Locale.ROOT));
         return type != null ? type : ElementType.NONE;
     }
 

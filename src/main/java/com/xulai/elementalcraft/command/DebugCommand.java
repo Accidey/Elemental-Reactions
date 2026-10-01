@@ -19,6 +19,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
+import java.util.Locale;
 
 public class DebugCommand {
 
@@ -89,42 +90,42 @@ public class DebugCommand {
 
         public MutableComponent buildFormulaComponent() {
             MutableComponent formula = Component.literal(" (");
-            formula.append(Component.translatable("debug.elementalcraft.formula.base_enhance", String.format("%.2f", baseEnhancementDamage)).withStyle(ChatFormatting.GOLD));
+            formula.append(Component.translatable("debug.elementalcraft.formula.base_enhance", String.format(Locale.ROOT, "%.2f", baseEnhancementDamage)).withStyle(ChatFormatting.GOLD));
             if (Math.abs(globalDamageMult - 1.0f) > 0.001f) {
-                formula.append(Component.literal(" × ")).append(Component.translatable("debug.elementalcraft.formula.global_dmg_mult", String.format("%.2f", globalDamageMult)).withStyle(ChatFormatting.GRAY));
+                formula.append(Component.literal(" × ")).append(Component.translatable("debug.elementalcraft.formula.global_dmg_mult", String.format(Locale.ROOT, "%.2f", globalDamageMult)).withStyle(ChatFormatting.GRAY));
             }
             if (Math.abs(restraintMult - 1.0f) > 0.001f) {
                 ChatFormatting color = restraintMult > 1.0f ? ChatFormatting.RED : ChatFormatting.BLUE;
-                formula.append(Component.literal(" × ")).append(Component.translatable("debug.elementalcraft.formula.restraint", String.format("%.2f", restraintMult)).withStyle(color));
+                formula.append(Component.literal(" × ")).append(Component.translatable("debug.elementalcraft.formula.restraint", String.format(Locale.ROOT, "%.2f", restraintMult)).withStyle(color));
             }
             if (Math.abs(sporeVulnMult - 1.0f) > 0.001f) {
-                formula.append(Component.literal(" × ")).append(Component.translatable("debug.elementalcraft.formula.spore_vuln", String.format("%.2f", sporeVulnMult)).withStyle(ChatFormatting.DARK_GREEN));
+                formula.append(Component.literal(" × ")).append(Component.translatable("debug.elementalcraft.formula.spore_vuln", String.format(Locale.ROOT, "%.2f", sporeVulnMult)).withStyle(ChatFormatting.DARK_GREEN));
             }
             if (Math.abs(scorchVulnMult - 1.0f) > 0.001f) {
                 if (scorchedElement != null) {
                     formula.append(Component.literal(" × ")).append(Component.translatable("debug.elementalcraft.formula.scorch_vuln_element",
-                            String.format("%.2f", scorchVulnMult),
-                            Component.translatable("element." + scorchedElement.name().toLowerCase()).withStyle(ChatFormatting.YELLOW)).withStyle(ChatFormatting.DARK_RED));
+                            String.format(Locale.ROOT, "%.2f", scorchVulnMult),
+                            Component.translatable("element." + scorchedElement.name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.YELLOW)).withStyle(ChatFormatting.DARK_RED));
                 } else {
-                    formula.append(Component.literal(" × ")).append(Component.translatable("debug.elementalcraft.formula.scorch_vuln", String.format("%.2f", scorchVulnMult)).withStyle(ChatFormatting.DARK_RED));
+                    formula.append(Component.literal(" × ")).append(Component.translatable("debug.elementalcraft.formula.scorch_vuln", String.format(Locale.ROOT, "%.2f", scorchVulnMult)).withStyle(ChatFormatting.DARK_RED));
                 }
             }
             if (Math.abs(frozenMeltMult - 1.0f) > 0.001f) {
-                formula.append(Component.literal(" × ")).append(Component.translatable("debug.elementalcraft.formula.frozen_melt", String.format("%.1f", frozenMeltMult)).withStyle(ChatFormatting.AQUA));
+                formula.append(Component.literal(" × ")).append(Component.translatable("debug.elementalcraft.formula.frozen_melt", String.format(Locale.ROOT, "%.1f", frozenMeltMult)).withStyle(ChatFormatting.AQUA));
             }
             if (Math.abs(wetnessBaseMult - 1.0f) > 0.001f) {
-                formula.append(Component.literal(" × ")).append(Component.translatable("debug.elementalcraft.formula.wetness_base", String.format("%.2f", wetnessBaseMult)).withStyle(ChatFormatting.AQUA));
+                formula.append(Component.literal(" × ")).append(Component.translatable("debug.elementalcraft.formula.wetness_base", String.format(Locale.ROOT, "%.2f", wetnessBaseMult)).withStyle(ChatFormatting.AQUA));
             }
             if (Math.abs(selfDryingPenaltyMult - 1.0f) > 0.001f) {
-                formula.append(Component.literal(" × ")).append(Component.translatable("debug.elementalcraft.formula.self_drying", String.format("%.2f", selfDryingPenaltyMult)).withStyle(ChatFormatting.RED));
+                formula.append(Component.literal(" × ")).append(Component.translatable("debug.elementalcraft.formula.self_drying", String.format(Locale.ROOT, "%.2f", selfDryingPenaltyMult)).withStyle(ChatFormatting.RED));
             }
             formula.append(Component.literal(" - "));
-            formula.append(Component.translatable("debug.elementalcraft.formula.resist", String.format("%.2f", baseResistReduction)).withStyle(ChatFormatting.BLUE));
+            formula.append(Component.translatable("debug.elementalcraft.formula.resist", String.format(Locale.ROOT, "%.2f", baseResistReduction)).withStyle(ChatFormatting.BLUE));
             if (Math.abs(globalResistMult - 1.0f) > 0.001f) {
-                formula.append(Component.literal(" × ")).append(Component.translatable("debug.elementalcraft.formula.res_mult", String.format("%.2f", globalResistMult)).withStyle(ChatFormatting.GRAY));
+                formula.append(Component.literal(" × ")).append(Component.translatable("debug.elementalcraft.formula.res_mult", String.format(Locale.ROOT, "%.2f", globalResistMult)).withStyle(ChatFormatting.GRAY));
             }
             if (isFloored) {
-                formula.append(Component.literal(" + ")).append(Component.translatable("debug.elementalcraft.formula.floor", String.format("%.0f", minPercent * 100)).withStyle(ChatFormatting.RED));
+                formula.append(Component.literal(" + ")).append(Component.translatable("debug.elementalcraft.formula.floor", String.format(Locale.ROOT, "%.0f", minPercent * 100)).withStyle(ChatFormatting.RED));
             }
             formula.append(Component.literal(")"));
             return formula;
@@ -134,7 +135,7 @@ public class DebugCommand {
             MutableComponent details = Component.translatable("debug.elementalcraft.combat.details.header").withStyle(ChatFormatting.GOLD);
             details.append(Component.literal(" "));
             details.append(Component.translatable("debug.elementalcraft.combat.details.enhancement",
-                    Component.translatable("element." + attackElement.name().toLowerCase()).withStyle(ChatFormatting.YELLOW),
+                    Component.translatable("element." + attackElement.name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.YELLOW),
                     attackerEnhancement).withStyle(ChatFormatting.WHITE));
             details.append(Component.literal(", "));
             details.append(Component.translatable("debug.elementalcraft.combat.details.resistance", targetResistance).withStyle(ChatFormatting.WHITE));
@@ -312,9 +313,9 @@ public class DebugCommand {
         else prefix = prefix.withStyle(ChatFormatting.GRAY);
 
         MutableComponent overview = Component.translatable("debug.elementalcraft.damage_overview",
-                String.format("%.2f", ctx.totalDamage),
-                String.format("%.2f", ctx.physicalDamage),
-                String.format("%.2f", ctx.finalElemDmg)
+                String.format(Locale.ROOT, "%.2f", ctx.totalDamage),
+                String.format(Locale.ROOT, "%.2f", ctx.physicalDamage),
+                String.format(Locale.ROOT, "%.2f", ctx.finalElemDmg)
         ).withStyle(ChatFormatting.WHITE);
 
         MutableComponent fullMessage = Component.literal("")
@@ -334,19 +335,19 @@ public class DebugCommand {
         if (ctx.mitigation > 0) {
             String enchDetail = buildEnchDetail("enchantment.minecraft.blast_protection", ctx.blastProtLevel, ctx.generalProtLevel);
             damageInfo = Component.translatable("debug.elementalcraft.reaction.toxic_blast.damage_with_mitigation",
-                    Component.literal(String.format("%.1f", ctx.rawBaseDamage)).withStyle(ChatFormatting.RED),
-                    Component.literal(String.format("%.1f", ctx.finalDamage)).withStyle(ChatFormatting.GOLD),
+                    Component.literal(String.format(Locale.ROOT, "%.1f", ctx.rawBaseDamage)).withStyle(ChatFormatting.RED),
+                    Component.literal(String.format(Locale.ROOT, "%.1f", ctx.finalDamage)).withStyle(ChatFormatting.GOLD),
                     Component.literal(enchDetail).withStyle(ChatFormatting.BLUE),
-                    Component.literal(String.format("%.0f", ctx.mitigation * 100)).withStyle(ChatFormatting.BLUE));
+                    Component.literal(String.format(Locale.ROOT, "%.0f", ctx.mitigation * 100)).withStyle(ChatFormatting.BLUE));
         } else {
             damageInfo = Component.translatable("debug.elementalcraft.reaction.toxic_blast.damage_no_mitigation",
-                    Component.literal(String.format("%.1f", ctx.rawBaseDamage)).withStyle(ChatFormatting.RED));
+                    Component.literal(String.format(Locale.ROOT, "%.1f", ctx.rawBaseDamage)).withStyle(ChatFormatting.RED));
         }
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.toxic_blast.message",
                 nameOf(ctx.attacker),
                 nameOf(ctx.target),
                 Component.literal(String.valueOf(ctx.stacks)).withStyle(ChatFormatting.DARK_GREEN),
-                String.format("%.1f", ctx.radius),
+                String.format(Locale.ROOT, "%.1f", ctx.radius),
                 ctx.affectedCount,
                 damageInfo
         ).withStyle(ChatFormatting.WHITE);
@@ -358,7 +359,7 @@ public class DebugCommand {
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.wildfire.header").withStyle(ChatFormatting.GOLD);
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.wildfire.message",
                 ctx.victim.getDisplayName(),
-                String.format("%.1f", ctx.radius),
+                String.format(Locale.ROOT, "%.1f", ctx.radius),
                 ctx.affectedCount
         ).withStyle(ChatFormatting.WHITE);
         sendDebugMessage(ctx.victim, prefix.append(Component.literal(" ")).append(content));
@@ -369,10 +370,10 @@ public class DebugCommand {
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.fire_counter.header").withStyle(ChatFormatting.RED);
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.fire_counter.message",
                 ctx.owner.getDisplayName(),
-                String.format("%.1f", ctx.radius),
+                String.format(Locale.ROOT, "%.1f", ctx.radius),
                 ctx.affectedCount,
-                String.format("%.1f", ctx.damage),
-                String.format("%.1f", ctx.knockback)
+                String.format(Locale.ROOT, "%.1f", ctx.damage),
+                String.format(Locale.ROOT, "%.1f", ctx.knockback)
         ).withStyle(ChatFormatting.WHITE);
         sendDebugMessage(ctx.owner, prefix.append(Component.literal(" ")).append(content));
     }
@@ -405,12 +406,12 @@ public class DebugCommand {
     public static void sendExhaustionLog(ExhaustionLogContext ctx) {
         if (!DebugMode.isEnabled(ctx.player)) return;
         float total = ctx.baseDelta + ctx.wetnessDelta;
-        MutableComponent msg = Component.translatable("debug.elementalcraft.exhaustion.header", String.format("%.2f", total)).withStyle(ChatFormatting.GOLD);
+        MutableComponent msg = Component.translatable("debug.elementalcraft.exhaustion.header", String.format(Locale.ROOT, "%.2f", total)).withStyle(ChatFormatting.GOLD);
         msg.append(Component.literal(": "));
-        msg.append(Component.translatable("debug.elementalcraft.exhaustion.base", String.format("%.2f", ctx.baseDelta)).withStyle(ChatFormatting.WHITE));
+        msg.append(Component.translatable("debug.elementalcraft.exhaustion.base", String.format(Locale.ROOT, "%.2f", ctx.baseDelta)).withStyle(ChatFormatting.WHITE));
         if (ctx.wetnessLevel > 0 && ctx.wetnessDelta > 0) {
             msg.append(Component.literal(" + "));
-            msg.append(Component.translatable("debug.elementalcraft.exhaustion.wetness", String.format("%.2f", ctx.wetnessDelta), ctx.wetnessLevel).withStyle(ChatFormatting.AQUA));
+            msg.append(Component.translatable("debug.elementalcraft.exhaustion.wetness", String.format(Locale.ROOT, "%.2f", ctx.wetnessDelta), ctx.wetnessLevel).withStyle(ChatFormatting.AQUA));
         }
         ctx.player.sendSystemMessage(msg);
     }
@@ -433,12 +434,12 @@ public class DebugCommand {
                 target.getDisplayName(),
                 Component.literal(String.valueOf(staticStacks)).withStyle(ChatFormatting.LIGHT_PURPLE),
                 Component.literal(String.valueOf(sporeStacks)).withStyle(ChatFormatting.DARK_GREEN),
-                Component.literal(String.format("%.0f", baseChance * 100)).withStyle(ChatFormatting.WHITE),
+                Component.literal(String.format(Locale.ROOT, "%.0f", baseChance * 100)).withStyle(ChatFormatting.WHITE),
                 Component.literal(String.valueOf(staticStacks)).withStyle(ChatFormatting.LIGHT_PURPLE),
-                Component.literal(String.format("%.0f", perStatic * 100)).withStyle(ChatFormatting.LIGHT_PURPLE),
+                Component.literal(String.format(Locale.ROOT, "%.0f", perStatic * 100)).withStyle(ChatFormatting.LIGHT_PURPLE),
                 Component.literal(String.valueOf(sporeStacks)).withStyle(ChatFormatting.DARK_GREEN),
-                Component.literal(String.format("%.0f", perSpore * 100)).withStyle(ChatFormatting.DARK_GREEN),
-                Component.literal(String.format("%.0f", totalChance * 100)).withStyle(ChatFormatting.GOLD),
+                Component.literal(String.format(Locale.ROOT, "%.0f", perSpore * 100)).withStyle(ChatFormatting.DARK_GREEN),
+                Component.literal(String.format(Locale.ROOT, "%.0f", totalChance * 100)).withStyle(ChatFormatting.GOLD),
                 Component.translatable(triggered ? "debug.elementalcraft.reaction.static_spore_blast.hit" : "debug.elementalcraft.reaction.static_spore_blast.miss").withStyle(triggered ? ChatFormatting.GREEN : ChatFormatting.RED)
         ).withStyle(ChatFormatting.WHITE);
         sendDebugMessage(target, prefix.append(Component.literal(" ")).append(content));
@@ -453,7 +454,7 @@ public class DebugCommand {
                 : Component.literal("");
         Component enchText = ctx.enchReduction > 0
                 ? Component.translatable("debug.elementalcraft.reaction.paralysis.enchant",
-                        Component.literal(String.format("%.0f", ctx.enchReduction * 100)).withStyle(ChatFormatting.AQUA))
+                        Component.literal(String.format(Locale.ROOT, "%.0f", ctx.enchReduction * 100)).withStyle(ChatFormatting.AQUA))
                 : Component.literal("");
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.paralysis.message",
                 nameOf(ctx.target),
@@ -461,7 +462,7 @@ public class DebugCommand {
                 wetnessText,
                 Component.literal(String.valueOf(ctx.paralysisStacks)).withStyle(ChatFormatting.LIGHT_PURPLE),
                 Component.literal(String.valueOf(ctx.paralysisDuration)).withStyle(ChatFormatting.WHITE),
-                Component.literal(String.format("%.1f", ctx.totalDamage)).withStyle(ChatFormatting.RED),
+                Component.literal(String.format(Locale.ROOT, "%.1f", ctx.totalDamage)).withStyle(ChatFormatting.RED),
                 enchText
         ).withStyle(ChatFormatting.WHITE);
         sendDebugMessage(ctx.target, prefix.append(Component.literal(" ")).append(content));
@@ -473,9 +474,9 @@ public class DebugCommand {
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.water_electrification.message",
                 ctx.source.getDisplayName(),
                 Component.literal(String.valueOf(ctx.stacks)).withStyle(ChatFormatting.LIGHT_PURPLE),
-                String.format("%.1f", ctx.range),
+                String.format(Locale.ROOT, "%.1f", ctx.range),
                 ctx.affectedCount,
-                Component.literal(String.format("%.1f", ctx.settlementDamage)).withStyle(ChatFormatting.RED),
+                Component.literal(String.format(Locale.ROOT, "%.1f", ctx.settlementDamage)).withStyle(ChatFormatting.RED),
                 Component.literal(String.valueOf(ctx.paralysisDuration)).withStyle(ChatFormatting.AQUA)
         ).withStyle(ChatFormatting.WHITE);
         sendDebugMessage(ctx.source, prefix.append(Component.literal(" ")).append(content));
@@ -485,23 +486,23 @@ public class DebugCommand {
         double scaledChance = Math.min(1.0, baseChance + scalingSteps * scalingChance);
         MutableComponent comp = Component.translatable("debug.elementalcraft.breakdown.header",
                 type.getDisplayName(),
-                Component.literal(String.format("%.0f", power)).withStyle(color),
-                Component.literal(String.format("%.0f", baseChance * 100)).withStyle(color));
+                Component.literal(String.format(Locale.ROOT, "%.0f", power)).withStyle(color),
+                Component.literal(String.format(Locale.ROOT, "%.0f", baseChance * 100)).withStyle(color));
         if (scalingSteps > 0) {
             double finalChance = scaledChance;
             comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.step",
                     Component.translatable("debug.elementalcraft.breakdown.label.enhance"),
                     Component.literal(String.valueOf(scalingSteps)).withStyle(ChatFormatting.AQUA),
-                    Component.literal(String.format("%.0f", scalingChance * 100)).withStyle(ChatFormatting.AQUA),
-                    Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
+                    Component.literal(String.format(Locale.ROOT, "%.0f", scalingChance * 100)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format(Locale.ROOT, "%.0f", finalChance * 100)).withStyle(color)));
         }
         if (stackingBonus > 0) {
             scaledChance = Math.min(1.0, scaledChance + stackingBonus);
             double finalChance = scaledChance;
             comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.bonus",
                     Component.translatable("debug.elementalcraft.breakdown.label.stacking"),
-                    Component.literal(String.format("%.0f", stackingBonus * 100)).withStyle(ChatFormatting.AQUA),
-                    Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
+                    Component.literal(String.format(Locale.ROOT, "%.0f", stackingBonus * 100)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format(Locale.ROOT, "%.0f", finalChance * 100)).withStyle(color)));
         }
         if (wetnessLevel > 0) {
             double wetAmount = wetnessLevel * wetnessBonusPerLevel;
@@ -509,8 +510,8 @@ public class DebugCommand {
             double finalChance = scaledChance;
             comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.bonus",
                     Component.translatable("debug.elementalcraft.breakdown.label.wetness"),
-                    Component.literal(String.format("%.0f", wetAmount * 100)).withStyle(ChatFormatting.AQUA),
-                    Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
+                    Component.literal(String.format(Locale.ROOT, "%.0f", wetAmount * 100)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format(Locale.ROOT, "%.0f", finalChance * 100)).withStyle(color)));
         }
         if (thunderstorm) {
             double stormAmount = ElementalThunderFrostReactionsConfig.staticThunderstormBonusChance;
@@ -518,8 +519,8 @@ public class DebugCommand {
             double finalChance = scaledChance;
             comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.bonus",
                     Component.translatable("debug.elementalcraft.breakdown.label.thunderstorm"),
-                    Component.literal(String.format("%.0f", stormAmount * 100)).withStyle(ChatFormatting.AQUA),
-                    Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
+                    Component.literal(String.format(Locale.ROOT, "%.0f", stormAmount * 100)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format(Locale.ROOT, "%.0f", finalChance * 100)).withStyle(color)));
         }
         if (coldBiomeMult < 1.0) {
             double before = scaledChance;
@@ -527,8 +528,8 @@ public class DebugCommand {
             double finalChance = scaledChance;
             comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.multiply",
                     Component.translatable("debug.elementalcraft.breakdown.label.cold"),
-                    Component.literal(String.format("%.0f", (1.0 - coldBiomeMult) * 100)).withStyle(ChatFormatting.AQUA),
-                    Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
+                    Component.literal(String.format(Locale.ROOT, "%.0f", (1.0 - coldBiomeMult) * 100)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format(Locale.ROOT, "%.0f", finalChance * 100)).withStyle(color)));
         }
         comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.footer"));
         return comp;
@@ -550,7 +551,7 @@ public class DebugCommand {
                 target.getDisplayName(),
                 Component.literal(String.valueOf(stacksApplied)).withStyle(ChatFormatting.LIGHT_PURPLE),
                 breakdown,
-                String.format("%.0f", chance * 100)
+                String.format(Locale.ROOT, "%.0f", chance * 100)
         ).withStyle(ChatFormatting.LIGHT_PURPLE);
         sendDebugMessage(target, msg);
     }
@@ -562,7 +563,7 @@ public class DebugCommand {
                 attacker.getDisplayName(),
                 target.getDisplayName(),
                 breakdown,
-                String.format("%.0f", chance * 100)
+                String.format(Locale.ROOT, "%.0f", chance * 100)
         ).withStyle(ChatFormatting.GRAY);
         sendDebugMessage(target, msg);
     }
@@ -575,7 +576,7 @@ public class DebugCommand {
                 target.getDisplayName(),
                 Component.literal(String.valueOf(stacksApplied)).withStyle(ChatFormatting.DARK_GREEN),
                 breakdown,
-                String.format("%.0f", chance * 100)
+                String.format(Locale.ROOT, "%.0f", chance * 100)
         ).withStyle(ChatFormatting.DARK_GREEN);
         sendDebugMessage(target, msg);
     }
@@ -587,7 +588,7 @@ public class DebugCommand {
                 attacker.getDisplayName(),
                 target.getDisplayName(),
                 breakdown,
-                String.format("%.0f", chance * 100)
+                String.format(Locale.ROOT, "%.0f", chance * 100)
         ).withStyle(ChatFormatting.GRAY);
         sendDebugMessage(target, msg);
     }
@@ -597,14 +598,14 @@ public class DebugCommand {
         MutableComponent comp = Component.translatable("debug.elementalcraft.breakdown.header",
                 ElementType.FIRE.getDisplayName(),
                 Component.literal(String.valueOf(firePower)).withStyle(color),
-                Component.literal(String.format("%.0f", baseChance * 100)).withStyle(color));
+                Component.literal(String.format(Locale.ROOT, "%.0f", baseChance * 100)).withStyle(color));
         if (scalingSteps > 0) {
             double finalChance = scaledChance;
             comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.step",
                     Component.translatable("debug.elementalcraft.breakdown.label.enhance"),
                     Component.literal(String.valueOf(scalingSteps)).withStyle(ChatFormatting.AQUA),
-                    Component.literal(String.format("%.0f", scalingChance * 100)).withStyle(ChatFormatting.AQUA),
-                    Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
+                    Component.literal(String.format(Locale.ROOT, "%.0f", scalingChance * 100)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format(Locale.ROOT, "%.0f", finalChance * 100)).withStyle(color)));
         }
         if (biomeBonus != 0) {
             scaledChance = Math.min(1.0, scaledChance + biomeBonus);
@@ -615,8 +616,8 @@ public class DebugCommand {
             }
             comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.bonus",
                     label,
-                    Component.literal(String.format("%+.0f", biomeBonus * 100)).withStyle(ChatFormatting.AQUA),
-                    Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
+                    Component.literal(String.format(Locale.ROOT, "%+.0f", biomeBonus * 100)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format(Locale.ROOT, "%.0f", finalChance * 100)).withStyle(color)));
         }
         comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.footer"));
         return comp;
@@ -652,31 +653,31 @@ public class DebugCommand {
         double scaledChance = Math.min(1.0, baseChance + scalingSteps * scalingChance);
         MutableComponent comp = Component.translatable("debug.elementalcraft.breakdown.header",
                 ElementType.FROST.getDisplayName(),
-                Component.literal(String.format("%.0f", frostPower)).withStyle(color),
-                Component.literal(String.format("%.0f", baseChance * 100)).withStyle(color));
+                Component.literal(String.format(Locale.ROOT, "%.0f", frostPower)).withStyle(color),
+                Component.literal(String.format(Locale.ROOT, "%.0f", baseChance * 100)).withStyle(color));
         if (scalingSteps > 0) {
             double finalChance = scaledChance;
             comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.step",
                     Component.translatable("debug.elementalcraft.breakdown.label.growth"),
                     Component.literal(String.valueOf(scalingSteps)).withStyle(ChatFormatting.AQUA),
-                    Component.literal(String.format("%.0f", scalingChance * 100)).withStyle(ChatFormatting.AQUA),
-                    Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
+                    Component.literal(String.format(Locale.ROOT, "%.0f", scalingChance * 100)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format(Locale.ROOT, "%.0f", finalChance * 100)).withStyle(color)));
         }
         if (stackingBonus > 0) {
             scaledChance = Math.min(1.0, scaledChance + stackingBonus);
             double finalChance = scaledChance;
             comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.bonus",
                     Component.translatable("debug.elementalcraft.breakdown.label.stacking"),
-                    Component.literal(String.format("%.0f", stackingBonus * 100)).withStyle(ChatFormatting.AQUA),
-                    Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
+                    Component.literal(String.format(Locale.ROOT, "%.0f", stackingBonus * 100)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format(Locale.ROOT, "%.0f", finalChance * 100)).withStyle(color)));
         }
         if (wetBonus > 0) {
             scaledChance = Math.min(1.0, scaledChance + wetBonus);
             double finalChance = scaledChance;
             comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.bonus",
                     Component.translatable("debug.elementalcraft.breakdown.label.wetness"),
-                    Component.literal(String.format("%.0f", wetBonus * 100)).withStyle(ChatFormatting.AQUA),
-                    Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
+                    Component.literal(String.format(Locale.ROOT, "%.0f", wetBonus * 100)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format(Locale.ROOT, "%.0f", finalChance * 100)).withStyle(color)));
         }
         if (biomeBonus != 0) {
             scaledChance = Math.min(1.0, scaledChance + biomeBonus);
@@ -687,8 +688,8 @@ public class DebugCommand {
             }
             comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.bonus",
                     label,
-                    Component.literal(String.format("%+.0f", biomeBonus * 100)).withStyle(ChatFormatting.AQUA),
-                    Component.literal(String.format("%.0f", finalChance * 100)).withStyle(color)));
+                    Component.literal(String.format(Locale.ROOT, "%+.0f", biomeBonus * 100)).withStyle(ChatFormatting.AQUA),
+                    Component.literal(String.format(Locale.ROOT, "%.0f", finalChance * 100)).withStyle(color)));
         }
         comp = comp.append(Component.translatable("debug.elementalcraft.breakdown.footer"));
         return comp;
@@ -705,8 +706,8 @@ public class DebugCommand {
                 target.getDisplayName(),
                 Component.literal(String.valueOf(stacksApplied)).withStyle(ChatFormatting.AQUA),
                 breakdown,
-                String.format("%.1f", durationTicks / 20.0),
-                String.format("%.0f", Math.min(speedReduction, 0.9) * 100)
+                String.format(Locale.ROOT, "%.1f", durationTicks / 20.0),
+                String.format(Locale.ROOT, "%.0f", Math.min(speedReduction, 0.9) * 100)
         ).withStyle(ChatFormatting.WHITE);
         sendDebugMessage(context, prefix.append(Component.literal(" ")).append(content));
     }
@@ -718,15 +719,15 @@ public class DebugCommand {
         msg.append(target.getDisplayName());
         msg.append(Component.literal(" "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.frostbite_periodic.base",
-                Component.literal(String.format("%.1f", baseDamage)).withStyle(ChatFormatting.WHITE)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", baseDamage)).withStyle(ChatFormatting.WHITE)));
         if (element != ElementType.NONE && elementMult != 1.0f) {
             msg.append(Component.translatable("debug.elementalcraft.reaction.frostbite_periodic.element_mult",
                     element.getDisplayName(),
-                    Component.literal(String.format("%.1f", elementMult)).withStyle(element.getColor())));
+                    Component.literal(String.format(Locale.ROOT, "%.1f", elementMult)).withStyle(element.getColor())));
         }
         msg.append(Component.literal(" | "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.frostbite_periodic.final",
-                Component.literal(String.format("%.1f", finalDamage)).withStyle(ChatFormatting.RED)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", finalDamage)).withStyle(ChatFormatting.RED)));
         sendDebugMessage(target, msg);
     }
 
@@ -737,11 +738,11 @@ public class DebugCommand {
         msg.append(target.getDisplayName());
         msg.append(Component.literal(" "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.spore_damage.base",
-                Component.literal(String.format("%.1f", baseDamage)).withStyle(ChatFormatting.WHITE)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", baseDamage)).withStyle(ChatFormatting.WHITE)));
         msg.append(Component.literal("(" + stacks + "层)"));
         msg.append(Component.literal(" | "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.spore_damage.final",
-                Component.literal(String.format("%.1f", finalDamage)).withStyle(ChatFormatting.RED)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", finalDamage)).withStyle(ChatFormatting.RED)));
         sendDebugMessage(target, msg);
     }
 
@@ -763,15 +764,15 @@ public class DebugCommand {
         msg.append(nameOf(ctx.target));
         msg.append(Component.literal(" "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.frostbite_aura.base",
-                Component.literal(String.format("%.1f", ctx.baseDamage)).withStyle(ChatFormatting.WHITE)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", ctx.baseDamage)).withStyle(ChatFormatting.WHITE)));
         if (ctx.element != ElementType.NONE && ctx.elementMult != 1.0f) {
             msg.append(Component.translatable("debug.elementalcraft.reaction.frostbite_aura.element_mult",
                     ctx.element.getDisplayName(),
-                    Component.literal(String.format("%.1f", ctx.elementMult)).withStyle(ctx.element.getColor())));
+                    Component.literal(String.format(Locale.ROOT, "%.1f", ctx.elementMult)).withStyle(ctx.element.getColor())));
         }
         msg.append(Component.literal(" | "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.frostbite_aura.final",
-                Component.literal(String.format("%.1f", ctx.finalDamage)).withStyle(ChatFormatting.RED)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", ctx.finalDamage)).withStyle(ChatFormatting.RED)));
         msg.append(Component.literal(" "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.frostbite_aura.source",
                 ctx.source != null ? ctx.source.getDisplayName() : Component.translatable("debug.elementalcraft.reaction.frostbite_aura.aura_source")));
@@ -791,7 +792,7 @@ public class DebugCommand {
                 wetnessText,
                 Component.literal(String.valueOf(ctx.freezeStacks)).withStyle(ChatFormatting.AQUA),
                 Component.literal(String.valueOf(ctx.freezeDuration)).withStyle(ChatFormatting.WHITE),
-                Component.literal(String.format("%.1f", ctx.damage)).withStyle(ChatFormatting.RED)
+                Component.literal(String.format(Locale.ROOT, "%.1f", ctx.damage)).withStyle(ChatFormatting.RED)
         ).withStyle(ChatFormatting.WHITE);
         sendDebugMessage(ctx.target, prefix.append(Component.literal(" ")).append(content));
     }
@@ -816,7 +817,7 @@ public class DebugCommand {
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.static_steam_cloud.message",
                 ctx.source.getDisplayName(),
                 Component.literal(String.valueOf(ctx.triggerStacks)).withStyle(ChatFormatting.LIGHT_PURPLE),
-                Component.literal(String.format("%.1f", ctx.settlementDamage)).withStyle(ChatFormatting.RED),
+                Component.literal(String.format(Locale.ROOT, "%.1f", ctx.settlementDamage)).withStyle(ChatFormatting.RED),
                 Component.literal(String.valueOf(ctx.cloudDuration)).withStyle(ChatFormatting.AQUA)
         ).withStyle(ChatFormatting.WHITE);
         sendDebugMessage(ctx.source, prefix.append(Component.literal(" ")).append(content));
@@ -829,7 +830,7 @@ public class DebugCommand {
                 ctx.source.getDisplayName(),
                 Component.literal(String.valueOf(ctx.sourceStacks)).withStyle(ChatFormatting.DARK_GREEN),
                 Component.literal(String.valueOf(ctx.transferStacks)).withStyle(ChatFormatting.GREEN),
-                String.format("%.1f", ctx.radius),
+                String.format(Locale.ROOT, "%.1f", ctx.radius),
                 ctx.affectedCount
         ).withStyle(ChatFormatting.WHITE);
         sendDebugMessage(ctx.source, prefix.append(Component.literal(" ")).append(content));
@@ -851,7 +852,7 @@ public class DebugCommand {
         if (!DebugMode.hasAnyDebugEnabled()) return;
         MutableComponent message = Component.translatable("debug.elementalcraft.reaction." + ctx.reactionKey + "_aura.message",
                 nameOf(ctx.target),
-                Component.literal(String.format("%.1f", ctx.damage)).withStyle(ChatFormatting.RED),
+                Component.literal(String.format(Locale.ROOT, "%.1f", ctx.damage)).withStyle(ChatFormatting.RED),
                 ctx.source.getDisplayName()
         ).withStyle(ChatFormatting.WHITE);
         sendDebugMessage(ctx.target, message);
@@ -864,21 +865,21 @@ public class DebugCommand {
         msg.append(target.getDisplayName());
         msg.append(Component.literal(" "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.static_damage.base",
-                Component.literal(String.format("%.1f", baseDamage)).withStyle(ChatFormatting.WHITE)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", baseDamage)).withStyle(ChatFormatting.WHITE)));
         if (element != ElementType.NONE) {
             msg.append(Component.translatable("debug.elementalcraft.reaction.static_damage.element_mult",
                     element.getDisplayName(),
-                    Component.literal(String.format("%.1f", elementMult)).withStyle(element.getColor())));
+                    Component.literal(String.format(Locale.ROOT, "%.1f", elementMult)).withStyle(element.getColor())));
         }
         if (enchReduction > 0) {
             String enchDetail = buildStaticEnchDetail(protLevel, projProtLevel);
             msg.append(Component.translatable("debug.elementalcraft.reaction.static_damage.ench_format",
                     Component.literal(enchDetail).withStyle(ChatFormatting.BLUE),
-                    Component.literal(String.format("%.0f", enchReduction * 100)).withStyle(ChatFormatting.BLUE)));
+                    Component.literal(String.format(Locale.ROOT, "%.0f", enchReduction * 100)).withStyle(ChatFormatting.BLUE)));
         }
         msg.append(Component.literal(" | "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.static_damage.final",
-                Component.literal(String.format("%.1f", finalDamage)).withStyle(ChatFormatting.RED)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", finalDamage)).withStyle(ChatFormatting.RED)));
         sendDebugMessage(target, msg);
     }
 
@@ -900,21 +901,21 @@ public class DebugCommand {
         msg.append(target.getDisplayName());
         msg.append(Component.literal(" "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.static_damage.base",
-                Component.literal(String.format("%.1f", baseDamage)).withStyle(ChatFormatting.WHITE)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", baseDamage)).withStyle(ChatFormatting.WHITE)));
         if (element != ElementType.NONE) {
             msg.append(Component.translatable("debug.elementalcraft.reaction.static_damage.element_mult",
                     element.getDisplayName(),
-                    Component.literal(String.format("%.1f", elementMult)).withStyle(element.getColor())));
+                    Component.literal(String.format(Locale.ROOT, "%.1f", elementMult)).withStyle(element.getColor())));
         }
         if (enchReduction > 0) {
             String enchDetail = buildStaticEnchDetail(protLevel, projProtLevel);
             msg.append(Component.translatable("debug.elementalcraft.reaction.static_damage.ench_format",
                     Component.literal(enchDetail).withStyle(ChatFormatting.BLUE),
-                    Component.literal(String.format("%.0f", enchReduction * 100)).withStyle(ChatFormatting.BLUE)));
+                    Component.literal(String.format(Locale.ROOT, "%.0f", enchReduction * 100)).withStyle(ChatFormatting.BLUE)));
         }
         msg.append(Component.literal(" | "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.static_damage.final",
-                Component.literal(String.format("%.1f", finalDamage)).withStyle(ChatFormatting.RED)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", finalDamage)).withStyle(ChatFormatting.RED)));
         msg.append(Component.literal(" "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.static_damage.source",
                 source.getDisplayName()));
@@ -928,19 +929,19 @@ public class DebugCommand {
         msg.append(target.getDisplayName());
         msg.append(Component.literal(" "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.scorched_tick.base",
-                Component.literal(String.format("%.1f", baseDamage)).withStyle(ChatFormatting.WHITE)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", baseDamage)).withStyle(ChatFormatting.WHITE)));
         if (enchReduction > 0) {
             String enchDetail = buildEnchDetail("enchantment.minecraft.fire_protection", fireProtLevel, genProtLevel);
             msg.append(Component.translatable("debug.elementalcraft.reaction.toxic_blast.damage_ench_format",
                     Component.literal(enchDetail).withStyle(ChatFormatting.BLUE),
-                    Component.literal(String.format("%.0f", enchReduction * 100)).withStyle(ChatFormatting.BLUE)));
+                    Component.literal(String.format(Locale.ROOT, "%.0f", enchReduction * 100)).withStyle(ChatFormatting.BLUE)));
         }
         msg.append(Component.literal(" | "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.scorched_tick.final",
-                Component.literal(String.format("%.1f", finalDamage)).withStyle(ChatFormatting.RED)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", finalDamage)).withStyle(ChatFormatting.RED)));
         String multipliers = "";
         if (element != ElementType.NONE && elementMult != 1.0f) {
-            multipliers = element.getDisplayName().getString() + String.format(" × %.1f", elementMult);
+            multipliers = element.getDisplayName().getString() + String.format(Locale.ROOT, " × %.1f", elementMult);
         }
         if (dmgMult > 1.0f) {
             if (!multipliers.isEmpty()) multipliers += ", ";
@@ -952,7 +953,7 @@ public class DebugCommand {
             } else {
                 label = Component.translatable("debug.elementalcraft.reaction.scorched.damage_mult_label").getString();
             }
-            multipliers += label + String.format(" × %.1f", dmgMult);
+            multipliers += label + String.format(Locale.ROOT, " × %.1f", dmgMult);
         }
         if (!multipliers.isEmpty()) {
             msg.append(Component.translatable("debug.elementalcraft.reaction.scorched.multiplier_format", multipliers).withStyle(ChatFormatting.GOLD));
@@ -967,19 +968,19 @@ public class DebugCommand {
         msg.append(target.getDisplayName());
         msg.append(Component.literal(" "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.scorched_aura.base",
-                Component.literal(String.format("%.1f", baseDamage)).withStyle(ChatFormatting.WHITE)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", baseDamage)).withStyle(ChatFormatting.WHITE)));
         msg.append(Component.literal(" | "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.scorched_aura.final",
-                Component.literal(String.format("%.1f", finalDamage)).withStyle(ChatFormatting.RED)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", finalDamage)).withStyle(ChatFormatting.RED)));
         if (enchReduction > 0) {
             String enchDetail = buildEnchDetail("enchantment.minecraft.fire_protection", fireProtLevel, genProtLevel);
             msg.append(Component.translatable("debug.elementalcraft.reaction.toxic_blast.damage_ench_format",
                     Component.literal(enchDetail).withStyle(ChatFormatting.BLUE),
-                    Component.literal(String.format("%.0f", enchReduction * 100)).withStyle(ChatFormatting.BLUE)));
+                    Component.literal(String.format(Locale.ROOT, "%.0f", enchReduction * 100)).withStyle(ChatFormatting.BLUE)));
         }
         String multipliers = "";
         if (element != ElementType.NONE && elementMult != 1.0f) {
-            multipliers = element.getDisplayName().getString() + String.format(" × %.1f", elementMult);
+            multipliers = element.getDisplayName().getString() + String.format(Locale.ROOT, " × %.1f", elementMult);
         }
         if (dmgMult > 1.0f) {
             if (!multipliers.isEmpty()) multipliers += ", ";
@@ -991,7 +992,7 @@ public class DebugCommand {
             } else {
                 label = Component.translatable("debug.elementalcraft.reaction.scorched.damage_mult_label").getString();
             }
-            multipliers += label + String.format(" × %.1f", dmgMult);
+            multipliers += label + String.format(Locale.ROOT, " × %.1f", dmgMult);
         }
         if (!multipliers.isEmpty()) {
             msg.append(Component.translatable("debug.elementalcraft.reaction.scorched.multiplier_format", multipliers).withStyle(ChatFormatting.GOLD));
@@ -1008,9 +1009,9 @@ public class DebugCommand {
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.thermal_shock.message",
                 nameOf(ctx.target),
                 Component.literal(String.valueOf(ctx.remainingTicks)).withStyle(ChatFormatting.YELLOW),
-                Component.literal(String.format("%.1f", ctx.totalRemainingDamage)).withStyle(ChatFormatting.GOLD),
-                Component.literal(String.format("%.0f", ctx.ratio * 100)).withStyle(ChatFormatting.YELLOW),
-                Component.literal(String.format("%.1f", ctx.shockDamage)).withStyle(ChatFormatting.RED),
+                Component.literal(String.format(Locale.ROOT, "%.1f", ctx.totalRemainingDamage)).withStyle(ChatFormatting.GOLD),
+                Component.literal(String.format(Locale.ROOT, "%.0f", ctx.ratio * 100)).withStyle(ChatFormatting.YELLOW),
+                Component.literal(String.format(Locale.ROOT, "%.1f", ctx.shockDamage)).withStyle(ChatFormatting.RED),
                 Component.literal(String.valueOf(ctx.steamLevel)).withStyle(ChatFormatting.AQUA)
         ).withStyle(ChatFormatting.WHITE);
         sendDebugMessage(ctx.target, prefix.append(Component.literal(" ")).append(content));
@@ -1023,23 +1024,23 @@ public class DebugCommand {
         msg.append(target.getDisplayName());
         msg.append(Component.literal(" "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.steam_scalding_tick.base",
-                Component.literal(String.format("%.1f", baseDamage)).withStyle(ChatFormatting.WHITE)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", baseDamage)).withStyle(ChatFormatting.WHITE)));
         msg.append(Component.literal(" | "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.steam_scalding_tick.level_mult",
-                Component.literal(String.format("× %.1f", levelMultiplier)).withStyle(ChatFormatting.YELLOW)));
+                Component.literal(String.format(Locale.ROOT, "× %.1f", levelMultiplier)).withStyle(ChatFormatting.YELLOW)));
         if (element != ElementType.NONE && elementMultiplier != 1.0f) {
             msg.append(Component.translatable("debug.elementalcraft.reaction.scorched.multiplier_format",
-                    element.getDisplayName().getString() + String.format(" × %.1f", elementMultiplier)).withStyle(ChatFormatting.GOLD));
+                    element.getDisplayName().getString() + String.format(Locale.ROOT, " × %.1f", elementMultiplier)).withStyle(ChatFormatting.GOLD));
         }
         if (enchReduction > 0) {
             String enchDetail = buildEnchDetail("enchantment.minecraft.fire_protection", fireProtLevel, genProtLevel);
             msg.append(Component.translatable("debug.elementalcraft.reaction.toxic_blast.damage_ench_format",
                     Component.literal(enchDetail).withStyle(ChatFormatting.BLUE),
-                    Component.literal(String.format("%.0f", enchReduction * 100)).withStyle(ChatFormatting.BLUE)));
+                    Component.literal(String.format(Locale.ROOT, "%.0f", enchReduction * 100)).withStyle(ChatFormatting.BLUE)));
         }
         msg.append(Component.literal(" | "));
         msg.append(Component.translatable("debug.elementalcraft.reaction.steam_scalding_tick.final",
-                Component.literal(String.format("%.1f", finalDamage)).withStyle(ChatFormatting.RED)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", finalDamage)).withStyle(ChatFormatting.RED)));
         sendDebugMessage(target, msg);
     }
 
@@ -1058,25 +1059,25 @@ public class DebugCommand {
                 level
         ).withStyle(ChatFormatting.WHITE);
         msg.append(Component.translatable("debug.elementalcraft.steam_cloud_combined.base",
-                Component.literal(String.format("%.1f", baseDamage)).withStyle(ChatFormatting.WHITE)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", baseDamage)).withStyle(ChatFormatting.WHITE)));
         msg.append(Component.translatable("debug.elementalcraft.steam_cloud_combined.radius",
-                Component.literal(String.format("%.1f", radius)).withStyle(ChatFormatting.WHITE)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", radius)).withStyle(ChatFormatting.WHITE)));
         msg.append(Component.translatable("debug.elementalcraft.steam_cloud_combined.duration",
-                Component.literal(String.format("%.1f", durationTicks / 20.0)).withStyle(ChatFormatting.WHITE)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", durationTicks / 20.0)).withStyle(ChatFormatting.WHITE)));
         msg.append(Component.translatable("debug.elementalcraft.steam_cloud_combined.height",
-                Component.literal(String.format("%.1f", heightCeiling)).withStyle(ChatFormatting.WHITE)));
+                Component.literal(String.format(Locale.ROOT, "%.1f", heightCeiling)).withStyle(ChatFormatting.WHITE)));
         msg.append(Component.translatable("debug.elementalcraft.steam_cloud_combined.level_mult",
-                Component.literal(String.format("×%.1f", levelMultiplier)).withStyle(ChatFormatting.YELLOW)));
-        MutableComponent dmgPart = Component.literal(String.format("%.1f", finalDamage)).withStyle(ChatFormatting.RED);
+                Component.literal(String.format(Locale.ROOT, "×%.1f", levelMultiplier)).withStyle(ChatFormatting.YELLOW)));
+        MutableComponent dmgPart = Component.literal(String.format(Locale.ROOT, "%.1f", finalDamage)).withStyle(ChatFormatting.RED);
         if (elementType != ElementType.NONE && elementMultiplier != 1.0f) {
             dmgPart.append(Component.literal("("));
             dmgPart.append(elementType.getDisplayName());
-            dmgPart.append(Component.literal(String.format(" ×%.1f", elementMultiplier)).withStyle(ChatFormatting.GOLD));
+            dmgPart.append(Component.literal(String.format(Locale.ROOT, " ×%.1f", elementMultiplier)).withStyle(ChatFormatting.GOLD));
             dmgPart.append(Component.literal(")"));
         }
         if (fireImmune) {
             dmgPart.append(Component.translatable("debug.elementalcraft.reaction.steam_scalding.immune",
-                    Component.literal(String.format("×%.2f", ElementalFireNatureReactionsConfig.scorchedImmuneModifier)).withStyle(ChatFormatting.RED)));
+                    Component.literal(String.format(Locale.ROOT, "×%.2f", ElementalFireNatureReactionsConfig.scorchedImmuneModifier)).withStyle(ChatFormatting.RED)));
         }
         msg.append(Component.translatable("debug.elementalcraft.steam_cloud_combined.damage", dmgPart));
         msg.append(Component.translatable("debug.elementalcraft.steam_cloud_combined.aggro",
@@ -1094,7 +1095,7 @@ public class DebugCommand {
             body = Component.translatable("debug.elementalcraft.reaction.thunder_counter.success",
                     nameOf(ctx.attacker),
                     nameOf(ctx.target),
-                    Component.literal(String.format("%.1f", ctx.lightningDamage)).withStyle(ChatFormatting.GOLD),
+                    Component.literal(String.format(Locale.ROOT, "%.1f", ctx.lightningDamage)).withStyle(ChatFormatting.GOLD),
                     String.valueOf(ctx.appliedStacks),
                     Component.translatable(ctx.appliedEffectKey)
                             .withStyle(ctx.appliedEffectKey.equals("effect.elementalcraft.paralysis")
@@ -1105,7 +1106,7 @@ public class DebugCommand {
             body = Component.translatable("debug.elementalcraft.reaction.thunder_counter.fail",
                     nameOf(ctx.target),
                     nameOf(ctx.attacker),
-                    String.format("%.1f", ctx.chance * 100)
+                    String.format(Locale.ROOT, "%.1f", ctx.chance * 100)
             ).withStyle(ChatFormatting.GRAY);
         }
         sendDebugMessage(ctx.attacker, prefix.append(Component.literal(" ")).append(body));
@@ -1120,14 +1121,14 @@ public class DebugCommand {
             body = Component.translatable("debug.elementalcraft.reaction.frost_counter.success",
                     nameOf(ctx.target),
                     String.valueOf(ctx.staticStacks),
-                    String.format("%.1f", ctx.chance * 100),
+                    String.format(Locale.ROOT, "%.1f", ctx.chance * 100),
                     Component.literal(String.valueOf(ctx.maxRadius)).withStyle(ChatFormatting.GOLD)
             ).withStyle(ChatFormatting.WHITE);
         } else {
             body = Component.translatable("debug.elementalcraft.reaction.frost_counter.fail",
                     nameOf(ctx.target),
                     String.valueOf(ctx.staticStacks),
-                    String.format("%.1f", ctx.chance * 100)
+                    String.format(Locale.ROOT, "%.1f", ctx.chance * 100)
             ).withStyle(ChatFormatting.GRAY);
         }
         sendDebugMessage(ctx.target, prefix.append(Component.literal(" ")).append(body));
@@ -1203,7 +1204,7 @@ public class DebugCommand {
         message.append(Component.literal(" "));
         message.append(Component.translatable("debug.elementalcraft.cooldown.remaining",
                 Component.literal(String.valueOf(remainingTicks)).withStyle(ChatFormatting.YELLOW),
-                Component.literal(String.format("%.1f", remainingTicks / 20.0)).withStyle(ChatFormatting.GOLD)
+                Component.literal(String.format(Locale.ROOT, "%.1f", remainingTicks / 20.0)).withStyle(ChatFormatting.GOLD)
         ).withStyle(ChatFormatting.GRAY));
         sendDebugMessage(contextEntity, message);
     }

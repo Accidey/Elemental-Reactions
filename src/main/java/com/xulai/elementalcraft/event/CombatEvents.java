@@ -37,6 +37,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.util.Random;
+import java.util.Locale;
 
 @EventBusSubscriber(modid = ElementalCraft.MODID)
 public class CombatEvents {
@@ -428,20 +429,20 @@ public class CombatEvents {
                 double adjustedSec = result.adjustedDuration / 20.0;
                 if (result.targetElement != ElementType.NONE && result.multiplier != 1.0f) {
                     durationInfo = Component.translatable("debug.elementalcraft.reaction.scorched.duration_element_enhanced",
-                            String.format("%.1f", durationSec), String.format("%.1f", adjustedSec),
-                            result.targetElement.getDisplayName(), String.format("%.1f", result.multiplier)).getString();
+                            String.format(Locale.ROOT, "%.1f", durationSec), String.format(Locale.ROOT, "%.1f", adjustedSec),
+                            result.targetElement.getDisplayName(), String.format(Locale.ROOT, "%.1f", result.multiplier)).getString();
                 } else {
                     durationInfo = Component.translatable("debug.elementalcraft.reaction.scorched.duration_seconds",
-                            String.format("%.1f", adjustedSec)).getString();
+                            String.format(Locale.ROOT, "%.1f", adjustedSec)).getString();
                 }
                 if (hasPoison) {
                     double enhancedSec = (int)(duration * ElementalFireNatureReactionsConfig.poisonScorchDurationMultiplier) / 20.0;
                     durationInfo = Component.translatable("debug.elementalcraft.reaction.scorched.duration_poison_enhanced",
-                            String.format("%.1f", durationSec), String.format("%.1f", enhancedSec)).getString()
+                            String.format(Locale.ROOT, "%.1f", durationSec), String.format(Locale.ROOT, "%.1f", enhancedSec)).getString()
                             + "(" + Component.translatable("effect.minecraft.poison").getString() + ")";
                 }
                 float baseDamage = ScorchedHandler.calculateScorchedDamage(firePower, target);
-                DebugCommand.sendScorchedSuccess(target, attacker, firePower, baseChance, scalingSteps, scalingChance, biomeBonus, biomeTag, (int)(totalChance * 100), durationInfo, String.format("%.1f", baseDamage));
+                DebugCommand.sendScorchedSuccess(target, attacker, firePower, baseChance, scalingSteps, scalingChance, biomeBonus, biomeTag, (int)(totalChance * 100), durationInfo, String.format(Locale.ROOT, "%.1f", baseDamage));
             }
         } else if (totalChance > 0.01) {
             DebugCommand.sendScorchedChanceFailed(attacker, target, firePower, baseChance, scalingSteps, scalingChance, biomeBonus, biomeTag, (int)(totalChance * 100));

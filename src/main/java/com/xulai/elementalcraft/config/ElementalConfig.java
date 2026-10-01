@@ -6,6 +6,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.Locale;
 
 public final class ElementalConfig {
     public static final ModConfigSpec SPEC;
@@ -940,7 +941,7 @@ public final class ElementalConfig {
             if (last <= 0 || entry.indexOf(':') == last) continue;
             if (!entry.substring(0, last).equals(entityId)) continue;
 
-            String elementId = entry.substring(last + 1).toLowerCase();
+            String elementId = entry.substring(last + 1).toLowerCase(Locale.ROOT);
             if (elementId.equals("all")) {
                 return EnumSet.of(ElementType.FIRE, ElementType.NATURE, ElementType.FROST, ElementType.THUNDER);
             }
