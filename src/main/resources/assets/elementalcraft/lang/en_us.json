@@ -39,6 +39,7 @@
   "command.elementalcraft.blacklist.header": "§eCurrent elemental attribute blacklist (§f%s §eentries):",
   "command.elementalcraft.blacklist.invalid_attribute": "§cInvalid attribute ID: %s (available: fire, frost, thunder, nature, all)",
   "command.elementalcraft.common.no_egg": "§cPlease hold a spawn egg!",
+  "command.elementalcraft.invalid_points": "§cInvalid points value. Use a non-negative integer or a range like 10-50.",
   "command.elementalcraft.blacklist.not_found_any": "§e%s §7has no elemental attribute blacklist entries",
   "command.elementalcraft.blacklist.not_found_single": "§e%s §7has no blacklist entry for attribute %s",
   "command.elementalcraft.blacklist.removed_all": "§aRemoved §lall §aelemental blacklist entries for entity §f%s",

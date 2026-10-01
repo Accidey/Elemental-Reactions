@@ -113,6 +113,19 @@ public class ForcedItemCommand {
         return ElementType.fromId(input.toLowerCase());
     }
 
+    private static boolean isValidPoints(String input) {
+        if (input == null || input.isBlank()) return false;
+        String val = input.trim();
+        if (!val.matches("\\d+(-\\d+)?")) return false;
+        if (val.contains("-")) {
+            String[] range = val.split("-");
+            int min = Integer.parseInt(range[0]);
+            int max = Integer.parseInt(range[1]);
+            return min >= 0 && max >= min;
+        }
+        return Integer.parseInt(val) >= 0;
+    }
+
     private static String normalizeLine(String line) {
         String trimmed = line.trim();
         if (trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
@@ -234,6 +247,11 @@ public class ForcedItemCommand {
 
         String enhanceStr = enhanceInput.isBlank() ? "0" : enhanceInput.trim();
         String resistStr = resistInput.isBlank() ? "0" : resistInput.trim();
+
+        if (!isValidPoints(enhanceStr) || !isValidPoints(resistStr)) {
+            player.sendSystemMessage(Component.translatable("command.elementalcraft.invalid_points"));
+            return 0;
+        }
 
         String itemId = stack.getItem().builtInRegistryHolder().key().identifier().toString();
 

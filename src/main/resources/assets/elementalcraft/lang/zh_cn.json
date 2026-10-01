@@ -39,6 +39,7 @@
   "command.elementalcraft.blacklist.header": "§e当前元素属性黑名单（§f%s §e条）：",
   "command.elementalcraft.blacklist.invalid_attribute": "§c无效的属性ID：%s（可用：fire, frost, thunder, nature, all）",
   "command.elementalcraft.common.no_egg": "§c请手持一个刷怪蛋！",
+  "command.elementalcraft.invalid_points": "§c点数参数非法，请输入非负整数或范围（如 10-50）。",
   "command.elementalcraft.blacklist.not_found_any": "§e%s §7没有任何元素属性黑名单",
   "command.elementalcraft.blacklist.not_found_single": "§e%s §7未为属性 %s 设置黑名单",
   "command.elementalcraft.blacklist.removed_all": "§a已移除实体 §f%s §a的 §l全部 §a元素黑名单",
