@@ -13,13 +13,13 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber(modid = ElementalCraft.MODID)
 public class ConfigAutoSync {
 
-    private static final Map<String, Long> FILE_TIMESTAMPS = new HashMap<>();
+    private static final Map<String, Long> FILE_TIMESTAMPS = new ConcurrentHashMap<>();
 
     private static int tickCounter = 0;
 
