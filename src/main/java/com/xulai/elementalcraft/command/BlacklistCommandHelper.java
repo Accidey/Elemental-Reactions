@@ -102,7 +102,7 @@ public class BlacklistCommandHelper {
     }
 
     private static void registerBlacklist(CommandDispatcher<CommandSourceStack> dispatcher, BlacklistEntry entry) {
-        dispatcher.register(Commands.literal("elementalcraft")
+        dispatcher.register(Commands.literal("element")
                 .then(Commands.literal("blacklist")
                         .then(Commands.literal(entry.commandName)
                                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
