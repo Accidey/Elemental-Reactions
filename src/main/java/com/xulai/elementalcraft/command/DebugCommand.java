@@ -30,7 +30,6 @@ public class DebugCommand {
                 Commands.literal("elementalcraft")
                         .requires(source -> true)
                         .then(Commands.literal("debug")
-                                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                                 .executes(context -> {
                                     CommandSourceStack source = context.getSource();
                                     if (!(source.getEntity() instanceof Player player)) {
