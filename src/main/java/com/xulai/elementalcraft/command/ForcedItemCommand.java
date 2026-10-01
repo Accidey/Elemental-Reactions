@@ -232,8 +232,22 @@ public class ForcedItemCommand {
         ElementType enhance = parse(enhanceRaw);
         ElementType resist = parse(resistRaw);
 
+        if (!enhanceRaw.isBlank() && enhance == null) {
+            player.sendSystemMessage(Component.translatable("command.elementalcraft.forceditem.invalid_element", enhanceRaw));
+            return 0;
+        }
+        if (!resistRaw.isBlank() && resist == null) {
+            player.sendSystemMessage(Component.translatable("command.elementalcraft.forceditem.invalid_element", resistRaw));
+            return 0;
+        }
+
         String enhanceStr = enhanceInput.isBlank() ? "0" : enhanceInput.trim();
         String resistStr = resistInput.isBlank() ? "0" : resistInput.trim();
+
+        if (ForcedItemHelper.maxPointsOf(enhanceStr) <= 0 && ForcedItemHelper.maxPointsOf(resistStr) <= 0) {
+            player.sendSystemMessage(Component.translatable("command.elementalcraft.forceditem.armor.need_points"));
+            return 0;
+        }
 
         String itemId = stack.getItem().builtInRegistryHolder().key().identifier().toString();
 

@@ -141,6 +141,10 @@ public final class ForcedItemHelper {
         return type;
     }
 
+    public static int maxPointsOf(String raw) {
+        return parsePointsRange(raw).max();
+    }
+
     private static RangeValue parsePointsRange(String s) {
         if (s == null || s.isBlank()) return new RangeValue(0, 0, true);
         String val = s.trim();
