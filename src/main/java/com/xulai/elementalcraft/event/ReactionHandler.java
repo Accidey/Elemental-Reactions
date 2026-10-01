@@ -600,6 +600,7 @@ public class ReactionHandler {
                     int affectedCount = 0;
                     List<LivingEntity> chainTargets = new ArrayList<>();
                     for (LivingEntity entity : nearbyEntities) {
+                        if (!entity.isAlive()) continue;
                         float mitigation = calculateBlastMitigation(entity);
                         float finalDamage = rawBaseDamage * (1.0f - mitigation);
                         ElementDamageHelper.applyDamage(entity, finalDamage, ModDamageTypes.source(entity.level(), ModDamageTypes.TOXIC_BLAST, killCredit));
@@ -658,6 +659,7 @@ public class ReactionHandler {
                         MinecraftServer server = serverLevel.getServer();
                         for (LivingEntity chainTarget : chainTargets) {
                             com.xulai.elementalcraft.util.ServerTaskScheduler.schedule(server, 20, () -> {
+                                if (!chainTarget.isAlive()) return;
                                 triggerToxicBlast(level, killCredit, chainTarget,
                                         ElementalFireNatureReactionsConfig.scorchedTriggerThreshold, killCredit, 0, visited);
                             });
