@@ -1186,7 +1186,7 @@ public class StaticShockHandler {
 
         double maxProtCap = ElementalThunderFrostReactionsConfig.staticMaxProtCap;
         double maxProjectileProtCap = ElementalThunderFrostReactionsConfig.staticMaxProjectileProtCap;
-        double denom = ElementalFireNatureReactionsConfig.enchantmentCalculationDenominator;
+        double denom = Math.max(1.0, ElementalFireNatureReactionsConfig.enchantmentCalculationDenominator);
 
         double protFactor = maxProtCap / denom;
         double projectileProtFactor = maxProjectileProtCap / denom;
