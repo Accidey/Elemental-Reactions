@@ -35,9 +35,9 @@ public final class ElementalISSIntegrationConfig {
 
         CASTER_MOB_CHANCE = BUILDER
                 .comment("属性生物成为施法者的概率。",
-                         "",
+                         " ",
                          "Chance for an elemental-attributed mob to become a caster.",
-                         "",
+                         " ",
                          "Default: 0.5 (50%) / 默认：0.5（50%）")
                 .defineInRange("caster_mob_chance", 0.5, 0.0, 1.0);
 
@@ -52,10 +52,10 @@ public final class ElementalISSIntegrationConfig {
         MOB_LOW_HEALTH_THRESHOLD = BUILDER
                 .comment("生命值比例低于此值时，生物进入激进施法模式（施法更频繁）。",
                          "自然施法生物中，仅持有伤害法术的生物才会进入激进模式。",
-                         "",
+                         " ",
                          "Health ratio below which the mob enters aggressive casting mode (casts more frequently).",
                          "For Nature caster mobs, only mobs holding damage spells enter aggressive mode.",
-                         "",
+                         " ",
                          "Default: 0.5 (50%) / 默认：0.5（50%）")
                 .defineInRange("mob_low_health_threshold", 0.5, 0.0, 1.0);
 
@@ -63,9 +63,9 @@ public final class ElementalISSIntegrationConfig {
 
         MOB_AGGRESSIVE_CAST_COOLDOWN = BUILDER
                 .comment("激进模式（低血量）下施法冷却时间（刻）。20刻 = 1秒。",
-                         "",
+                         " ",
                          "Cooldown (in ticks) between spell casts when mob is in aggressive mode (low health). 20 ticks = 1 second.",
-                         "",
+                         " ",
                          "Default: 100 (5 seconds) / 默认：100（5秒）")
                 .defineInRange("mob_aggressive_cast_cooldown", 100, 1, 72000);
 
@@ -73,9 +73,9 @@ public final class ElementalISSIntegrationConfig {
 
         MOB_NORMAL_CAST_COOLDOWN = BUILDER
                 .comment("正常模式下施法冷却时间（刻）。20刻 = 1秒。",
-                         "",
+                         " ",
                          "Cooldown (in ticks) between spell casts in normal mode. 20 ticks = 1 second.",
-                         "",
+                         " ",
                          "Default: 200 (10 seconds) / 默认：200（10秒）")
                 .defineInRange("mob_normal_cast_cooldown", 200, 1, 72000);
 
@@ -84,10 +84,10 @@ public final class ElementalISSIntegrationConfig {
         MOB_BOTTLE_THROW_COOLDOWN = BUILDER
                 .comment("施法生物每轮投掷药水瓶（3次）结束后的冷却时间（刻）。20刻 = 1秒。",
                          "连续3次未命中也会触发此冷却。",
-                         "",
+                         " ",
                          "Cooldown (in ticks) after a caster mob finishes a bottle throwing round (3 throws).",
                          "Also triggered after 3 consecutive missed throws.",
-                         "",
+                         " ",
                          "Default: 200 (10 seconds) / 默认：200（10秒）")
                 .defineInRange("mob_bottle_throw_cooldown", 200, 10, 72000);
 
@@ -101,9 +101,9 @@ public final class ElementalISSIntegrationConfig {
 
         SCROLL_DROP_CHANCE = BUILDER
                 .comment("施法生物持有的法术卷轴掉落概率。1.0 = 100%，0.0 = 不掉落。",
-                         "",
+                         " ",
                          "Drop chance for the spell scroll held by caster mobs. 1.0 = 100%, 0.0 = never drops.",
-                         "",
+                         " ",
                          "Default: 1.0 (100%) / 默认：1.0（100%）")
                 .defineInRange("scroll_drop_chance", 1.0, 0.0, 1.0);
 
@@ -119,11 +119,11 @@ public final class ElementalISSIntegrationConfig {
                 .comment("在此列表中的实体不能被选为施法生物。",
                          "格式：实体注册ID列表，例如 [\"minecraft:wither\", \"minecraft:warden\"]",
                          "也支持模组命名空间格式：[\"iceandfire\"] 会屏蔽该模组全部实体。",
-                         "",
+                         " ",
                          "Entities in this list cannot be selected as caster mobs.",
                          "Format: list of entity registry IDs, e.g., [\"minecraft:wither\", \"minecraft:warden\"]",
                          "Also supports mod namespace format: [\"iceandfire\"] to blacklist all entities from that mod.",
-                         "",
+                         " ",
                          "Default: [wither, warden, ender_dragon] / 默认：[凋零，坚守者，末影龙]")
                 .defineListAllowEmpty("caster_mob_blacklist",
                         List.of("minecraft:wither", "minecraft:warden", "minecraft:ender_dragon"),
