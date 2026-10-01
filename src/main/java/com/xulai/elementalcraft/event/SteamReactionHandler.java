@@ -62,14 +62,14 @@ public class SteamReactionHandler {
     private static final String TAG_CLOUD_UUID_PREFIX = "EC_CloudUUID_";
     public static final String TAG_FROST_OWNER_PREFIX = "EC_FrostOwner_";
 
-    private static final String NBT_CONDENSATION_TIMER = "EC_SteamCondensationTimer";
+    public static final String NBT_CONDENSATION_TIMER = "EC_SteamCondensationTimer";
     public static final String NBT_STEAM_ATTACKER_COOLDOWN = "EC_SteamAttackerCooldown";
-    private static final String NBT_STEAM_BLINDNESS = "EC_SteamBlindness";
-    private static final String NBT_STEAM_SCALDING_LOGGED = "EC_SteamScaldingLogged";
+    public static final String NBT_STEAM_BLINDNESS = "EC_SteamBlindness";
+    public static final String NBT_STEAM_SCALDING_LOGGED = "EC_SteamScaldingLogged";
     public static final String NBT_FROSTED_CLOUD_UUID = "EC_FrostedCloudUUID";
-    private static final String NBT_STATIC_CLOUD_UUID = "EC_StaticCloudUUID";
-    private static final String NBT_STATIC_DMG_CLOUD_UUID = "EC_StaticDmgCloudUUID";
-    private static final String NBT_FIRE_FROST_MELT_RESOLVED = "EC_FireFrostMeltResolved";
+    public static final String NBT_STATIC_CLOUD_UUID = "EC_StaticCloudUUID";
+    public static final String NBT_STATIC_DMG_CLOUD_UUID = "EC_StaticDmgCloudUUID";
+    public static final String NBT_FIRE_FROST_MELT_RESOLVED = "EC_FireFrostMeltResolved";
     private static final String NBT_STATIC_TIMER = "ec_static_timer";
     private static final String NBT_STATIC_DAMAGE_TIMER = "ec_static_damage_timer";
 

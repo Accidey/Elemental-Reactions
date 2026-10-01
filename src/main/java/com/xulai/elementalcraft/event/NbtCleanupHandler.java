@@ -73,17 +73,17 @@ public class NbtCleanupHandler {
             data.remove(ScorchedHandler.NBT_WETNESS_STEAM_COOLDOWN);
         }
 
-        data.remove("EC_SteamCondensationTimer");
-        data.remove("EC_SteamAttackerCooldown");
-        data.remove("EC_SteamBlindness");
-        data.remove("EC_SteamScaldingLogged");
-        data.remove("EC_FrostedCloudUUID");
-        data.remove("EC_StaticCloudUUID");
-        data.remove("EC_StaticDmgCloudUUID");
+        data.remove(SteamReactionHandler.NBT_CONDENSATION_TIMER);
+        data.remove(SteamReactionHandler.NBT_STEAM_ATTACKER_COOLDOWN);
+        data.remove(SteamReactionHandler.NBT_STEAM_BLINDNESS);
+        data.remove(SteamReactionHandler.NBT_STEAM_SCALDING_LOGGED);
+        data.remove(SteamReactionHandler.NBT_FROSTED_CLOUD_UUID);
+        data.remove(SteamReactionHandler.NBT_STATIC_CLOUD_UUID);
+        data.remove(SteamReactionHandler.NBT_STATIC_DMG_CLOUD_UUID);
 
-        data.remove("EC_FireFrostMeltResolved");
-        data.remove("EC_SelfDryingPenalty");
-        data.remove("EC_LastSelfDryTick");
+        data.remove(SteamReactionHandler.NBT_FIRE_FROST_MELT_RESOLVED);
+        data.remove(CombatEvents.NBT_SELF_DRYING_PENALTY);
+        data.remove(CombatEvents.NBT_LAST_DRY_TICK);
         data.remove("EC_NatureAttackCooldown");
 
         StaticShockHandler.clearSessionState(player);

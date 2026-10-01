@@ -40,8 +40,8 @@ import java.util.Random;
 
 @EventBusSubscriber(modid = ElementalCraft.MODID)
 public class CombatEvents {
-    private static final String NBT_LAST_DRY_TICK = "EC_LastSelfDryTick";
-    private static final String NBT_SELF_DRYING_PENALTY = "EC_SelfDryingPenalty";
+    public static final String NBT_LAST_DRY_TICK = "EC_LastSelfDryTick";
+    public static final String NBT_SELF_DRYING_PENALTY = "EC_SelfDryingPenalty";
 
     private static final Random RANDOM = new Random();
 
