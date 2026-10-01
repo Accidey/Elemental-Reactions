@@ -50,7 +50,7 @@ public class CombatEvents {
         LivingEntity target = event.getEntity();
         if (target.level().isClientSide()) return;
         if (ScorchedHandler.isFireCounterActive(target)) {
-            float reduction = (float) ElementalFireNatureReactionsConfig.fireCounterDamageReduction;
+            float reduction = (float) Math.min(0.99, Math.max(0.0, ElementalFireNatureReactionsConfig.fireCounterDamageReduction));
             event.setNewDamage(event.getNewDamage() * (1.0f - reduction));
         }
     }
