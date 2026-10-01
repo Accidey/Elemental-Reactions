@@ -793,12 +793,12 @@ public class ReactionHandler {
         double coldMult = ElementalFireNatureReactionsConfig.sporeColdBiomeChanceMultiplier;
         boolean modified = false;
         CompoundTag data = target.getPersistentData();
-        if (coldMult < 1.0 && !data.getBooleanOr("EC_SporeBiomeColdLogged", false)) {
+        if (coldMult < 1.0) {
             Biome biome = target.level().getBiome(target.blockPosition()).value();
             if (biome.getBaseTemperature() <= 0.3) {
                 result *= coldMult;
+                modified = !data.getBooleanOr("EC_SporeBiomeColdLogged", false);
                 data.putBoolean("EC_SporeBiomeColdLogged", true);
-                modified = true;
             }
         }
         result = Math.min(1.0, result);
