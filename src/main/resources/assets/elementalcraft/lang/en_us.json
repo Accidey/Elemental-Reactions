@@ -15,7 +15,7 @@
   "element.frost.bracket": "Frost",
   "element.fire.bracket": "Fire",
 
-  "command.elementalcraft.biomebias.added_all": "§aSuccessfully set §lall §aattribute biases for biome §e%s §ato %.1f%%",
+  "command.elementalcraft.biomebias.added_all": "§aSuccessfully set §lall §aattribute biases to §e%.1f%% §afor biome §e%s",
   "command.elementalcraft.biomebias.added_single": "§aSuccessfully added attribute §r%s §abias (%.1f%%) for biome §e%s",
   "command.elementalcraft.biomebias.already_exists": "§e%s §7already has a bias configured for attribute §r%s",
   "command.elementalcraft.biomebias.conflict_all": "§e%s §7already has the same bias set for §lall §7attributes, cannot add individually.",

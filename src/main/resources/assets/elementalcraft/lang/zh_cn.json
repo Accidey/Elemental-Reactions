@@ -15,8 +15,8 @@
   "element.frost.bracket": "冰霜",
   "element.fire.bracket": "赤焰",
 
-  "command.elementalcraft.biomebias.added_all": "§a已为群系 §e%s §a将 §l全部 §a属性偏向设置为 %.1f%%",
-  "command.elementalcraft.biomebias.added_single": "§a已为群系 §e%s §a成功添加属性 §r%s §a偏向（%.1f%%）",
+  "command.elementalcraft.biomebias.added_all": "§a已将 §l全部 §a属性偏向设置为 §e%.1f%% §a（群系 §e%s§a）",
+  "command.elementalcraft.biomebias.added_single": "§a成功添加属性 §r%s §a偏向（%.1f%%）到群系 §e%s",
   "command.elementalcraft.biomebias.already_exists": "§e%s §7已为属性 §r%s §7配置偏向",
   "command.elementalcraft.biomebias.conflict_all": "§e%s §7已为 §l全部 §7属性设置相同偏向，无法单独添加。",
   "command.elementalcraft.biomebias.header": "§e群系 §f%s §e当前属性偏向（%d 条）：",
@@ -24,7 +24,7 @@
   "command.elementalcraft.biomebias.not_found_any": "§e%s §7没有任何属性偏向配置",
   "command.elementalcraft.biomebias.not_found_single": "§e%s §7未为属性 %s 配置偏向",
   "command.elementalcraft.biomebias.removed_all": "§a已移除群系 §e%s §a的 §l全部 §a属性偏向",
-  "command.elementalcraft.biomebias.removed_single": "§a已从群系 §e%s §a移除属性 §r%s §a的偏向",
+  "command.elementalcraft.biomebias.removed_single": "§a已移除属性 §r%s §a在群系 §e%s §a的偏向",
   "command.elementalcraft.biomebias.saved": "§7配置文件已保存，缓存已刷新，立即生效",
   "command.elementalcraft.biomebias.use_remove_first": "§c群系ID已在偏向配置中。",
 
