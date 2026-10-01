@@ -19,6 +19,9 @@ public class UpdateChecker {
     private static final String CURSEFORGE_BASE_URL =
             "https://www.curseforge.com/minecraft/mc-mods/elementalcraft-reactions/files/all?page=1&pageSize=20&showAlphaFiles=hide";
     private static final String LOADER_NAME = "neoforge";
+    private static final HttpClient CLIENT = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(10))
+            .build();
 
     private static volatile boolean hasUpdate = false;
     private static volatile String latestVersion = "";
@@ -41,10 +44,6 @@ public class UpdateChecker {
     }
 
     public static void checkForUpdate() {
-        HttpClient client = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(10))
-                .build();
-
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.modrinth.com/v2/project/elementalcraft-reactions/version"))
                 .timeout(Duration.ofSeconds(15))
@@ -53,7 +52,7 @@ public class UpdateChecker {
 
         CompletableFuture.supplyAsync(() -> {
             try {
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() != 200) return null;
                 return response.body();
             } catch (Exception e) {
