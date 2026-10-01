@@ -887,6 +887,8 @@ public class ScorchedHandler {
     public static void onPlayerLoginClearFireLock(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof net.minecraft.server.level.ServerPlayer sp) {
             PacketDistributor.sendToPlayer(sp, new FireCounterLockPacket(false));
+            activeFireCounters.remove(sp.getUUID());
+            restoreSavedSpeed(sp);
         }
     }
 
