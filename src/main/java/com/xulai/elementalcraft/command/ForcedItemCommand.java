@@ -178,8 +178,13 @@ public class ForcedItemCommand {
 
         List<String> list = new ArrayList<>(ForcedItemConfig.FORCED_WEAPONS.get());
         list.add(newLine);
-        ForcedItemConfig.FORCED_WEAPONS.set(list);
-        ForcedItemConfig.SPEC.save();
+ForcedItemConfig.FORCED_WEAPONS.set(list);
+        try {
+            ForcedItemConfig.SPEC.save();
+        } catch (Exception e) {
+            player.sendSystemMessage(Component.translatable("command.elementalcraft.save_failed"));
+            return 0;
+        }
 
         ForcedItemHelper.clearCache();
 
@@ -210,8 +215,13 @@ public class ForcedItemCommand {
         list.removeIf(s -> normalizeLine(s).startsWith(targetPrefix));
         int removed = oldSize - list.size();
 
-        ForcedItemConfig.FORCED_WEAPONS.set(list);
-        ForcedItemConfig.SPEC.save();
+ForcedItemConfig.FORCED_WEAPONS.set(list);
+        try {
+            ForcedItemConfig.SPEC.save();
+        } catch (Exception e) {
+            player.sendSystemMessage(Component.translatable("command.elementalcraft.save_failed"));
+            return 0;
+        }
         ForcedItemHelper.clearCache();
 
         if (removed > 0) {
@@ -275,8 +285,13 @@ public class ForcedItemCommand {
 
         List<String> list = new ArrayList<>(ForcedItemConfig.FORCED_ARMOR.get());
         list.add(newLine);
-        ForcedItemConfig.FORCED_ARMOR.set(list);
-        ForcedItemConfig.SPEC.save();
+ForcedItemConfig.FORCED_ARMOR.set(list);
+        try {
+            ForcedItemConfig.SPEC.save();
+        } catch (Exception e) {
+            player.sendSystemMessage(Component.translatable("command.elementalcraft.save_failed"));
+            return 0;
+        }
 
         ForcedItemHelper.clearCache();
 
@@ -307,8 +322,13 @@ public class ForcedItemCommand {
         list.removeIf(s -> normalizeLine(s).startsWith(targetPrefix));
         int removed = oldSize - list.size();
 
-        ForcedItemConfig.FORCED_ARMOR.set(list);
-        ForcedItemConfig.SPEC.save();
+ForcedItemConfig.FORCED_ARMOR.set(list);
+        try {
+            ForcedItemConfig.SPEC.save();
+        } catch (Exception e) {
+            player.sendSystemMessage(Component.translatable("command.elementalcraft.save_failed"));
+            return 0;
+        }
         ForcedItemHelper.clearCache();
 
         if (removed > 0) {
