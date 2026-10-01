@@ -1,5 +1,6 @@
 package com.xulai.elementalcraft.util;
 
+import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.config.ForcedItemConfig;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -18,12 +19,17 @@ public final class ForcedItemHelper {
 
     private static final Map<Item, ArmorData> ARMOR_ROLLED_CACHE = new ConcurrentHashMap<>();
 
+    private static volatile boolean weaponsParsed = false;
+    private static volatile boolean armorParsed = false;
+
     private ForcedItemHelper() {}
 
     public static void clearCache() {
         WEAPON_CACHE.clear();
         ARMOR_CACHE.clear();
         ARMOR_ROLLED_CACHE.clear();
+        weaponsParsed = false;
+        armorParsed = false;
     }
 
     public record WeaponData(ElementType attackType) {}
@@ -40,14 +46,14 @@ public final class ForcedItemHelper {
     }
 
     public static WeaponData getForcedWeapon(Item item) {
-        if (WEAPON_CACHE.isEmpty() && !ForcedItemConfig.FORCED_WEAPONS.get().isEmpty()) {
+        if (!weaponsParsed) {
             parseWeapons();
         }
         return WEAPON_CACHE.get(item);
     }
 
     public static ArmorData getForcedArmor(Item item) {
-        if (ARMOR_CACHE.isEmpty() && !ForcedItemConfig.FORCED_ARMOR.get().isEmpty()) {
+        if (!armorParsed) {
             parseArmor();
         }
 
@@ -68,19 +74,29 @@ public final class ForcedItemHelper {
         for (String line : ForcedItemConfig.FORCED_WEAPONS.get()) {
             try {
                 String[] parts = line.split(",");
-                if (parts.length < 2) continue;
+                if (parts.length < 2) {
+                    ElementalCraft.LOGGER.warn("[ElementalCraft] Skipped forced weapon entry with too few fields: {}", line);
+                    continue;
+                }
 
                 Identifier itemId = Identifier.parse(parts[0].trim());
                 Item item = BuiltInRegistries.ITEM.getValue(itemId);
-                if (item == null) continue;
+                if (item == null) {
+                    ElementalCraft.LOGGER.warn("[ElementalCraft] Unknown item id in forced weapon config: {}", itemId);
+                    continue;
+                }
 
                 ElementType attack = ElementType.fromId(parts[1].trim());
-                if (attack != ElementType.NONE) {
+                if (attack != null && attack != ElementType.NONE) {
                     WEAPON_CACHE.put(item, new WeaponData(attack));
+                } else {
+                    ElementalCraft.LOGGER.warn("[ElementalCraft] Unknown element id '{}' in forced weapon config for {}", parts[1].trim(), itemId);
                 }
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                ElementalCraft.LOGGER.warn("[ElementalCraft] Skipped invalid forced weapon entry: {}", line, e);
             }
         }
+        weaponsParsed = true;
     }
 
     @SuppressWarnings("deprecation")
@@ -88,11 +104,17 @@ public final class ForcedItemHelper {
         for (String line : ForcedItemConfig.FORCED_ARMOR.get()) {
             try {
                 String[] parts = line.split(",");
-                if (parts.length < 5) continue;
+                if (parts.length < 5) {
+                    ElementalCraft.LOGGER.warn("[ElementalCraft] Skipped forced armor entry with too few fields: {}", line);
+                    continue;
+                }
 
                 Identifier itemId = Identifier.parse(parts[0].trim());
                 Item item = BuiltInRegistries.ITEM.getValue(itemId);
-                if (item == null) continue;
+                if (item == null) {
+                    ElementalCraft.LOGGER.warn("[ElementalCraft] Unknown item id in forced armor config: {}", itemId);
+                    continue;
+                }
 
                 ElementType enhance = parseElement(parts[1]);
                 RangeValue enhanceRange = parsePointsRange(parts[2]);
@@ -103,14 +125,20 @@ public final class ForcedItemHelper {
                 if (enhanceRange.max > 0 || resistRange.max > 0) {
                     ARMOR_CACHE.put(item, new ArmorTemplate(enhance, enhanceRange, resist, resistRange));
                 }
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                ElementalCraft.LOGGER.warn("[ElementalCraft] Skipped invalid forced armor entry: {}", line, e);
             }
         }
+        armorParsed = true;
     }
 
     private static ElementType parseElement(String s) {
         if (s == null || s.isBlank()) return ElementType.NONE;
-        return ElementType.fromId(s.trim());
+        ElementType type = ElementType.fromId(s.trim());
+        if (type == null) {
+            ElementalCraft.LOGGER.warn("[ElementalCraft] Unknown element id '{}' in forced armor config", s.trim());
+        }
+        return type;
     }
 
     private static RangeValue parsePointsRange(String s) {
