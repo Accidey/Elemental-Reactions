@@ -10,6 +10,7 @@ import com.xulai.elementalcraft.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
@@ -97,8 +98,9 @@ public class MobAttributeLogic {
             return;
         }
 
+        boolean hasCustomBias = hasCustomBiomeBias(mob);
         double chance = isNeutral ? ElementalConfig.mobChanceNeutral : ElementalConfig.mobChanceHostile;
-        boolean willGenerate = ThreadLocalRandom.current().nextDouble() < chance;
+        boolean willGenerate = hasCustomBias || ThreadLocalRandom.current().nextDouble() < chance;
 
         if (!willGenerate) {
             data.putBoolean("ElementalCraft_AttributesSet", true);
@@ -107,6 +109,14 @@ public class MobAttributeLogic {
 
         applyRandomAttributes(mob, blockedElements);
         data.putBoolean("ElementalCraft_AttributesSet", true);
+    }
+
+    private static boolean hasCustomBiomeBias(Mob mob) {
+        if (!(mob.level() instanceof ServerLevel sl)) return false;
+        ResourceLocation biomeId = sl.getBiome(mob.blockPosition()).unwrapKey()
+                .map(key -> key.location()).orElse(null);
+        if (biomeId == null) return false;
+        return CustomBiomeBias.getCustomBias(biomeId).values().stream().anyMatch(v -> v > 0);
     }
 
     private static ElementType pickBiasedElement(ServerLevel level, BlockPos pos, java.util.Set<ElementType> blocked) {
