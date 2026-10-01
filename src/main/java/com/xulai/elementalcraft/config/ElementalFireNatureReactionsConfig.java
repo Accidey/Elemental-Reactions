@@ -818,10 +818,10 @@ public class ElementalFireNatureReactionsConfig {
     FIRE_COUNTER_DAMAGE_REDUCTION = BUILDER
             .comment("赤焰反制期间减免的伤害比例（0.0 = 不减免，1.0 = 完全免疫）。",
                      "减免作用于所有类型的伤害，包括属性伤害。",
-                     "",
+                     " ",
                      "Damage reduction ratio during Fire Counter (0.0 = no reduction, 1.0 = immune).",
                      "Applies to all damage types, including elemental damage.",
-                     "",
+                     " ",
                      "Default: 0.9 (90%) / 默认：0.9（90%）")
             .defineInRange("fire_counter_damage_reduction", 0.9, 0.0, 1.0);
     BUILDER.pop();
