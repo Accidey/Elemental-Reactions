@@ -27,9 +27,8 @@ public class DebugCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
                 Commands.literal("elementalcraft")
-                        .requires(source -> source.hasPermission(2))
+                        .requires(source -> source.hasPermission(0))
                         .then(Commands.literal("debug")
-                                .requires(source -> source.hasPermission(2))
                                 .executes(context -> {
                                     CommandSourceStack source = context.getSource();
                                     if (!(source.getEntity() instanceof Player player)) {
