@@ -12,6 +12,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class CherryBlossomParticle extends SingleQuadParticle {
 
+    private static final int FADE_OUT_TICKS = 30;
+
     private final float driftSeed;
     private final float rollSpeed;
 
@@ -70,8 +72,8 @@ public class CherryBlossomParticle extends SingleQuadParticle {
         this.yd *= this.friction;
         this.zd *= this.friction;
 
-        if (this.age > this.lifetime - 30) {
-            float f = (this.lifetime - this.age) / 30.0f;
+        if (this.age > this.lifetime - FADE_OUT_TICKS) {
+            float f = (this.lifetime - this.age) / (float) FADE_OUT_TICKS;
             this.alpha = 0.85f * f;
         }
     }
