@@ -68,21 +68,21 @@ public class ElementalBookDropHandler {
 
         int strengthPerLevel = ElementalConfig.getStrengthPerLevel();
         int resistPerLevel = ElementalConfig.getResistPerLevel();
-        int maxEnhanceLevel = Math.max(1, ElementalConfig.getMaxStatCap() / strengthPerLevel);
-        int maxResistLevel = Math.max(1, ElementalConfig.getMaxStatCap() / resistPerLevel);
+        int maxEnhanceLevel = Math.max(1, ElementalConfig.getMaxStatCap() / Math.max(1, strengthPerLevel));
+        int maxResistLevel = Math.max(1, ElementalConfig.getMaxStatCap() / Math.max(1, resistPerLevel));
 
         List<BookCandidate> candidates = new ArrayList<>();
         if (attackType != null && attackType != ElementType.NONE) {
             candidates.add(new BookCandidate(BookType.ATTACK, attackType, 1));
         }
         if (elementType != null && elementType != ElementType.NONE && enhancePoints > 0) {
-            float quality = (float) enhancePoints / 4 / strengthPerLevel;
+            float quality = (float) enhancePoints / 4 / Math.max(1, strengthPerLevel);
             int maxLevel = Math.max(1, Math.min(maxEnhanceLevel, Math.round(quality)));
             int level = rollRandomLevel(quality, maxLevel, ElementalConfig.enchantedBookLevelSpread);
             candidates.add(new BookCandidate(BookType.ENHANCE, elementType, level));
         }
         if (resistType != null && resistType != ElementType.NONE && resistPoints > 0) {
-            float quality = (float) resistPoints / 4 / resistPerLevel;
+            float quality = (float) resistPoints / 4 / Math.max(1, resistPerLevel);
             int maxLevel = Math.max(1, Math.min(maxResistLevel, Math.round(quality)));
             int level = rollRandomLevel(quality, maxLevel, ElementalConfig.enchantedBookLevelSpread);
             candidates.add(new BookCandidate(BookType.RESIST, resistType, level));
