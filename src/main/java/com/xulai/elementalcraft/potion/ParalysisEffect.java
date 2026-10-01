@@ -9,7 +9,7 @@ import net.minecraft.world.entity.Mob;
 
 public class ParalysisEffect extends MobEffect {
     private static final String NBT_AI_DISABLED = "EC_AIDisabled";
-    private static final String NBT_SHARED_ORIGINAL_NO_AI = "EC_SharedOriginalNoAI";
+    private static final String NBT_ORIGINAL_NO_AI = "EC_ParalysisOriginalNoAI";
 
     public ParalysisEffect() {
         super(MobEffectCategory.HARMFUL, 0x808080);
@@ -40,8 +40,8 @@ public class ParalysisEffect extends MobEffect {
         if (!(entity instanceof Mob mob)) return;
         CompoundTag data = entity.getPersistentData();
         if (data.getBooleanOr(NBT_AI_DISABLED, false)) return;
-        if (!data.contains(NBT_SHARED_ORIGINAL_NO_AI)) {
-            data.putBoolean(NBT_SHARED_ORIGINAL_NO_AI, mob.isNoAi());
+        if (!data.contains(NBT_ORIGINAL_NO_AI)) {
+            data.putBoolean(NBT_ORIGINAL_NO_AI, mob.isNoAi());
         }
         mob.setNoAi(true);
         data.putBoolean(NBT_AI_DISABLED, true);
@@ -53,9 +53,9 @@ public class ParalysisEffect extends MobEffect {
         if (!data.getBooleanOr(NBT_AI_DISABLED, false)) return;
         data.remove(NBT_AI_DISABLED);
         if (entity.hasEffect(ModMobEffects.FREEZE)) return;
-        boolean wasNoAi = data.getBooleanOr(NBT_SHARED_ORIGINAL_NO_AI, false);
+        boolean wasNoAi = data.getBooleanOr(NBT_ORIGINAL_NO_AI, false);
         mob.setNoAi(wasNoAi);
-        data.remove(NBT_SHARED_ORIGINAL_NO_AI);
+        data.remove(NBT_ORIGINAL_NO_AI);
     }
 
 }

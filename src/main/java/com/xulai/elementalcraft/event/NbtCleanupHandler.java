@@ -40,6 +40,7 @@ public class NbtCleanupHandler {
             data.remove("ec_paralysis_stacks");
             data.remove("ec_paralysis_timer");
             data.remove("ec_paralysis_cooldown_timer");
+            data.remove("EC_ParalysisOriginalNoAI");
             data.remove("EC_FleeActive");
         }
 
