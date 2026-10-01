@@ -1609,6 +1609,13 @@ public class StaticShockHandler {
         for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, area)) {
             e.getPersistentData().remove(NBT_STORM_PARALYSIS);
         }
+        for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class,
+                new AABB(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY,
+                        Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY))) {
+            if (e.getPersistentData().contains(NBT_STORM_PARALYSIS) && !area.contains(e.getX(), e.getY(), e.getZ())) {
+                e.getPersistentData().remove(NBT_STORM_PARALYSIS);
+            }
+        }
     }
 
 }
