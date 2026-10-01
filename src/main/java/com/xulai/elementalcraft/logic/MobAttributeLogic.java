@@ -2,6 +2,7 @@ package com.xulai.elementalcraft.logic;
 
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ElementalConfig;
+import com.xulai.elementalcraft.event.ElementalBookDropHandler;
 import com.xulai.elementalcraft.event.FrostbiteHandler;
 import com.xulai.elementalcraft.event.ScorchedHandler;
 import com.xulai.elementalcraft.event.StaticShockHandler;
@@ -37,7 +38,7 @@ public class MobAttributeLogic {
             EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
     };
 
-    public static final String NBT_ATTRIBUTES_SET = "ElementalCraft_AttributesSet";
+    public static final String NBT_ATTRIBUTES_SET = "EC_AttributesSet";
 
     public static void processMob(Mob mob) {
         CompoundTag data = mob.getPersistentData();
@@ -173,7 +174,7 @@ public class MobAttributeLogic {
         applyArmorAttributes(mob, enhanceType, enhanceTotalPoints, resistType, resistTotalPoints, forceGold);
 
         CompoundTag dropData = mob.getPersistentData();
-        dropData.putString("EC_DropElementType", mainType.getId());
+        dropData.putString(ElementalBookDropHandler.NBT_DROP_ELEMENT, mainType.getId());
         if (attackType != null) {
             dropData.putString("EC_DropAttackType", attackType.getId());
         }
@@ -234,7 +235,7 @@ public class MobAttributeLogic {
             boolean forceGold = BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType()).toString().equals("minecraft:piglin");
             applyArmorAttributes(mob, enhanceType, enhancePoints, resistType, resistPoints, forceGold);
 
-            persistentData.putString("EC_DropElementType", enhanceType != null ? enhanceType.getId() : "");
+            persistentData.putString(ElementalBookDropHandler.NBT_DROP_ELEMENT, enhanceType != null ? enhanceType.getId() : "");
             if (attackType != null && attackType != ElementType.NONE) {
                 persistentData.putString("EC_DropAttackType", attackType.getId());
             }

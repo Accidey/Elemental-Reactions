@@ -26,7 +26,7 @@ import java.util.Random;
 @EventBusSubscriber(modid = ElementalCraft.MODID)
 public class ElementalBookDropHandler {
 
-    private static final String NBT_DROP_ELEMENT = "EC_DropElementType";
+    public static final String NBT_DROP_ELEMENT = "EC_DropElementType";
     private static final String NBT_DROP_ATTACK_TYPE = "EC_DropAttackType";
     private static final String NBT_DROP_ENHANCE_POINTS = "EC_DropEnhancePoints";
     private static final String NBT_DROP_RESIST_POINTS = "EC_DropResistPoints";
