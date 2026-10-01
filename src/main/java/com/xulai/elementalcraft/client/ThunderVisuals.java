@@ -283,7 +283,7 @@ public class ThunderVisuals {
         }
         if (tier >= 3 && ElementalVisualConfig.thunderRangedTailReversePortalEnabled) {
             int groups = Math.min(ElementalVisualConfig.thunderRangedTailReversePortalGroups, MAX_TRAIL_GROUPS);
-            int countPerGroup = ElementalVisualConfig.thunderRangedTailReversePortalCount;
+            int countPerGroup = Math.min(ElementalVisualConfig.thunderRangedTailReversePortalCount, MAX_HELIX_PARTICLES_PER_GROUP);
             double spread = ElementalVisualConfig.thunderRangedTailReversePortalSpread;
             for (int i = 0; i < groups; i++) {
                 double offsetX = (RANDOM.nextDouble() - 0.5) * spread;
@@ -296,7 +296,7 @@ public class ThunderVisuals {
         }
         if (tier >= 4 && ElementalVisualConfig.thunderRangedTailDragonBreathEnabled) {
             int groups = Math.min(ElementalVisualConfig.thunderRangedTailDragonBreathGroups, MAX_TRAIL_GROUPS);
-            int countPerGroup = ElementalVisualConfig.thunderRangedTailDragonBreathCount;
+            int countPerGroup = Math.min(ElementalVisualConfig.thunderRangedTailDragonBreathCount, MAX_HELIX_PARTICLES_PER_GROUP);
             double spread = ElementalVisualConfig.thunderRangedTailDragonBreathSpread;
             for (int i = 0; i < groups; i++) {
                 double offsetX = (RANDOM.nextDouble() - 0.5) * spread;

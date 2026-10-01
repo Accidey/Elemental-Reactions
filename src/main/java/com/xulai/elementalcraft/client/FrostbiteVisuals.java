@@ -44,7 +44,7 @@ public class FrostbiteVisuals {
                 double centerY = entity.getY() + entity.getBbHeight() * 0.5;
                 double centerZ = entity.getZ();
 
-                int particleCount = stacks * 2;
+                int particleCount = Math.min(stacks * 2, AURA_RING_PARTICLE_BUDGET);
                 double spread = 0.3 + stacks * 0.1;
 
                 if (isFrozen) {
