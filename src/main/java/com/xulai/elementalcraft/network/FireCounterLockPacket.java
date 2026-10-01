@@ -5,7 +5,10 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record FireCounterLockPacket(boolean locked) implements CustomPacketPayload {
@@ -21,7 +24,9 @@ public record FireCounterLockPacket(boolean locked) implements CustomPacketPaylo
         return TYPE;
     }
 
+    @OnlyIn(Dist.CLIENT)
     public static void handle(FireCounterLockPacket msg, IPayloadContext ctx) {
+        if (ctx.flow() != PacketFlow.CLIENTBOUND) return;
         ctx.enqueueWork(() -> {
             com.xulai.elementalcraft.client.FrozenInputBlocker.fireCounterLocked = msg.locked;
         });
