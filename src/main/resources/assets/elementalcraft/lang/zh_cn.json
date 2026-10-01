@@ -33,7 +33,7 @@
   "command.elementalcraft.entity.blacklist.removed": "§a成功将 §e%s §a从属性生物黑名单移除。",
 
   "command.elementalcraft.blacklist.added_all": "§a已为实体 §f%s §a成功禁用 §l全部 §a元素属性",
-  "command.elementalcraft.blacklist.added_single": "§a已为实体 §f%s §a成功禁用属性 §r%s",
+  "command.elementalcraft.blacklist.added_single": "§a成功禁用属性 §r%s §a（实体 §f%s§a）",
   "command.elementalcraft.blacklist.already_exists": "§e%s §7已为属性 §r%s §7设置黑名单",
   "command.elementalcraft.blacklist.empty": "§7暂无任何元素属性黑名单。",
   "command.elementalcraft.blacklist.header": "§e当前元素属性黑名单（§f%s §e条）：",
@@ -43,7 +43,7 @@
   "command.elementalcraft.blacklist.not_found_any": "§e%s §7没有任何元素属性黑名单",
   "command.elementalcraft.blacklist.not_found_single": "§e%s §7未为属性 %s 设置黑名单",
   "command.elementalcraft.blacklist.removed_all": "§a已移除实体 §f%s §a的 §l全部 §a元素黑名单",
-  "command.elementalcraft.blacklist.removed_single": "§a已从实体 §f%s §a移除属性 §r%s §a的黑名单",
+  "command.elementalcraft.blacklist.removed_single": "§a已移除属性 §r%s §a的黑名单（实体 §f%s§a）",
   "command.elementalcraft.blacklist.saved": "§7配置文件已保存，立即生效",
   "command.elementalcraft.blacklist.use_remove_first": "§c生物ID已在黑名单中。",
 
