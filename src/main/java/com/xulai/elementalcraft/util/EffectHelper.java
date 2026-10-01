@@ -21,7 +21,6 @@ import com.xulai.elementalcraft.config.ElementalVisualConfig;
 import java.util.List;
 import java.util.Random;
 
-@SuppressWarnings("null")
 public class EffectHelper {
     private static final Random RANDOM = new Random();
 

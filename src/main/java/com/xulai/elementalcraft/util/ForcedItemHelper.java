@@ -69,7 +69,6 @@ public final class ForcedItemHelper {
         return rolled;
     }
 
-    @SuppressWarnings("deprecation")
     private static void parseWeapons() {
         for (String line : ForcedItemConfig.FORCED_WEAPONS.get()) {
             try {
@@ -99,7 +98,6 @@ public final class ForcedItemHelper {
         weaponsParsed = true;
     }
 
-    @SuppressWarnings("deprecation")
     private static void parseArmor() {
         for (String line : ForcedItemConfig.FORCED_ARMOR.get()) {
             try {

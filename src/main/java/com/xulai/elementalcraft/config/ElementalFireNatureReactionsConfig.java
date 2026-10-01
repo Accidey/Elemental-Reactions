@@ -1472,7 +1472,6 @@ public class ElementalFireNatureReactionsConfig {
         scorchedThunderDmgMultiplier = SCORCHED_THUNDER_DMG_MULTIPLIER.get();
     }
 
-    @SuppressWarnings("deprecation")
     public static void register(ModContainer container, String fileName) {
         container.registerConfig(ModConfig.Type.COMMON, SPEC, fileName);
     }

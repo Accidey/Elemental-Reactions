@@ -19,7 +19,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 @EventBusSubscriber(modid = ElementalCraft.MODID, value = Dist.CLIENT)
 public class FrozenIceLayer {
 
-    @SuppressWarnings("removal")
     private static final Identifier ICE_TEXTURE = Identifier.withDefaultNamespace("textures/block/packed_ice.png");
 
     @SubscribeEvent

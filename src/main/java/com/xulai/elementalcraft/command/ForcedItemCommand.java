@@ -8,6 +8,7 @@ import com.xulai.elementalcraft.util.ElementType;
 import com.xulai.elementalcraft.util.ForcedItemHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EventBusSubscriber(modid = "elementalcraft")
-@SuppressWarnings("null")
 public class ForcedItemCommand {
 
     @SubscribeEvent
@@ -170,7 +170,7 @@ public class ForcedItemCommand {
         ForcedItemHelper.clearCache();
 
         player.sendSystemMessage(Component.translatable("command.elementalcraft.forceditem.weapon.add_success", stack.getHoverName(), type.getDisplayName()));
-        player.sendSystemMessage(Component.literal("§7" + newLine));
+        player.sendSystemMessage(Component.literal(newLine).withStyle(ChatFormatting.GRAY));
         player.sendSystemMessage(Component.translatable("command.elementalcraft.forceditem.saved"));
 
         return 1;
@@ -285,7 +285,7 @@ public class ForcedItemCommand {
         ForcedItemHelper.clearCache();
 
         player.sendSystemMessage(Component.translatable("command.elementalcraft.forceditem.armor.add_success", stack.getHoverName()));
-        player.sendSystemMessage(Component.literal("§7" + newLine));
+        player.sendSystemMessage(Component.literal(newLine).withStyle(ChatFormatting.GRAY));
         player.sendSystemMessage(Component.translatable("command.elementalcraft.forceditem.saved"));
 
         return 1;

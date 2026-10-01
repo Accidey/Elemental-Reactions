@@ -1078,6 +1078,12 @@ duration--;
         return false;
     }
 
+    private static final String NBT_FROST_HEAT_CACHE_TICK = "EC_FrostHeatCacheTick";
+    private static final String NBT_FROST_HEAT_CACHE_X = "EC_FrostHeatCacheX";
+    private static final String NBT_FROST_HEAT_CACHE_Y = "EC_FrostHeatCacheY";
+    private static final String NBT_FROST_HEAT_CACHE_Z = "EC_FrostHeatCacheZ";
+    private static final String NBT_FROST_HEAT_CACHE_MULT = "EC_FrostHeatCacheMult";
+
     private static double checkFrostbiteHeatAccelerator(LivingEntity entity, Level level, BlockPos center) {
         double mult = ElementalThunderFrostReactionsConfig.frostbiteHeatAccelerateMultiplier;
         if (mult <= 1.0) return 1.0;
@@ -1085,27 +1091,51 @@ duration--;
         if (radius <= 0) return 1.0;
         if (entity.isInWater()) return 1.0;
         if (level.getBiome(center).value().getPrecipitationAt(center, level.getSeaLevel()) != Biome.Precipitation.NONE) return 1.0;
+
+        CompoundTag cache = entity.getPersistentData();
+        long nowTick = level.getGameTime();
+        int cx = center.getX();
+        int cy = center.getY();
+        int cz = center.getZ();
+        if (cache.contains(NBT_FROST_HEAT_CACHE_TICK)
+                && nowTick - cache.getLongOr(NBT_FROST_HEAT_CACHE_TICK, 0L) < 20
+                && cache.getIntOr(NBT_FROST_HEAT_CACHE_X, Integer.MIN_VALUE) == cx
+                && cache.getIntOr(NBT_FROST_HEAT_CACHE_Y, Integer.MIN_VALUE) == cy
+                && cache.getIntOr(NBT_FROST_HEAT_CACHE_Z, Integer.MIN_VALUE) == cz) {
+            return cache.getDoubleOr(NBT_FROST_HEAT_CACHE_MULT, 1.0);
+        }
+
+        double result = 1.0;
         int range = (int)Math.ceil(radius);
         BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
+        scan:
         for (int x = -range; x <= range; x++) {
             for (int y = -range; y <= range; y++) {
                 for (int z = -range; z <= range; z++) {
-                    mutablePos.set(center.getX() + x, center.getY() + y, center.getZ() + z);
+                    mutablePos.set(cx + x, cy + y, cz + z);
                     BlockState state = level.getBlockState(mutablePos);
                     if (state.is(Blocks.CAMPFIRE) || state.is(Blocks.SOUL_CAMPFIRE)) {
                         if (state.getValue(CampfireBlock.LIT)) {
-                            return ElementalThunderFrostReactionsConfig.frostbiteHeatAccelerateMultiplier;
+                            result = mult;
+                            break scan;
                         }
                     }
                     if (state.getBlock() instanceof AbstractFurnaceBlock) {
                         if (state.getValue(AbstractFurnaceBlock.LIT)) {
-                            return ElementalThunderFrostReactionsConfig.frostbiteHeatAccelerateMultiplier;
+                            result = mult;
+                            break scan;
                         }
                     }
                 }
             }
         }
-        return 1.0;
+
+        cache.putLong(NBT_FROST_HEAT_CACHE_TICK, nowTick);
+        cache.putInt(NBT_FROST_HEAT_CACHE_X, cx);
+        cache.putInt(NBT_FROST_HEAT_CACHE_Y, cy);
+        cache.putInt(NBT_FROST_HEAT_CACHE_Z, cz);
+        cache.putDouble(NBT_FROST_HEAT_CACHE_MULT, result);
+        return result;
     }
 
     private static void decaySpores(LivingEntity entity) {

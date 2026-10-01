@@ -20,7 +20,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 @EventBusSubscriber(modid = ElementalCraft.MODID, value = Dist.CLIENT)
 public class FrostbiteSnowLayer {
 
-    @SuppressWarnings("removal")
     private static final Identifier SNOW_TEXTURE = Identifier.withDefaultNamespace("textures/block/powder_snow.png");
 
     @SubscribeEvent

@@ -22,8 +22,8 @@ public final class LivingEntityRenderStateData {
     }
 
     @SubscribeEvent
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public static void onRegisterRenderStateModifiers(RegisterRenderStateModifiersEvent event) {
+        @SuppressWarnings("unchecked")
         Class<LivingEntityRenderer<LivingEntity, LivingEntityRenderState, EntityModel<LivingEntityRenderState>>> rendererClass =
                 (Class) LivingEntityRenderer.class;
         event.registerEntityModifier(rendererClass, (entity, state) -> state.setRenderData(ENTITY, entity));
