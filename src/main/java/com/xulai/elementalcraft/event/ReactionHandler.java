@@ -432,7 +432,7 @@ public class ReactionHandler {
             if (isNewEffect && !target.level().isClientSide()) {
                 target.level().playSound(null, target.getX(), target.getY(), target.getZ(), ModSounds.SPORE_GAIN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
             }
-            if (DebugMode.hasAnyDebugEnabled()) {
+            if (DebugMode.hasViewer(target)) {
                 String elementSuffix = "";
                 if (isFire) elementSuffix = "(" + Component.translatable("element.fire.bracket").getString() + " ×" + String.format("%.1f", ElementalFireNatureReactionsConfig.sporeFireDurationReduction) + ")";
                 else if (isThunder) elementSuffix = "(" + Component.translatable("element.thunder.bracket").getString() + " ×" + String.format("%.1f", ElementalFireNatureReactionsConfig.sporeThunderMultiplier) + ")";
@@ -802,7 +802,7 @@ public class ReactionHandler {
             }
         }
         result = Math.min(1.0, result);
-        if (modified && DebugMode.hasAnyDebugEnabled()) {
+        if (modified && DebugMode.hasViewer(target)) {
             MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.static_spore_blast.biome",
                     Component.literal(String.format("%.0f", Math.min(1.0, chance) * 100)).withStyle(ChatFormatting.GRAY),
                     Component.literal(String.format("%.0f", result * 100)).withStyle(ChatFormatting.GOLD));

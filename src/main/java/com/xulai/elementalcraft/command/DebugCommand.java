@@ -16,7 +16,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
@@ -302,7 +301,7 @@ public class DebugCommand {
     }
 
     public static void sendCombatLog(CombatLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(ctx.attacker)) return;
         if (!(ctx.target.level() instanceof ServerLevel serverLevel)) return;
 
         String sourceName = (ctx.directEntity instanceof ThrownTrident) ? "Trident" : ctx.attacker.getDisplayName().getString();
@@ -330,7 +329,7 @@ public class DebugCommand {
     }
 
     public static void sendToxicBlastLog(ToxicBlastLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(ctx.attacker)) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.toxic_blast.header").withStyle(ChatFormatting.RED);
         MutableComponent damageInfo;
         if (ctx.mitigation > 0) {
@@ -356,7 +355,7 @@ public class DebugCommand {
     }
 
     public static void sendWildfireLog(WildfireLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(ctx.victim)) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.wildfire.header").withStyle(ChatFormatting.GOLD);
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.wildfire.message",
                 ctx.victim.getDisplayName(),
@@ -367,7 +366,7 @@ public class DebugCommand {
     }
 
     public static void sendFireCounterLog(FireCounterLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(ctx.owner)) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.fire_counter.header").withStyle(ChatFormatting.RED);
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.fire_counter.message",
                 ctx.owner.getDisplayName(),
@@ -380,7 +379,7 @@ public class DebugCommand {
     }
 
     public static void sendDryLog(DryLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(ctx.entity)) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.drying.header").withStyle(ChatFormatting.YELLOW);
         MutableComponent content;
         if (ctx.steamLevel > 0) {
@@ -418,7 +417,7 @@ public class DebugCommand {
     }
 
     public static void sendScorchedSporeReactionLog(ScorchedSporeReactionLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(ctx.target)) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.scorched_spore.header").withStyle(ChatFormatting.DARK_RED);
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.scorched_spore.message",
                 ctx.target.getDisplayName(),
@@ -429,7 +428,7 @@ public class DebugCommand {
     }
 
     public static void sendStaticSporeBlastLog(LivingEntity target, int staticStacks, int sporeStacks, double baseChance, double perStatic, double perSpore, double totalChance, boolean triggered) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(target)) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.static_spore_blast.header").withStyle(ChatFormatting.LIGHT_PURPLE);
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.static_spore_blast.message",
                 target.getDisplayName(),
@@ -447,7 +446,7 @@ public class DebugCommand {
     }
 
     public static void sendParalysisLog(ParalysisLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(ctx.target)) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.paralysis.header").withStyle(ChatFormatting.DARK_PURPLE);
         Component wetnessText = ctx.wetnessLevel > 0
                 ? Component.translatable("debug.elementalcraft.reaction.paralysis.wetness",
@@ -470,7 +469,7 @@ public class DebugCommand {
     }
 
     public static void sendWaterElectrificationLog(WaterElectrificationLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(ctx.source)) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.water_electrification.header").withStyle(ChatFormatting.AQUA);
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.water_electrification.message",
                 ctx.source.getDisplayName(),
@@ -545,7 +544,7 @@ public class DebugCommand {
     }
 
     public static void sendStaticShockSuccess(LivingEntity attacker, LivingEntity target, int stacksApplied, ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, int wetnessLevel, double wetnessBonusPerLevel, double chance, boolean thunderstorm) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(target)) return;
         MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, 0, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.GREEN, thunderstorm, getSporeColdBiomeMult(target));
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.static_shock.success",
                 attacker.getDisplayName(),
@@ -558,7 +557,7 @@ public class DebugCommand {
     }
 
     public static void sendStaticShockChanceFailed(LivingEntity attacker, LivingEntity target, ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, int wetnessLevel, double wetnessBonusPerLevel, double chance, boolean thunderstorm) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(target)) return;
         MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, 0, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.YELLOW, thunderstorm, getSporeColdBiomeMult(target));
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.static_shock.failed.chance",
                 attacker.getDisplayName(),
@@ -570,7 +569,7 @@ public class DebugCommand {
     }
 
     public static void sendNatureParasiteSuccess(LivingEntity attacker, LivingEntity target, int stacksApplied, ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, int wetnessLevel, double wetnessBonusPerLevel, double chance) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(target)) return;
         MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, 0, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.GREEN, false, getSporeColdBiomeMult(target));
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.nature_parasite.success",
                 attacker.getDisplayName(),
@@ -583,7 +582,7 @@ public class DebugCommand {
     }
 
     public static void sendNatureParasiteChanceFailed(LivingEntity attacker, LivingEntity target, ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, int wetnessLevel, double wetnessBonusPerLevel, double chance) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(target)) return;
         MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, 0, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.YELLOW, false, getSporeColdBiomeMult(target));
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.nature_parasite.failed.chance",
                 attacker.getDisplayName(),
@@ -625,7 +624,7 @@ public class DebugCommand {
     }
 
     public static void sendScorchedSuccess(LivingEntity target, LivingEntity attacker, int firePower, double baseChance, int scalingSteps, double scalingChance, double biomeBonus, String biomeTag, int chancePercent, String durationInfo, String baseDamage) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(target)) return;
         MutableComponent breakdown = buildScorchedChanceBreakdown(firePower, baseChance, scalingSteps, scalingChance, biomeBonus, biomeTag, ChatFormatting.GREEN);
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.scorched.success",
                 attacker.getDisplayName(),
@@ -639,7 +638,7 @@ public class DebugCommand {
     }
 
     public static void sendScorchedChanceFailed(LivingEntity attacker, LivingEntity target, int firePower, double baseChance, int scalingSteps, double scalingChance, double biomeBonus, String biomeTag, int chancePercent) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(target)) return;
         MutableComponent breakdown = buildScorchedChanceBreakdown(firePower, baseChance, scalingSteps, scalingChance, biomeBonus, biomeTag, ChatFormatting.YELLOW);
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.scorched.failed.chance",
                 attacker.getDisplayName(),
@@ -697,8 +696,8 @@ public class DebugCommand {
     }
 
     public static void sendFrostbiteLog(LivingEntity attacker, LivingEntity target, int stacksApplied, double chance, int durationTicks, double speedReduction, double frostPower, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, double wetBonus, double biomeBonus, String biomeTag) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
         LivingEntity context = attacker != null ? attacker : target;
+        if (!DebugMode.hasViewer(context)) return;
         Component attackerName = attacker != null ? attacker.getDisplayName() : Component.literal("IceBurst");
         MutableComponent breakdown = buildFrostbiteChanceBreakdown(frostPower, baseChance, scalingSteps, scalingChance, stackingBonus, wetBonus, biomeBonus, biomeTag, ChatFormatting.GREEN);
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.frostbite.header").withStyle(ChatFormatting.AQUA);
@@ -714,7 +713,7 @@ public class DebugCommand {
     }
 
     public static void sendFrostbitePeriodicDamageLog(LivingEntity target, float baseDamage, ElementType element, float elementMult, float finalDamage) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(target)) return;
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.frostbite_periodic.header").withStyle(ChatFormatting.AQUA);
         msg.append(Component.literal(" "));
         msg.append(target.getDisplayName());
@@ -733,7 +732,7 @@ public class DebugCommand {
     }
 
     public static void sendSporeDamageLog(LivingEntity target, float baseDamage, int stacks, float finalDamage) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(target)) return;
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.spore_damage.header").withStyle(ChatFormatting.GREEN);
         msg.append(Component.literal(" "));
         msg.append(target.getDisplayName());
@@ -748,7 +747,7 @@ public class DebugCommand {
     }
 
     public static void sendFrostbiteChanceFailed(LivingEntity attacker, LivingEntity target, double frostPower, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, double wetBonus, double biomeBonus, String biomeTag) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(attacker)) return;
         MutableComponent breakdown = buildFrostbiteChanceBreakdown(frostPower, baseChance, scalingSteps, scalingChance, stackingBonus, wetBonus, biomeBonus, biomeTag, ChatFormatting.YELLOW);
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.frostbite.failed.chance",
                 attacker.getDisplayName(),
@@ -759,7 +758,7 @@ public class DebugCommand {
     }
 
     public static void sendFrostbiteAuraDamageLog(FrostbiteAuraDamageLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(ctx.target)) return;
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.frostbite_aura.header").withStyle(ChatFormatting.AQUA);
         msg.append(Component.literal(" "));
         msg.append(ctx.target.getDisplayName());
@@ -781,7 +780,7 @@ public class DebugCommand {
     }
 
     public static void sendFreezeLog(FreezeLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(ctx.target)) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.freeze.header").withStyle(ChatFormatting.BLUE);
         Component wetnessText = ctx.wetnessLevel > 0
                 ? Component.translatable("debug.elementalcraft.reaction.freeze.wetness",
@@ -799,7 +798,7 @@ public class DebugCommand {
     }
 
     public static void sendFireFreezeMeltLog(LivingEntity target, LivingEntity attacker, int frozenStacks, int newWetness, int firePower, int requiredPoints) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(attacker)) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.fire_freeze_melt.header").withStyle(ChatFormatting.RED);
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.fire_freeze_melt.message",
                 attacker.getDisplayName(),
@@ -813,7 +812,7 @@ public class DebugCommand {
     }
 
     public static void sendStaticSteamCloudLog(StaticSteamCloudLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(ctx.source)) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.static_steam_cloud.header").withStyle(ChatFormatting.LIGHT_PURPLE);
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.static_steam_cloud.message",
                 ctx.source.getDisplayName(),
@@ -825,7 +824,7 @@ public class DebugCommand {
     }
 
     public static void sendContagionLog(ContagionLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(ctx.source)) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.contagion.header").withStyle(ChatFormatting.DARK_GREEN);
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.contagion.message",
                 ctx.source.getDisplayName(),
@@ -838,7 +837,7 @@ public class DebugCommand {
     }
 
     public static void sendFrostedSteamCloudLog(FrostedSteamCloudLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(ctx.source)) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.frosted_steam_cloud.header").withStyle(ChatFormatting.AQUA);
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.frosted_steam_cloud.message",
                 ctx.source.getDisplayName(),
@@ -850,7 +849,7 @@ public class DebugCommand {
     }
 
     public static void sendAuraDamageLog(AuraDamageLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(ctx.target)) return;
         MutableComponent message = Component.translatable("debug.elementalcraft.reaction." + ctx.reactionKey + "_aura.message",
                 ctx.target.getDisplayName(),
                 Component.literal(String.format("%.1f", ctx.damage)).withStyle(ChatFormatting.RED),
@@ -860,7 +859,7 @@ public class DebugCommand {
     }
 
     public static void sendStaticDamageLog(LivingEntity target, float baseDamage, ElementType element, float elementMult, float finalDamage, float enchReduction, int protLevel, int projProtLevel) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(target)) return;
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.static_damage.header").withStyle(ChatFormatting.GOLD);
         msg.append(Component.literal(" "));
         msg.append(target.getDisplayName());
@@ -896,7 +895,7 @@ public class DebugCommand {
     }
 
     public static void sendStaticAuraDamageLog(LivingEntity source, LivingEntity target, float baseDamage, ElementType element, float elementMult, float finalDamage, float enchReduction, int protLevel, int projProtLevel) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(target)) return;
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.static_damage.aura_header").withStyle(ChatFormatting.GOLD);
         msg.append(Component.literal(" "));
         msg.append(target.getDisplayName());
@@ -924,7 +923,7 @@ public class DebugCommand {
     }
 
     public static void sendScorchedTickLog(LivingEntity target, float baseDamage, ElementType element, float elementMult, float finalDamage, float dmgMult, String multSrc, int fireProtLevel, int genProtLevel, float enchReduction) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(target)) return;
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.scorched_tick.header").withStyle(ChatFormatting.GOLD);
         msg.append(Component.literal(" "));
         msg.append(target.getDisplayName());
@@ -963,7 +962,7 @@ public class DebugCommand {
     }
 
     public static void sendScorchedAuraLog(LivingEntity source, LivingEntity target, float baseDamage, ElementType element, float elementMult, float finalDamage, float dmgMult, String multSrc, int fireProtLevel, int genProtLevel, float enchReduction) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(target)) return;
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.scorched_aura.header").withStyle(ChatFormatting.GOLD);
         msg.append(Component.literal(" "));
         msg.append(target.getDisplayName());
@@ -1005,7 +1004,7 @@ public class DebugCommand {
     }
 
     public static void sendThermalShockLog(ThermalShockLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(ctx.target)) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.thermal_shock.header").withStyle(ChatFormatting.GOLD);
         MutableComponent content = Component.translatable("debug.elementalcraft.reaction.thermal_shock.message",
                 ctx.target.getDisplayName(),
@@ -1019,7 +1018,7 @@ public class DebugCommand {
     }
 
     public static void sendSteamScaldingTickLog(LivingEntity target, float baseDamage, float levelMultiplier, ElementType element, float elementMultiplier, float preEnchDamage, int fireProtLevel, int genProtLevel, float enchReduction, float finalDamage) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(target)) return;
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.steam_scalding_tick.header").withStyle(ChatFormatting.GOLD);
         msg.append(Component.literal(" "));
         msg.append(target.getDisplayName());
@@ -1049,7 +1048,7 @@ public class DebugCommand {
                                                     float baseDamage, float levelMultiplier, float radius, int durationTicks,
                                                     double heightCeiling, boolean clearAggro,
                                                     ElementType elementType, float elementMultiplier, boolean fireImmune, float finalDamage) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(target)) return;
         String typeKey = isHighHeat ? "debug.elementalcraft.steam_trigger.high" : "debug.elementalcraft.steam_trigger.low";
         ChatFormatting typeColor = isHighHeat ? ChatFormatting.RED : ChatFormatting.AQUA;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.steam_trigger.header").withStyle(ChatFormatting.YELLOW);
@@ -1088,7 +1087,7 @@ public class DebugCommand {
     }
 
     public static void sendThunderCounterLog(ThunderCounterLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(ctx.attacker)) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.thunder_counter.header")
                 .withStyle(ChatFormatting.YELLOW);
         MutableComponent body;
@@ -1114,7 +1113,7 @@ public class DebugCommand {
     }
 
     public static void sendFrostCounterLog(FrostCounterLogContext ctx) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(ctx.target)) return;
         MutableComponent prefix = Component.translatable("debug.elementalcraft.reaction.frost_counter.header")
                 .withStyle(ChatFormatting.AQUA);
         MutableComponent body;
@@ -1136,26 +1135,10 @@ public class DebugCommand {
     }
 
     public static void sendDebugMessage(LivingEntity contextEntity, Component message) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
-        if (!(contextEntity.level() instanceof ServerLevel serverLevel)) return;
-        List<ServerPlayer> viewers = serverLevel.getServer().getPlayerList().getPlayers().stream()
-                .filter(DebugMode::isEnabled)
-                .filter(p -> isRelatedTo(contextEntity, p))
-                .toList();
+        List<ServerPlayer> viewers = DebugMode.viewersOf(contextEntity);
         if (viewers.isEmpty()) return;
         ElementalCraft.LOGGER.info("[EC Debug] " + message.getString());
         viewers.forEach(p -> p.sendSystemMessage(message));
-    }
-
-    private static boolean isRelatedTo(LivingEntity contextEntity, Player player) {
-        if (contextEntity == null) return false;
-        if (contextEntity.getUUID().equals(player.getUUID())) return true;
-        if (contextEntity instanceof Mob mob) {
-            LivingEntity target = mob.getTarget();
-            if (target != null && target.getUUID().equals(player.getUUID())) return true;
-        }
-        LivingEntity lastAttacker = player.getLastHurtByMob();
-        return lastAttacker != null && lastAttacker.getUUID().equals(contextEntity.getUUID());
     }
 
     public static long getRemainingCooldown(LivingEntity entity, String nbtKey) {
@@ -1177,14 +1160,14 @@ public class DebugCommand {
     }
 
     public static void sendReactionSuccessSuffix(LivingEntity contextEntity, String reactionKey, String suffix, Object... args) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(contextEntity)) return;
         MutableComponent message = Component.translatable("debug.elementalcraft.reaction." + reactionKey + suffix, args)
                 .withStyle(ChatFormatting.GREEN);
         sendDebugMessage(contextEntity, message);
     }
 
     public static void sendReactionCooldownBlock(LivingEntity contextEntity, String reactionKey, long remainingTicks) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(contextEntity)) return;
         MutableComponent message = Component.translatable("debug.elementalcraft.reaction." + reactionKey + ".failed.cooldown")
                 .withStyle(ChatFormatting.GRAY);
         message.append(Component.literal(" "));
@@ -1196,14 +1179,14 @@ public class DebugCommand {
     }
 
     public static void sendReactionFailed(LivingEntity contextEntity, String reactionKey, String reason, Object... args) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(contextEntity)) return;
         MutableComponent message = Component.translatable("debug.elementalcraft.reaction." + reactionKey + ".failed." + reason, args)
                 .withStyle(ChatFormatting.GRAY);
         sendDebugMessage(contextEntity, message);
     }
 
     public static void sendWetnessReactionFailed(LivingEntity contextEntity, String reason, Object... args) {
-        if (!DebugMode.hasAnyDebugEnabled()) return;
+        if (!DebugMode.hasViewer(contextEntity)) return;
         MutableComponent message = Component.translatable("debug.elementalcraft.reaction.wetness.failed." + reason, args)
                 .withStyle(ChatFormatting.GRAY);
         sendDebugMessage(contextEntity, message);

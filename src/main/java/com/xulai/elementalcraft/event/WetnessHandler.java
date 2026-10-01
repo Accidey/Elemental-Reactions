@@ -422,7 +422,7 @@ public class WetnessHandler {
         if (roll < effectiveChance) {
             int freezeDuration = ElementalThunderFrostReactionsConfig.freezeDurationPerStackTicks * wetnessLevel;
             int freezeAmplifier = Math.min(wetnessLevel - 1, ElementalThunderFrostReactionsConfig.freezeMaxStacks - 1);
-            if (DebugMode.hasAnyDebugEnabled() && entity instanceof Player) {
+            if (entity instanceof Player && DebugMode.hasViewer(entity)) {
                 double dbTemp = biome.getBaseTemperature();
                 boolean precipitating = level.isRaining() && level.canSeeSky(pos);
                 DebugCommand.sendDebugMessage(entity,
