@@ -78,6 +78,7 @@ public class FrozenInputBlocker {
     @SubscribeEvent
     public static void onMouseScroll(InputEvent.MouseScrollingEvent event) {
         Minecraft mc = Minecraft.getInstance();
+        if (mc.screen != null) return;
         if (isAffected(mc)) {
             event.setCanceled(true);
         }
@@ -85,6 +86,11 @@ public class FrozenInputBlocker {
 
     @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        fireCounterLocked = false;
+    }
+
+    @SubscribeEvent
+    public static void onChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         fireCounterLocked = false;
     }
 

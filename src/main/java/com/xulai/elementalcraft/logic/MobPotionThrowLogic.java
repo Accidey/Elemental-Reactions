@@ -8,6 +8,7 @@ import com.xulai.elementalcraft.event.iss.ISSCore;
 import com.xulai.elementalcraft.util.ElementType;
 import com.xulai.elementalcraft.util.ElementUtils;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -35,6 +36,7 @@ public class MobPotionThrowLogic {
     private static final String NBT_BOTTLE_CD = "EC_BottleCd";
     private static final String NBT_BOTTLE_MISS = "EC_BottleMiss";
     private static final String NBT_BOTTLE_VERDICT = "EC_BottleVerdict";
+    private static final String NBT_BOTTLE_TARGET = "EC_BottleTarget";
     private static final String NBT_BOTTLE_ROUND = "EC_BottleRound";
     private static final String NBT_BOTTLE_WAIT = "EC_BottleWait";
 
@@ -87,9 +89,15 @@ public class MobPotionThrowLogic {
         long verdict = data.getLong(NBT_BOTTLE_VERDICT);
         if (verdict > 0) {
             if (gameTime < verdict) return;
-            LivingEntity target = mob.getTarget();
+            LivingEntity target = null;
+            if (data.hasUUID(NBT_BOTTLE_TARGET)) {
+                Entity verdictTarget = ((net.minecraft.server.level.ServerLevel) mob.level()).getEntity(data.getUUID(NBT_BOTTLE_TARGET));
+                if (verdictTarget instanceof LivingEntity le) target = le;
+            }
+            if (target == null) target = mob.getTarget();
             boolean hit = target != null && target.isAlive()
                     && (isFire ? target.hasEffect(MobEffects.POISON) : WetnessHandler.getWetnessLevel(target) > 0);
+            data.remove(NBT_BOTTLE_TARGET);
             if (hit) {
                 data.putInt(NBT_BOTTLE_MISS, 0);
                 data.remove(NBT_BOTTLE_VERDICT);
@@ -132,8 +140,10 @@ public class MobPotionThrowLogic {
             ISSCore.throwSplashPoisonBottle(mob, target);
         } else {
             if (!WetnessHandler.canGainWetness(target)) return;
+            int wetnessMaxLevel = ElementalFireNatureReactionsConfig.wetnessMaxLevel;
+            if (wetnessMaxLevel <= 0) return;
             int wetnessLevel = WetnessHandler.getWetnessLevel(target);
-            if (wetnessLevel >= ElementalFireNatureReactionsConfig.wetnessMaxLevel) {
+            if (wetnessLevel >= wetnessMaxLevel) {
                 data.putInt(NBT_BOTTLE_ROUND, 0);
                 data.putBoolean(NBT_BOTTLE_WAIT, true);
                 return;
@@ -150,6 +160,7 @@ public class MobPotionThrowLogic {
             ISSCore.throwSplashWaterBottle(mob, target);
         }
         data.putLong(NBT_BOTTLE_VERDICT, gameTime + ATTEMPT_INTERVAL);
+        data.putUUID(NBT_BOTTLE_TARGET, target.getUUID());
         data.putInt(NBT_BOTTLE_ROUND, data.getInt(NBT_BOTTLE_ROUND) + 1);
     }
 }

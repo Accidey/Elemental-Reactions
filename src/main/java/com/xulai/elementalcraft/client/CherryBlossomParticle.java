@@ -12,6 +12,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class CherryBlossomParticle extends TextureSheetParticle {
 
+    private static final int FADE_OUT_TICKS = 30;
     private final SpriteSet sprites;
     private final float driftSeed;
     private final float rollSpeed;
@@ -57,7 +58,7 @@ public class CherryBlossomParticle extends TextureSheetParticle {
             return;
         }
 
-        float progress = (float)this.age / 300.0F;
+        float progress = (float)this.age / this.lifetime;
         float driftMag = (float)Math.pow(progress, 1.25f) * 2.0f * 0.0025f;
         double dx = Math.cos(Math.toRadians(driftSeed * 60.0f)) * driftMag;
         double dz = Math.sin(Math.toRadians(driftSeed * 60.0f)) * driftMag;
@@ -73,8 +74,8 @@ public class CherryBlossomParticle extends TextureSheetParticle {
         this.yd *= this.friction;
         this.zd *= this.friction;
 
-        if (this.age > this.lifetime - 30) {
-            float f = (this.lifetime - this.age) / 30.0f;
+        if (this.age > this.lifetime - FADE_OUT_TICKS) {
+            float f = (this.lifetime - this.age) / (float) FADE_OUT_TICKS;
             this.alpha = 0.85f * f;
         }
     }

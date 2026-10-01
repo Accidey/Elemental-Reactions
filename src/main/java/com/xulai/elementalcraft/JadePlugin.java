@@ -53,28 +53,29 @@ public class JadePlugin implements IWailaPlugin {
                         .withStyle(c));
             }
 
-            int totalEnhance = 0;
-            ElementType enhanceType = ElementType.NONE;
+            java.util.List<ElementType> enhanceTypes = new java.util.ArrayList<>();
+            java.util.Map<ElementType, Integer> enhanceValues = new java.util.LinkedHashMap<>();
 
             for (ElementType t : ElementType.values()) {
                 if (t == ElementType.NONE) continue;
                 int val = ElementUtils.getDisplayEnhancement(living, t);
                 if (val > 0) {
-                    totalEnhance = val;
-                    enhanceType = t;
-                    break;
+                    enhanceTypes.add(t);
+                    enhanceValues.put(t, val);
                 }
             }
 
-            if (totalEnhance > 0) {
-                ChatFormatting c = enhanceType.getColor();
+            if (!enhanceTypes.isEmpty()) {
                 tooltip.add(Component.translatable("jade.elementalcraft.strengths_title")
-                        .withStyle(ChatFormatting.BOLD, c));
-                tooltip.add(Component.literal("  ")
-                        .append(enhanceType.getDisplayName())
-                        .append(Component.translatable("jade.elementalcraft.strength_prefix"))
-                        .append(Component.literal(String.valueOf(totalEnhance)))
-                        .withStyle(c));
+                        .withStyle(ChatFormatting.BOLD, enhanceTypes.get(0).getColor()));
+                for (ElementType t : enhanceTypes) {
+                    ChatFormatting c = t.getColor();
+                    tooltip.add(Component.literal("  ")
+                            .append(t.getDisplayName())
+                            .append(Component.translatable("jade.elementalcraft.strength_prefix"))
+                            .append(Component.literal(String.valueOf(enhanceValues.get(t))))
+                            .withStyle(c));
+                }
             }
 
             boolean headerAdded = false;

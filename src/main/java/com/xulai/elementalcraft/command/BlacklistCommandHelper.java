@@ -116,7 +116,7 @@ public class BlacklistCommandHelper {
         dispatcher.register(Commands.literal("elementalcraft")
                 .then(Commands.literal("blacklist")
                         .then(Commands.literal(entry.commandName)
-                                .requires(source -> source.hasPermission(2))
+                                .requires(source -> source.hasPermission(Commands.LEVEL_GAMEMASTERS))
                                 .then(Commands.literal("add")
                                         .executes(ctx -> addEntity(ctx, entry)))
                                 .then(Commands.literal("remove")

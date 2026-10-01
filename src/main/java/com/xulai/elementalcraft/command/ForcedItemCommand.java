@@ -3,6 +3,7 @@ package com.xulai.elementalcraft.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import java.util.Locale;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ForcedItemConfig;
 import com.xulai.elementalcraft.util.ElementType;
@@ -33,7 +34,7 @@ public class ForcedItemCommand {
 
         dispatcher.register(Commands.literal("elementalcraft")
                 .then(Commands.literal("item")
-                        .requires(source -> source.hasPermission(2))
+                        .requires(source -> source.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.literal("weapon")
                                 .then(Commands.literal("add")
                                         .then(Commands.argument("element", StringArgumentType.word())
@@ -111,7 +112,7 @@ public class ForcedItemCommand {
 
     private static ElementType parse(String input) {
         if (input == null || input.isBlank()) return null;
-        return ElementType.fromId(input.toLowerCase());
+        return ElementType.fromId(input.toLowerCase(Locale.ROOT));
     }
 
     private static String normalizeLine(String line) {

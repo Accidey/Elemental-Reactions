@@ -658,6 +658,7 @@ public class ReactionHandler {
                         int scheduleTick = server.getTickCount() + 20;
                         for (LivingEntity chainTarget : chainTargets) {
                             server.tell(new TickTask(scheduleTick, () -> {
+                                if (!chainTarget.isAlive() || !level.isLoaded(chainTarget.blockPosition())) return;
                                 triggerToxicBlast(level, killCredit, chainTarget,
                                         ElementalFireNatureReactionsConfig.scorchedTriggerThreshold, killCredit, 0, visited);
                             }));

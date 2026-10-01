@@ -462,7 +462,8 @@ public final class ElementalConfig {
                         "  \"frost->fire\"     (Frost restrains Fire / 冰霜克制赤焰)")
                 .defineList("element_restraints",
                         List.of("fire->nature", "nature->thunder", "thunder->frost", "frost->fire"),
-                        obj -> obj instanceof String s && s.matches("^[a-z]+->[a-z]+$"));
+                        obj -> obj instanceof String s && s.matches("^[a-z]+->[a-z]+$")
+                                && !s.split("->")[0].equals(s.split("->")[1]));
 
         BUILDER.pop();
 

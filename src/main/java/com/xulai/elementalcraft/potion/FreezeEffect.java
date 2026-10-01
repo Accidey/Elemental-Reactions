@@ -19,7 +19,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class FreezeEffect extends MobEffect {
 
-    private static final String NBT_SHARED_ORIGINAL_NO_AI = "EC_SharedOriginalNoAI";
+    private static final String NBT_ORIGINAL_NO_AI = FrostbiteHandler.NBT_FREEZE_ORIGINAL_NO_AI;
 
     public FreezeEffect() {
         super(MobEffectCategory.HARMFUL, 0x00BFFF);
@@ -87,8 +87,8 @@ public class FreezeEffect extends MobEffect {
         if (!(entity instanceof Mob mob)) return;
         CompoundTag data = entity.getPersistentData();
         if (data.getBoolean(FrostbiteHandler.NBT_FREEZE_AI_DISABLED)) return;
-        if (!data.contains(NBT_SHARED_ORIGINAL_NO_AI)) {
-            data.putBoolean(NBT_SHARED_ORIGINAL_NO_AI, mob.isNoAi());
+        if (!data.contains(NBT_ORIGINAL_NO_AI)) {
+            data.putBoolean(NBT_ORIGINAL_NO_AI, mob.isNoAi());
         }
         mob.setNoAi(true);
         data.putBoolean(FrostbiteHandler.NBT_FREEZE_AI_DISABLED, true);
@@ -100,8 +100,8 @@ public class FreezeEffect extends MobEffect {
         if (!data.getBoolean(FrostbiteHandler.NBT_FREEZE_AI_DISABLED)) return;
         data.remove(FrostbiteHandler.NBT_FREEZE_AI_DISABLED);
         if (entity.hasEffect(ModMobEffects.PARALYSIS.get())) return;
-        boolean wasNoAi = data.getBoolean(NBT_SHARED_ORIGINAL_NO_AI);
+        boolean wasNoAi = data.getBoolean(NBT_ORIGINAL_NO_AI);
         mob.setNoAi(wasNoAi);
-        data.remove(NBT_SHARED_ORIGINAL_NO_AI);
+        data.remove(NBT_ORIGINAL_NO_AI);
     }
 }

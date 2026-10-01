@@ -609,6 +609,12 @@ public class StaticShockHandler {
                     WetnessHandler.updateWetnessLevel(e, maxWetness);
                 }
             }
+            for (UUID exposedId : storm.exposedEntities) {
+                Entity exposed = sl.getEntity(exposedId);
+                if (exposed instanceof LivingEntity le && !stormArea.contains(le.getX(), le.getY(), le.getZ())) {
+                    le.getPersistentData().remove(NBT_STORM_PARALYSIS);
+                }
+            }
             Player owner = sl.getPlayerByUUID(storm.ownerUUID);
             if (owner != null && stormArea.contains(owner.getX(), owner.getY(), owner.getZ())) {
                 int exposure = owner.getPersistentData().getInt(NBT_STORM_EXPOSURE) + 1;
@@ -623,13 +629,6 @@ public class StaticShockHandler {
             storm.nextStrikeTick = now + storm.strikeInterval;
 
             for (LivingEntity strikeTarget : areaEntities) {
-                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(sl);
-                if (lightning != null) {
-                    lightning.moveTo(strikeTarget.getX(), strikeTarget.getY(), strikeTarget.getZ());
-                    lightning.setVisualOnly(true);
-                    sl.addFreshEntity(lightning);
-                }
-
                 ElementDamageHelper.applyDamage(strikeTarget,
                         (float) ElementalThunderFrostReactionsConfig.counterLightningDamage,
                         ModDamageTypes.source(sl, ModDamageTypes.STATIC_SHOCK));
@@ -655,6 +654,15 @@ public class StaticShockHandler {
                     data.putInt(NBT_STATIC_STACKS, newStacks);
                     data.putInt(NBT_STATIC_TIMER, totalTimer);
                     updateEffect(strikeTarget, newStacks, totalTimer);
+                }
+            }
+            if (!areaEntities.isEmpty()) {
+                LivingEntity visualTarget = areaEntities.get(sl.random.nextInt(areaEntities.size()));
+                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(sl);
+                if (lightning != null) {
+                    lightning.moveTo(visualTarget.getX(), visualTarget.getY(), visualTarget.getZ());
+                    lightning.setVisualOnly(true);
+                    sl.addFreshEntity(lightning);
                 }
             }
 
@@ -867,7 +875,7 @@ public class StaticShockHandler {
                             fd.remove(FrostbiteHandler.NBT_FROZEN_FROSTBITE_STACKS);
                             fd.remove(FrostbiteHandler.NBT_FREEZE_STACKS);
                             fd.remove(FrostbiteHandler.NBT_FREEZE_AI_DISABLED);
-                            fd.remove("EC_SharedOriginalNoAI");
+                            fd.remove("EC_FreezeOriginalNoAI");
                             fd.remove("EC_DrownTimer");
                             fd.putLong(FrostbiteHandler.NBT_FREEZE_COOLDOWN,
                                     target.level().getGameTime() + ElementalThunderFrostReactionsConfig.freezeCooldownTicks);
@@ -1148,7 +1156,7 @@ public class StaticShockHandler {
 
         double maxProtCap = ElementalThunderFrostReactionsConfig.staticMaxProtCap;
         double maxProjectileProtCap = ElementalThunderFrostReactionsConfig.staticMaxProjectileProtCap;
-        double denom = ElementalFireNatureReactionsConfig.enchantmentCalculationDenominator;
+        double denom = Math.max(1.0, ElementalFireNatureReactionsConfig.enchantmentCalculationDenominator);
 
         double protFactor = maxProtCap / denom;
         double projectileProtFactor = maxProjectileProtCap / denom;
@@ -1398,7 +1406,7 @@ public class StaticShockHandler {
         fd.remove(FrostbiteHandler.NBT_FROZEN_FROSTBITE_STACKS);
         fd.remove(FrostbiteHandler.NBT_FREEZE_STACKS);
         fd.remove(FrostbiteHandler.NBT_FREEZE_AI_DISABLED);
-        fd.remove("EC_SharedOriginalNoAI");
+        fd.remove("EC_FreezeOriginalNoAI");
         fd.remove("EC_DrownTimer");
         fd.putLong(FrostbiteHandler.NBT_FREEZE_COOLDOWN,
                 entity.level().getGameTime() + ElementalThunderFrostReactionsConfig.freezeCooldownTicks);

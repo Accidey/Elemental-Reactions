@@ -23,8 +23,10 @@ public class FireCounterLockPacket {
     }
 
     public static void handle(FireCounterLockPacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
-                () -> () -> com.xulai.elementalcraft.client.FrozenInputBlocker.fireCounterLocked = msg.locked));
+        if (ctx.get().getDirection().getReceptionSide().isClient()) {
+            ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                    () -> () -> com.xulai.elementalcraft.client.FrozenInputBlocker.fireCounterLocked = msg.locked));
+        }
         ctx.get().setPacketHandled(true);
     }
 }

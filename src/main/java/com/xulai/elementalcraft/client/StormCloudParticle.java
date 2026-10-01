@@ -32,7 +32,6 @@ public class StormCloudParticle extends TextureSheetParticle {
         this.fadeInEnd = (int) (this.lifetime * 0.15);
         this.fadeOutStart = (int) (this.lifetime * 0.7);
 
-        int texIndex = level.random.nextInt(12);
         float sizeMult = 1.5f + level.random.nextFloat() * 2.0f;
         this.quadSize = 0.5f * sizeMult;
 
@@ -41,7 +40,7 @@ public class StormCloudParticle extends TextureSheetParticle {
         this.yd = 0;
         this.zd = 0;
 
-        this.setSprite(sprites.get(texIndex, 12));
+        this.setSprite(sprites.get(level.random));
     }
 
     @Override

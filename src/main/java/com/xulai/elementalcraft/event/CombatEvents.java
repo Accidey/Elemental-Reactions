@@ -50,8 +50,9 @@ public class CombatEvents {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onLivingDamageFireCounterReduction(LivingDamageEvent event) {
         if (event.getEntity().level().isClientSide) return;
+        if (!(event.getSource().getDirectEntity() instanceof LivingEntity)) return;
         if (event.getEntity().getPersistentData().getBoolean(ScorchedHandler.NBT_FIRE_COUNTER_INVULN)) {
-            float reduction = (float) ElementalFireNatureReactionsConfig.fireCounterDamageReduction;
+            float reduction = (float) Math.min(0.99, Math.max(0.0, ElementalFireNatureReactionsConfig.fireCounterDamageReduction));
             event.setAmount(event.getAmount() * (1.0f - reduction));
         }
     }

@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import java.util.Locale;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ElementalConfig;
 import com.xulai.elementalcraft.util.ElementType;
@@ -54,7 +55,7 @@ public class ForcedEntityCommand {
 
         dispatcher.register(Commands.literal("elementalcraft")
                 .then(Commands.literal("entity")
-                        .requires(source -> source.hasPermission(2))
+                        .requires(source -> source.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.literal("add")
                                 .then(Commands.argument("attack_element", StringArgumentType.string())
                                         .suggests(SUGGEST_ELEMENT)
@@ -184,7 +185,7 @@ public class ForcedEntityCommand {
         String enhanceStr = enhanceInput.isBlank() ? "0" : enhanceInput.trim();
         String resistStr = resistInput.isBlank() ? "0" : resistInput.trim();
 
-        String newLine = String.format(
+        String newLine = String.format(Locale.ROOT, 
                 "%s,%s,%s,%s,%s,%s",
                 entityKey,
                 attack != ElementType.NONE ? attack.getId() : "",
@@ -275,7 +276,7 @@ public class ForcedEntityCommand {
         }
 
         boolean isAll = elementStr.equalsIgnoreCase("all");
-        ElementType type = isAll ? null : ElementType.fromId(elementStr.toLowerCase());
+        ElementType type = isAll ? null : ElementType.fromId(elementStr.toLowerCase(Locale.ROOT));
 
         if (!isAll && (type == null || type == ElementType.NONE)) {
             player.sendSystemMessage(Component.translatable("command.elementalcraft.blacklist.invalid_attribute", elementStr));
@@ -335,7 +336,7 @@ public class ForcedEntityCommand {
         }
 
         boolean isAll = elementStr.equalsIgnoreCase("all");
-        ElementType type = isAll ? null : ElementType.fromId(elementStr.toLowerCase());
+        ElementType type = isAll ? null : ElementType.fromId(elementStr.toLowerCase(Locale.ROOT));
 
         if (!isAll && (type == null || type == ElementType.NONE)) {
             player.sendSystemMessage(Component.translatable("command.elementalcraft.blacklist.invalid_attribute", elementStr));
@@ -405,7 +406,7 @@ public class ForcedEntityCommand {
         if (input == null || input.isBlank() || "none".equalsIgnoreCase(input)) {
             return ElementType.NONE;
         }
-        ElementType type = ElementType.fromId(input.toLowerCase());
+        ElementType type = ElementType.fromId(input.toLowerCase(Locale.ROOT));
         return type != null ? type : ElementType.NONE;
     }
 

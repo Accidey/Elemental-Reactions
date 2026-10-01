@@ -258,17 +258,17 @@ public class ThunderVisuals {
             Vec3 pos = p.position().subtract(dir.scale(backDist)).add(radial);
 
             level.sendParticles(ModParticles.THUNDER_SPARK_PERSISTENT.get(),
-                    pos.x, pos.y, pos.z, ElementalVisualConfig.thunderRangedMainParticleCount, 0, 0, 0, 0);
+                    pos.x, pos.y, pos.z, Math.min(200, ElementalVisualConfig.thunderRangedMainParticleCount), 0, 0, 0, 0);
         }
 
         Vec3 tailPos = p.position().subtract(dir.scale(ElementalVisualConfig.thunderRangedBackOffsetStart));
         if (tier >= 2 && ElementalVisualConfig.thunderRangedTailEndRodEnabled) {
             level.sendParticles(ParticleTypes.END_ROD,
-                    tailPos.x, tailPos.y, tailPos.z, ElementalVisualConfig.thunderRangedTailEndRodCount, 0, 0, 0, 0);
+                    tailPos.x, tailPos.y, tailPos.z, Math.min(50, ElementalVisualConfig.thunderRangedTailEndRodCount), 0, 0, 0, 0);
         }
         if (tier >= 3 && ElementalVisualConfig.thunderRangedTailReversePortalEnabled) {
             int groups = ElementalVisualConfig.thunderRangedTailReversePortalGroups;
-            int countPerGroup = ElementalVisualConfig.thunderRangedTailReversePortalCount;
+            int countPerGroup = Math.min(50, ElementalVisualConfig.thunderRangedTailReversePortalCount);
             double spread = ElementalVisualConfig.thunderRangedTailReversePortalSpread;
             for (int i = 0; i < groups; i++) {
                 double offsetX = (RANDOM.nextDouble() - 0.5) * spread;
@@ -281,7 +281,7 @@ public class ThunderVisuals {
         }
         if (tier >= 4 && ElementalVisualConfig.thunderRangedTailDragonBreathEnabled) {
             int groups = ElementalVisualConfig.thunderRangedTailDragonBreathGroups;
-            int countPerGroup = ElementalVisualConfig.thunderRangedTailDragonBreathCount;
+            int countPerGroup = Math.min(50, ElementalVisualConfig.thunderRangedTailDragonBreathCount);
             double spread = ElementalVisualConfig.thunderRangedTailDragonBreathSpread;
             for (int i = 0; i < groups; i++) {
                 double offsetX = (RANDOM.nextDouble() - 0.5) * spread;

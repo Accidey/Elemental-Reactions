@@ -15,11 +15,13 @@ public class NbtCleanupHandler {
 
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        DebugMode.remove(event.getEntity());
         cleanupStaleData(event.getEntity());
     }
 
     @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        DebugMode.remove(event.getEntity());
         cleanupStaleData(event.getEntity());
     }
 
@@ -62,7 +64,7 @@ public class NbtCleanupHandler {
             data.remove(FrostbiteHandler.NBT_FROZEN_FROSTBITE_STACKS);
             data.remove(FrostbiteHandler.NBT_FREEZE_AI_DISABLED);
             data.remove(FrostbiteHandler.NBT_FREEZE_ORIGINAL_NO_AI);
-            data.remove("EC_SharedOriginalNoAI");
+            data.remove("EC_ParalysisOriginalNoAI");
             data.remove("EC_DrownTimer");
         }
 
