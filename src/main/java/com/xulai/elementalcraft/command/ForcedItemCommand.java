@@ -32,8 +32,8 @@ public class ForcedItemCommand {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
 
         dispatcher.register(Commands.literal("elementalcraft")
-                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("item")
+                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.literal("weapon")
                                 .then(Commands.literal("add")
                                         .then(Commands.argument("element", StringArgumentType.word())

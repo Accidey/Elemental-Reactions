@@ -53,8 +53,8 @@ public class ForcedEntityCommand {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
 
         dispatcher.register(Commands.literal("elementalcraft")
-                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("entity")
+                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.literal("add")
                                 .then(Commands.argument("attack_element", StringArgumentType.string())
                                         .suggests(SUGGEST_ELEMENT)
