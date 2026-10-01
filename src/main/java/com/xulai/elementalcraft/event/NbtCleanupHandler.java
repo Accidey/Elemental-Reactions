@@ -77,6 +77,7 @@ public class NbtCleanupHandler {
         data.remove(SteamReactionHandler.NBT_CONDENSATION_TIMER);
         data.remove(SteamReactionHandler.NBT_STEAM_ATTACKER_COOLDOWN);
         data.remove(SteamReactionHandler.NBT_STEAM_BLINDNESS);
+        player.removeEffect(net.minecraft.world.effect.MobEffects.BLINDNESS);
         data.remove(SteamReactionHandler.NBT_STEAM_SCALDING_LOGGED);
         data.remove(SteamReactionHandler.NBT_FROSTED_CLOUD_UUID);
         data.remove(SteamReactionHandler.NBT_STATIC_CLOUD_UUID);
