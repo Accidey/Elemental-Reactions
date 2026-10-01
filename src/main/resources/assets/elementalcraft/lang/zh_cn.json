@@ -59,7 +59,6 @@
   "command.elementalcraft.forceditem.armor.not_found": "§f%s §7没有强制强化+抗性属性",
   "command.elementalcraft.forceditem.armor.remove_success": "§a已移除 §f%s §a的强制强化+抗性属性",
   "command.elementalcraft.forceditem.invalid_element": "§c无效的属性ID：%s",
-  "message.elementalcraft.update_available": "§e[ElementalCraft] §f发现新版本：§7%s §f-> §a%s§f，下载地址：%s",
   "command.elementalcraft.forceditem.armor.need_points": "§c至少一个点数必须大于 0，未写入任何内容。",
   "command.elementalcraft.forceditem.no_item": "§c请手持一个物品！",
   "command.elementalcraft.forceditem.saved": "§7配置文件已保存，缓存已刷新，立即生效",

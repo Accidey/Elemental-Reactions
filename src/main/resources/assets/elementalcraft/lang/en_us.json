@@ -59,7 +59,6 @@
   "command.elementalcraft.forceditem.armor.not_found": "§f%s §7has no forced enhancement+resistance attributes",
   "command.elementalcraft.forceditem.armor.remove_success": "§aSuccessfully removed forced enhancement+resistance attributes from §f%s",
   "command.elementalcraft.forceditem.invalid_element": "§cInvalid attribute ID: %s",
-  "message.elementalcraft.update_available": "§e[ElementalCraft] §fUpdate available: §7%s §f-> §a%s§f. Download: %s",
   "command.elementalcraft.forceditem.armor.need_points": "§cAt least one point value must be above 0 - nothing was written.",
   "command.elementalcraft.forceditem.no_item": "§cPlease hold an item!",
   "command.elementalcraft.forceditem.saved": "§7Configuration file saved, cache refreshed, effective immediately",
