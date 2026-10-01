@@ -38,7 +38,7 @@ public class FlammableSporesEffect extends MobEffect {
                 double damagePerStack = ElementalFireNatureReactionsConfig.sporePoisonDamage;
                 if (damagePerStack > 0) {
                     float totalDamage = (float) damagePerStack;
-                    if (DebugMode.hasAnyDebugEnabled() && !entity.getPersistentData().getBoolean("EC_SporeDamageLogged")) {
+                    if (DebugMode.hasRelevantDebugger(entity) && !entity.getPersistentData().getBoolean("EC_SporeDamageLogged")) {
                         DebugCommand.sendSporeDamageLog(entity, (float) damagePerStack, amplifier + 1, totalDamage);
                         entity.getPersistentData().putBoolean("EC_SporeDamageLogged", true);
                     }
