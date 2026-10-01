@@ -100,7 +100,9 @@ public class FrostbiteHandler {
     private static final Set<UUID> removedByClear = new HashSet<>();
     private static volatile boolean suppressRemoveCleanup = false;
 
-    private static final java.util.Map<UUID, ActiveFrostBurst> activeFrostBursts = new java.util.HashMap<>();
+    private static final java.util.Map<FrostBurstKey, ActiveFrostBurst> activeFrostBursts = new java.util.HashMap<>();
+
+    record FrostBurstKey(UUID ownerUUID, net.minecraft.resources.ResourceKey<Level> dimension) {}
 
     static class ActiveFrostBurst {
         final double x, y, z;
@@ -131,7 +133,7 @@ public class FrostbiteHandler {
 
     public static void triggerFrostBurst(LivingEntity source) {
         if (!(source.level() instanceof ServerLevel sl)) return;
-        ActiveFrostBurst replaced = activeFrostBursts.put(source.getUUID(), new ActiveFrostBurst(source));
+        ActiveFrostBurst replaced = activeFrostBursts.put(new FrostBurstKey(source.getUUID(), source.level().dimension()), new ActiveFrostBurst(source));
         if (replaced != null) releaseFrostBurstTargets(sl, replaced);
 
         AreaEffectCloud cloud = SteamReactionHandler.spawnSteamCloud(source, false, 1);
@@ -221,7 +223,7 @@ public class FrostbiteHandler {
             burst.dwellTicks--;
             if (burst.dwellTicks == 0) {
                 releaseFrostBurstTargets(sl, burst);
-                activeFrostBursts.remove(burst.ownerUUID);
+                activeFrostBursts.remove(new FrostBurstKey(burst.ownerUUID, burst.dimension));
                 return;
             }
         } else {
