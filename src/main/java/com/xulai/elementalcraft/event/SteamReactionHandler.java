@@ -76,11 +76,9 @@ public class SteamReactionHandler {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onLivingDamage(LivingDamageEvent event) {
         if (event.isCanceled()) return;
-        float originalDamage = event.getAmount();
         if (event.getSource().getEntity() instanceof LivingEntity attacker) {
             processTriggerLogic(event, attacker, event.getEntity());
         }
-        event.setAmount(originalDamage);
     }
 
     @SubscribeEvent
@@ -520,7 +518,7 @@ public class SteamReactionHandler {
                     int sourceTimer = data.getInt(NBT_STATIC_TIMER);
                     int interval = ElementalThunderFrostReactionsConfig.staticDamageIntervalTicks;
                     if (interval < 1) interval = 1;
-                    int remainingHits = (sourceTimer + interval - 1) / interval;
+                    int remainingHits = Math.max(1, (sourceTimer + interval - 1) / interval);
                     float settlementDamage = 0;
                     for (int i = 0; i < remainingHits; i++) {
                         settlementDamage += StaticShockHandler.getRandomStaticDamage(entity);
@@ -755,6 +753,7 @@ public class SteamReactionHandler {
         }
         data.remove(NBT_STATIC_DMG_CLOUD_UUID);
         data.remove(NBT_STEAM_SCALDING_LOGGED);
+        data.remove(NBT_CONDENSATION_TIMER);
     }
 
     private static float getCloudStaticDamage(List<AreaEffectCloud> clouds, LivingEntity entity) {

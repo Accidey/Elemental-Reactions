@@ -42,10 +42,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -163,20 +160,6 @@ public class StaticShockHandler {
         int remaining = entity.getEffect(ModMobEffects.PARALYSIS.get()).getDuration();
         DebugCommand.sendReactionFailed(entity, "static_shock", "paralysis", entity.getDisplayName(), remaining, remaining / 20);
         return true;
-    }
-
-    @SubscribeEvent
-    public static void onProjectileImpact(ProjectileImpactEvent event) {
-        Level level = event.getProjectile().level();
-        if (level.isClientSide) return;
-        if (!(event.getProjectile().getOwner() instanceof LivingEntity shooter)) return;
-        int thunderPower = ElementUtils.getDisplayEnhancement(shooter, ElementType.THUNDER);
-        int threshold = ElementalThunderFrostReactionsConfig.thunderStrengthThreshold;
-        if (threshold <= 0 || thunderPower < threshold) return;
-        Entity projectile = event.getProjectile();
-        if (projectile instanceof net.minecraft.world.entity.projectile.ThrownPotion) return;
-        HitResult hitResult = event.getRayTraceResult();
-        if (hitResult.getType() == HitResult.Type.ENTITY && ((EntityHitResult) hitResult).getEntity() instanceof LivingEntity) return;
     }
 
     private static boolean isInOrOnWater(LivingEntity entity) {
@@ -707,7 +690,7 @@ public class StaticShockHandler {
             int sourceTimer = sourceData.getInt(NBT_STATIC_TIMER);
             int interval = ElementalThunderFrostReactionsConfig.staticDamageIntervalTicks;
             if (interval < 1) interval = 1;
-            int remainingHits = (sourceTimer + interval - 1) / interval;
+            int remainingHits = Math.max(1, (sourceTimer + interval - 1) / interval);
 
             double baseSettlementDamage = 0;
             for (int i = 0; i < remainingHits; i++) {
@@ -1013,14 +996,6 @@ public class StaticShockHandler {
         double range = stacks * ElementalThunderFrostReactionsConfig.staticAuraBaseRange;
 
         CompoundTag sourceData = source.getPersistentData();
-        String trackedStr = sourceData.getString(NBT_AURA_TRACKED);
-        Set<UUID> oldTracked = new HashSet<>();
-        if (!trackedStr.isEmpty()) {
-            for (String s : trackedStr.split(",")) {
-                try { oldTracked.add(UUID.fromString(s)); } catch (Exception ignored) {}
-            }
-        }
-
         Set<UUID> currentTracked = new HashSet<>();
 
         for (LivingEntity target : nearby) {
@@ -1066,16 +1041,6 @@ public class StaticShockHandler {
             if (target instanceof Mob) MobAttributeLogic.processFlee(target, source, range);
         }
 
-        for (UUID oldId : oldTracked) {
-            if (currentTracked.contains(oldId)) continue;
-            if (source.level() instanceof ServerLevel sl) {
-                Entity e = sl.getEntity(oldId);
-                if (e instanceof LivingEntity le) {
-                    clearAuraTargetTempStatic(le);
-                }
-            }
-        }
-
         int syncPhase = sourceData.getInt(NBT_AURA_SYNC_PHASE);
         if (syncPhase > 0 && source.level() instanceof ServerLevel sl) {
             float lastDamage = sourceData.getFloat(NBT_LAST_STATIC_DAMAGE);
@@ -1116,13 +1081,6 @@ public class StaticShockHandler {
                 sourceData.putInt(NBT_AURA_SYNC_PHASE, 0);
             }
         }
-
-        StringBuilder sb = new StringBuilder();
-        for (UUID id : currentTracked) {
-            if (sb.length() > 0) sb.append(',');
-            sb.append(id);
-        }
-        sourceData.putString(NBT_AURA_TRACKED, sb.toString());
     }
 
     private static void spawnConnectionParticles(ServerLevel level, LivingEntity source, LivingEntity target) {

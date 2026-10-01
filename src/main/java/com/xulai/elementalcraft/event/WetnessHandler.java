@@ -421,6 +421,7 @@ public class WetnessHandler {
         double effectiveChance = chance + (wetnessLevel - 1) * ElementalThunderFrostReactionsConfig.wetnessColdBiomeFreezeLevelBonus;
         float roll = RANDOM.nextFloat();
         if (roll < effectiveChance) {
+            if (ElementalThunderFrostReactionsConfig.freezeMaxStacks <= 0) return;
             int freezeDuration = ElementalThunderFrostReactionsConfig.freezeDurationPerStackTicks * wetnessLevel;
             int freezeAmplifier = Math.min(wetnessLevel - 1, ElementalThunderFrostReactionsConfig.freezeMaxStacks - 1);
             if (DebugMode.hasAnyDebugEnabled() && entity instanceof Player) {
@@ -684,6 +685,7 @@ public class WetnessHandler {
 
     @SubscribeEvent
     public static void onProjectileImpact(ProjectileImpactEvent event) {
+        if (event.getProjectile().level().isClientSide) return;
         if (event.getRayTraceResult().getType() != HitResult.Type.ENTITY) return;
         Entity projectile = event.getProjectile();
         if (!(projectile instanceof ThrownPotion potion)) return;

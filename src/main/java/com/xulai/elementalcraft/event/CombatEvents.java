@@ -85,7 +85,6 @@ public class CombatEvents {
 
         net.minecraft.world.effect.MobEffect sporeEffect = ModMobEffects.SPORES.get();
         float originalPhysicalDamage = currentDamage;
-        event.setAmount(currentDamage);
 
         if (!(source.getEntity() instanceof LivingEntity attacker)) {
             return;
@@ -211,6 +210,7 @@ public class CombatEvents {
         float baseResistReduction = resistancePoints / (float) resistPerHalfReduction * 0.5f;
 
         if (baseEnhancementDamage <= 0.0f) {
+            attacker.getPersistentData().putInt(NBT_SELF_DRYING_PENALTY, 0);
             return;
         }
 
@@ -237,8 +237,10 @@ public class CombatEvents {
 
         CompoundTag attackerData = attacker.getPersistentData();
         float selfDryingPenaltyMult = 1.0f;
-        if (attackerData.getInt(NBT_SELF_DRYING_PENALTY) != 0 && attackElement == ElementType.FIRE) {
-            selfDryingPenaltyMult = 1.0f - (float) ElementalFireNatureReactionsConfig.wetnessSelfDryingDamagePenalty;
+        if (attackerData.getInt(NBT_SELF_DRYING_PENALTY) != 0) {
+            if (attackElement == ElementType.FIRE) {
+                selfDryingPenaltyMult = 1.0f - (float) ElementalFireNatureReactionsConfig.wetnessSelfDryingDamagePenalty;
+            }
             attackerData.putInt(NBT_SELF_DRYING_PENALTY, 0);
         }
 

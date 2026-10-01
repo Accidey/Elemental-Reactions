@@ -307,9 +307,9 @@ public class DebugCommand {
         String relationKey = ctx.restraintMult > 1.0f ? "debug.elementalcraft.relation.restrain" : ctx.restraintMult < 1.0f ? "debug.elementalcraft.relation.weak" : "debug.elementalcraft.relation.neutral";
 
         MutableComponent prefix = Component.translatable(relationKey, sourceName, ctx.target.getDisplayName().getString());
-        if (ctx.restraintMult > 1.0f) prefix.withStyle(ChatFormatting.RED);
-        else if (ctx.restraintMult < 1.0f) prefix.withStyle(ChatFormatting.BLUE);
-        else prefix.withStyle(ChatFormatting.GRAY);
+        if (ctx.restraintMult > 1.0f) prefix = prefix.withStyle(ChatFormatting.RED);
+        else if (ctx.restraintMult < 1.0f) prefix = prefix.withStyle(ChatFormatting.BLUE);
+        else prefix = prefix.withStyle(ChatFormatting.GRAY);
 
         MutableComponent overview = Component.translatable("debug.elementalcraft.damage_overview",
                 String.format("%.2f", ctx.totalDamage),
@@ -481,7 +481,7 @@ public class DebugCommand {
         sendDebugMessage(ctx.source, prefix.append(Component.literal(" ")).append(content));
     }
 
-    private static MutableComponent buildStaticChanceBreakdown(ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, double wetBonus, int wetnessLevel, double wetnessBonusPerLevel, ChatFormatting color, boolean thunderstorm, double coldBiomeMult) {
+    private static MutableComponent buildStaticChanceBreakdown(ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, int wetnessLevel, double wetnessBonusPerLevel, ChatFormatting color, boolean thunderstorm, double coldBiomeMult) {
         double scaledChance = Math.min(1.0, baseChance + scalingSteps * scalingChance);
         MutableComponent comp = Component.translatable("debug.elementalcraft.breakdown.header",
                 type.getDisplayName(),
@@ -544,7 +544,7 @@ public class DebugCommand {
 
     public static void sendStaticShockSuccess(LivingEntity attacker, LivingEntity target, int stacksApplied, ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, int wetnessLevel, double wetnessBonusPerLevel, double chance, boolean thunderstorm) {
         if (!DebugMode.hasAnyDebugEnabled()) return;
-        MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, 0, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.GREEN, thunderstorm, getSporeColdBiomeMult(target));
+        MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.GREEN, thunderstorm, getSporeColdBiomeMult(target));
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.static_shock.success",
                 attacker.getDisplayName(),
                 target.getDisplayName(),
@@ -557,7 +557,7 @@ public class DebugCommand {
 
     public static void sendStaticShockChanceFailed(LivingEntity attacker, LivingEntity target, ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, int wetnessLevel, double wetnessBonusPerLevel, double chance, boolean thunderstorm) {
         if (!DebugMode.hasAnyDebugEnabled()) return;
-        MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, 0, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.YELLOW, thunderstorm, getSporeColdBiomeMult(target));
+        MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.YELLOW, thunderstorm, getSporeColdBiomeMult(target));
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.static_shock.failed.chance",
                 attacker.getDisplayName(),
                 target.getDisplayName(),
@@ -569,7 +569,7 @@ public class DebugCommand {
 
     public static void sendNatureParasiteSuccess(LivingEntity attacker, LivingEntity target, int stacksApplied, ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, int wetnessLevel, double wetnessBonusPerLevel, double chance) {
         if (!DebugMode.hasAnyDebugEnabled()) return;
-        MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, 0, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.GREEN, false, getSporeColdBiomeMult(target));
+        MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.GREEN, false, getSporeColdBiomeMult(target));
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.nature_parasite.success",
                 attacker.getDisplayName(),
                 target.getDisplayName(),
@@ -582,7 +582,7 @@ public class DebugCommand {
 
     public static void sendNatureParasiteChanceFailed(LivingEntity attacker, LivingEntity target, ElementType type, double power, double baseChance, int scalingSteps, double scalingChance, double stackingBonus, int wetnessLevel, double wetnessBonusPerLevel, double chance) {
         if (!DebugMode.hasAnyDebugEnabled()) return;
-        MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, 0, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.YELLOW, false, getSporeColdBiomeMult(target));
+        MutableComponent breakdown = buildStaticChanceBreakdown(type, power, baseChance, scalingSteps, scalingChance, stackingBonus, wetnessLevel, wetnessBonusPerLevel, ChatFormatting.YELLOW, false, getSporeColdBiomeMult(target));
         MutableComponent msg = Component.translatable("debug.elementalcraft.reaction.nature_parasite.failed.chance",
                 attacker.getDisplayName(),
                 target.getDisplayName(),
@@ -1136,7 +1136,7 @@ public class DebugCommand {
     public static void sendDebugMessage(LivingEntity contextEntity, Component message) {
         if (!DebugMode.hasAnyDebugEnabled()) return;
         if (!(contextEntity.level() instanceof ServerLevel serverLevel)) return;
-        ElementalCraft.LOGGER.info("[EC Debug] " + message.getString());
+        ElementalCraft.LOGGER.debug("[EC Debug] " + message.getString());
         serverLevel.getServer().getPlayerList().getPlayers().stream()
                 .filter(DebugMode::isEnabled)
                 .filter(p -> isRelatedTo(contextEntity, p))
