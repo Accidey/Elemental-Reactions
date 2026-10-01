@@ -11,12 +11,12 @@
     {
       "type": "patchouli:text",
       "title": "只屏蔽单个元素",
-      "text": "也可以只屏蔽$(l)某一个$()元素，而不是全部。在条目末尾用冒号追加第三段：$(br2)$(thing)\"minecraft:zombie:fire\"$()$(br2)僵尸仍可为冰霜、雷霆或自然，但永不为赤焰——攻击、强化、抗性都不会出现，掉落的附魔书也不会带。$(br2)第三段写 $(thing)all$() 即屏蔽全部。游戏内对应命令 $(thing)/elementalcraft entity blacklist$()。"
+      "text": "也可以只屏蔽$(l)某一个$()元素，而不是全部。在条目末尾用冒号追加第三段：$(br2)$(thing)\"minecraft:zombie:fire\"$()$(br2)僵尸仍可为冰霜、雷霆或自然，但永不为赤焰——攻击、强化、抗性都不会出现，掉落的附魔书也不会带。$(br2)第三段写 $(thing)all$() 即屏蔽全部。游戏内对应命令 $(thing)/element entity blacklist$()。"
     },
     {
       "type": "patchouli:text",
       "title": "分机制黑名单",
-      "text": "每种反应族都有独立名单，位于两个反应配置文件中：$(thing)wetness_entity_blacklist$()、$(thing)spore_entity_blacklist$()、$(thing)scorched_entity_blacklist$()、$(thing)steam_immunity_blacklist$()、$(thing)static_immunity_blacklist$()、$(thing)paralysis_immunity_blacklist$()、$(thing)frostbite_immunity_blacklist$()、$(thing)freeze_immunity_blacklist$()。$(br2)格式相同，也可以在游戏内手持刷怪蛋用 $(thing)/elementalcraft blacklist$() 编辑。"
+      "text": "每种反应族都有独立名单，位于两个反应配置文件中：$(thing)wetness_entity_blacklist$()、$(thing)spore_entity_blacklist$()、$(thing)scorched_entity_blacklist$()、$(thing)steam_immunity_blacklist$()、$(thing)static_immunity_blacklist$()、$(thing)paralysis_immunity_blacklist$()、$(thing)frostbite_immunity_blacklist$()、$(thing)freeze_immunity_blacklist$()。$(br2)格式相同，也可以在游戏内手持刷怪蛋用 $(thing)/element blacklist$() 编辑。"
     },
     {
       "type": "patchouli:text",

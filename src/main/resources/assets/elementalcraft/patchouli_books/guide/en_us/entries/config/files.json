@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "All settings live in $(thing)config/ElementalCraft/$(). Every file is bilingual (English and Chinese comments) and every one is hot-reloadable: save the file and the mod reloads it within about five seconds, or force it with $(thing)/elementalcraft reload$().$(br2)There is no need to restart the server to retune a reaction."
+      "text": "All settings live in $(thing)config/ElementalCraft/$(). Every file is bilingual (English and Chinese comments) and every one is hot-reloadable: save the file and the mod reloads it within about five seconds, or force it with $(thing)/element reload$().$(br2)There is no need to restart the server to retune a reaction."
     },
     {
       "type": "patchouli:text",
