@@ -18,6 +18,11 @@ public class NbtCleanupHandler {
     }
 
     @SubscribeEvent
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        com.xulai.elementalcraft.util.DebugMode.remove(event.getEntity());
+    }
+
+    @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         cleanupStaleData(event.getEntity());
     }
