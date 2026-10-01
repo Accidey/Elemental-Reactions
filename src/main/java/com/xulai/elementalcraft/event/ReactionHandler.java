@@ -764,6 +764,7 @@ public class ReactionHandler {
     }
 
     public static void triggerToxicBlastFromScorched(LivingEntity target, int stacks, int sourceFirePower, LivingEntity killCredit) {
+        if (!ElementalFireNatureReactionsConfig.scorchedAuraSporeDetonationEnabled) return;
         if (ElementalFireNatureReactionsConfig.sporeReactionThreshold <= 0) return;
         if (target.level().isClientSide()) return;
         Level level = target.level();

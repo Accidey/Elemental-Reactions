@@ -57,7 +57,6 @@ public class ElementalVisualConfig {
     public static final ModConfigSpec.DoubleValue FROST_RANGED_ROTATION_SPEED;
     public static final ModConfigSpec.IntValue FROST_RANGED_ACTIVATION_INTERVAL;
     public static final ModConfigSpec.IntValue FROST_RANGED_HELIX_COUNT_PER_TIER;
-    public static final ModConfigSpec.IntValue FROST_RANGED_RING_PARTICLE_COUNT;
     public static final ModConfigSpec.BooleanValue FROST_RANGED_INNER_CORE_ENABLED;
     public static final ModConfigSpec.IntValue FROST_RANGED_INNER_CORE_COUNT;
     public static final ModConfigSpec.IntValue FROST_RANGED_INNER_DELAY_TICKS;
@@ -86,8 +85,6 @@ public class ElementalVisualConfig {
     public static final ModConfigSpec.IntValue FROST_IMPACT_BLIZZARD_RING_COUNT;
     public static final ModConfigSpec.DoubleValue FROST_IMPACT_BLIZZARD_RING_RADIUS;
     public static final ModConfigSpec.IntValue FROST_IMPACT_BLIZZARD_MIST_COUNT;
-
-    public static final ModConfigSpec.IntValue FROST_COUNTER_CLOUD_INTERVAL;
 
     public static final ModConfigSpec.BooleanValue GLOBAL_VISIBILITY_CHECK_ENABLED;
     public static final ModConfigSpec.DoubleValue GLOBAL_VIEW_DISTANCE_MULTIPLIER;
@@ -406,7 +403,6 @@ public class ElementalVisualConfig {
     public static double frostRangedRotationSpeed = 3.5;
     public static int frostRangedActivationInterval = 1;
     public static int frostRangedHelixCountPerTier = 2;
-    public static int frostRangedRingParticleCount = 3;
     public static boolean frostRangedInnerCoreEnabled = true;
     public static int frostRangedInnerCoreCount = 2;
     public static int frostRangedInnerDelayTicks = 3;
@@ -435,8 +431,6 @@ public class ElementalVisualConfig {
     public static int frostImpactBlizzardRingCount = 16;
     public static double frostImpactBlizzardRingRadius = 1.8;
     public static int frostImpactBlizzardMistCount = 8;
-
-    public static int frostCounterCloudInterval = 10;
 
     static {
         ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
@@ -1837,14 +1831,6 @@ public class ElementalVisualConfig {
 
         BUILDER.comment(" ");
 
-        FROST_RANGED_RING_PARTICLE_COUNT = BUILDER
-                .comment("Number of CLOUD particles per outer helix point.",
-                        "外圈螺旋线每个点生成的云雾粒子数量。",
-                        "Default: 3 / 默认：3")
-                .defineInRange("ring_particle_count", 3, 1, 10);
-
-        BUILDER.comment(" ");
-
         FROST_RANGED_INNER_CORE_ENABLED = BUILDER
                 .comment("Whether to enable the inner core helix.",
                         "是否开启内圈螺旋线。",
@@ -2070,13 +2056,6 @@ public class ElementalVisualConfig {
 
         BUILDER.comment("Ice Burst (Frost Counter) Visuals", "冰暴（冰霜反制）特效")
                 .push("ice_burst");
-
-        FROST_COUNTER_CLOUD_INTERVAL = BUILDER
-                .comment("Interval (in ticks) between each cold steam cloud particle generation.",
-                         "冰暴生成低温蒸汽云粒子的间隔时间（刻）。",
-                         "Default: 10 / 默认：10",
-                         "Range: 1 ~ 100")
-                .defineInRange("cloud_interval", 10, 1, 100);
 
         BUILDER.pop();
 
@@ -2309,7 +2288,6 @@ public class ElementalVisualConfig {
         frostRangedRotationSpeed = FROST_RANGED_ROTATION_SPEED.get();
         frostRangedActivationInterval = FROST_RANGED_ACTIVATION_INTERVAL.get();
         frostRangedHelixCountPerTier = FROST_RANGED_HELIX_COUNT_PER_TIER.get();
-        frostRangedRingParticleCount = FROST_RANGED_RING_PARTICLE_COUNT.get();
         frostRangedInnerCoreEnabled = FROST_RANGED_INNER_CORE_ENABLED.get();
         frostRangedInnerCoreCount = FROST_RANGED_INNER_CORE_COUNT.get();
         frostRangedInnerDelayTicks = FROST_RANGED_INNER_DELAY_TICKS.get();
@@ -2338,7 +2316,5 @@ public class ElementalVisualConfig {
         frostImpactBlizzardRingCount = FROST_IMPACT_BLIZZARD_RING_COUNT.get();
         frostImpactBlizzardRingRadius = FROST_IMPACT_BLIZZARD_RING_RADIUS.get();
         frostImpactBlizzardMistCount = FROST_IMPACT_BLIZZARD_MIST_COUNT.get();
-
-        frostCounterCloudInterval = FROST_COUNTER_CLOUD_INTERVAL.get();
     }
 }

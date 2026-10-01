@@ -18,7 +18,6 @@ public final class ElementalConfig {
     public static final ModConfigSpec.DoubleValue CHANCE_0_20;
     public static final ModConfigSpec.DoubleValue CHANCE_20_50;
     public static final ModConfigSpec.DoubleValue CHANCE_50_80;
-    public static final ModConfigSpec.DoubleValue CHANCE_80_100;
 
     public static final ModConfigSpec.IntValue STRENGTH_PER_LEVEL;
     public static final ModConfigSpec.IntValue RESIST_PER_LEVEL;
@@ -173,18 +172,6 @@ public final class ElementalConfig {
                         "",
                         "Default: 0.15 / 默认：0.15")
                 .defineInRange("chance_50_80", 0.15, 0.0, 1.0);
-
-        CHANCE_80_100 = BUILDER
-                .comment("在最大值的 80~100% 区间内取值的概率。",
-                        "这些是接近满属性的精英级生物。",
-                        "同时吸收其他三个区间未覆盖的剩余概率。",
-                        "",
-                        "Probability of rolling a value in the 80-100% range of max.",
-                        "These are elite-tier mobs with near-maximum attributes.",
-                        "Also absorbs any leftover probability from the other three ranges.",
-                        "",
-                        "Default: 0.10 / 默认：0.10")
-                .defineInRange("chance_80_100", 0.10, 0.0, 1.0);
 
         MOB_FLEE_ENABLED = BUILDER
                 .comment("开启后，属性生物会被光环影响的生物吓跑。",
@@ -482,7 +469,7 @@ public final class ElementalConfig {
                         "",
                         "Point value formats / 点数格式：",
                         "  • Fixed: 100          → always exactly 100 / 固定值：始终为 100",
-                        "  • Range: 50-200       → random between 50 and 200, weighted by chance_0_20~chance_80_100 / 随机范围，受概率分段权重影响",
+                        "  • Range: 50-200       → random between 50 and 200, weighted by chance_0_20~chance_50_80 / 随机范围，受概率分段权重影响",
                         "  • Empty or 0          → no attribute assigned / 留空或0 = 不赋予该属性",
                         "",
                         "Examples / 示例：",
@@ -767,7 +754,7 @@ public final class ElementalConfig {
     public static int strengthPerHalfDamage = 10;
     public static int resistPerHalfReduction = 10;
 
-    public static double chance0_20, chance20_50, chance50_80, chance80_100;
+    public static double chance0_20, chance20_50, chance50_80;
     public static double mobChanceHostile, mobChanceNeutral, attackChance, counterResistChance;
 
     public static boolean netherForcedFire = true;
@@ -809,7 +796,6 @@ public final class ElementalConfig {
         chance0_20 = CHANCE_0_20.get();
         chance20_50 = CHANCE_20_50.get();
         chance50_80 = CHANCE_50_80.get();
-        chance80_100 = CHANCE_80_100.get();
 
         mobChanceHostile = MOB_ATTRIBUTE_CHANCE_HOSTILE.get();
         mobChanceNeutral = MOB_ATTRIBUTE_CHANCE_NEUTRAL.get();
