@@ -63,7 +63,8 @@ public class FireVisuals {
             if (!entity.level().isClientSide()) return;
             if (!ElementalVisualConfig.fireMeleeEnabled) return;
 
-            if (entity.swinging && entity.swingingArm == InteractionHand.MAIN_HAND && entity.swingTime == 1) {
+            if (entity.swinging && entity.swingingArm == InteractionHand.MAIN_HAND && entity.swingTime == 1
+                    && AttackSwingGuard.isAttackSwing(entity)) {
                 ItemStack stack = entity.getMainHandItem();
                 if (stack.getAttributeModifiers().modifiers().stream().noneMatch(e -> e.attribute().is(Attributes.ATTACK_DAMAGE) && e.slot().test(EquipmentSlot.MAINHAND))) {
                     return;
