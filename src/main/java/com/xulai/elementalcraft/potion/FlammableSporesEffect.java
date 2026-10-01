@@ -48,7 +48,7 @@ public class FlammableSporesEffect extends MobEffect {
 
             if (entity.tickCount % 20 == 0) {
                 double durabilityPercent = ElementalFireNatureReactionsConfig.sporeDurabilityPercent;
-                if (durabilityPercent > 0 && !(entity instanceof net.minecraft.world.entity.player.Player)) {
+                if (durabilityPercent > 0) {
                     int stacks = amplifier + 1;
                     if (stacks >= 5) {
                         for (EquipmentSlot slot : new EquipmentSlot[]{
