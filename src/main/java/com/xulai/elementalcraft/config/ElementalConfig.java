@@ -78,6 +78,7 @@ public final class ElementalConfig {
                         "Default: 0.40 (40%) / 默认：0.40（40%）")
                 .defineInRange("mob_attribute_chance_hostile", 0.40, 0.0, 1.0);
 
+        BUILDER.comment(" ");
         MOB_ATTRIBUTE_CHANCE_NEUTRAL = BUILDER
                 .comment("中立生物（如猪灵、末影人、狼）成为属性生物的概率。",
                         "仅在生物未被列入黑名单且不在强制维度（下界/末地）时生效。",
@@ -90,6 +91,7 @@ public final class ElementalConfig {
                         "Default: 0.30 (30%) / 默认：0.30（30%）")
                 .defineInRange("mob_attribute_chance_neutral", 0.30, 0.0, 1.0);
 
+        BUILDER.comment(" ");
         ATTACK_ATTRIBUTE_CHANCE = BUILDER
                 .comment("属性生物获得与其群系偏好元素一致的攻击属性的概率。",
                         "触发后，生物的武器将附魔攻击属性，同时生成强化点数。",
@@ -102,6 +104,7 @@ public final class ElementalConfig {
                         "Default: 0.60 (60%) / 默认：0.60（60%）")
                 .defineInRange("attack_attribute_chance", 0.60, 0.0, 1.0);
 
+        BUILDER.comment(" ");
         COUNTER_RESIST_CHANCE = BUILDER
                 .comment("属性生物获得针对自身克制属性的抗性的概率。",
                         "示例：拥有赤焰攻击的生物有概率获得自然抗性（因为自然克制赤焰）。",
@@ -145,6 +148,7 @@ public final class ElementalConfig {
                         "四个概率的总和不需要等于 1.0。",
                         "如果总和小于 1.0，剩余概率默认归入 80~100% 区间。");
 
+        BUILDER.comment(" ");
         CHANCE_0_20 = BUILDER
                 .comment("在最大值的 0~20% 区间内取值的概率。",
                         "数值越高，弱小生物越多。",
@@ -155,6 +159,7 @@ public final class ElementalConfig {
                         "Default: 0.40 / 默认：0.40")
                 .defineInRange("chance_0_20", 0.40, 0.0, 1.0);
 
+        BUILDER.comment(" ");
         CHANCE_20_50 = BUILDER
                 .comment("在最大值的 20~50% 区间内取值的概率。",
                         "这是普通档位。",
@@ -165,6 +170,7 @@ public final class ElementalConfig {
                         "Default: 0.30 / 默认：0.30")
                 .defineInRange("chance_20_50", 0.30, 0.0, 1.0);
 
+        BUILDER.comment(" ");
         CHANCE_50_80 = BUILDER
                 .comment("在最大值的 50~80% 区间内取值的概率。",
                         "这些生物明显更强。",
@@ -175,6 +181,7 @@ public final class ElementalConfig {
                         "Default: 0.15 / 默认：0.15")
                 .defineInRange("chance_50_80", 0.15, 0.0, 1.0);
 
+        BUILDER.comment(" ");
         CHANCE_80_100 = BUILDER
                 .comment("在最大值的 80~100% 区间内取值的概率。",
                         "这些是接近满属性的精英级生物。",
@@ -187,6 +194,7 @@ public final class ElementalConfig {
                         "Default: 0.10 / 默认：0.10")
                 .defineInRange("chance_80_100", 0.10, 0.0, 1.0);
 
+        BUILDER.comment(" ");
         MOB_FLEE_ENABLED = BUILDER
                 .comment("开启后，属性生物会被光环影响的生物吓跑。",
                         "控制灼烧/静电/霜冻光环触发的逃跑行为。",
@@ -211,6 +219,7 @@ public final class ElementalConfig {
                         "Default: true / 默认：true")
                 .define("mob_potion_throw_enabled", true);
 
+        BUILDER.comment(" ");
         MOB_BOTTLE_EQUIP_CHANCE = BUILDER
                 .comment("属性生物装备副手水瓶的概率（每只生物只判定一次）。",
                         "判定通过后，该生物将持续作为投掷者直到死亡。",
@@ -221,6 +230,7 @@ public final class ElementalConfig {
                         "Default: 0.35 (35%) / 默认：0.35（35%）")
                 .defineInRange("mob_bottle_equip_chance", 0.35, 0.0, 1.0);
 
+        BUILDER.comment(" ");
         MOB_BOTTLE_THROW_COOLDOWN = BUILDER
                 .comment("连续 3 次投掷未命中（目标未获得潮湿）后的冷却时间（游戏刻，20 刻 = 1 秒）。",
                         "投掷尝试间隔固定为 20 刻，冷却结束后才继续投掷。",
@@ -270,6 +280,7 @@ public final class ElementalConfig {
                         "Default: 5 / 默认：5")
                 .defineInRange("strength_per_level", 5, 1, 1000);
 
+        BUILDER.comment(" ");
         RESIST_PER_LEVEL = BUILDER
                 .comment("每级属性抗性附魔提供多少抗性点数。",
                         "逻辑与 strength_per_level 相同，但用于抗性附魔。",
@@ -280,6 +291,7 @@ public final class ElementalConfig {
                         "Default: 5 / 默认：5")
                 .defineInRange("resist_per_level", 5, 1, 1000);
 
+        BUILDER.comment(" ");
         MAX_STAT_CAP = BUILDER
                 .comment("单件护甲上单个属性（强化或抗性）的最大点数上限。",
                         "这是单个护甲槽位的硬性上限，不是 4 件护甲的总和。",
@@ -329,6 +341,7 @@ public final class ElementalConfig {
                         "Default: 10 / 默认：10")
                 .defineInRange("strength_per_half_damage", 10, 1, 1000);
 
+        BUILDER.comment(" ");
         RESIST_PER_HALF_REDUCTION = BUILDER
                 .comment("控制每点抗性值减免多少元素伤害。",
                         "公式：伤害减免 += (0.5 / 该值) × 抗性点数",
@@ -345,6 +358,7 @@ public final class ElementalConfig {
                         "Default: 10 / 默认：10")
                 .defineInRange("resist_per_half_reduction", 10, 1, 1000);
 
+        BUILDER.comment(" ");
         ELEMENTAL_DAMAGE_MULTIPLIER = BUILDER
                 .comment("全局元素伤害倍率，作用于所有元素伤害。",
                         "最终伤害 = 计算出的元素伤害 × 此倍率",
@@ -358,6 +372,7 @@ public final class ElementalConfig {
                         "Default: 1.0 / 默认：1.0")
                 .defineInRange("elemental_damage_multiplier", 1.0, 0.0, 100.0);
 
+        BUILDER.comment(" ");
         ELEMENTAL_RESISTANCE_MULTIPLIER = BUILDER
                 .comment("全局元素抗性减免倍率，作用于所有元素抗性减免。",
                         "最终减免 = 计算出的抗性减免 × 此倍率",
@@ -389,6 +404,7 @@ public final class ElementalConfig {
                         "Default: 1.5 / 默认：1.5")
                 .defineInRange("restraint_multiplier", 1.5, 0.1, 10.0);
 
+        BUILDER.comment(" ");
         WEAK_MULTIPLIER = BUILDER
                 .comment("当攻击方元素被目标元素克制时的伤害倍率。",
                         "示例：赤焰 vs 冰霜（冰霜克制赤焰）→ 伤害 × 此值",
@@ -402,6 +418,7 @@ public final class ElementalConfig {
                         "Default: 0.5 / 默认：0.5")
                 .defineInRange("weak_multiplier", 0.5, 0.1, 10.0);
 
+        BUILDER.comment(" ");
         RESTRAINT_MIN_DAMAGE_PERCENT = BUILDER
                 .comment("即使抗性完全抵消伤害，仍然保留的最低元素伤害百分比。",
                         "仅在攻击方克制目标 且 抗性将伤害减免至 0 时生效。",
@@ -420,6 +437,7 @@ public final class ElementalConfig {
                         "Default: 0.1 (10%) / 默认：0.1（10%）")
                 .defineInRange("restraint_min_damage_percent", 0.1, 0.0, 1.0);
 
+        BUILDER.comment(" ");
         ELEMENT_RESTRAINTS = BUILDER
                 .comment("定义属性克制关系。",
                         "格式：\"攻击方元素->受害方元素\"",
@@ -542,6 +560,7 @@ public final class ElementalConfig {
                         "Default: true / 默认：true")
                 .define("nether_dimension_forced_fire", true);
 
+        BUILDER.comment(" ");
         NETHER_FIRE_POINTS = BUILDER
                 .comment("下界强制赤焰属性使用的点数，同时应用于强化和抗性。",
                         " ",
@@ -582,6 +601,7 @@ public final class ElementalConfig {
                         "Default: true / 默认：true")
                 .define("end_dimension_forced_thunder", true);
 
+        BUILDER.comment(" ");
         END_THUNDER_POINTS = BUILDER
                 .comment("末地强制雷霆属性使用的点数，同时应用于强化和抗性。",
                         " ",
@@ -637,6 +657,7 @@ public final class ElementalConfig {
                          "Default: 0.5 (50%) / 默认：0.5（50%）")
                 .defineInRange("enchanted_book_drop_chance", 0.5, 0.0, 1.0);
 
+        BUILDER.comment(" ");
         ENCHANTED_BOOK_LOOTING_BONUS = BUILDER
                 .comment("每级抢夺附魔增加的掉落概率。",
                         " ",
@@ -645,6 +666,7 @@ public final class ElementalConfig {
                         "Default: 0.10 (10%) / 默认：0.10（10%）")
                 .defineInRange("enchanted_book_looting_bonus", 0.10, 0.0, 1.0);
 
+        BUILDER.comment(" ");
         ENCHANTED_BOOK_LEVEL_SPREAD = BUILDER
                 .comment("控制附魔书掉落等级在生物自然等级附近的集中程度。",
                         "自然等级由属性点数计算：等级 = 点数 / 4 / 每级点数。",
@@ -689,6 +711,7 @@ public final class ElementalConfig {
                         "Default: 60.0 / 默认：60.0")
                 .defineInRange("hot_fire_bias", 60.0, 0.0, 100.0);
 
+        BUILDER.comment(" ");
         COLD_FROST_BIAS = BUILDER
                 .comment("寒冷生物群系（雪原、冰刺之地、冻洋等）中冰霜属性的权重。",
                         " ",
@@ -697,6 +720,7 @@ public final class ElementalConfig {
                         "Default: 60.0 / 默认：60.0")
                 .defineInRange("cold_frost_bias", 60.0, 0.0, 100.0);
 
+        BUILDER.comment(" ");
         FOREST_NATURE_BIAS = BUILDER
                 .comment("森林类生物群系（森林、黑森林、花林、丛林等）中自然属性的权重。",
                         " ",
@@ -705,6 +729,7 @@ public final class ElementalConfig {
                         "Default: 60.0 / 默认：60.0")
                 .defineInRange("forest_nature_bias", 60.0, 0.0, 100.0);
 
+        BUILDER.comment(" ");
         THUNDERSTORM_THUNDER_BIAS = BUILDER
                 .comment("雷雨天气时雷霆属性的权重（全局生效，覆盖群系偏好）。",
                         "雷雨天气激活时，此权重替代群系对雷霆的权重。",
