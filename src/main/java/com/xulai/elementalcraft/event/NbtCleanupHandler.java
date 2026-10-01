@@ -57,6 +57,7 @@ public class NbtCleanupHandler {
             data.remove(FrostbiteHandler.NBT_FREEZE_AI_DISABLED);
             data.remove(FrostbiteHandler.NBT_FREEZE_ORIGINAL_NO_AI);
             data.remove("EC_SharedOriginalNoAI");
+            data.remove("EC_ParalysisOriginalNoAI");
             data.remove("EC_DrownTimer");
             player.setTicksFrozen(0);
         }
