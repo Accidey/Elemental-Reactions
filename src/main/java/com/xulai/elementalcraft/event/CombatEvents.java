@@ -205,8 +205,8 @@ public class CombatEvents {
         int strengthPerHalfDamage = ElementalConfig.getStrengthPerHalfDamage();
         int resistPerHalfReduction = ElementalConfig.getResistPerHalfReduction();
 
-        float baseEnhancementDamage = enhancementPoints / (float) strengthPerHalfDamage * 0.5f;
-        float baseResistReduction = resistancePoints / (float) resistPerHalfReduction * 0.5f;
+        float baseEnhancementDamage = enhancementPoints / (float) Math.max(1, strengthPerHalfDamage) * 0.5f;
+        float baseResistReduction = resistancePoints / (float) Math.max(1, resistPerHalfReduction) * 0.5f;
 
         if (baseEnhancementDamage <= 0.0f) {
             return;
