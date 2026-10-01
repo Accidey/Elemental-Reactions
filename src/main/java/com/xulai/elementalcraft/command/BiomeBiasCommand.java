@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class BiomeBiasCommand {
 
@@ -118,7 +119,7 @@ public class BiomeBiasCommand {
             return 0;
         }
 
-        String newEntry = biomeId + "," + (isAll ? "all" : type.getId()) + "," + String.format("%.1f", probability);
+        String newEntry = biomeId + "," + (isAll ? "all" : type.getId()) + "," + String.format(Locale.ROOT, "%.1f", probability);
         currentList.add(newEntry);
 
         ElementalConfig.CUSTOM_BIOME_ATTRIBUTE_BIAS.set(currentList);
