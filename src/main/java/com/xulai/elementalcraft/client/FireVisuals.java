@@ -43,7 +43,7 @@ public class FireVisuals {
     private static final Set<Projectile> ACTIVE_PROJECTILES = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
     public static int calculateVisualTier(LivingEntity entity, ElementType type) {
-        if (type == ElementType.NONE) return 0;
+        if (type != ElementType.FIRE) return 0;
         int totalPoints = ElementUtils.getDisplayEnhancement(entity, type);
         int cap = ElementalConfig.getMaxStatCap();
         if (cap <= 0) cap = 100;
