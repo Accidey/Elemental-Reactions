@@ -40,6 +40,7 @@ public class NbtCleanupHandler {
             data.remove("ec_paralysis_stacks");
             data.remove("ec_paralysis_timer");
             data.remove("ec_paralysis_cooldown_timer");
+            data.remove("EC_FleeActive");
         }
 
         if (!player.hasEffect(ModMobEffects.FROSTBITE)) {
@@ -57,6 +58,7 @@ public class NbtCleanupHandler {
             data.remove(FrostbiteHandler.NBT_FREEZE_AI_DISABLED);
             data.remove(FrostbiteHandler.NBT_FREEZE_ORIGINAL_NO_AI);
             data.remove("EC_SharedOriginalNoAI");
+            data.remove("EC_FleeActive");
             DrownHelper.clearTimers(player);
             player.setTicksFrozen(0);
         }
