@@ -8,6 +8,31 @@ public class ElementalVisualConfig {
 
     public static final ModConfigSpec SPEC;
 
+    public static final ModConfigSpec.BooleanValue FIRE_MOB_ENABLED;
+    public static final ModConfigSpec.IntValue FIRE_MOB_PARTICLES_PER_TIER;
+    public static final ModConfigSpec.BooleanValue FIRE_MOB_HIDE_WHEN_INVISIBLE;
+    public static final ModConfigSpec.BooleanValue FIRE_MOB_HIDE_SELF_FIRST_PERSON;
+
+    public static final ModConfigSpec.BooleanValue NATURE_MOB_ENABLED;
+    public static final ModConfigSpec.IntValue NATURE_MOB_PARTICLES_PER_TIER;
+    public static final ModConfigSpec.DoubleValue NATURE_MOB_SPAWN_HEIGHT_OFFSET;
+    public static final ModConfigSpec.DoubleValue NATURE_MOB_HORIZONTAL_SPEED;
+    public static final ModConfigSpec.BooleanValue NATURE_MOB_HIDE_WHEN_INVISIBLE;
+    public static final ModConfigSpec.BooleanValue NATURE_MOB_HIDE_SELF_FIRST_PERSON;
+
+    public static final ModConfigSpec.BooleanValue THUNDER_MOB_ENABLED;
+    public static final ModConfigSpec.IntValue THUNDER_MOB_PARTICLES_PER_TIER;
+    public static final ModConfigSpec.IntValue THUNDER_MOB_SPAWN_INTERVAL;
+    public static final ModConfigSpec.DoubleValue THUNDER_MOB_RADIUS;
+    public static final ModConfigSpec.DoubleValue THUNDER_MOB_HEIGHT_OFFSET;
+    public static final ModConfigSpec.BooleanValue THUNDER_MOB_HIDE_WHEN_INVISIBLE;
+    public static final ModConfigSpec.BooleanValue THUNDER_MOB_HIDE_SELF_FIRST_PERSON;
+
+    public static final ModConfigSpec.BooleanValue FROST_MOB_ENABLED;
+    public static final ModConfigSpec.IntValue FROST_MOB_PARTICLES_PER_TIER;
+    public static final ModConfigSpec.BooleanValue FROST_MOB_HIDE_WHEN_INVISIBLE;
+    public static final ModConfigSpec.BooleanValue FROST_MOB_HIDE_SELF_FIRST_PERSON;
+
     public static final ModConfigSpec.BooleanValue FIRE_MELEE_ENABLED;
     public static final ModConfigSpec.BooleanValue FIRE_RANGED_ENABLED;
     public static final ModConfigSpec.BooleanValue NATURE_MELEE_ENABLED;
@@ -228,6 +253,31 @@ public class ElementalVisualConfig {
     public static boolean natureRangedEnabled = true;
     public static boolean thunderMeleeEnabled = true;
     public static boolean thunderRangedEnabled = true;
+
+    public static boolean fireMobEnabled = true;
+    public static int fireMobParticlesPerTier = 1;
+    public static boolean fireMobHideWhenInvisible = true;
+    public static boolean fireMobHideSelfFirstPerson = true;
+
+    public static boolean natureMobEnabled = true;
+    public static int natureMobParticlesPerTier = 1;
+    public static double natureMobSpawnHeightOffset = 0.3;
+    public static double natureMobHorizontalSpeed = 0.05;
+    public static boolean natureMobHideWhenInvisible = true;
+    public static boolean natureMobHideSelfFirstPerson = true;
+
+    public static boolean thunderMobEnabled = true;
+    public static int thunderMobParticlesPerTier = 1;
+    public static int thunderMobSpawnInterval = 20;
+    public static double thunderMobRadius = 1.0;
+    public static double thunderMobHeightOffset = 0.5;
+    public static boolean thunderMobHideWhenInvisible = true;
+    public static boolean thunderMobHideSelfFirstPerson = true;
+
+    public static boolean frostMobEnabled = true;
+    public static int frostMobParticlesPerTier = 1;
+    public static boolean frostMobHideWhenInvisible = true;
+    public static boolean frostMobHideSelfFirstPerson = true;
 
     public static boolean globalVisibilityCheckEnabled = true;
     public static double globalViewDistanceMultiplier = 1.0;
@@ -476,6 +526,41 @@ public class ElementalVisualConfig {
                         "在实体较多的服务器上关闭此项可以提高性能。",
                         "Default: true / 默认：true")
                 .define("fire_ranged_enabled", true);
+
+        BUILDER.comment("Fire Mob Footprint Visuals", "赤焰生物移动足迹特效")
+                .push("mob_aura");
+
+        FIRE_MOB_ENABLED = BUILDER
+                .comment("Whether to enable the Fire mob footprint: flame particles spawn at a moving Fire-attribute creature's feet, leaving a fiery trail that marks the creature and its enhancement tier from afar.",
+                        "是否开启赤焰生物移动足迹特效：赤焰属性生物移动时脚下生成火焰粒子，形成火焰足迹，用于远距离识别赤焰属性生物及其强化等级。",
+                        "Default: true / 默认：true")
+                .define("fire_mob_enabled", true);
+
+        BUILDER.comment(" ");
+
+        FIRE_MOB_PARTICLES_PER_TIER = BUILDER
+                .comment("Flame particles spawned per tick per tier while the creature is moving. Total per tick = particles_per_tier * tier.",
+                        "赤焰属性生物移动时每 tick 每等级生成的火焰粒子数。每 tick 总数 = 每等级粒子数 × 等级。",
+                        "Default: 1 / 默认：1")
+                .defineInRange("particles_per_tier", 1, 1, 8);
+
+        BUILDER.comment(" ");
+
+        FIRE_MOB_HIDE_WHEN_INVISIBLE = BUILDER
+                .comment("Whether to hide the effect on entities with the Invisibility effect.",
+                        "是否在生物拥有隐形效果时隐藏特效。",
+                        "Default: true / 默认：true")
+                .define("hide_when_invisible", true);
+
+        BUILDER.comment(" ");
+
+        FIRE_MOB_HIDE_SELF_FIRST_PERSON = BUILDER
+                .comment("Whether to hide the effect on the local player in first-person view. Third-person view still renders it.",
+                        "是否仅在第一人称下隐藏本地玩家自己的特效。第三人称仍正常渲染。",
+                        "Default: true / 默认：true")
+                .define("hide_self_first_person", true);
+
+        BUILDER.pop();
 
         BUILDER.comment("Fire Melee Swing Visuals", "赤焰近战挥动特效")
                 .push("melee");
@@ -856,6 +941,57 @@ public class ElementalVisualConfig {
                         "在实体较多的服务器上关闭此项可以提高性能。",
                         "Default: true / 默认：true")
                 .define("nature_ranged_enabled", true);
+
+        BUILDER.comment("Nature Mob Falling Petals Visuals", "自然属性生物移动飘花特效")
+                .push("mob_aura");
+
+        NATURE_MOB_ENABLED = BUILDER
+                .comment("Whether to enable the Nature mob falling petals: cherry blossom petals spawn at random positions on a moving Nature-attribute creature's body and drift down, marking the creature and its enhancement tier from afar.",
+                        "是否开启自然属性生物移动飘花特效：自然属性生物移动时身上随机位置飘落樱花花瓣，用于远距离识别自然属性生物及其强化等级。",
+                        "Default: true / 默认：true")
+                .define("nature_mob_enabled", true);
+
+        BUILDER.comment(" ");
+
+        NATURE_MOB_PARTICLES_PER_TIER = BUILDER
+                .comment("Fixed number of petals spawned per batch while the creature is moving. The batch interval scales with tier (interval = 5 - tier).",
+                        "自然属性生物移动时每批生成的樱花花瓣固定数量。批次间隔随等级变化（间隔 = 5 - 等级）。",
+                        "Default: 1 / 默认：1")
+                .defineInRange("particles_per_tier", 1, 1, 8);
+
+        BUILDER.comment(" ");
+
+        NATURE_MOB_SPAWN_HEIGHT_OFFSET = BUILDER
+                .comment("Extra vertical extension above the entity's body where petals can spawn, in blocks. Petals spawn at random positions within the body bounding box plus this extra extension.",
+                        "花瓣生成点的额外垂直扩展范围（方块）。花瓣在生物包围盒内的随机位置生成，并额外向上扩展此高度。",
+                        "Default: 0.3 / 默认：0.3")
+                .defineInRange("spawn_height_offset", 0.3, 0.0, 3.0);
+
+        BUILDER.comment(" ");
+
+        NATURE_MOB_HORIZONTAL_SPEED = BUILDER
+                .comment("Maximum random horizontal speed given to spawned petals (blocks/tick). Adds a gentle outward drift.",
+                        "花瓣生成时获得的随机水平速度上限（方块/tick）。带来轻微向外飘散。",
+                        "Default: 0.05 / 默认：0.05")
+                .defineInRange("horizontal_speed", 0.05, 0.0, 0.5);
+
+        BUILDER.comment(" ");
+
+        NATURE_MOB_HIDE_WHEN_INVISIBLE = BUILDER
+                .comment("Whether to hide the effect on entities with the Invisibility effect.",
+                        "是否在生物拥有隐形效果时隐藏特效。",
+                        "Default: true / 默认：true")
+                .define("hide_when_invisible", true);
+
+        BUILDER.comment(" ");
+
+        NATURE_MOB_HIDE_SELF_FIRST_PERSON = BUILDER
+                .comment("Whether to hide the effect on the local player in first-person view. Third-person view still renders it.",
+                        "是否仅在第一人称下隐藏本地玩家自己的特效。第三人称仍正常渲染。",
+                        "Default: true / 默认：true")
+                .define("hide_self_first_person", true);
+
+        BUILDER.pop();
 
         BUILDER.comment("Nature Melee Swing Visuals", "自然近战挥动特效")
                 .push("melee");
@@ -1328,6 +1464,65 @@ public class ElementalVisualConfig {
                         "Default: true / 默认：true")
                 .define("thunder_ranged_enabled", true);
 
+        BUILDER.comment("Thunder Mob Spark Visuals", "雷霆生物电火花特效")
+                .push("mob_aura");
+
+        THUNDER_MOB_ENABLED = BUILDER
+                .comment("Whether to enable the Thunder mob spark effect: electric sparks intermittently flash at random positions around a Thunder-attribute creature's body, marking the creature and its enhancement tier.",
+                        "是否开启雷霆生物电火花特效：雷霆属性生物身体周围随机位置间歇闪现电火花，用于识别雷霆属性生物及其强化等级。",
+                        "Default: true / 默认：true")
+                .define("thunder_mob_enabled", true);
+
+        BUILDER.comment(" ");
+
+        THUNDER_MOB_PARTICLES_PER_TIER = BUILDER
+                .comment("Sparks spawned per batch per tier. Total per batch = particles_per_tier * tier.",
+                        "每次生成时每等级的电火花数量。每批总数 = 每等级火花数 × 等级。",
+                        "Default: 1 / 默认：1")
+                .defineInRange("particles_per_tier", 1, 1, 8);
+
+        BUILDER.comment(" ");
+
+        THUNDER_MOB_SPAWN_INTERVAL = BUILDER
+                .comment("How many ticks between each spark batch. Larger values mean fewer sparks.",
+                        "每隔多少 tick 生成一批电火花。数值越大，电火花越少。",
+                        "Default: 20 / 默认：20")
+                .defineInRange("spawn_interval", 20, 1, 200);
+
+        BUILDER.comment(" ");
+
+        THUNDER_MOB_RADIUS = BUILDER
+                .comment("Horizontal radius around the creature where sparks are spawned, in blocks. Sparks float in a cylinder of this radius.",
+                        "电火花在生物周围的水平生成半径（方块）。火花悬浮在此半径的圆柱形空间内。",
+                        "Default: 1.0 / 默认：1.0")
+                .defineInRange("radius", 1.0, 0.2, 4.0);
+
+        BUILDER.comment(" ");
+
+        THUNDER_MOB_HEIGHT_OFFSET = BUILDER
+                .comment("Extra height above the creature's head where sparks may spawn, in blocks. Sparks appear at random heights from the feet up to head height plus this offset.",
+                        "电火花可生成在生物头顶之上的额外高度（方块）。火花在脚底到头顶加上此偏移的高度范围内随机出现。",
+                        "Default: 0.5 / 默认：0.5")
+                .defineInRange("height_offset", 0.5, 0.0, 3.0);
+
+        BUILDER.comment(" ");
+
+        THUNDER_MOB_HIDE_WHEN_INVISIBLE = BUILDER
+                .comment("Whether to hide the effect on entities with the Invisibility effect.",
+                        "是否在生物拥有隐形效果时隐藏特效。",
+                        "Default: true / 默认：true")
+                .define("hide_when_invisible", true);
+
+        BUILDER.comment(" ");
+
+        THUNDER_MOB_HIDE_SELF_FIRST_PERSON = BUILDER
+                .comment("Whether to hide the effect on the local player in first-person view. Third-person view still renders it.",
+                        "是否仅在第一人称下隐藏本地玩家自己的特效。第三人称仍正常渲染。",
+                        "Default: true / 默认：true")
+                .define("hide_self_first_person", true);
+
+        BUILDER.pop();
+
         BUILDER.comment("Thunder Melee Swing Visuals", "雷霆近战挥动特效")
                 .push("melee");
 
@@ -1670,6 +1865,41 @@ public class ElementalVisualConfig {
                         "在实体较多的服务器上关闭此项可以提高性能。",
                         "Default: true / 默认：true")
                 .define("frost_ranged_enabled", true);
+
+        BUILDER.comment("Frost Mob Footprint Visuals", "冰霜生物移动足迹特效")
+                .push("mob_aura");
+
+        FROST_MOB_ENABLED = BUILDER
+                .comment("Whether to enable the Frost mob footprint: snowflake particles spawn at a moving Frost-attribute creature's feet, leaving a frosty trail that marks the creature and its enhancement tier from afar.",
+                        "是否开启冰霜生物移动足迹特效：冰霜属性生物移动时脚下生成雪花粒子，形成霜雪足迹，用于远距离识别冰霜属性生物及其强化等级。",
+                        "Default: true / 默认：true")
+                .define("frost_mob_enabled", true);
+
+        BUILDER.comment(" ");
+
+        FROST_MOB_PARTICLES_PER_TIER = BUILDER
+                .comment("Snowflake particles spawned per tick per tier while the creature is moving. Total per tick = particles_per_tier * tier.",
+                        "冰霜属性生物移动时每 tick 每等级生成的雪花粒子数。每 tick 总数 = 每等级粒子数 × 等级。",
+                        "Default: 1 / 默认：1")
+                .defineInRange("particles_per_tier", 1, 1, 8);
+
+        BUILDER.comment(" ");
+
+        FROST_MOB_HIDE_WHEN_INVISIBLE = BUILDER
+                .comment("Whether to hide the effect on entities with the Invisibility effect.",
+                        "是否在生物拥有隐形效果时隐藏特效。",
+                        "Default: true / 默认：true")
+                .define("hide_when_invisible", true);
+
+        BUILDER.comment(" ");
+
+        FROST_MOB_HIDE_SELF_FIRST_PERSON = BUILDER
+                .comment("Whether to hide the effect on the local player in first-person view. Third-person view still renders it.",
+                        "是否仅在第一人称下隐藏本地玩家自己的特效。第三人称仍正常渲染。",
+                        "Default: true / 默认：true")
+                .define("hide_self_first_person", true);
+
+        BUILDER.pop();
 
         BUILDER.comment("Frost Melee Swing Visuals", "冰霜近战挥动特效")
                 .push("melee");
@@ -2109,6 +2339,31 @@ public class ElementalVisualConfig {
         natureRangedEnabled = NATURE_RANGED_ENABLED.get();
         thunderMeleeEnabled = THUNDER_MELEE_ENABLED.get();
         thunderRangedEnabled = THUNDER_RANGED_ENABLED.get();
+
+        fireMobEnabled = FIRE_MOB_ENABLED.get();
+        fireMobParticlesPerTier = FIRE_MOB_PARTICLES_PER_TIER.get();
+        fireMobHideWhenInvisible = FIRE_MOB_HIDE_WHEN_INVISIBLE.get();
+        fireMobHideSelfFirstPerson = FIRE_MOB_HIDE_SELF_FIRST_PERSON.get();
+
+        natureMobEnabled = NATURE_MOB_ENABLED.get();
+        natureMobParticlesPerTier = NATURE_MOB_PARTICLES_PER_TIER.get();
+        natureMobSpawnHeightOffset = NATURE_MOB_SPAWN_HEIGHT_OFFSET.get();
+        natureMobHorizontalSpeed = NATURE_MOB_HORIZONTAL_SPEED.get();
+        natureMobHideWhenInvisible = NATURE_MOB_HIDE_WHEN_INVISIBLE.get();
+        natureMobHideSelfFirstPerson = NATURE_MOB_HIDE_SELF_FIRST_PERSON.get();
+
+        thunderMobEnabled = THUNDER_MOB_ENABLED.get();
+        thunderMobParticlesPerTier = THUNDER_MOB_PARTICLES_PER_TIER.get();
+        thunderMobSpawnInterval = THUNDER_MOB_SPAWN_INTERVAL.get();
+        thunderMobRadius = THUNDER_MOB_RADIUS.get();
+        thunderMobHeightOffset = THUNDER_MOB_HEIGHT_OFFSET.get();
+        thunderMobHideWhenInvisible = THUNDER_MOB_HIDE_WHEN_INVISIBLE.get();
+        thunderMobHideSelfFirstPerson = THUNDER_MOB_HIDE_SELF_FIRST_PERSON.get();
+
+        frostMobEnabled = FROST_MOB_ENABLED.get();
+        frostMobParticlesPerTier = FROST_MOB_PARTICLES_PER_TIER.get();
+        frostMobHideWhenInvisible = FROST_MOB_HIDE_WHEN_INVISIBLE.get();
+        frostMobHideSelfFirstPerson = FROST_MOB_HIDE_SELF_FIRST_PERSON.get();
 
         staticShockAuraEnabled = STATIC_SHOCK_AURA_ENABLED.get();
 
