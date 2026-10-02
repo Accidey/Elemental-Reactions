@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Blacklists exempt entities from a mechanic, or stop them becoming elemental at all. In $(thing)elementalcraft-common.toml$():$(br2)$(thing)blacklisted_entities$() - entities that never receive attributes. One entry per line, written as a full id such as $(thing)\"minecraft:zombie\"$(). Writing only a namespace, e.g. $(thing)\"cataclysm\"$(), excludes every entity from that mod."
+      "text": "Blacklists exempt entities from a mechanic, or stop them becoming elemental at all. In $(thing)elemental-common.toml$():$(br2)$(thing)blacklisted_entities$() - entities that never receive attributes. One entry per line, written as a full id such as $(thing)\"minecraft:zombie\"$(). Writing only a namespace, e.g. $(thing)\"cataclysm\"$(), excludes every entity from that mod."
     },
     {
       "type": "patchouli:text",

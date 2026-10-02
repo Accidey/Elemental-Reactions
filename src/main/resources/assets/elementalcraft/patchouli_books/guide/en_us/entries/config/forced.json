@@ -11,7 +11,7 @@
     {
       "type": "patchouli:text",
       "title": "forced_weapons",
-      "text": "In $(thing)elementalcraft-forced-items.toml$():$(br2)$(thing)\"modid:item_id,element\"$()$(br2)Example:$(br2)$(thing)\"minecraft:golden_sword,thunder\"$()$(br2)The item gains that Aspect at level I whenever a player carries it. Removing the line strips the enchantment again on the next inventory check."
+      "text": "In $(thing)elemental-forced-items.toml$():$(br2)$(thing)\"modid:item_id,element\"$()$(br2)Example:$(br2)$(thing)\"minecraft:golden_sword,thunder\"$()$(br2)The item gains that Aspect at level I whenever a player carries it. Removing the line strips the enchantment again on the next inventory check."
     },
     {
       "type": "patchouli:text",
@@ -21,7 +21,7 @@
     {
       "type": "patchouli:text",
       "title": "forced_entities",
-      "text": "In $(thing)elementalcraft-common.toml$() -> $(thing)forced_attributes.forced_entities$():$(br2)$(thing)\"modid:entity_id,attack,enh_element,enh_points,res_element,res_points\"$()$(br2)Example:$(br2)$(thing)\"minecraft:zombie,fire,fire,60,frost,40\"$()$(br2)This replaces random generation for that mob. Note that the $(thing)Nether$() and $(thing)End$() dimension overrides are applied to any mob that has no forced entry, so add entries there if you want exceptions."
+      "text": "In $(thing)elemental-common.toml$() -> $(thing)forced_attributes.forced_entities$():$(br2)$(thing)\"modid:entity_id,attack,enh_element,enh_points,res_element,res_points\"$()$(br2)Example:$(br2)$(thing)\"minecraft:zombie,fire,fire,60,frost,40\"$()$(br2)This replaces random generation for that mob. Note that the $(thing)Nether$() and $(thing)End$() dimension overrides are applied to any mob that has no forced entry, so add entries there if you want exceptions."
     }
   ]
 }

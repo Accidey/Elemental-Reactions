@@ -6,17 +6,17 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "All settings live in $(thing)config/ElementalCraft/$(). Every file is bilingual (English and Chinese comments) and every one is hot-reloadable: save the file and the mod reloads it within about five seconds, or force it with $(thing)/element reload$().$(br2)There is no need to restart the server to retune a reaction."
+      "text": "All settings live in $(thing)config/Elemental_Reactions/$(). Every file is bilingual (English and Chinese comments) and every one is hot-reloadable: save the file and the mod reloads it within about five seconds, or force it with $(thing)/element reload$().$(br2)There is no need to restart the server to retune a reaction."
     },
     {
       "type": "patchouli:text",
       "title": "The files",
-      "text": "$(li)$(thing)elementalcraft-common.toml$() - mob generation, points per level, damage and restraint multipliers, dimension forcing, book drop rates, biome bias, and the $(thing)guide_book_on_first_join$() gift.$(li)$(thing)elementalcraft-fire-nature-reactions.toml$() - Wetness, Steam, Scorched, Spores, Toxic Blast, Nature Counter.$(li)$(thing)elementalcraft-thunder-frost-reactions.toml$() - Static, Paralysis, Frostbite, Freeze, counters, electrified water."
+      "text": "$(li)$(thing)elemental-common.toml$() - mob generation, points per level, damage and restraint multipliers, dimension forcing, book drop rates, biome bias, and the $(thing)guide_book_on_first_join$() gift.$(li)$(thing)elemental-fire-nature-reactions.toml$() - Wetness, Steam, Scorched, Spores, Toxic Blast, Nature Counter.$(li)$(thing)elemental-thunder-frost-reactions.toml$() - Static, Paralysis, Frostbite, Freeze, counters, electrified water."
     },
     {
       "type": "patchouli:text",
       "title": "More files",
-      "text": "$(li)$(thing)elementalcraft-forced-items.toml$() - fixed elements for specific items.$(li)$(thing)elementalcraft-visuals.toml$() - every particle, trail and spiral effect, all toggleable.$(li)$(thing)elementalcraft-iss-integration.toml$() - created only when Iron's Spells is installed: caster chance, cooldowns, blacklists.$(br2)Deleting a file regenerates it with defaults on the next launch."
+      "text": "$(li)$(thing)elemental-forced-items.toml$() - fixed elements for specific items.$(li)$(thing)elemental-visuals.toml$() - every particle, trail and spiral effect, all toggleable.$(li)$(thing)elemental-iss-integration.toml$() - created only when Iron's Spells is installed: caster chance, cooldowns, blacklists.$(br2)Deleting a file regenerates it with defaults on the next launch."
     },
     {
       "type": "patchouli:text",

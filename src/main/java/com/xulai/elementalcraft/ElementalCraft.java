@@ -43,14 +43,14 @@ public class ElementalCraft {
     public ElementalCraft(IEventBus modEventBus, ModContainer modContainer) {
         migrateConfigFiles();
 
-        modContainer.registerConfig(ModConfig.Type.COMMON, ElementalConfig.SPEC, "ElementalCraft/elementalcraft-common.toml");
-        ForcedItemConfig.register(modContainer, "ElementalCraft/elementalcraft-forced-items.toml");
-        ElementalFireNatureReactionsConfig.register(modContainer, "ElementalCraft/elementalcraft-fire-nature-reactions.toml");
-        ElementalVisualConfig.register(modContainer, "ElementalCraft/elementalcraft-visuals.toml");
-        ElementalThunderFrostReactionsConfig.register(modContainer, "ElementalCraft/elementalcraft-thunder-frost-reactions.toml");
+        modContainer.registerConfig(ModConfig.Type.COMMON, ElementalConfig.SPEC, "Elemental_Reactions/elemental-common.toml");
+        ForcedItemConfig.register(modContainer, "Elemental_Reactions/elemental-forced-items.toml");
+        ElementalFireNatureReactionsConfig.register(modContainer, "Elemental_Reactions/elemental-fire-nature-reactions.toml");
+        ElementalVisualConfig.register(modContainer, "Elemental_Reactions/elemental-visuals.toml");
+        ElementalThunderFrostReactionsConfig.register(modContainer, "Elemental_Reactions/elemental-thunder-frost-reactions.toml");
 
         if (ModList.get().isLoaded("irons_spellbooks")) {
-            ElementalISSIntegrationConfig.register(modContainer, "ElementalCraft/elementalcraft-iss-integration.toml");
+            ElementalISSIntegrationConfig.register(modContainer, "Elemental_Reactions/elemental-iss-integration.toml");
         }
 
         ModMobEffects.register(modEventBus);
@@ -76,8 +76,21 @@ public class ElementalCraft {
     private void migrateConfigFiles() {
         try {
             Path configRoot = FMLPaths.CONFIGDIR.get();
+            Path oldDir = configRoot.resolve("ElementalCraft");
+            Path newDir = configRoot.resolve("Elemental_Reactions");
 
-            String[] filesToDelete = {
+            if (Files.exists(oldDir)) {
+                if (Files.exists(newDir)) {
+                    migrateLegacyFilesInside(oldDir, newDir);
+                } else {
+                    Files.move(oldDir, newDir);
+                    LOGGER.info("[ElementalCraft] 旧配置目录已重命名为 Elemental_Reactions");
+                }
+                renameLegacyFiles(newDir);
+                return;
+            }
+
+            String[] legacyFiles = {
                 "elementalcraft-common.toml",
                 "elementalcraft-forced-items.toml",
                 "elementalcraft-reactions.toml",
@@ -88,18 +101,69 @@ public class ElementalCraft {
                 "elementalcraft-iss-integration.toml"
             };
 
-            for (String file : filesToDelete) {
+            if (!Files.exists(newDir)) Files.createDirectories(newDir);
+            for (String file : legacyFiles) {
                 Path oldPath = configRoot.resolve(file);
-                if (Files.exists(oldPath)) {
-                    Path backupPath = configRoot.resolve(file + ".migrated.bak");
-                    if (Files.exists(backupPath)) Files.delete(backupPath);
-                    Files.move(oldPath, backupPath);
-                    LOGGER.info("[ElementalCraft] 旧配置文件已备份为 {}: {}", backupPath.getFileName(), file);
-                }
+                if (!Files.exists(oldPath)) continue;
+                Files.move(oldPath, newDir.resolve(file), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
             }
+            renameLegacyFiles(newDir);
 
         } catch (Exception e) {
-            LOGGER.warn("[ElementalCraft] 清理旧配置文件失败: {}", e.getMessage());
+            LOGGER.warn("[ElementalCraft] 迁移旧配置文件失败: {}", e.getMessage());
+        }
+    }
+
+    private void migrateLegacyFilesInside(Path oldDir, Path newDir) throws java.io.IOException {
+        String[] legacyFiles = {
+            "elementalcraft-common.toml",
+            "elementalcraft-forced-items.toml",
+            "elementalcraft-reactions.toml",
+            "elementalcraft-fire-nature-reactions.toml",
+            "elementalcraft-visuals.toml",
+            "elementalcraft-thunderfrost-reactions.toml",
+            "elementalcraft-thunder-frost-reactions.toml",
+            "elementalcraft-iss-integration.toml"
+        };
+        for (String file : legacyFiles) {
+            Path oldPath = oldDir.resolve(file);
+            if (!Files.exists(oldPath)) continue;
+            Files.move(oldPath, newDir.resolve(file), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    private void renameLegacyFiles(Path dir) throws java.io.IOException {
+        String[] legacyFiles = {
+            "elementalcraft-common.toml",
+            "elementalcraft-forced-items.toml",
+            "elementalcraft-reactions.toml",
+            "elementalcraft-fire-nature-reactions.toml",
+            "elementalcraft-visuals.toml",
+            "elementalcraft-thunderfrost-reactions.toml",
+            "elementalcraft-thunder-frost-reactions.toml",
+            "elementalcraft-iss-integration.toml"
+        };
+        String[] newFiles = {
+            "elemental-common.toml",
+            "elemental-forced-items.toml",
+            "elemental-reactions.toml",
+            "elemental-fire-nature-reactions.toml",
+            "elemental-visuals.toml",
+            "elemental-thunderfrost-reactions.toml",
+            "elemental-thunder-frost-reactions.toml",
+            "elemental-iss-integration.toml"
+        };
+        for (int i = 0; i < legacyFiles.length; i++) {
+            Path oldPath = dir.resolve(legacyFiles[i]);
+            if (!Files.exists(oldPath)) continue;
+            Path newPath = dir.resolve(newFiles[i]);
+            if (Files.exists(newPath)) {
+                Files.delete(oldPath);
+                LOGGER.info("[ElementalCraft] 旧配置文件 {} 已删除（新文件已存在）", legacyFiles[i]);
+            } else {
+                Files.move(oldPath, newPath);
+                LOGGER.info("[ElementalCraft] 旧配置文件已重命名为 {}", newFiles[i]);
+            }
         }
     }
 
@@ -117,26 +181,26 @@ public class ElementalCraft {
     public void onConfigLoad(ModConfigEvent.Loading event) {
         if (event.getConfig().getSpec() == ElementalConfig.SPEC) {
             ElementalConfig.refreshCache();
-            LOGGER.info("[ElementalCraft] Config Loaded: elementalcraft-common.toml");
+            LOGGER.info("[ElementalCraft] Config Loaded: elemental-common.toml");
         }
         if (event.getConfig().getSpec() == ElementalFireNatureReactionsConfig.SPEC) {
             ElementalFireNatureReactionsConfig.refreshCache();
-            LOGGER.info("[ElementalCraft] Config Loaded: elementalcraft-fire-nature-reactions.toml");
+            LOGGER.info("[ElementalCraft] Config Loaded: elemental-fire-nature-reactions.toml");
         }
         if (event.getConfig().getSpec() == ElementalVisualConfig.SPEC) {
             ElementalVisualConfig.refreshCache();
         }
         if (event.getConfig().getSpec() == ForcedItemConfig.SPEC) {
             ForcedItemHelper.clearCache();
-            LOGGER.info("[ElementalCraft] Config Loaded: elementalcraft-forced-items.toml");
+            LOGGER.info("[ElementalCraft] Config Loaded: elemental-forced-items.toml");
         }
         if (event.getConfig().getSpec() == ElementalThunderFrostReactionsConfig.SPEC) {
             ElementalThunderFrostReactionsConfig.refreshCache();
-            LOGGER.info("[ElementalCraft] Config Loaded: elementalcraft-thunder-frost-reactions.toml");
+            LOGGER.info("[ElementalCraft] Config Loaded: elemental-thunder-frost-reactions.toml");
         }
         if (event.getConfig().getSpec() == ElementalISSIntegrationConfig.SPEC) {
             ElementalISSIntegrationConfig.refreshCache();
-            LOGGER.info("[ElementalCraft] Config Loaded: elementalcraft-iss-integration.toml");
+            LOGGER.info("[ElementalCraft] Config Loaded: elemental-iss-integration.toml");
         }
     }
 
@@ -145,26 +209,26 @@ public class ElementalCraft {
             ElementalConfig.refreshCache();
             CustomBiomeBias.clearCache();
             ForcedAttributeHelper.clearCache();
-            LOGGER.info("[ElementalCraft] Config reloaded from file: elementalcraft-common.toml");
+            LOGGER.info("[ElementalCraft] Config reloaded from file: elemental-common.toml");
         }
         if (event.getConfig().getSpec() == ForcedItemConfig.SPEC) {
             ForcedItemHelper.clearCache();
-            LOGGER.info("[ElementalCraft] Config reloaded from file: elementalcraft-forced-items.toml");
+            LOGGER.info("[ElementalCraft] Config reloaded from file: elemental-forced-items.toml");
         }
         if (event.getConfig().getSpec() == ElementalFireNatureReactionsConfig.SPEC) {
             ElementalFireNatureReactionsConfig.refreshCache();
-            LOGGER.info("[ElementalCraft] Config reloaded from file: elementalcraft-fire-nature-reactions.toml");
+            LOGGER.info("[ElementalCraft] Config reloaded from file: elemental-fire-nature-reactions.toml");
         }
         if (event.getConfig().getSpec() == ElementalVisualConfig.SPEC) {
             ElementalVisualConfig.refreshCache();
         }
         if (event.getConfig().getSpec() == ElementalThunderFrostReactionsConfig.SPEC) {
             ElementalThunderFrostReactionsConfig.refreshCache();
-            LOGGER.info("[ElementalCraft] Config reloaded from file: elementalcraft-thunder-frost-reactions.toml");
+            LOGGER.info("[ElementalCraft] Config reloaded from file: elemental-thunder-frost-reactions.toml");
         }
         if (event.getConfig().getSpec() == ElementalISSIntegrationConfig.SPEC) {
             ElementalISSIntegrationConfig.refreshCache();
-            LOGGER.info("[ElementalCraft] Config reloaded from file: elementalcraft-iss-integration.toml");
+            LOGGER.info("[ElementalCraft] Config reloaded from file: elemental-iss-integration.toml");
         }
     }
 
