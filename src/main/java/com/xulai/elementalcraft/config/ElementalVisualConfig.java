@@ -153,7 +153,8 @@ public class ElementalVisualConfig {
     public static final ForgeConfigSpec.BooleanValue THUNDER_MOB_ENABLED;
     public static final ForgeConfigSpec.IntValue THUNDER_MOB_PARTICLES_PER_TIER;
     public static final ForgeConfigSpec.IntValue THUNDER_MOB_SPAWN_INTERVAL;
-    public static final ForgeConfigSpec.DoubleValue THUNDER_MOB_RADIUS_FACTOR;
+    public static final ForgeConfigSpec.DoubleValue THUNDER_MOB_RADIUS;
+    public static final ForgeConfigSpec.DoubleValue THUNDER_MOB_HEIGHT_OFFSET;
     public static final ForgeConfigSpec.BooleanValue THUNDER_MOB_HIDE_WHEN_INVISIBLE;
     public static final ForgeConfigSpec.BooleanValue THUNDER_MOB_HIDE_SELF_FIRST_PERSON;
 
@@ -314,7 +315,8 @@ public class ElementalVisualConfig {
     public static volatile boolean thunderMobEnabled = true;
     public static volatile int thunderMobParticlesPerTier = 1;
     public static volatile int thunderMobSpawnInterval = 20;
-    public static volatile double thunderMobRadiusFactor = 0.5;
+    public static volatile double thunderMobRadius = 1.0;
+    public static volatile double thunderMobHeightOffset = 0.5;
     public static volatile boolean thunderMobHideWhenInvisible = true;
     public static volatile boolean thunderMobHideSelfFirstPerson = true;
 
@@ -1482,11 +1484,19 @@ public class ElementalVisualConfig {
 
         BUILDER.comment(" ");
 
-        THUNDER_MOB_RADIUS_FACTOR = BUILDER
-                .comment("Horizontal spread of sparks relative to entity width. Sparks spawn within the body bounding box scaled by this factor.",
-                        "电火花水平散布范围相对于生物体宽的系数。火花在按此系数缩放的包围盒内生成。",
+        THUNDER_MOB_RADIUS = BUILDER
+                .comment("Horizontal radius around the creature where sparks are spawned, in blocks. Sparks float in a cylinder of this radius.",
+                        "电火花在生物周围的水平生成半径（方块）。火花悬浮在此半径的圆柱形空间内。",
+                        "Default: 1.0 / 默认：1.0")
+                .defineInRange("radius", 1.0, 0.2, 4.0);
+
+        BUILDER.comment(" ");
+
+        THUNDER_MOB_HEIGHT_OFFSET = BUILDER
+                .comment("Extra height above the creature's head where sparks may spawn, in blocks. Sparks appear at random heights from the feet up to head height plus this offset.",
+                        "电火花可生成在生物头顶之上的额外高度（方块）。火花在脚底到头顶加上此偏移的高度范围内随机出现。",
                         "Default: 0.5 / 默认：0.5")
-                .defineInRange("radius_factor", 0.5, 0.1, 1.5);
+                .defineInRange("height_offset", 0.5, 0.0, 3.0);
 
         BUILDER.comment(" ");
 
@@ -2392,7 +2402,8 @@ public class ElementalVisualConfig {
         thunderMobEnabled = THUNDER_MOB_ENABLED.get();
         thunderMobParticlesPerTier = THUNDER_MOB_PARTICLES_PER_TIER.get();
         thunderMobSpawnInterval = THUNDER_MOB_SPAWN_INTERVAL.get();
-        thunderMobRadiusFactor = THUNDER_MOB_RADIUS_FACTOR.get();
+        thunderMobRadius = THUNDER_MOB_RADIUS.get();
+        thunderMobHeightOffset = THUNDER_MOB_HEIGHT_OFFSET.get();
         thunderMobHideWhenInvisible = THUNDER_MOB_HIDE_WHEN_INVISIBLE.get();
         thunderMobHideSelfFirstPerson = THUNDER_MOB_HIDE_SELF_FIRST_PERSON.get();
 

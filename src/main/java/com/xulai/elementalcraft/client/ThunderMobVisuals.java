@@ -41,18 +41,19 @@ public class ThunderMobVisuals {
         if (tier <= 0) return;
 
         int count = ElementalVisualConfig.thunderMobParticlesPerTier * tier;
-        double radiusFactor = ElementalVisualConfig.thunderMobRadiusFactor;
-        double spread = entity.getBbWidth() * 0.5 * radiusFactor;
-        double bodyHeight = entity.getBbHeight();
+        double horizontalRadius = ElementalVisualConfig.thunderMobRadius;
+        double verticalTop = entity.getBbHeight() + ElementalVisualConfig.thunderMobHeightOffset;
         double baseX = entity.getX();
         double baseY = entity.getY();
         double baseZ = entity.getZ();
         SimpleParticleType particle = ModParticles.THUNDER_SPARK_PERSISTENT.get();
 
         for (int i = 0; i < count; i++) {
-            double px = baseX + (Math.random() * 2 - 1) * spread;
-            double py = baseY + Math.random() * bodyHeight;
-            double pz = baseZ + (Math.random() * 2 - 1) * spread;
+            double angle = Math.random() * 2 * Math.PI;
+            double distance = Math.sqrt(Math.random()) * horizontalRadius;
+            double px = baseX + Math.cos(angle) * distance;
+            double py = baseY + Math.random() * verticalTop;
+            double pz = baseZ + Math.sin(angle) * distance;
             level.addParticle(particle, px, py, pz, 0, 0, 0);
         }
     }
