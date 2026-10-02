@@ -36,8 +36,8 @@ public class NatureMobVisuals {
 
         if (!isValidTarget(entity, mc.player)) return;
 
-        double dx = entity.getX() - entity.xo;
-        double dz = entity.getZ() - entity.zo;
+        double dx = entity.xo - entity.xOld;
+        double dz = entity.zo - entity.zOld;
         if (dx * dx + dz * dz < MOVEMENT_THRESHOLD_SQ) return;
 
         int tier = NatureVisuals.calculateVisualTier(entity, ElementType.NATURE);
