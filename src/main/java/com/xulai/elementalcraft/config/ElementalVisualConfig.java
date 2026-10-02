@@ -138,6 +138,17 @@ public class ElementalVisualConfig {
     public static final ForgeConfigSpec.DoubleValue FIRE_IMPACT_SMOKE_SPREAD_XZ;
     public static final ForgeConfigSpec.DoubleValue FIRE_IMPACT_SMOKE_SPREAD_Y;
 
+    public static final ForgeConfigSpec.BooleanValue FIRE_MOB_ENABLED;
+    public static final ForgeConfigSpec.IntValue FIRE_MOB_SCAN_INTERVAL;
+    public static final ForgeConfigSpec.DoubleValue FIRE_MOB_RADIUS;
+    public static final ForgeConfigSpec.IntValue FIRE_MOB_PARTICLE_LIFE;
+    public static final ForgeConfigSpec.DoubleValue FIRE_MOB_ROTATION_SPEED;
+    public static final ForgeConfigSpec.IntValue FIRE_MOB_PARTICLES_PER_HELIX;
+    public static final ForgeConfigSpec.IntValue FIRE_MOB_TOP_BURST_PARTICLES;
+    public static final ForgeConfigSpec.IntValue FIRE_MOB_MAX_PARTICLES_PER_TICK;
+    public static final ForgeConfigSpec.BooleanValue FIRE_MOB_HIDE_WHEN_INVISIBLE;
+    public static final ForgeConfigSpec.BooleanValue FIRE_MOB_HIDE_SELF_FIRST_PERSON;
+
     public static final ForgeConfigSpec.DoubleValue NATURE_MELEE_RADIUS;
     public static final ForgeConfigSpec.DoubleValue NATURE_MELEE_BASE_ANGLE_DEGREES;
     public static final ForgeConfigSpec.DoubleValue NATURE_MELEE_ANGLE_MULTIPLIER_BASE;
@@ -279,6 +290,17 @@ public class ElementalVisualConfig {
     public static volatile int fireImpactSmokeCount = 5;
     public static volatile double fireImpactSmokeSpreadXZ = 0.2;
     public static volatile double fireImpactSmokeSpreadY = 0.5;
+
+    public static volatile boolean fireMobEnabled = true;
+    public static volatile int fireMobScanInterval = 20;
+    public static volatile double fireMobRadius = 32.0;
+    public static volatile int fireMobParticleLife = 40;
+    public static volatile double fireMobRotationSpeed = 0.3;
+    public static volatile int fireMobParticlesPerHelix = 2;
+    public static volatile int fireMobTopBurstParticles = 3;
+    public static volatile int fireMobMaxParticlesPerTick = 150;
+    public static volatile boolean fireMobHideWhenInvisible = true;
+    public static volatile boolean fireMobHideSelfFirstPerson = true;
 
     public static volatile double natureMeleeRadius = 2.2;
     public static volatile double natureMeleeBaseAngleDegrees = 50.0;
@@ -839,6 +861,87 @@ public class ElementalVisualConfig {
                         "烟雾粒子的垂直扩散半径（方块）。",
                         "Default: 0.5 / 默认：0.5")
                 .defineInRange("smoke_spread_y", 0.5, 0.0, 1.5);
+
+        BUILDER.comment("Fire Mob Aura Visuals", "赤焰生物标记特效")
+                .push("mob_aura");
+
+        FIRE_MOB_ENABLED = BUILDER
+                .comment("Whether to enable the Fire mob aura: flame particles spiralling from a creature's feet to its head, marking Fire-attribute creatures and their enhancement tier from afar.",
+                        "是否开启赤焰生物标记特效：火焰粒子从生物脚下螺线上升到头顶，用于远距离识别赤焰属性生物及其强化等级。",
+                        "Default: true / 默认：true")
+                .define("fire_mob_enabled", true);
+
+        BUILDER.comment(" ");
+
+        FIRE_MOB_SCAN_INTERVAL = BUILDER
+                .comment("How often (in ticks) the client re-scans nearby entities and refreshes the aura. Lower values react faster to equipment changes but cost more CPU.",
+                        "客户端每隔多少 tick 重新扫描附近实体并刷新特效。数值越小，对装备变化的响应越快，但 CPU 开销越大。",
+                        "Default: 20 / 默认：20")
+                .defineInRange("scan_interval", 20, 5, 100);
+
+        BUILDER.comment(" ");
+
+        FIRE_MOB_RADIUS = BUILDER
+                .comment("Maximum distance (in blocks) from the local player at which the aura is rendered. Beyond this range no particles are spawned.",
+                        "本地玩家周围渲染该特效的最大距离（方块）。超出此范围的实体不生成粒子。",
+                        "Default: 32.0 / 默认：32.0")
+                .defineInRange("radius", 32.0, 8.0, 64.0);
+
+        BUILDER.comment(" ");
+
+        FIRE_MOB_PARTICLE_LIFE = BUILDER
+                .comment("Lifetime of each flame particle in ticks. Determines how much of the spiral is visible (40 ticks ~ 1.9 turns).",
+                        "每个火焰粒子的存活时间（tick）。决定螺线的可见长度（40 tick 约 1.9 圈）。",
+                        "Default: 40 / 默认：40")
+                .defineInRange("particle_life", 40, 10, 100);
+
+        BUILDER.comment(" ");
+
+        FIRE_MOB_ROTATION_SPEED = BUILDER
+                .comment("Rotation speed of the spiral in radians per tick. 0.3 is a calm, candle-like rotation.",
+                        "螺线的旋转速度（弧度/tick）。0.3 为安静的烛火式旋转。",
+                        "Default: 0.3 / 默认：0.3")
+                .defineInRange("rotation_speed", 0.3, 0.05, 1.5);
+
+        BUILDER.comment(" ");
+
+        FIRE_MOB_PARTICLES_PER_HELIX = BUILDER
+                .comment("Particles spawned per helix strand per tick. Total per entity = particles_per_helix * tier.",
+                        "每股螺线每 tick 生成的粒子数。单实体总粒子数 = 每股粒子数 × 等级。",
+                        "Default: 2 / 默认：2")
+                .defineInRange("particles_per_helix", 2, 1, 8);
+
+        BUILDER.comment(" ");
+
+        FIRE_MOB_TOP_BURST_PARTICLES = BUILDER
+                .comment("Number of particles in the small burst above the head at tier 4.",
+                        "等级 4 时头顶小爆发的粒子数量。",
+                        "Default: 3 / 默认：3")
+                .defineInRange("top_burst_particles", 3, 0, 10);
+
+        BUILDER.comment(" ");
+
+        FIRE_MOB_MAX_PARTICLES_PER_TICK = BUILDER
+                .comment("Global budget: maximum total particles spawned per tick across all eligible entities. Entities are prioritized by distance.",
+                        "全局粒子预算：每 tick 在所有合格实体上生成的粒子总数上限。按距离优先分配。",
+                        "Default: 150 / 默认：150")
+                .defineInRange("max_particles_per_tick", 150, 20, 500);
+
+        BUILDER.comment(" ");
+
+        FIRE_MOB_HIDE_WHEN_INVISIBLE = BUILDER
+                .comment("Whether to hide the aura on entities with the Invisibility effect.",
+                        "是否在生物拥有隐形效果时隐藏特效。",
+                        "Default: true / 默认：true")
+                .define("hide_when_invisible", true);
+
+        BUILDER.comment(" ");
+
+        FIRE_MOB_HIDE_SELF_FIRST_PERSON = BUILDER
+                .comment("Whether to hide the aura on the local player in first-person view. Prevents the particles from blocking the player's view.",
+                        "是否在第一人称下隐藏本地玩家自己身上的特效，避免粒子遮挡视线。",
+                        "Default: true / 默认：true")
+                .define("hide_self_first_person", true);
 
         BUILDER.pop();
         BUILDER.pop();
@@ -2121,7 +2224,7 @@ public class ElementalVisualConfig {
     }
 
     public static void register() {
-        register("elementalcraft-visuals.toml");
+        register("elemental-visuals.toml");
     }
 
     public static void register(String configPath) {
@@ -2203,6 +2306,17 @@ public class ElementalVisualConfig {
         fireImpactSmokeCount = FIRE_IMPACT_SMOKE_COUNT.get();
         fireImpactSmokeSpreadXZ = FIRE_IMPACT_SMOKE_SPREAD_XZ.get();
         fireImpactSmokeSpreadY = FIRE_IMPACT_SMOKE_SPREAD_Y.get();
+
+        fireMobEnabled = FIRE_MOB_ENABLED.get();
+        fireMobScanInterval = FIRE_MOB_SCAN_INTERVAL.get();
+        fireMobRadius = FIRE_MOB_RADIUS.get();
+        fireMobParticleLife = FIRE_MOB_PARTICLE_LIFE.get();
+        fireMobRotationSpeed = FIRE_MOB_ROTATION_SPEED.get();
+        fireMobParticlesPerHelix = FIRE_MOB_PARTICLES_PER_HELIX.get();
+        fireMobTopBurstParticles = FIRE_MOB_TOP_BURST_PARTICLES.get();
+        fireMobMaxParticlesPerTick = FIRE_MOB_MAX_PARTICLES_PER_TICK.get();
+        fireMobHideWhenInvisible = FIRE_MOB_HIDE_WHEN_INVISIBLE.get();
+        fireMobHideSelfFirstPerson = FIRE_MOB_HIDE_SELF_FIRST_PERSON.get();
 
         natureMeleeRadius = NATURE_MELEE_RADIUS.get();
         natureMeleeBaseAngleDegrees = NATURE_MELEE_BASE_ANGLE_DEGREES.get();
