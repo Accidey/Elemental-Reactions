@@ -9,7 +9,7 @@ version = mod_version
 group = mod_group_id
 
 base {
-    archivesName = archive_name
+    archivesName = "${mod_id}-Forge-${minecraft_version}-${mod_version}"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
