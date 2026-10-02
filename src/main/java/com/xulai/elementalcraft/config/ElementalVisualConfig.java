@@ -931,8 +931,8 @@ public class ElementalVisualConfig {
         BUILDER.comment(" ");
 
         NATURE_MOB_PARTICLES_PER_TIER = BUILDER
-                .comment("Petals spawned per tick per tier while the creature is moving. Total per tick = particles_per_tier * tier.",
-                        "自然属性生物移动时每 tick 每等级生成的樱花花瓣数。每 tick 总数 = 每等级花瓣数 × 等级。",
+                .comment("Fixed number of petals spawned per tick while the creature is moving. This value no longer scales with tier.",
+                        "自然属性生物移动时每 tick 生成的樱花花瓣固定数量。该值不再随强化等级增加。",
                         "Default: 1 / 默认：1")
                 .defineInRange("particles_per_tier", 1, 1, 8);
 
