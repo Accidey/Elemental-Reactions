@@ -58,7 +58,7 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation files('libs/Jade-1.20.1-Forge-11.12.3.jar')
+    compileOnly files('libs/Jade-1.20.1-Forge-11.12.3.jar')
 }
 
 sourceSets.main.compileClasspath += files('libs/Jade-1.20.1-Forge-11.12.3.jar')

@@ -7,7 +7,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Mobs do not spawn elemental - they $(l)become$() elemental the first time a player comes within about 20 blocks. At that moment the mod rolls for an element, builds a matching set of enchanted gear for the mob, and marks it permanently.$(br2)$(li)$(thing)40%$() of hostile mobs are elemental$(li)$(thing)30%$() of neutral mobs (including piglins)"
+      "text": "Mobs do not spawn elemental - they $(l)become$() elemental the first time a player comes near. At that moment the mod rolls for an element, builds a matching set of enchanted gear for the mob, and marks it permanently.$(br2)$(li)$(thing)40%$() of hostile mobs are elemental$(li)$(thing)30%$() of neutral mobs (including piglins)"
     },
     {
       "type": "patchouli:text",

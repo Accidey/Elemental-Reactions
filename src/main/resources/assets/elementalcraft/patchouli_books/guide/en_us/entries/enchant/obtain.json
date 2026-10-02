@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "All twelve enchantments are registered as normal enchantments, so they appear at the $(thing)enchanting table$() and can be applied with an $(thing)anvil$() and enchanted books.$(br2)Aspect enchantments are cheap (weight 5, level I). Enhancement and Resistance run to level V and cost more experience."
+      "text": "All twelve enchantments are registered as normal enchantments, so they appear at the $(thing)enchanting table$() and can be applied with an $(thing)anvil$() and enchanted books.$(br2)Aspect enchantments are cheap (level I). Enhancement and Resistance run to level V by default and cost more experience."
     },
     {
       "type": "patchouli:text",

@@ -16,7 +16,7 @@
     {
       "type": "patchouli:text",
       "title": "Spreading",
-      "text": "At $(thing)3 or more stacks$() the infection becomes contagious. Every second, nearby creatures within $(thing)2 + 1 block per stack$() are infected too, gaining $(thing)stacks - 2$() stacks each time.$(br2)By default this spreads to $(l)players and pets as well$(). It is not limited to hostile mobs."
+      "text": "At $(thing)3 or more stacks$() the infection becomes contagious. Every second, nearby creatures within $(thing)2 + 1 block per stack above 3$() are infected too, gaining $(thing)stacks - 2$() stacks each time.$(br2)By default this spreads to $(l)players and pets as well$(). It is not limited to hostile mobs."
     },
     {
       "type": "patchouli:text",

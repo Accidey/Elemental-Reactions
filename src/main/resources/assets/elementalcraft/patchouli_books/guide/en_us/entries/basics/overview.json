@@ -17,7 +17,7 @@
     {
       "type": "patchouli:text",
       "title": "The numbers are visible",
-      "text": "You do not have to memorise anything: power is drawn on screen. As your total enhancement in one element rises, your melee swings and your arrows change appearance.$(br2)$(li)$(thing)25 points$() - flame arcs on melee swings$(li)$(thing)50 points$() - soul flames, arrow helix trails$(li)$(thing)75 points$() - lava droplets, stronger impacts$(br2)One armour piece at maximum level gives 25 points, so each visual step is roughly one more maxed piece."
+      "text": "You do not have to memorise anything: power is drawn on screen. As your total enhancement in one element rises, your melee swings and your arrows change appearance.$(br2)$(li)$(thing)25 points$() - flame arcs on melee swings$(li)$(thing)50 points$() - soul flames, arrow helix trails$(li)$(thing)75 points$() - lava droplets, stronger impacts$(li)$(thing)100 points$() - soul particles, empowered projectiles$(br2)One armour piece at maximum level gives 25 points, so each visual step is roughly one more maxed piece."
     },
     {
       "type": "patchouli:text",

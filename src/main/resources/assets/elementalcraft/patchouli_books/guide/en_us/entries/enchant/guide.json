@@ -7,7 +7,12 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Twelve enchantments carry the whole mod - three families, four elements each.$(br2)$(li)$(thing)X Aspect$() (e.g. $(#c00)Fire Aspect$()) $(#888)- level I only, goes on a $(l)weapon$(). This decides $(l)which element you attack with$().$(li)$(thing)X Enhancement$() $(#888)- levels I-V, goes on $(l)armour$(). This is your $(l)power$().$(li)$(thing)X Resistance$() $(#888)- levels I-V, goes on $(l)armour$(). This is your $(l)defence$()."
+      "text": "Twelve enchantments carry the whole mod - three families, four elements each.$(br2)$(li)$(thing)X Aspect$() (e.g. $(#c00)Fire Aspect$()) $(#888)- level I only, goes on a $(l)weapon$(). This decides $(l)which element you attack with$().$(li)$(thing)X Enhancement$() $(#888)- levels I-V by default, goes on $(l)armour$(). This is your $(l)power$().$(li)$(thing)X Resistance$() $(#888)- levels I-V by default, goes on $(l)armour$(). This is your $(l)defence$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Level caps",
+      "text": "Enhancement and Resistance levels are derived from the config: the cap is $(thing)max_stat_cap / points_per_level$(). With the defaults that is $(thing)25 / 5 = level V$() per piece.$(br2)If a pack maker changes the config, the displayed max level on the enchantment changes too. Each level is always worth $(thing)5 points$()."
     },
     {
       "type": "patchouli:text",

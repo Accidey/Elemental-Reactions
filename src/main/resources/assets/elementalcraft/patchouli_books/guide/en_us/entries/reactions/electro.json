@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Carrying $(thing)Static Shock$() into water electrifies it. Everything swimming in the pool is hit at once.$(br2)$(li)Radius $(thing)3 blocks$(), +1 per static stack$(li)Every victim instantly takes $(thing)50% of your remaining static damage$()$(li)Every victim is $(thing)Paralysed$() for $(thing)5 seconds$()$(br2)Charge yourself, then jump in. Against a group of swimming mobs this is a mass disable."
+      "text": "Carrying $(thing)Static Shock$() into water electrifies it. Everything swimming in the pool is hit at once.$(br2)$(li)Radius $(thing)3 blocks$(), +1 per static stack above the first$(li)Every victim instantly takes $(thing)50% of your remaining static damage$()$(li)Every victim is $(thing)Paralysed$() for $(thing)5 seconds$()$(br2)Charge yourself, then jump in. Against a group of swimming mobs this is a mass disable."
     },
     {
       "type": "patchouli:text",
