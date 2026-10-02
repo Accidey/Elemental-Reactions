@@ -22,7 +22,7 @@ repositories {
 }
 
 base {
-    archivesName = "ElementalCraft-Reactions"
+    archivesName = "Elemental-Reactions"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(25)

@@ -28,7 +28,8 @@ Elemental reactions for entities: fire, frost, thunder, nature.
 
 [[dependencies.elementalcraft]]
     modId="jade"
-    type="required"
+    type="optional"
     versionRange="[26.2.10,)"
+
     ordering="AFTER"
-    side="BOTH"
+    side="CLIENT"
