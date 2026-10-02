@@ -23,7 +23,7 @@ public class BiomeBiasCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
-                Commands.literal("element")
+                Commands.literal("elemental")
                         .then(Commands.literal("biome")
                                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                                 .then(Commands.literal("add")

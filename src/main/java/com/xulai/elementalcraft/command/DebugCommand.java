@@ -25,7 +25,7 @@ public class DebugCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
-                Commands.literal("element")
+                Commands.literal("elemental")
                         .requires(Commands.hasPermission(Commands.LEVEL_ALL))
                         .then(Commands.literal("debug")
                                 .requires(Commands.hasPermission(Commands.LEVEL_ALL))
