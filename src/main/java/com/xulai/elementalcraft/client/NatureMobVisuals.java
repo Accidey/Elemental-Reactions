@@ -2,12 +2,11 @@ package com.xulai.elementalcraft.client;
 
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ElementalVisualConfig;
-import com.xulai.elementalcraft.event.iss.ISSCore;
 import com.xulai.elementalcraft.util.ElementType;
 import com.xulai.elementalcraft.util.ElementUtils;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -26,16 +25,16 @@ import java.util.List;
 import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = ElementalCraft.MODID, value = Dist.CLIENT)
-public class FireMobVisuals {
+public class NatureMobVisuals {
 
-    private FireMobVisuals() {}
+    private NatureMobVisuals() {}
 
     private static final Map<LivingEntity, Integer> ACTIVE_AURAS = new HashMap<>();
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
-        if (!ElementalVisualConfig.fireMobEnabled) return;
+        if (!ElementalVisualConfig.natureMobEnabled) return;
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || mc.player == null) return;
@@ -43,7 +42,7 @@ public class FireMobVisuals {
         Level level = mc.level;
         Player localPlayer = mc.player;
 
-        if (level.getGameTime() % ElementalVisualConfig.fireMobScanInterval == 0) {
+        if (level.getGameTime() % ElementalVisualConfig.natureMobScanInterval == 0) {
             refreshAuras(level, localPlayer);
         }
 
@@ -51,7 +50,7 @@ public class FireMobVisuals {
     }
 
     private static void refreshAuras(Level level, Player localPlayer) {
-        double radius = ElementalVisualConfig.fireMobRadius;
+        double radius = ElementalVisualConfig.natureMobRadius;
         Vec3 center = localPlayer.position();
         AABB box = new AABB(center.x - radius, center.y - radius, center.z - radius,
                 center.x + radius, center.y + radius, center.z + radius);
@@ -62,7 +61,7 @@ public class FireMobVisuals {
         Map<LivingEntity, Integer> newAuras = new HashMap<>();
         for (LivingEntity entity : candidates) {
             if (!isValidTarget(entity, localPlayer)) continue;
-            int tier = FireVisuals.calculateVisualTier(entity, ElementType.FIRE);
+            int tier = NatureVisuals.calculateVisualTier(entity, ElementType.NATURE);
             if (tier > 0) {
                 newAuras.put(entity, tier);
             }
@@ -73,13 +72,13 @@ public class FireMobVisuals {
     }
 
     private static boolean isValidTarget(LivingEntity entity, Player localPlayer) {
-        if (ElementalVisualConfig.fireMobHideWhenInvisible && entity.hasEffect(MobEffects.INVISIBILITY)) {
+        if (ElementalVisualConfig.natureMobHideWhenInvisible && entity.hasEffect(MobEffects.INVISIBILITY)) {
             return false;
         }
-        if (entity == localPlayer && ElementalVisualConfig.fireMobHideSelfFirstPerson && isFirstPerson()) {
+        if (entity == localPlayer && ElementalVisualConfig.natureMobHideSelfFirstPerson && isFirstPerson()) {
             return false;
         }
-        return ElementUtils.getConsistentAttackElement(entity) == ElementType.FIRE;
+        return ElementUtils.getConsistentAttackElement(entity) == ElementType.NATURE;
     }
 
     private static boolean isFirstPerson() {
@@ -90,7 +89,7 @@ public class FireMobVisuals {
     private static void spawnParticles(Level level, Player localPlayer) {
         if (ACTIVE_AURAS.isEmpty()) return;
 
-        double radius = ElementalVisualConfig.fireMobRadius;
+        double radius = ElementalVisualConfig.natureMobRadius;
         double radiusSq = radius * radius;
         ACTIVE_AURAS.entrySet().removeIf(e -> {
             LivingEntity entity = e.getKey();
@@ -102,21 +101,18 @@ public class FireMobVisuals {
         List<Map.Entry<LivingEntity, Integer>> sorted = new ArrayList<>(ACTIVE_AURAS.entrySet());
         sorted.sort(Comparator.comparingDouble(e -> e.getKey().distanceToSqr(localPlayer)));
 
-        int budget = ElementalVisualConfig.fireMobMaxParticlesPerTick;
+        int budget = ElementalVisualConfig.natureMobMaxParticlesPerTick;
         int remaining = budget;
         int totalDemand = 0;
         for (Map.Entry<LivingEntity, Integer> entry : sorted) {
-            totalDemand += ElementalVisualConfig.fireMobParticlesPerHelix * entry.getValue();
-            if (entry.getValue() >= 4) {
-                totalDemand += ElementalVisualConfig.fireMobTopBurstParticles;
-            }
+            totalDemand += ElementalVisualConfig.natureMobParticlesPerTier * entry.getValue();
         }
 
         double scale = Math.min(1.0, (double) budget / Math.max(1, totalDemand));
 
         for (Map.Entry<LivingEntity, Integer> entry : sorted) {
             if (remaining <= 0) break;
-            int baseDemand = ElementalVisualConfig.fireMobParticlesPerHelix * entry.getValue();
+            int baseDemand = ElementalVisualConfig.natureMobParticlesPerTier * entry.getValue();
             int scaled = Math.max(1, (int) Math.floor(baseDemand * scale));
             int used = spawnAuraScaled(level, entry.getKey(), entry.getValue(), scaled, remaining);
             remaining -= used;
@@ -124,42 +120,27 @@ public class FireMobVisuals {
     }
 
     private static int spawnAuraScaled(Level level, LivingEntity entity, int tier, int particleBudget, int hardCap) {
-        double height = entity.getBbHeight() + 0.3;
-        double radius = Math.max(0.3, entity.getBbWidth() * ElementalVisualConfig.fireMobRadiusFactor);
-        double rotationSpeed = ElementalVisualConfig.fireMobRotationSpeed;
-        int desiredPerTick = ElementalVisualConfig.fireMobParticlesPerHelix * tier;
+        double spawnHeightOffset = ElementalVisualConfig.natureMobSpawnHeightOffset;
+        double radius = Math.max(0.3, entity.getBbWidth() * ElementalVisualConfig.natureMobRadiusFactor);
+        int desiredPerTick = ElementalVisualConfig.natureMobParticlesPerTier * tier;
         int count = Math.min(particleBudget, Math.min(desiredPerTick, hardCap));
         if (count <= 0) return 0;
 
-        double turns = Math.max(1.0, (rotationSpeed * ElementalVisualConfig.fireMobParticleLife) / (2 * Math.PI));
-        double totalPhase = 2 * Math.PI * turns;
-
-        ParticleOptions particle = ISSCore.getFireParticle();
-        Vec3 origin = entity.position();
+        double horizontalSpeed = ElementalVisualConfig.natureMobHorizontalSpeed;
+        double originX = entity.getX();
+        double originY = entity.getY() + entity.getBbHeight() + spawnHeightOffset;
+        double originZ = entity.getZ();
         int spawned = 0;
 
         for (int i = 0; i < count; i++) {
-            double phaseOffset = (2 * Math.PI * i) / count;
-            double phase = (entity.tickCount * rotationSpeed + phaseOffset) % totalPhase;
-            double y = (phase / totalPhase) * height;
-            double angle = phase;
-            double px = origin.x + Math.cos(angle) * radius;
-            double pz = origin.z + Math.sin(angle) * radius;
-            level.addParticle(particle, px, origin.y + y, pz, 0, 0, 0);
+            double angle = Math.random() * 2 * Math.PI;
+            double distance = Math.sqrt(Math.random()) * radius;
+            double px = originX + Math.cos(angle) * distance;
+            double pz = originZ + Math.sin(angle) * distance;
+            double vx = (Math.random() * 2 - 1) * horizontalSpeed;
+            double vz = (Math.random() * 2 - 1) * horizontalSpeed;
+            level.addParticle(ParticleTypes.CHERRY_LEAVES, px, originY, pz, vx, 0, vz);
             spawned++;
-        }
-
-        if (tier >= 4 && ElementalVisualConfig.fireMobTopBurstParticles > 0) {
-            int burstBudget = Math.max(0, hardCap - count);
-            int burst = Math.min(ElementalVisualConfig.fireMobTopBurstParticles, burstBudget);
-            double topY = origin.y + height;
-            for (int i = 0; i < burst; i++) {
-                double angle = entity.tickCount * 0.4 + (2 * Math.PI * i) / Math.max(1, burst);
-                double vx = Math.cos(angle) * 0.05;
-                double vz = Math.sin(angle) * 0.05;
-                level.addParticle(particle, origin.x, topY, origin.z, vx, 0.02, vz);
-                spawned++;
-            }
         }
 
         return spawned;

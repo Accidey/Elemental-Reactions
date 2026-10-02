@@ -150,6 +150,17 @@ public class ElementalVisualConfig {
     public static final ForgeConfigSpec.BooleanValue FIRE_MOB_HIDE_WHEN_INVISIBLE;
     public static final ForgeConfigSpec.BooleanValue FIRE_MOB_HIDE_SELF_FIRST_PERSON;
 
+    public static final ForgeConfigSpec.BooleanValue NATURE_MOB_ENABLED;
+    public static final ForgeConfigSpec.IntValue NATURE_MOB_SCAN_INTERVAL;
+    public static final ForgeConfigSpec.DoubleValue NATURE_MOB_RADIUS;
+    public static final ForgeConfigSpec.DoubleValue NATURE_MOB_RADIUS_FACTOR;
+    public static final ForgeConfigSpec.DoubleValue NATURE_MOB_SPAWN_HEIGHT_OFFSET;
+    public static final ForgeConfigSpec.IntValue NATURE_MOB_PARTICLES_PER_TIER;
+    public static final ForgeConfigSpec.DoubleValue NATURE_MOB_HORIZONTAL_SPEED;
+    public static final ForgeConfigSpec.IntValue NATURE_MOB_MAX_PARTICLES_PER_TICK;
+    public static final ForgeConfigSpec.BooleanValue NATURE_MOB_HIDE_WHEN_INVISIBLE;
+    public static final ForgeConfigSpec.BooleanValue NATURE_MOB_HIDE_SELF_FIRST_PERSON;
+
     public static final ForgeConfigSpec.DoubleValue NATURE_MELEE_RADIUS;
     public static final ForgeConfigSpec.DoubleValue NATURE_MELEE_BASE_ANGLE_DEGREES;
     public static final ForgeConfigSpec.DoubleValue NATURE_MELEE_ANGLE_MULTIPLIER_BASE;
@@ -303,6 +314,17 @@ public class ElementalVisualConfig {
     public static volatile int fireMobMaxParticlesPerTick = 150;
     public static volatile boolean fireMobHideWhenInvisible = true;
     public static volatile boolean fireMobHideSelfFirstPerson = true;
+
+    public static volatile boolean natureMobEnabled = true;
+    public static volatile int natureMobScanInterval = 20;
+    public static volatile double natureMobRadius = 32.0;
+    public static volatile double natureMobRadiusFactor = 1.4;
+    public static volatile double natureMobSpawnHeightOffset = 0.5;
+    public static volatile int natureMobParticlesPerTier = 1;
+    public static volatile double natureMobHorizontalSpeed = 0.05;
+    public static volatile int natureMobMaxParticlesPerTick = 150;
+    public static volatile boolean natureMobHideWhenInvisible = true;
+    public static volatile boolean natureMobHideSelfFirstPerson = true;
 
     public static volatile double natureMeleeRadius = 2.2;
     public static volatile double natureMeleeBaseAngleDegrees = 50.0;
@@ -974,6 +996,89 @@ public class ElementalVisualConfig {
                         "在实体较多的服务器上关闭此项可以提高性能。",
                         "Default: true / 默认：true")
                 .define("nature_ranged_enabled", true);
+
+        BUILDER.comment("Nature Mob Aura Visuals", "自然属性生物标记特效")
+                .push("mob_aura");
+
+        NATURE_MOB_ENABLED = BUILDER
+                .comment("Whether to enable the Nature mob aura: cherry blossom petals drifting down around a creature, marking Nature-attribute creatures and their enhancement tier from afar.",
+                        "是否开启自然属性生物标记特效：樱花花瓣在生物周围飘落，用于远距离识别自然属性生物及其强化等级。",
+                        "Default: true / 默认：true")
+                .define("nature_mob_enabled", true);
+
+        BUILDER.comment(" ");
+
+        NATURE_MOB_SCAN_INTERVAL = BUILDER
+                .comment("How often (in ticks) the client re-scans nearby entities and refreshes the aura. Lower values react faster to equipment changes but cost more CPU.",
+                        "客户端每隔多少 tick 重新扫描附近实体并刷新特效。数值越小，对装备变化的响应越快，但 CPU 开销越大。",
+                        "Default: 20 / 默认：20")
+                .defineInRange("scan_interval", 20, 5, 100);
+
+        BUILDER.comment(" ");
+
+        NATURE_MOB_RADIUS = BUILDER
+                .comment("Maximum distance (in blocks) from the local player at which the aura is rendered. Beyond this range no particles are spawned.",
+                        "本地玩家周围渲染该特效的最大距离（方块）。超出此范围的实体不生成粒子。",
+                        "Default: 32.0 / 默认：32.0")
+                .defineInRange("radius", 32.0, 8.0, 64.0);
+
+        BUILDER.comment(" ");
+
+        NATURE_MOB_RADIUS_FACTOR = BUILDER
+                .comment("Horizontal spread radius of falling petals relative to entity width. Final radius = max(0.3, entity_width * factor).",
+                        "花瓣飘落的水平散开半径相对于生物体宽的系数。最终半径 = max(0.3, 实体宽度 × 系数)。",
+                        "Default: 1.4 / 默认：1.4")
+                .defineInRange("radius_factor", 1.4, 0.3, 3.0);
+
+        BUILDER.comment(" ");
+
+        NATURE_MOB_SPAWN_HEIGHT_OFFSET = BUILDER
+                .comment("Height above the entity's head where petals are spawned, in blocks. Petals then fall naturally.",
+                        "花瓣生成点高出生物头顶的距离（方块）。花瓣生成后自然下落。",
+                        "Default: 0.5 / 默认：0.5")
+                .defineInRange("spawn_height_offset", 0.5, 0.0, 3.0);
+
+        BUILDER.comment(" ");
+
+        NATURE_MOB_PARTICLES_PER_TIER = BUILDER
+                .comment("Petals spawned per tick per tier. Total per entity = particles_per_tier * tier.",
+                        "每 tick 每等级生成的花瓣数。单实体总花瓣数 = 每等级花瓣数 × 等级。",
+                        "Default: 1 / 默认：1")
+                .defineInRange("particles_per_tier", 1, 1, 8);
+
+        BUILDER.comment(" ");
+
+        NATURE_MOB_HORIZONTAL_SPEED = BUILDER
+                .comment("Maximum random horizontal speed given to spawned petals (blocks/tick). Adds a gentle outward drift.",
+                        "花瓣生成时获得的随机水平速度上限（方块/tick）。带来轻微向外飘散。",
+                        "Default: 0.05 / 默认：0.05")
+                .defineInRange("horizontal_speed", 0.05, 0.0, 0.5);
+
+        BUILDER.comment(" ");
+
+        NATURE_MOB_MAX_PARTICLES_PER_TICK = BUILDER
+                .comment("Global budget: maximum total petals spawned per tick across all eligible entities. Entities are prioritized by distance.",
+                        "全局粒子预算：每 tick 在所有合格实体上生成的花瓣总数上限。按距离优先分配。",
+                        "Default: 150 / 默认：150")
+                .defineInRange("max_particles_per_tick", 150, 20, 500);
+
+        BUILDER.comment(" ");
+
+        NATURE_MOB_HIDE_WHEN_INVISIBLE = BUILDER
+                .comment("Whether to hide the aura on entities with the Invisibility effect.",
+                        "是否在生物拥有隐形效果时隐藏特效。",
+                        "Default: true / 默认：true")
+                .define("hide_when_invisible", true);
+
+        BUILDER.comment(" ");
+
+        NATURE_MOB_HIDE_SELF_FIRST_PERSON = BUILDER
+                .comment("Whether to hide the aura on the local player in first-person view only. Third-person view still renders it.",
+                        "是否仅在第一人称下隐藏本地玩家自己身上的特效。第三人称仍正常渲染。",
+                        "Default: true / 默认：true")
+                .define("hide_self_first_person", true);
+
+        BUILDER.pop();
 
         BUILDER.comment("Nature Melee Swing Visuals", "自然近战挥动特效")
                 .push("melee");
@@ -2328,6 +2433,17 @@ public class ElementalVisualConfig {
         fireMobMaxParticlesPerTick = FIRE_MOB_MAX_PARTICLES_PER_TICK.get();
         fireMobHideWhenInvisible = FIRE_MOB_HIDE_WHEN_INVISIBLE.get();
         fireMobHideSelfFirstPerson = FIRE_MOB_HIDE_SELF_FIRST_PERSON.get();
+
+        natureMobEnabled = NATURE_MOB_ENABLED.get();
+        natureMobScanInterval = NATURE_MOB_SCAN_INTERVAL.get();
+        natureMobRadius = NATURE_MOB_RADIUS.get();
+        natureMobRadiusFactor = NATURE_MOB_RADIUS_FACTOR.get();
+        natureMobSpawnHeightOffset = NATURE_MOB_SPAWN_HEIGHT_OFFSET.get();
+        natureMobParticlesPerTier = NATURE_MOB_PARTICLES_PER_TIER.get();
+        natureMobHorizontalSpeed = NATURE_MOB_HORIZONTAL_SPEED.get();
+        natureMobMaxParticlesPerTick = NATURE_MOB_MAX_PARTICLES_PER_TICK.get();
+        natureMobHideWhenInvisible = NATURE_MOB_HIDE_WHEN_INVISIBLE.get();
+        natureMobHideSelfFirstPerson = NATURE_MOB_HIDE_SELF_FIRST_PERSON.get();
 
         natureMeleeRadius = NATURE_MELEE_RADIUS.get();
         natureMeleeBaseAngleDegrees = NATURE_MELEE_BASE_ANGLE_DEGREES.get();
