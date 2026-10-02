@@ -560,7 +560,7 @@ public class WetnessHandler {
                         ModMobEffects.WETNESS,
                         durationTicks,
                         amplifier,
-                        true, false, true
+                        true, true, true
                 ));
             } finally {
                 suppressRemoveCleanup = false;
@@ -718,7 +718,7 @@ public class WetnessHandler {
         int duration = ElementalThunderFrostReactionsConfig.paralysisDurationPerStackTicks * wetnessLevel;
         int amplifier = Math.min(wetnessLevel - 1, maxStacks - 1);
         entity.removeEffect(ModMobEffects.PARALYSIS);
-        entity.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS, duration, amplifier, false, false, true));
+        entity.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS, duration, amplifier, false, true, true));
     }
 
     @SubscribeEvent

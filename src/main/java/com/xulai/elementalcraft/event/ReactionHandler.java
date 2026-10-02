@@ -427,7 +427,7 @@ public class ReactionHandler {
         }
 
         if (newStacks > 0) {
-            target.addEffect(new MobEffectInstance(ModMobEffects.SPORES, durationTicks, newStacks - 1, false, false, true));
+            target.addEffect(new MobEffectInstance(ModMobEffects.SPORES, durationTicks, newStacks - 1, false, true, true));
             target.getPersistentData().putLong(NBT_SPORE_APPLY_TICK, target.level().getGameTime());
             if (isNewEffect && !target.level().isClientSide()) {
                 target.level().playSound(null, target.getX(), target.getY(), target.getZ(), ModSounds.SPORE_GAIN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
