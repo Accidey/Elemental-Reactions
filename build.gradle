@@ -32,11 +32,11 @@ repositories {
 }
 
 base {
-    archivesName = "${mod_id}-NeoForge-${minecraft_version}-${mod_version}"
+    archivesName = "Elemental-Reactions-NeoForge-${minecraft_version}-${mod_version}"
 }
 
 tasks.withType(AbstractArchiveTask).configureEach {
-    archiveFileName = "${mod_id}-NeoForge-${minecraft_version}-${mod_version}.jar"
+    archiveFileName = "Elemental-Reactions-NeoForge-${minecraft_version}-${mod_version}.jar"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
