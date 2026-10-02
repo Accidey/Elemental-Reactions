@@ -26,7 +26,7 @@ public class DebugCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
-                Commands.literal("element")
+                Commands.literal("elemental")
                         .requires(source -> true)
                         .then(Commands.literal("debug")
                                 .executes(context -> {

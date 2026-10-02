@@ -26,11 +26,11 @@ public class ConfigAutoSync {
 
     private static final int CHECK_INTERVAL = 100;
 
-    private static final String COMMON = "ElementalCraft/elementalcraft-common.toml";
-    private static final String FORCED_ITEMS = "ElementalCraft/elementalcraft-forced-items.toml";
-    private static final String FIRE_NATURE = "ElementalCraft/elementalcraft-fire-nature-reactions.toml";
-    private static final String VISUALS = "ElementalCraft/elementalcraft-visuals.toml";
-    private static final String THUNDER_FROST = "ElementalCraft/elementalcraft-thunder-frost-reactions.toml";
+    private static final String COMMON = "Elemental_Reactions/elemental-common.toml";
+    private static final String FORCED_ITEMS = "Elemental_Reactions/elemental-forced-items.toml";
+    private static final String FIRE_NATURE = "Elemental_Reactions/elemental-fire-nature-reactions.toml";
+    private static final String VISUALS = "Elemental_Reactions/elemental-visuals.toml";
+    private static final String THUNDER_FROST = "Elemental_Reactions/elemental-thunder-frost-reactions.toml";
 
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
@@ -45,31 +45,31 @@ public class ConfigAutoSync {
             CustomBiomeBias.clearCache();
             ForcedAttributeHelper.clearCache();
 
-            ElementalCraft.LOGGER.info("[ElementalCraft] Detected change in elementalcraft-common.toml, caches refreshed automatically.");
+            ElementalCraft.LOGGER.info("[ElementalCraft] Detected change in elemental-common.toml, caches refreshed automatically.");
         });
 
         checkConfig(FORCED_ITEMS, () -> {
             ForcedItemHelper.clearCache();
 
-            ElementalCraft.LOGGER.info("[ElementalCraft] Detected change in elementalcraft-forced-items.toml, caches refreshed automatically.");
+            ElementalCraft.LOGGER.info("[ElementalCraft] Detected change in elemental-forced-items.toml, caches refreshed automatically.");
         });
 
         checkConfig(FIRE_NATURE, () -> {
             ElementalFireNatureReactionsConfig.refreshCache();
 
-            ElementalCraft.LOGGER.info("[ElementalCraft] Detected change in elementalcraft-fire-nature-reactions.toml, caches refreshed automatically.");
+            ElementalCraft.LOGGER.info("[ElementalCraft] Detected change in elemental-fire-nature-reactions.toml, caches refreshed automatically.");
         });
 
         checkConfig(VISUALS, () -> {
             ElementalVisualConfig.refreshCache();
 
-            ElementalCraft.LOGGER.info("[ElementalCraft] Detected change in elementalcraft-visuals.toml, caches refreshed automatically.");
+            ElementalCraft.LOGGER.info("[ElementalCraft] Detected change in elemental-visuals.toml, caches refreshed automatically.");
         });
 
         checkConfig(THUNDER_FROST, () -> {
             ElementalThunderFrostReactionsConfig.refreshCache();
 
-            ElementalCraft.LOGGER.info("[ElementalCraft] Detected change in elementalcraft-thunder-frost-reactions.toml, caches refreshed automatically.");
+            ElementalCraft.LOGGER.info("[ElementalCraft] Detected change in elemental-thunder-frost-reactions.toml, caches refreshed automatically.");
         });
 
     }

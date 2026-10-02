@@ -30,7 +30,7 @@ public class ForcedItemCommand {
     public static void register(RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
 
-        dispatcher.register(Commands.literal("element")
+        dispatcher.register(Commands.literal("elemental")
                 .then(Commands.literal("item")
                         .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.literal("weapon")
