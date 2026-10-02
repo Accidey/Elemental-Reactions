@@ -139,25 +139,14 @@ public class ElementalVisualConfig {
     public static final ForgeConfigSpec.DoubleValue FIRE_IMPACT_SMOKE_SPREAD_Y;
 
     public static final ForgeConfigSpec.BooleanValue FIRE_MOB_ENABLED;
-    public static final ForgeConfigSpec.IntValue FIRE_MOB_SCAN_INTERVAL;
-    public static final ForgeConfigSpec.DoubleValue FIRE_MOB_RADIUS;
-    public static final ForgeConfigSpec.DoubleValue FIRE_MOB_RADIUS_FACTOR;
-    public static final ForgeConfigSpec.IntValue FIRE_MOB_PARTICLE_LIFE;
-    public static final ForgeConfigSpec.DoubleValue FIRE_MOB_ROTATION_SPEED;
-    public static final ForgeConfigSpec.IntValue FIRE_MOB_PARTICLES_PER_HELIX;
-    public static final ForgeConfigSpec.IntValue FIRE_MOB_TOP_BURST_PARTICLES;
-    public static final ForgeConfigSpec.IntValue FIRE_MOB_MAX_PARTICLES_PER_TICK;
+    public static final ForgeConfigSpec.IntValue FIRE_MOB_PARTICLES_PER_TIER;
     public static final ForgeConfigSpec.BooleanValue FIRE_MOB_HIDE_WHEN_INVISIBLE;
     public static final ForgeConfigSpec.BooleanValue FIRE_MOB_HIDE_SELF_FIRST_PERSON;
 
     public static final ForgeConfigSpec.BooleanValue NATURE_MOB_ENABLED;
-    public static final ForgeConfigSpec.IntValue NATURE_MOB_SCAN_INTERVAL;
-    public static final ForgeConfigSpec.DoubleValue NATURE_MOB_RADIUS;
-    public static final ForgeConfigSpec.DoubleValue NATURE_MOB_RADIUS_FACTOR;
-    public static final ForgeConfigSpec.DoubleValue NATURE_MOB_SPAWN_HEIGHT_OFFSET;
     public static final ForgeConfigSpec.IntValue NATURE_MOB_PARTICLES_PER_TIER;
+    public static final ForgeConfigSpec.DoubleValue NATURE_MOB_SPAWN_HEIGHT_OFFSET;
     public static final ForgeConfigSpec.DoubleValue NATURE_MOB_HORIZONTAL_SPEED;
-    public static final ForgeConfigSpec.IntValue NATURE_MOB_MAX_PARTICLES_PER_TICK;
     public static final ForgeConfigSpec.BooleanValue NATURE_MOB_HIDE_WHEN_INVISIBLE;
     public static final ForgeConfigSpec.BooleanValue NATURE_MOB_HIDE_SELF_FIRST_PERSON;
 
@@ -304,25 +293,14 @@ public class ElementalVisualConfig {
     public static volatile double fireImpactSmokeSpreadY = 0.5;
 
     public static volatile boolean fireMobEnabled = true;
-    public static volatile int fireMobScanInterval = 20;
-    public static volatile double fireMobRadius = 32.0;
-    public static volatile double fireMobRadiusFactor = 1.4;
-    public static volatile int fireMobParticleLife = 40;
-    public static volatile double fireMobRotationSpeed = 0.3;
-    public static volatile int fireMobParticlesPerHelix = 1;
-    public static volatile int fireMobTopBurstParticles = 3;
-    public static volatile int fireMobMaxParticlesPerTick = 150;
+    public static volatile int fireMobParticlesPerTier = 1;
     public static volatile boolean fireMobHideWhenInvisible = true;
     public static volatile boolean fireMobHideSelfFirstPerson = true;
 
     public static volatile boolean natureMobEnabled = true;
-    public static volatile int natureMobScanInterval = 20;
-    public static volatile double natureMobRadius = 32.0;
-    public static volatile double natureMobRadiusFactor = 1.4;
-    public static volatile double natureMobSpawnHeightOffset = 0.5;
     public static volatile int natureMobParticlesPerTier = 1;
+    public static volatile double natureMobSpawnHeightOffset = 0.3;
     public static volatile double natureMobHorizontalSpeed = 0.05;
-    public static volatile int natureMobMaxParticlesPerTick = 150;
     public static volatile boolean natureMobHideWhenInvisible = true;
     public static volatile boolean natureMobHideSelfFirstPerson = true;
 
@@ -886,83 +864,27 @@ public class ElementalVisualConfig {
                         "Default: 0.5 / 默认：0.5")
                 .defineInRange("smoke_spread_y", 0.5, 0.0, 1.5);
 
-        BUILDER.comment("Fire Mob Aura Visuals", "赤焰生物标记特效")
+        BUILDER.comment("Fire Mob Footprint Visuals", "赤焰生物移动足迹特效")
                 .push("mob_aura");
 
         FIRE_MOB_ENABLED = BUILDER
-                .comment("Whether to enable the Fire mob aura: flame particles spiralling from a creature's feet to its head, marking Fire-attribute creatures and their enhancement tier from afar.",
-                        "是否开启赤焰生物标记特效：火焰粒子从生物脚下螺线上升到头顶，用于远距离识别赤焰属性生物及其强化等级。",
+                .comment("Whether to enable the Fire mob footprint: flame particles spawn at a moving Fire-attribute creature's feet, leaving a fiery trail that marks the creature and its enhancement tier from afar.",
+                        "是否开启赤焰生物移动足迹特效：赤焰属性生物移动时脚下生成火焰粒子，形成火焰足迹，用于远距离识别赤焰属性生物及其强化等级。",
                         "Default: true / 默认：true")
                 .define("fire_mob_enabled", true);
 
         BUILDER.comment(" ");
 
-        FIRE_MOB_SCAN_INTERVAL = BUILDER
-                .comment("How often (in ticks) the client re-scans nearby entities and refreshes the aura. Lower values react faster to equipment changes but cost more CPU.",
-                        "客户端每隔多少 tick 重新扫描附近实体并刷新特效。数值越小，对装备变化的响应越快，但 CPU 开销越大。",
-                        "Default: 20 / 默认：20")
-                .defineInRange("scan_interval", 20, 5, 100);
-
-        BUILDER.comment(" ");
-
-        FIRE_MOB_RADIUS = BUILDER
-                .comment("Maximum distance (in blocks) from the local player at which the aura is rendered. Beyond this range no particles are spawned.",
-                        "本地玩家周围渲染该特效的最大距离（方块）。超出此范围的实体不生成粒子。",
-                        "Default: 32.0 / 默认：32.0")
-                .defineInRange("radius", 32.0, 8.0, 64.0);
-
-        BUILDER.comment(" ");
-
-        FIRE_MOB_RADIUS_FACTOR = BUILDER
-                .comment("Radius of the helix relative to the entity width. Final radius = max(0.3, entity_width * factor). Larger values spread the flame column wider.",
-                        "螺线半径相对于生物体宽的系数。最终半径 = max(0.3, 实体宽度 × 系数)。数值越大，火焰柱越宽。",
-                        "Default: 1.4 / 默认：1.4")
-                .defineInRange("radius_factor", 1.4, 0.3, 3.0);
-
-        BUILDER.comment(" ");
-
-        FIRE_MOB_PARTICLE_LIFE = BUILDER
-                .comment("Lifetime of each flame particle in ticks. Determines how much of the spiral is visible (40 ticks ~ 1.9 turns).",
-                        "每个火焰粒子的存活时间（tick）。决定螺线的可见长度（40 tick 约 1.9 圈）。",
-                        "Default: 40 / 默认：40")
-                .defineInRange("particle_life", 40, 10, 100);
-
-        BUILDER.comment(" ");
-
-        FIRE_MOB_ROTATION_SPEED = BUILDER
-                .comment("Rotation speed of the spiral in radians per tick. 0.3 is a calm, candle-like rotation.",
-                        "螺线的旋转速度（弧度/tick）。0.3 为安静的烛火式旋转。",
-                        "Default: 0.3 / 默认：0.3")
-                .defineInRange("rotation_speed", 0.3, 0.05, 1.5);
-
-        BUILDER.comment(" ");
-
-        FIRE_MOB_PARTICLES_PER_HELIX = BUILDER
-                .comment("Particles spawned per helix strand per tick. Total per entity = particles_per_helix * tier.",
-                        "每股螺线每 tick 生成的粒子数。单实体总粒子数 = 每股粒子数 × 等级。",
+        FIRE_MOB_PARTICLES_PER_TIER = BUILDER
+                .comment("Flame particles spawned per tick per tier while the creature is moving. Total per tick = particles_per_tier * tier.",
+                        "赤焰生物移动时每 tick 每等级生成的火焰粒子数。每 tick 总数 = 每等级粒子数 × 等级。",
                         "Default: 1 / 默认：1")
-                .defineInRange("particles_per_helix", 1, 1, 8);
-
-        BUILDER.comment(" ");
-
-        FIRE_MOB_TOP_BURST_PARTICLES = BUILDER
-                .comment("Number of particles in the small burst above the head at tier 4.",
-                        "等级 4 时头顶小爆发的粒子数量。",
-                        "Default: 3 / 默认：3")
-                .defineInRange("top_burst_particles", 3, 0, 10);
-
-        BUILDER.comment(" ");
-
-        FIRE_MOB_MAX_PARTICLES_PER_TICK = BUILDER
-                .comment("Global budget: maximum total particles spawned per tick across all eligible entities. Entities are prioritized by distance.",
-                        "全局粒子预算：每 tick 在所有合格实体上生成的粒子总数上限。按距离优先分配。",
-                        "Default: 150 / 默认：150")
-                .defineInRange("max_particles_per_tick", 150, 20, 500);
+                .defineInRange("particles_per_tier", 1, 1, 8);
 
         BUILDER.comment(" ");
 
         FIRE_MOB_HIDE_WHEN_INVISIBLE = BUILDER
-                .comment("Whether to hide the aura on entities with the Invisibility effect.",
+                .comment("Whether to hide the effect on entities with the Invisibility effect.",
                         "是否在生物拥有隐形效果时隐藏特效。",
                         "Default: true / 默认：true")
                 .define("hide_when_invisible", true);
@@ -970,8 +892,8 @@ public class ElementalVisualConfig {
         BUILDER.comment(" ");
 
         FIRE_MOB_HIDE_SELF_FIRST_PERSON = BUILDER
-                .comment("Whether to hide the aura on the local player in first-person view. Prevents the particles from blocking the player's view.",
-                        "是否在第一人称下隐藏本地玩家自己身上的特效，避免粒子遮挡视线。",
+                .comment("Whether to hide the effect on the local player in first-person view. Third-person view still renders it.",
+                        "是否仅在第一人称下隐藏本地玩家自己的特效。第三人称仍正常渲染。",
                         "Default: true / 默认：true")
                 .define("hide_self_first_person", true);
 
@@ -997,54 +919,30 @@ public class ElementalVisualConfig {
                         "Default: true / 默认：true")
                 .define("nature_ranged_enabled", true);
 
-        BUILDER.comment("Nature Mob Aura Visuals", "自然属性生物标记特效")
+        BUILDER.comment("Nature Mob Falling Petals Visuals", "自然属性生物移动飘花特效")
                 .push("mob_aura");
 
         NATURE_MOB_ENABLED = BUILDER
-                .comment("Whether to enable the Nature mob aura: cherry blossom petals drifting down around a creature, marking Nature-attribute creatures and their enhancement tier from afar.",
-                        "是否开启自然属性生物标记特效：樱花花瓣在生物周围飘落，用于远距离识别自然属性生物及其强化等级。",
+                .comment("Whether to enable the Nature mob falling petals: cherry blossom petals spawn at random positions on a moving Nature-attribute creature's body and drift down, marking the creature and its enhancement tier from afar.",
+                        "是否开启自然属性生物移动飘花特效：自然属性生物移动时身上随机位置飘落樱花花瓣，用于远距离识别自然属性生物及其强化等级。",
                         "Default: true / 默认：true")
                 .define("nature_mob_enabled", true);
 
         BUILDER.comment(" ");
 
-        NATURE_MOB_SCAN_INTERVAL = BUILDER
-                .comment("How often (in ticks) the client re-scans nearby entities and refreshes the aura. Lower values react faster to equipment changes but cost more CPU.",
-                        "客户端每隔多少 tick 重新扫描附近实体并刷新特效。数值越小，对装备变化的响应越快，但 CPU 开销越大。",
-                        "Default: 20 / 默认：20")
-                .defineInRange("scan_interval", 20, 5, 100);
-
-        BUILDER.comment(" ");
-
-        NATURE_MOB_RADIUS = BUILDER
-                .comment("Maximum distance (in blocks) from the local player at which the aura is rendered. Beyond this range no particles are spawned.",
-                        "本地玩家周围渲染该特效的最大距离（方块）。超出此范围的实体不生成粒子。",
-                        "Default: 32.0 / 默认：32.0")
-                .defineInRange("radius", 32.0, 8.0, 64.0);
-
-        BUILDER.comment(" ");
-
-        NATURE_MOB_RADIUS_FACTOR = BUILDER
-                .comment("Horizontal spread radius of falling petals relative to entity width. Final radius = max(0.3, entity_width * factor).",
-                        "花瓣飘落的水平散开半径相对于生物体宽的系数。最终半径 = max(0.3, 实体宽度 × 系数)。",
-                        "Default: 1.4 / 默认：1.4")
-                .defineInRange("radius_factor", 1.4, 0.3, 3.0);
+        NATURE_MOB_PARTICLES_PER_TIER = BUILDER
+                .comment("Petals spawned per tick per tier while the creature is moving. Total per tick = particles_per_tier * tier.",
+                        "自然属性生物移动时每 tick 每等级生成的樱花花瓣数。每 tick 总数 = 每等级花瓣数 × 等级。",
+                        "Default: 1 / 默认：1")
+                .defineInRange("particles_per_tier", 1, 1, 8);
 
         BUILDER.comment(" ");
 
         NATURE_MOB_SPAWN_HEIGHT_OFFSET = BUILDER
-                .comment("Height above the entity's head where petals are spawned, in blocks. Petals then fall naturally.",
-                        "花瓣生成点高出生物头顶的距离（方块）。花瓣生成后自然下落。",
-                        "Default: 0.5 / 默认：0.5")
-                .defineInRange("spawn_height_offset", 0.5, 0.0, 3.0);
-
-        BUILDER.comment(" ");
-
-        NATURE_MOB_PARTICLES_PER_TIER = BUILDER
-                .comment("Petals spawned per tick per tier. Total per entity = particles_per_tier * tier.",
-                        "每 tick 每等级生成的花瓣数。单实体总花瓣数 = 每等级花瓣数 × 等级。",
-                        "Default: 1 / 默认：1")
-                .defineInRange("particles_per_tier", 1, 1, 8);
+                .comment("Extra vertical extension above the entity's body where petals can spawn, in blocks. Petals spawn at random positions within the body bounding box plus this extra extension.",
+                        "花瓣生成点的额外垂直扩展范围（方块）。花瓣在生物包围盒内的随机位置生成，并额外向上扩展此高度。",
+                        "Default: 0.3 / 默认：0.3")
+                .defineInRange("spawn_height_offset", 0.3, 0.0, 3.0);
 
         BUILDER.comment(" ");
 
@@ -1056,16 +954,8 @@ public class ElementalVisualConfig {
 
         BUILDER.comment(" ");
 
-        NATURE_MOB_MAX_PARTICLES_PER_TICK = BUILDER
-                .comment("Global budget: maximum total petals spawned per tick across all eligible entities. Entities are prioritized by distance.",
-                        "全局粒子预算：每 tick 在所有合格实体上生成的花瓣总数上限。按距离优先分配。",
-                        "Default: 150 / 默认：150")
-                .defineInRange("max_particles_per_tick", 150, 20, 500);
-
-        BUILDER.comment(" ");
-
         NATURE_MOB_HIDE_WHEN_INVISIBLE = BUILDER
-                .comment("Whether to hide the aura on entities with the Invisibility effect.",
+                .comment("Whether to hide the effect on entities with the Invisibility effect.",
                         "是否在生物拥有隐形效果时隐藏特效。",
                         "Default: true / 默认：true")
                 .define("hide_when_invisible", true);
@@ -1073,8 +963,8 @@ public class ElementalVisualConfig {
         BUILDER.comment(" ");
 
         NATURE_MOB_HIDE_SELF_FIRST_PERSON = BUILDER
-                .comment("Whether to hide the aura on the local player in first-person view only. Third-person view still renders it.",
-                        "是否仅在第一人称下隐藏本地玩家自己身上的特效。第三人称仍正常渲染。",
+                .comment("Whether to hide the effect on the local player in first-person view. Third-person view still renders it.",
+                        "是否仅在第一人称下隐藏本地玩家自己的特效。第三人称仍正常渲染。",
                         "Default: true / 默认：true")
                 .define("hide_self_first_person", true);
 
@@ -2423,25 +2313,14 @@ public class ElementalVisualConfig {
         fireImpactSmokeSpreadY = FIRE_IMPACT_SMOKE_SPREAD_Y.get();
 
         fireMobEnabled = FIRE_MOB_ENABLED.get();
-        fireMobScanInterval = FIRE_MOB_SCAN_INTERVAL.get();
-        fireMobRadius = FIRE_MOB_RADIUS.get();
-        fireMobRadiusFactor = FIRE_MOB_RADIUS_FACTOR.get();
-        fireMobParticleLife = FIRE_MOB_PARTICLE_LIFE.get();
-        fireMobRotationSpeed = FIRE_MOB_ROTATION_SPEED.get();
-        fireMobParticlesPerHelix = FIRE_MOB_PARTICLES_PER_HELIX.get();
-        fireMobTopBurstParticles = FIRE_MOB_TOP_BURST_PARTICLES.get();
-        fireMobMaxParticlesPerTick = FIRE_MOB_MAX_PARTICLES_PER_TICK.get();
+        fireMobParticlesPerTier = FIRE_MOB_PARTICLES_PER_TIER.get();
         fireMobHideWhenInvisible = FIRE_MOB_HIDE_WHEN_INVISIBLE.get();
         fireMobHideSelfFirstPerson = FIRE_MOB_HIDE_SELF_FIRST_PERSON.get();
 
         natureMobEnabled = NATURE_MOB_ENABLED.get();
-        natureMobScanInterval = NATURE_MOB_SCAN_INTERVAL.get();
-        natureMobRadius = NATURE_MOB_RADIUS.get();
-        natureMobRadiusFactor = NATURE_MOB_RADIUS_FACTOR.get();
-        natureMobSpawnHeightOffset = NATURE_MOB_SPAWN_HEIGHT_OFFSET.get();
         natureMobParticlesPerTier = NATURE_MOB_PARTICLES_PER_TIER.get();
+        natureMobSpawnHeightOffset = NATURE_MOB_SPAWN_HEIGHT_OFFSET.get();
         natureMobHorizontalSpeed = NATURE_MOB_HORIZONTAL_SPEED.get();
-        natureMobMaxParticlesPerTick = NATURE_MOB_MAX_PARTICLES_PER_TICK.get();
         natureMobHideWhenInvisible = NATURE_MOB_HIDE_WHEN_INVISIBLE.get();
         natureMobHideSelfFirstPerson = NATURE_MOB_HIDE_SELF_FIRST_PERSON.get();
 
