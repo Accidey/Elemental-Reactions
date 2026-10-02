@@ -9,11 +9,11 @@ version = mod_version
 group = mod_group_id
 
 base {
-    archivesName = "${mod_id}-Forge-${minecraft_version}-${mod_version}"
+    archivesName = "Elemental-Reactions-Forge-${minecraft_version}-${mod_version}"
 }
 
 tasks.withType(AbstractArchiveTask).configureEach {
-    archiveFileName = "${mod_id}-Forge-${minecraft_version}-${mod_version}.jar"
+    archiveFileName = "Elemental-Reactions-Forge-${minecraft_version}-${mod_version}.jar"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
