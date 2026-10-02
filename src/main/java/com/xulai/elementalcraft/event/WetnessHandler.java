@@ -24,6 +24,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.fish.WaterAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.AbstractThrownPotion;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
@@ -700,7 +702,10 @@ public class WetnessHandler {
     public static void onProjectileImpact(ProjectileImpactEvent event) {
         if (event.getRayTraceResult().getType() != HitResult.Type.ENTITY) return;
         Entity projectile = event.getProjectile();
-        if (!(projectile instanceof AbstractThrownPotion)) return;
+        if (!(projectile instanceof AbstractThrownPotion potion)) return;
+        PotionContents contents = potion.getItem().get(net.minecraft.core.component.DataComponents.POTION_CONTENTS);
+        if (contents == null) return;
+        if (!contents.is(Potions.WATER) && !contents.is(Potions.MUNDANE) && !contents.is(Potions.THICK)) return;
         Entity target = ((EntityHitResult) event.getRayTraceResult()).getEntity();
         if (!(target instanceof LivingEntity livingTarget)) return;
         if (ScorchedHandler.isScorched(livingTarget)) {
