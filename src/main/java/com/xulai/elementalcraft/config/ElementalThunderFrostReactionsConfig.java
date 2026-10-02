@@ -432,7 +432,7 @@ public final class ElementalThunderFrostReactionsConfig {
         BUILDER.pop();
 
         BUILDER.comment("雷霆反制配置 - Thunder Counter",
-                        "雷霆属性生物在低血量时受到伤害触发的反击机制：释放扩散雷暴，周期性劈击范围内所有实体并施加静电效果。",
+                        "雷霆属性生物在低血量时受到伤害触发的反制机制：释放扩散雷暴，周期性劈击范围内所有实体并施加静电效果。",
                         "A counter-attack triggered when a Thunder entity takes damage at low health: releases an expanding thunder storm that periodically strikes all entities in range and applies Static Shock.")
                 .push("thunder_counter");
         BUILDER.comment(" ");
@@ -922,7 +922,7 @@ public final class ElementalThunderFrostReactionsConfig {
         BUILDER.pop();
 
         BUILDER.comment("冰霜反制配置 - Frost Counter",
-                        "冰霜属性生物在低血量时受到伤害触发的反击机制：释放冰暴霜冻环，冻结范围内的敌人。",
+                        "冰霜属性生物在低血量时受到伤害触发的反制机制：释放冰暴霜冻环，冻结范围内的敌人。",
                         "A counter-attack triggered when a Frost entity takes damage at low health: releases an Ice Burst frost ring that freezes enemies in range.")
                 .push("frost_counter");
 
