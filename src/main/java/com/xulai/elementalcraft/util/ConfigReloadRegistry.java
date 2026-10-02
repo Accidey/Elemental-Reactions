@@ -8,12 +8,12 @@ import java.util.Map;
 
 public final class ConfigReloadRegistry {
 
-    public static final String COMMON = "ElementalCraft/elementalcraft-common.toml";
-    public static final String FORCED_ITEMS = "ElementalCraft/elementalcraft-forced-items.toml";
-    public static final String FIRE_NATURE = "ElementalCraft/elementalcraft-fire-nature-reactions.toml";
-    public static final String VISUALS = "ElementalCraft/elementalcraft-visuals.toml";
-    public static final String THUNDER_FROST = "ElementalCraft/elementalcraft-thunder-frost-reactions.toml";
-    public static final String ISS_INTEGRATION = "ElementalCraft/elementalcraft-iss-integration.toml";
+    public static final String COMMON = "Elemental_Reactions/elemental-common.toml";
+    public static final String FORCED_ITEMS = "Elemental_Reactions/elemental-forced-items.toml";
+    public static final String FIRE_NATURE = "Elemental_Reactions/elemental-fire-nature-reactions.toml";
+    public static final String VISUALS = "Elemental_Reactions/elemental-visuals.toml";
+    public static final String THUNDER_FROST = "Elemental_Reactions/elemental-thunder-frost-reactions.toml";
+    public static final String ISS_INTEGRATION = "Elemental_Reactions/elemental-iss-integration.toml";
 
     private static final Map<IConfigSpec<?>, String> PATH_BY_SPEC = new LinkedHashMap<>();
     private static final Map<String, Runnable> RELOAD_BY_PATH = new LinkedHashMap<>();

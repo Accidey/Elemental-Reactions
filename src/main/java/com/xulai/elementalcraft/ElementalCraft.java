@@ -121,8 +121,21 @@ public class ElementalCraft {
     private void migrateConfigFiles() {
         try {
             Path configRoot = FMLPaths.CONFIGDIR.get();
+            Path oldDir = configRoot.resolve("ElementalCraft");
+            Path newDir = configRoot.resolve("Elemental_Reactions");
 
-            String[] filesToMove = {
+            if (Files.exists(oldDir)) {
+                if (Files.exists(newDir)) {
+                    migrateLegacyFilesInside(oldDir, newDir);
+                } else {
+                    Files.move(oldDir, newDir);
+                    LOGGER.info("[ElementalCraft] 旧配置目录已重命名为 Elemental_Reactions");
+                }
+                renameLegacyFiles(newDir);
+                return;
+            }
+
+            String[] legacyFiles = {
                 "elementalcraft-common.toml",
                 "elementalcraft-forced-items.toml",
                 "elementalcraft-reactions.toml",
@@ -133,17 +146,69 @@ public class ElementalCraft {
                 "elementalcraft-iss-integration.toml"
             };
 
-            for (String file : filesToMove) {
+            if (!Files.exists(newDir)) Files.createDirectories(newDir);
+            for (String file : legacyFiles) {
                 Path oldPath = configRoot.resolve(file);
-                if (Files.exists(oldPath)) {
-                    Path backupPath = configRoot.resolve(file + ".bak");
-                    Files.move(oldPath, backupPath, StandardCopyOption.REPLACE_EXISTING);
-                    LOGGER.info("[ElementalCraft] 旧配置文件已备份为 {}（不会被加载）", backupPath.getFileName());
-                }
+                if (!Files.exists(oldPath)) continue;
+                Files.move(oldPath, newDir.resolve(file), StandardCopyOption.REPLACE_EXISTING);
             }
+            renameLegacyFiles(newDir);
 
         } catch (Exception e) {
-            LOGGER.warn("[ElementalCraft] 备份旧配置文件失败: {}", e.getMessage());
+            LOGGER.warn("[ElementalCraft] 迁移旧配置文件失败: {}", e.getMessage());
+        }
+    }
+
+    private void migrateLegacyFilesInside(Path oldDir, Path newDir) throws java.io.IOException {
+        String[] legacyFiles = {
+            "elementalcraft-common.toml",
+            "elementalcraft-forced-items.toml",
+            "elementalcraft-reactions.toml",
+            "elementalcraft-fire-nature-reactions.toml",
+            "elementalcraft-visuals.toml",
+            "elementalcraft-thunderfrost-reactions.toml",
+            "elementalcraft-thunder-frost-reactions.toml",
+            "elementalcraft-iss-integration.toml"
+        };
+        for (String file : legacyFiles) {
+            Path oldPath = oldDir.resolve(file);
+            if (!Files.exists(oldPath)) continue;
+            Files.move(oldPath, newDir.resolve(file), StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    private void renameLegacyFiles(Path dir) throws java.io.IOException {
+        String[] legacyFiles = {
+            "elementalcraft-common.toml",
+            "elementalcraft-forced-items.toml",
+            "elementalcraft-reactions.toml",
+            "elementalcraft-fire-nature-reactions.toml",
+            "elementalcraft-visuals.toml",
+            "elementalcraft-thunderfrost-reactions.toml",
+            "elementalcraft-thunder-frost-reactions.toml",
+            "elementalcraft-iss-integration.toml"
+        };
+        String[] newFiles = {
+            "elemental-common.toml",
+            "elemental-forced-items.toml",
+            "elemental-reactions.toml",
+            "elemental-fire-nature-reactions.toml",
+            "elemental-visuals.toml",
+            "elemental-thunderfrost-reactions.toml",
+            "elemental-thunder-frost-reactions.toml",
+            "elemental-iss-integration.toml"
+        };
+        for (int i = 0; i < legacyFiles.length; i++) {
+            Path oldPath = dir.resolve(legacyFiles[i]);
+            if (!Files.exists(oldPath)) continue;
+            Path newPath = dir.resolve(newFiles[i]);
+            if (Files.exists(newPath)) {
+                Files.delete(oldPath);
+                LOGGER.info("[ElementalCraft] 旧配置文件 {} 已删除（新文件已存在）", legacyFiles[i]);
+            } else {
+                Files.move(oldPath, newPath);
+                LOGGER.info("[ElementalCraft] 旧配置文件已重命名为 {}", newFiles[i]);
+            }
         }
     }
 

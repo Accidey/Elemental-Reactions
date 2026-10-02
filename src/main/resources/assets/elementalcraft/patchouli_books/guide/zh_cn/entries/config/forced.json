@@ -11,7 +11,7 @@
     {
       "type": "patchouli:text",
       "title": "forced_weapons",
-      "text": "在 $(thing)elementalcraft-forced-items.toml$() 中：$(br2)$(thing)\"模组:物品ID,元素\"$()$(br2)例如：$(br2)$(thing)\"minecraft:golden_sword,thunder\"$()$(br2)玩家携带该物品时，它会获得 I 级对应属性附魔。删除该行后，下次背包检查会移除附魔。"
+      "text": "在 $(thing)elemental-forced-items.toml$() 中：$(br2)$(thing)\"模组:物品ID,元素\"$()$(br2)例如：$(br2)$(thing)\"minecraft:golden_sword,thunder\"$()$(br2)玩家携带该物品时，它会获得 I 级对应属性附魔。删除该行后，下次背包检查会移除附魔。"
     },
     {
       "type": "patchouli:text",
@@ -21,7 +21,7 @@
     {
       "type": "patchouli:text",
       "title": "forced_entities",
-      "text": "在 $(thing)elementalcraft-common.toml$() 的 $(thing)forced_attributes.forced_entities$() 中：$(br2)$(thing)\"模组:实体ID,攻击,强化元素,强化点数,抗性元素,抗性点数\"$()$(br2)例如：$(br2)$(thing)\"minecraft:zombie,fire,fire,60,frost,40\"$()$(br2)这会替该生物跳过随机生成。注意：没有强制条目的生物会被$(thing)下界$()与$(thing)末地$()的维度强制覆盖，想例外就得给它加条目。"
+      "text": "在 $(thing)elemental-common.toml$() 的 $(thing)forced_attributes.forced_entities$() 中：$(br2)$(thing)\"模组:实体ID,攻击,强化元素,强化点数,抗性元素,抗性点数\"$()$(br2)例如：$(br2)$(thing)\"minecraft:zombie,fire,fire,60,frost,40\"$()$(br2)这会替该生物跳过随机生成。注意：没有强制条目的生物会被$(thing)下界$()与$(thing)末地$()的维度强制覆盖，想例外就得给它加条目。"
     }
   ]
 }

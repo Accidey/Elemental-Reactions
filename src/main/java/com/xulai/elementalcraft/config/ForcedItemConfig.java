@@ -74,7 +74,7 @@ public final class ForcedItemConfig {
 
 
     public static void register() {
-        register("elementalcraft-forced-items.toml");
+        register("elemental-forced-items.toml");
     }
 
     public static void register(String configPath) {
