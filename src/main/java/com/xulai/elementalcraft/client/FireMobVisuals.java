@@ -12,10 +12,14 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = ElementalCraft.MODID, value = Dist.CLIENT)
 public class FireMobVisuals {
@@ -23,6 +27,7 @@ public class FireMobVisuals {
     private FireMobVisuals() {}
 
     private static final double MOVEMENT_THRESHOLD_SQ = 1.0E-6;
+    private static final Map<Integer, Vec3> PREV_POS = new HashMap<>();
 
     @SubscribeEvent
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
@@ -37,9 +42,18 @@ public class FireMobVisuals {
 
         if (!isValidTarget(entity, mc.player)) return;
 
-        double dx = entity.xo - entity.xOld;
-        double dz = entity.zo - entity.zOld;
-        if (dx * dx + dz * dz < MOVEMENT_THRESHOLD_SQ) return;
+        int id = entity.getId();
+        Vec3 pos = entity.position();
+        Vec3 prev = PREV_POS.get(id);
+        boolean moving = false;
+        if (prev != null) {
+            double dx = pos.x - prev.x;
+            double dz = pos.z - prev.z;
+            moving = dx * dx + dz * dz >= MOVEMENT_THRESHOLD_SQ;
+        }
+        PREV_POS.put(id, pos);
+
+        if (!moving) return;
 
         int tier = FireVisuals.calculateVisualTier(entity, ElementType.FIRE);
         if (tier <= 0) return;
