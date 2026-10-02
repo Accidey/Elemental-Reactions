@@ -12,6 +12,10 @@ base {
     archivesName = "${mod_id}-Forge-${minecraft_version}-${mod_version}"
 }
 
+tasks.withType(AbstractArchiveTask).configureEach {
+    archiveFileName = "${mod_id}-Forge-${minecraft_version}-${mod_version}.jar"
+}
+
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
