@@ -150,6 +150,13 @@ public class ElementalVisualConfig {
     public static final ForgeConfigSpec.BooleanValue NATURE_MOB_HIDE_WHEN_INVISIBLE;
     public static final ForgeConfigSpec.BooleanValue NATURE_MOB_HIDE_SELF_FIRST_PERSON;
 
+    public static final ForgeConfigSpec.BooleanValue THUNDER_MOB_ENABLED;
+    public static final ForgeConfigSpec.IntValue THUNDER_MOB_PARTICLES_PER_TIER;
+    public static final ForgeConfigSpec.IntValue THUNDER_MOB_SPAWN_INTERVAL;
+    public static final ForgeConfigSpec.DoubleValue THUNDER_MOB_RADIUS_FACTOR;
+    public static final ForgeConfigSpec.BooleanValue THUNDER_MOB_HIDE_WHEN_INVISIBLE;
+    public static final ForgeConfigSpec.BooleanValue THUNDER_MOB_HIDE_SELF_FIRST_PERSON;
+
     public static final ForgeConfigSpec.DoubleValue NATURE_MELEE_RADIUS;
     public static final ForgeConfigSpec.DoubleValue NATURE_MELEE_BASE_ANGLE_DEGREES;
     public static final ForgeConfigSpec.DoubleValue NATURE_MELEE_ANGLE_MULTIPLIER_BASE;
@@ -303,6 +310,13 @@ public class ElementalVisualConfig {
     public static volatile double natureMobHorizontalSpeed = 0.05;
     public static volatile boolean natureMobHideWhenInvisible = true;
     public static volatile boolean natureMobHideSelfFirstPerson = true;
+
+    public static volatile boolean thunderMobEnabled = true;
+    public static volatile int thunderMobParticlesPerTier = 1;
+    public static volatile int thunderMobSpawnInterval = 20;
+    public static volatile double thunderMobRadiusFactor = 0.5;
+    public static volatile boolean thunderMobHideWhenInvisible = true;
+    public static volatile boolean thunderMobHideSelfFirstPerson = true;
 
     public static volatile double natureMeleeRadius = 2.2;
     public static volatile double natureMeleeBaseAngleDegrees = 50.0;
@@ -1441,6 +1455,57 @@ public class ElementalVisualConfig {
                         "Default: true / 默认：true")
                 .define("thunder_ranged_enabled", true);
 
+        BUILDER.comment("Thunder Mob Spark Visuals", "雷霆生物电火花特效")
+                .push("mob_aura");
+
+        THUNDER_MOB_ENABLED = BUILDER
+                .comment("Whether to enable the Thunder mob spark effect: electric sparks intermittently flash at random positions around a Thunder-attribute creature's body, marking the creature and its enhancement tier.",
+                        "是否开启雷霆生物电火花特效：雷霆属性生物身体周围随机位置间歇闪现电火花，用于识别雷霆属性生物及其强化等级。",
+                        "Default: true / 默认：true")
+                .define("thunder_mob_enabled", true);
+
+        BUILDER.comment(" ");
+
+        THUNDER_MOB_PARTICLES_PER_TIER = BUILDER
+                .comment("Sparks spawned per batch per tier. Total per batch = particles_per_tier * tier.",
+                        "每次生成时每等级的电火花数量。每批总数 = 每等级火花数 × 等级。",
+                        "Default: 1 / 默认：1")
+                .defineInRange("particles_per_tier", 1, 1, 8);
+
+        BUILDER.comment(" ");
+
+        THUNDER_MOB_SPAWN_INTERVAL = BUILDER
+                .comment("How many ticks between each spark batch. Larger values mean fewer sparks.",
+                        "每隔多少 tick 生成一批电火花。数值越大，电火花越少。",
+                        "Default: 20 / 默认：20")
+                .defineInRange("spawn_interval", 20, 1, 200);
+
+        BUILDER.comment(" ");
+
+        THUNDER_MOB_RADIUS_FACTOR = BUILDER
+                .comment("Horizontal spread of sparks relative to entity width. Sparks spawn within the body bounding box scaled by this factor.",
+                        "电火花水平散布范围相对于生物体宽的系数。火花在按此系数缩放的包围盒内生成。",
+                        "Default: 0.5 / 默认：0.5")
+                .defineInRange("radius_factor", 0.5, 0.1, 1.5);
+
+        BUILDER.comment(" ");
+
+        THUNDER_MOB_HIDE_WHEN_INVISIBLE = BUILDER
+                .comment("Whether to hide the effect on entities with the Invisibility effect.",
+                        "是否在生物拥有隐形效果时隐藏特效。",
+                        "Default: true / 默认：true")
+                .define("hide_when_invisible", true);
+
+        BUILDER.comment(" ");
+
+        THUNDER_MOB_HIDE_SELF_FIRST_PERSON = BUILDER
+                .comment("Whether to hide the effect on the local player in first-person view. Third-person view still renders it.",
+                        "是否仅在第一人称下隐藏本地玩家自己的特效。第三人称仍正常渲染。",
+                        "Default: true / 默认：true")
+                .define("hide_self_first_person", true);
+
+        BUILDER.pop();
+
         BUILDER.comment("Thunder Melee Swing Visuals", "雷霆近战挥动特效")
                 .push("melee");
 
@@ -2323,6 +2388,13 @@ public class ElementalVisualConfig {
         natureMobHorizontalSpeed = NATURE_MOB_HORIZONTAL_SPEED.get();
         natureMobHideWhenInvisible = NATURE_MOB_HIDE_WHEN_INVISIBLE.get();
         natureMobHideSelfFirstPerson = NATURE_MOB_HIDE_SELF_FIRST_PERSON.get();
+
+        thunderMobEnabled = THUNDER_MOB_ENABLED.get();
+        thunderMobParticlesPerTier = THUNDER_MOB_PARTICLES_PER_TIER.get();
+        thunderMobSpawnInterval = THUNDER_MOB_SPAWN_INTERVAL.get();
+        thunderMobRadiusFactor = THUNDER_MOB_RADIUS_FACTOR.get();
+        thunderMobHideWhenInvisible = THUNDER_MOB_HIDE_WHEN_INVISIBLE.get();
+        thunderMobHideSelfFirstPerson = THUNDER_MOB_HIDE_SELF_FIRST_PERSON.get();
 
         natureMeleeRadius = NATURE_MELEE_RADIUS.get();
         natureMeleeBaseAngleDegrees = NATURE_MELEE_BASE_ANGLE_DEGREES.get();
