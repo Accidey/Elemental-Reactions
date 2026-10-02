@@ -30,7 +30,11 @@ repositories {
 }
 
 base {
-    archivesName = "ElementalCraft-Reactions"
+    archivesName = "Elemental-Reactions-NeoForge-${mod_version}-${minecraft_version}"
+}
+
+tasks.withType(AbstractArchiveTask).configureEach {
+    archiveFileName = "Elemental-Reactions-NeoForge-${mod_version}-${minecraft_version}.jar"
 }
 
 // Mojang ships Java 25 to end users in 26.3, so mods should target Java 25.
