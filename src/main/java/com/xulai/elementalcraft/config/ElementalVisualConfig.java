@@ -141,6 +141,7 @@ public class ElementalVisualConfig {
     public static final ForgeConfigSpec.BooleanValue FIRE_MOB_ENABLED;
     public static final ForgeConfigSpec.IntValue FIRE_MOB_SCAN_INTERVAL;
     public static final ForgeConfigSpec.DoubleValue FIRE_MOB_RADIUS;
+    public static final ForgeConfigSpec.DoubleValue FIRE_MOB_RADIUS_FACTOR;
     public static final ForgeConfigSpec.IntValue FIRE_MOB_PARTICLE_LIFE;
     public static final ForgeConfigSpec.DoubleValue FIRE_MOB_ROTATION_SPEED;
     public static final ForgeConfigSpec.IntValue FIRE_MOB_PARTICLES_PER_HELIX;
@@ -294,9 +295,10 @@ public class ElementalVisualConfig {
     public static volatile boolean fireMobEnabled = true;
     public static volatile int fireMobScanInterval = 20;
     public static volatile double fireMobRadius = 32.0;
+    public static volatile double fireMobRadiusFactor = 1.4;
     public static volatile int fireMobParticleLife = 40;
     public static volatile double fireMobRotationSpeed = 0.3;
-    public static volatile int fireMobParticlesPerHelix = 2;
+    public static volatile int fireMobParticlesPerHelix = 1;
     public static volatile int fireMobTopBurstParticles = 3;
     public static volatile int fireMobMaxParticlesPerTick = 150;
     public static volatile boolean fireMobHideWhenInvisible = true;
@@ -889,6 +891,14 @@ public class ElementalVisualConfig {
 
         BUILDER.comment(" ");
 
+        FIRE_MOB_RADIUS_FACTOR = BUILDER
+                .comment("Radius of the helix relative to the entity width. Final radius = max(0.3, entity_width * factor). Larger values spread the flame column wider.",
+                        "螺线半径相对于生物体宽的系数。最终半径 = max(0.3, 实体宽度 × 系数)。数值越大，火焰柱越宽。",
+                        "Default: 1.4 / 默认：1.4")
+                .defineInRange("radius_factor", 1.4, 0.3, 3.0);
+
+        BUILDER.comment(" ");
+
         FIRE_MOB_PARTICLE_LIFE = BUILDER
                 .comment("Lifetime of each flame particle in ticks. Determines how much of the spiral is visible (40 ticks ~ 1.9 turns).",
                         "每个火焰粒子的存活时间（tick）。决定螺线的可见长度（40 tick 约 1.9 圈）。",
@@ -908,8 +918,8 @@ public class ElementalVisualConfig {
         FIRE_MOB_PARTICLES_PER_HELIX = BUILDER
                 .comment("Particles spawned per helix strand per tick. Total per entity = particles_per_helix * tier.",
                         "每股螺线每 tick 生成的粒子数。单实体总粒子数 = 每股粒子数 × 等级。",
-                        "Default: 2 / 默认：2")
-                .defineInRange("particles_per_helix", 2, 1, 8);
+                        "Default: 1 / 默认：1")
+                .defineInRange("particles_per_helix", 1, 1, 8);
 
         BUILDER.comment(" ");
 
@@ -2310,6 +2320,7 @@ public class ElementalVisualConfig {
         fireMobEnabled = FIRE_MOB_ENABLED.get();
         fireMobScanInterval = FIRE_MOB_SCAN_INTERVAL.get();
         fireMobRadius = FIRE_MOB_RADIUS.get();
+        fireMobRadiusFactor = FIRE_MOB_RADIUS_FACTOR.get();
         fireMobParticleLife = FIRE_MOB_PARTICLE_LIFE.get();
         fireMobRotationSpeed = FIRE_MOB_ROTATION_SPEED.get();
         fireMobParticlesPerHelix = FIRE_MOB_PARTICLES_PER_HELIX.get();

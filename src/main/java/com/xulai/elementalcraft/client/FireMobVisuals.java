@@ -119,7 +119,7 @@ public class FireMobVisuals {
 
     private static int spawnAuraScaled(Level level, LivingEntity entity, int tier, int particleBudget, int hardCap) {
         double height = entity.getBbHeight() + 0.3;
-        double radius = Math.max(0.3, entity.getBbWidth() * 0.7);
+        double radius = Math.max(0.3, entity.getBbWidth() * ElementalVisualConfig.fireMobRadiusFactor);
         double rotationSpeed = ElementalVisualConfig.fireMobRotationSpeed;
         int desiredPerTick = ElementalVisualConfig.fireMobParticlesPerHelix * tier;
         int count = Math.min(particleBudget, Math.min(desiredPerTick, hardCap));
