@@ -13,6 +13,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import com.xulai.elementalcraft.util.ElementType;
 import com.xulai.elementalcraft.util.ElementUtils;
+import com.xulai.elementalcraft.util.MobEffectLookup;
 import com.xulai.elementalcraft.util.ElementDamageHelper;
 import com.xulai.elementalcraft.util.EffectHelper;
 import com.xulai.elementalcraft.event.SteamReactionHandler;
@@ -558,7 +559,7 @@ public class FrostbiteHandler {
     public static void onLivingTick(EntityTickEvent.Post event) {
         if (!(event.getEntity() instanceof LivingEntity entity)) return;
         if (entity.level().isClientSide()) {
-            if (entity.hasEffect(ModMobEffects.FREEZE)) {
+            if (MobEffectLookup.hasEffect(entity, ModMobEffects.FREEZE)) {
                 entity.setTicksFrozen(300);
             } else {
                 if (entity.getTicksFrozen() > 0 && !entity.isInPowderSnow) {

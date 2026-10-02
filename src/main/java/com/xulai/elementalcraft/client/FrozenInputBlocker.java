@@ -3,6 +3,7 @@ package com.xulai.elementalcraft.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.potion.ModMobEffects;
+import com.xulai.elementalcraft.util.MobEffectLookup;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
@@ -41,8 +42,8 @@ public class FrozenInputBlocker {
 
     private static boolean isAffected(Minecraft mc) {
         return mc.player != null
-            && (mc.player.hasEffect(ModMobEffects.FREEZE)
-             || mc.player.hasEffect(ModMobEffects.PARALYSIS));
+            && (MobEffectLookup.hasEffect(mc.player, ModMobEffects.FREEZE)
+             || MobEffectLookup.hasEffect(mc.player, ModMobEffects.PARALYSIS));
     }
 
     @SubscribeEvent

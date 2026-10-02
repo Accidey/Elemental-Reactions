@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import com.xulai.elementalcraft.potion.ModMobEffects;
+import com.xulai.elementalcraft.util.MobEffectLookup;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -27,9 +28,9 @@ public class FrostbiteSnowLayer {
         LivingEntity entity = event.getRenderState().getRenderData(LivingEntityRenderStateData.ENTITY);
         if (entity == null) return;
 
-        if (entity.hasEffect(ModMobEffects.FREEZE)) return;
+        if (MobEffectLookup.hasEffect(entity, ModMobEffects.FREEZE)) return;
 
-        MobEffectInstance frostbite = entity.getEffect(ModMobEffects.FROSTBITE);
+        MobEffectInstance frostbite = MobEffectLookup.getEffect(entity, ModMobEffects.FROSTBITE);
         if (frostbite == null) return;
         int stacks = frostbite.getAmplifier() + 1;
         if (stacks <= 0) return;
