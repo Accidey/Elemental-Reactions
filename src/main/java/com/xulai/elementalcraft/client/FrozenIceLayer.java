@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.potion.ModMobEffects;
-import com.xulai.elementalcraft.util.MobEffectLookup;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -14,20 +13,57 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @EventBusSubscriber(modid = ElementalCraft.MODID, value = Dist.CLIENT)
 public class FrozenIceLayer {
 
     private static final Identifier ICE_TEXTURE = Identifier.withDefaultNamespace("textures/block/packed_ice.png");
 
+    private static final Map<UUID, Boolean> freezeCache = new HashMap<>();
+
     @SubscribeEvent
-    public static void onRenderLivingPost(RenderLivingEvent.Post<?, ?, ?> event) {
+    public static void onMobEffectAdded(MobEffectEvent.Added event) {
+        if (event.getEffectInstance() != null
+                && event.getEffectInstance().getEffect().value() == ModMobEffects.FREEZE.value()) {
+            freezeCache.put(event.getEntity().getUUID(), true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onMobEffectRemoved(MobEffectEvent.Remove event) {
+        if (event.getEffect().value() == ModMobEffects.FREEZE.value()) {
+            freezeCache.remove(event.getEntity().getUUID());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onMobEffectExpired(MobEffectEvent.Expired event) {
+        if (event.getEffectInstance() != null
+                && event.getEffectInstance().getEffect().value() == ModMobEffects.FREEZE.value()) {
+            freezeCache.remove(event.getEntity().getUUID());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onEntityLeaveLevel(EntityLeaveLevelEvent event) {
+        freezeCache.remove(event.getEntity().getUUID());
+    }
+
+    @SubscribeEvent
+    public static void onRenderLivingPre(RenderLivingEvent.Pre<?, ?, ?> event) {
+        if (event.isCanceled()) return;
         LivingEntity entity = event.getRenderState().getRenderData(LivingEntityRenderStateData.ENTITY);
         if (entity == null) return;
 
-        if (!MobEffectLookup.hasEffect(entity, ModMobEffects.FREEZE)) return;
+        if (!freezeCache.containsKey(entity.getUUID())) return;
 
         float alpha = calcAlpha(entity);
         if (alpha <= 0.01f) return;
@@ -36,11 +72,17 @@ public class FrozenIceLayer {
         renderIceBox(event.getPoseStack(), event.getSubmitNodeCollector(), packedLight, entity, alpha);
     }
 
+    static boolean isFrozen(UUID uuid) {
+        return freezeCache.containsKey(uuid);
+    }
+
     private static float calcAlpha(LivingEntity entity) {
-        MobEffectInstance effect = MobEffectLookup.getEffect(entity, ModMobEffects.FREEZE);
-        if (effect == null) return 0.0f;
-        int dur = effect.getDuration();
-        if (dur < 20) return 1.0f * (dur / 20.0f);
+        if (!freezeCache.containsKey(entity.getUUID())) return 0.0f;
+        MobEffectInstance effect = entity.getEffect(ModMobEffects.FREEZE);
+        if (effect != null) {
+            int dur = effect.getDuration();
+            if (dur < 20) return 1.0f * (dur / 20.0f);
+        }
         return 1.0f;
     }
 
