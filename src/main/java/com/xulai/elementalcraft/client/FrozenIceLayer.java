@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.potion.ModMobEffects;
+import com.xulai.elementalcraft.util.MobEffectLookup;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -25,7 +26,7 @@ public class FrozenIceLayer {
     public static void onRenderLivingPost(RenderLivingEvent.Post<?, ?> event) {
         LivingEntity entity = event.getEntity();
 
-        if (!entity.hasEffect(ModMobEffects.FREEZE)) return;
+        if (!MobEffectLookup.hasEffect(entity, ModMobEffects.FREEZE)) return;
 
         float alpha = calcAlpha(entity);
         if (alpha <= 0.01f) return;
@@ -34,7 +35,7 @@ public class FrozenIceLayer {
     }
 
     private static float calcAlpha(LivingEntity entity) {
-        MobEffectInstance effect = entity.getEffect(ModMobEffects.FREEZE);
+        MobEffectInstance effect = MobEffectLookup.getEffect(entity, ModMobEffects.FREEZE);
         if (effect == null) return 0.0f;
         int dur = effect.getDuration();
         if (dur < 20) return 1.0f * (dur / 20.0f);
