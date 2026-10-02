@@ -32,7 +32,7 @@ repositories {
 }
 
 base {
-    archivesName = "Elemental-Reactions"
+    archivesName = "${mod_id}-NeoForge-${minecraft_version}-${mod_version}"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
