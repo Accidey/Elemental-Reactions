@@ -16,7 +16,7 @@
     {
       "type": "patchouli:text",
       "title": "A note on bows",
-      "text": "Attribute enchantments work on bows, crossbows and tridents too. Shoot a wet mob with a Fire-aspect bow and you get the same steam explosion a sword would produce.$(br2)Projectiles read the element of the $(thing)weapon that fired them$(), not the projectile itself."
+      "text": "Attribute enchantments work on bows, crossbows and tridents too. Shoot a wet mob with a Fire-aspect bow and you get the same steam explosion a sword would produce.$(br2)Projectiles read the element of the $(thing)projectile itself$() - a trident or thrown item carries its own enchantment. Arrows instead read the $(thing)bow or crossbow$() that fired them. Throwing a splash potion while holding an enchanted weapon in the other hand no longer triggers elemental effects."
     }
   ]
 }

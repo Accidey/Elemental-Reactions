@@ -11,7 +11,7 @@
     {
       "type": "patchouli:text",
       "title": "How you get wet",
-      "text": "$(li)Swimming: $(thing)3 levels$() in shallow water, the full $(thing)5$() when fully submerged.$(li)Rain or snow: $()+1 level per 10 seconds, up to 5.$(li)A thrown $(thing)splash water bottle$(): +1 level. Elemental mobs carry these and will throw them at you.$(li)Standing in a $(thing)steam cloud$(): the cloud condenses onto you."
+      "text": "$(li)Swimming: $(thing)3 levels$() in shallow water, the full $(thing)5$() when fully submerged.$(li)Rain or snow: $()+1 level per 10 seconds, up to 5.$(li)A thrown $(thing)splash water bottle$(), $(thing)splash mundane$() or $(thing)splash thick$() potion: +1 level. Elemental mobs carry these and will throw them at you.$(li)Standing in a $(thing)steam cloud$(): the cloud condenses onto you."
     },
     {
       "type": "patchouli:text",
