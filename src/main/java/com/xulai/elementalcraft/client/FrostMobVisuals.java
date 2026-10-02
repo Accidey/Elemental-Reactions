@@ -6,7 +6,7 @@ import com.xulai.elementalcraft.util.ElementType;
 import com.xulai.elementalcraft.util.ElementUtils;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -58,14 +58,13 @@ public class FrostMobVisuals {
         if (tier <= 0) return;
 
         int count = ElementalVisualConfig.frostMobParticlesPerTier * tier;
-        SimpleParticleType particle = ModParticles.frostSnowflake();
         double px = entity.getX();
         double py = entity.getY() + 0.05;
         double pz = entity.getZ();
         for (int i = 0; i < count; i++) {
             double ox = (Math.random() * 2 - 1) * entity.getBbWidth() * 0.3;
             double oz = (Math.random() * 2 - 1) * entity.getBbWidth() * 0.3;
-            level.addParticle(particle, px + ox, py, pz + oz, 0, 0, 0);
+            level.addParticle(ParticleTypes.SNOWFLAKE, px + ox, py, pz + oz, 0, 0, 0);
         }
     }
 
