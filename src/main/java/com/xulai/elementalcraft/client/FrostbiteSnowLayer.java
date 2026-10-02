@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import com.xulai.elementalcraft.potion.ModMobEffects;
-import com.xulai.elementalcraft.util.MobEffectLookup;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -14,8 +13,14 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @EventBusSubscriber(modid = ElementalCraft.MODID, value = Dist.CLIENT)
 public class FrostbiteSnowLayer {
@@ -23,16 +28,47 @@ public class FrostbiteSnowLayer {
     @SuppressWarnings("removal")
     private static final Identifier SNOW_TEXTURE = Identifier.withDefaultNamespace("textures/block/powder_snow.png");
 
+    private static final Map<UUID, Integer> frostbiteCache = new HashMap<>();
+
     @SubscribeEvent
-    public static void onRenderLivingPost(RenderLivingEvent.Post<?, ?, ?> event) {
+    public static void onMobEffectAdded(MobEffectEvent.Added event) {
+        MobEffectInstance effectInstance = event.getEffectInstance();
+        if (effectInstance != null && effectInstance.getEffect().value() == ModMobEffects.FROSTBITE.value()) {
+            frostbiteCache.put(event.getEntity().getUUID(), effectInstance.getAmplifier() + 1);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onMobEffectRemoved(MobEffectEvent.Remove event) {
+        if (event.getEffect().value() == ModMobEffects.FROSTBITE.value()) {
+            frostbiteCache.remove(event.getEntity().getUUID());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onMobEffectExpired(MobEffectEvent.Expired event) {
+        if (event.getEffectInstance() != null
+                && event.getEffectInstance().getEffect().value() == ModMobEffects.FROSTBITE.value()) {
+            frostbiteCache.remove(event.getEntity().getUUID());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onEntityLeaveLevel(EntityLeaveLevelEvent event) {
+        frostbiteCache.remove(event.getEntity().getUUID());
+    }
+
+    @SubscribeEvent
+    public static void onRenderLivingPre(RenderLivingEvent.Pre<?, ?, ?> event) {
+        if (event.isCanceled()) return;
         LivingEntity entity = event.getRenderState().getRenderData(LivingEntityRenderStateData.ENTITY);
         if (entity == null) return;
 
-        if (MobEffectLookup.hasEffect(entity, ModMobEffects.FREEZE)) return;
+        if (FrozenIceLayer.isFrozen(entity.getUUID())) return;
 
-        MobEffectInstance frostbite = MobEffectLookup.getEffect(entity, ModMobEffects.FROSTBITE);
-        if (frostbite == null) return;
-        int stacks = frostbite.getAmplifier() + 1;
+        Integer cached = frostbiteCache.get(entity.getUUID());
+        if (cached == null || cached <= 0) return;
+        int stacks = cached;
         int maxStacks = ElementalThunderFrostReactionsConfig.getFrostbiteMaxTotalStacks();
 
         float coverage = Math.min(1.0f, (float) stacks / maxStacks);
