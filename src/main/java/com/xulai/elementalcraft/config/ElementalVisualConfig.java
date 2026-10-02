@@ -158,6 +158,11 @@ public class ElementalVisualConfig {
     public static final ForgeConfigSpec.BooleanValue THUNDER_MOB_HIDE_WHEN_INVISIBLE;
     public static final ForgeConfigSpec.BooleanValue THUNDER_MOB_HIDE_SELF_FIRST_PERSON;
 
+    public static final ForgeConfigSpec.BooleanValue FROST_MOB_ENABLED;
+    public static final ForgeConfigSpec.IntValue FROST_MOB_PARTICLES_PER_TIER;
+    public static final ForgeConfigSpec.BooleanValue FROST_MOB_HIDE_WHEN_INVISIBLE;
+    public static final ForgeConfigSpec.BooleanValue FROST_MOB_HIDE_SELF_FIRST_PERSON;
+
     public static final ForgeConfigSpec.DoubleValue NATURE_MELEE_RADIUS;
     public static final ForgeConfigSpec.DoubleValue NATURE_MELEE_BASE_ANGLE_DEGREES;
     public static final ForgeConfigSpec.DoubleValue NATURE_MELEE_ANGLE_MULTIPLIER_BASE;
@@ -319,6 +324,11 @@ public class ElementalVisualConfig {
     public static volatile double thunderMobHeightOffset = 0.5;
     public static volatile boolean thunderMobHideWhenInvisible = true;
     public static volatile boolean thunderMobHideSelfFirstPerson = true;
+
+    public static volatile boolean frostMobEnabled = true;
+    public static volatile int frostMobParticlesPerTier = 1;
+    public static volatile boolean frostMobHideWhenInvisible = true;
+    public static volatile boolean frostMobHideSelfFirstPerson = true;
 
     public static volatile double natureMeleeRadius = 2.2;
     public static volatile double natureMeleeBaseAngleDegrees = 50.0;
@@ -1859,6 +1869,41 @@ public class ElementalVisualConfig {
                         "Default: true / 默认：true")
                 .define("frost_ranged_enabled", true);
 
+        BUILDER.comment("Frost Mob Footprint Visuals", "冰霜生物移动足迹特效")
+                .push("mob_aura");
+
+        FROST_MOB_ENABLED = BUILDER
+                .comment("Whether to enable the Frost mob footprint: snowflake particles spawn at a moving Frost-attribute creature's feet, leaving a frosty trail that marks the creature and its enhancement tier from afar.",
+                        "是否开启冰霜生物移动足迹特效：冰霜属性生物移动时脚下生成雪花粒子，形成霜雪足迹，用于远距离识别冰霜属性生物及其强化等级。",
+                        "Default: true / 默认：true")
+                .define("frost_mob_enabled", true);
+
+        BUILDER.comment(" ");
+
+        FROST_MOB_PARTICLES_PER_TIER = BUILDER
+                .comment("Snowflake particles spawned per tick per tier while the creature is moving. Total per tick = particles_per_tier * tier.",
+                        "冰霜属性生物移动时每 tick 每等级生成的雪花粒子数。每 tick 总数 = 每等级粒子数 × 等级。",
+                        "Default: 1 / 默认：1")
+                .defineInRange("particles_per_tier", 1, 1, 8);
+
+        BUILDER.comment(" ");
+
+        FROST_MOB_HIDE_WHEN_INVISIBLE = BUILDER
+                .comment("Whether to hide the effect on entities with the Invisibility effect.",
+                        "是否在生物拥有隐形效果时隐藏特效。",
+                        "Default: true / 默认：true")
+                .define("hide_when_invisible", true);
+
+        BUILDER.comment(" ");
+
+        FROST_MOB_HIDE_SELF_FIRST_PERSON = BUILDER
+                .comment("Whether to hide the effect on the local player in first-person view. Third-person view still renders it.",
+                        "是否仅在第一人称下隐藏本地玩家自己的特效。第三人称仍正常渲染。",
+                        "Default: true / 默认：true")
+                .define("hide_self_first_person", true);
+
+        BUILDER.pop();
+
         BUILDER.comment("Frost Melee Swing Visuals", "冰霜近战挥动特效")
                 .push("melee");
 
@@ -2406,6 +2451,11 @@ public class ElementalVisualConfig {
         thunderMobHeightOffset = THUNDER_MOB_HEIGHT_OFFSET.get();
         thunderMobHideWhenInvisible = THUNDER_MOB_HIDE_WHEN_INVISIBLE.get();
         thunderMobHideSelfFirstPerson = THUNDER_MOB_HIDE_SELF_FIRST_PERSON.get();
+
+        frostMobEnabled = FROST_MOB_ENABLED.get();
+        frostMobParticlesPerTier = FROST_MOB_PARTICLES_PER_TIER.get();
+        frostMobHideWhenInvisible = FROST_MOB_HIDE_WHEN_INVISIBLE.get();
+        frostMobHideSelfFirstPerson = FROST_MOB_HIDE_SELF_FIRST_PERSON.get();
 
         natureMeleeRadius = NATURE_MELEE_RADIUS.get();
         natureMeleeBaseAngleDegrees = NATURE_MELEE_BASE_ANGLE_DEGREES.get();
