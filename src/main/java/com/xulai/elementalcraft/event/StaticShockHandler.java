@@ -362,7 +362,7 @@ public class StaticShockHandler {
             if (effectInstance.getDuration() != remainingTicks || effectInstance.getAmplifier() != amplifier) {
                 entity.removeEffect(ModMobEffects.STATIC_SHOCK);
                 entity.addEffect(new MobEffectInstance(
-                        ModMobEffects.STATIC_SHOCK, remainingTicks, amplifier, false, false, true
+                        ModMobEffects.STATIC_SHOCK, remainingTicks, amplifier, false, true, true
                 ));
             }
         }
@@ -508,7 +508,7 @@ public class StaticShockHandler {
                     if (!isImmuneToStatic(entity)) {
                         long remaining = elec.duration - (now - elec.startTick);
                         if (remaining > 0 && ElementalThunderFrostReactionsConfig.paralysisMaxStacks > 0) {
-                            entity.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS, (int)remaining, 0, false, false, true));
+                            entity.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS, (int)remaining, 0, false, true, true));
                         }
                     }
                 }
@@ -600,7 +600,7 @@ public class StaticShockHandler {
                     e.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS,
                             edata.getIntOr(NBT_STORM_PARALYSIS, 0),
                             ElementalThunderFrostReactionsConfig.paralysisMaxStacks - 1,
-                            false, false, true));
+                            false, true, true));
                 } else if (exposure >= 40 && WetnessHandler.getWetnessLevel(e) < maxWetness) {
                     WetnessHandler.updateWetnessLevel(e, maxWetness);
                 }
@@ -644,7 +644,7 @@ public class StaticShockHandler {
                     data.putInt(NBT_STORM_PARALYSIS, paralysisDuration);
                 }
                 strikeTarget.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS,
-                        data.getIntOr(NBT_STORM_PARALYSIS, 0), maxParalysisStacks - 1, false, false, true));
+                        data.getIntOr(NBT_STORM_PARALYSIS, 0), maxParalysisStacks - 1, false, true, true));
 
                 int currentStacks = data.getIntOr(NBT_STATIC_STACKS, 0);
                 int maxStacks = ElementalThunderFrostReactionsConfig.staticMaxTotalStacks;
@@ -728,7 +728,7 @@ public class StaticShockHandler {
             newElec.damagedEntities.add(source.getUUID());
 
             if (paralysisDuration > 0 && ElementalThunderFrostReactionsConfig.paralysisMaxStacks > 0) {
-                source.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS, paralysisDuration, 0, false, false, true));
+                source.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS, paralysisDuration, 0, false, true, true));
             }
 
             AABB area = new AABB(
@@ -744,7 +744,7 @@ public class StaticShockHandler {
                 if (isImmuneToStatic(target)) continue;
 
                 if (paralysisDuration > 0 && ElementalThunderFrostReactionsConfig.paralysisMaxStacks > 0) {
-                    target.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS, paralysisDuration, 0, false, false, true));
+                    target.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS, paralysisDuration, 0, false, true, true));
                 }
                 if (source.level() instanceof ServerLevel serverLevel) {
                     EffectHelper.playStaticSplashParticles(serverLevel, source, target);
@@ -888,7 +888,7 @@ public class StaticShockHandler {
                                         ModMobEffects.WETNESS,
                                         layers * 200,
                                         layers - 1,
-                                        true, false, true
+                                        true, true, true
                                 ));
                             }
                             DebugCommand.sendReactionSuccess(target, "thunder_break_freeze",
@@ -944,7 +944,7 @@ public class StaticShockHandler {
                 paralysisStacks = Math.min(paralysisStacks, ElementalThunderFrostReactionsConfig.paralysisMaxStacks);
                 WetnessHandler.clearWetnessData(target);
                 target.addEffect(new MobEffectInstance(
-                        ModMobEffects.PARALYSIS, 60, paralysisStacks - 1, false, false, true));
+                        ModMobEffects.PARALYSIS, 60, paralysisStacks - 1, false, true, true));
                 CompoundTag targetData = target.getPersistentData();
                 targetData.putInt(NBT_PARALYSIS_STACKS, paralysisStacks);
                 targetData.putInt(NBT_PARALYSIS_TIMER, 60);
@@ -953,7 +953,7 @@ public class StaticShockHandler {
                 int existingStacks = targetData.getIntOr(NBT_PARALYSIS_STACKS, 0);
                 if (existingStacks <= 0) existingStacks = 1;
                 target.addEffect(new MobEffectInstance(
-                        ModMobEffects.PARALYSIS, 60, existingStacks - 1, false, false, true));
+                        ModMobEffects.PARALYSIS, 60, existingStacks - 1, false, true, true));
             }
 
             var sporesEffect = ModMobEffects.SPORES.isBound() ? ModMobEffects.SPORES : null;
@@ -1450,7 +1450,7 @@ public class StaticShockHandler {
                     ModMobEffects.WETNESS,
                     layers * 200,
                     layers - 1,
-                    true, false, true
+                    true, true, true
             ));
         }
         DebugCommand.sendReactionSuccess(entity, "thunder_break_freeze",
@@ -1469,7 +1469,7 @@ public class StaticShockHandler {
         if (currentEffect == null || currentEffect.getAmplifier() != amplifier || currentEffect.getDuration() != totalTicks) {
             entity.removeEffect(ModMobEffects.STATIC_SHOCK);
             entity.addEffect(new MobEffectInstance(
-                    ModMobEffects.STATIC_SHOCK, totalTicks, amplifier, false, false, true
+                    ModMobEffects.STATIC_SHOCK, totalTicks, amplifier, false, true, true
             ));
         }
     }
@@ -1582,7 +1582,7 @@ public class StaticShockHandler {
 
         int paralysisDuration = ElementalThunderFrostReactionsConfig.paralysisDurationPerStackTicks * paralysisStacks;
         entity.addEffect(new MobEffectInstance(
-                ModMobEffects.PARALYSIS, paralysisDuration, paralysisStacks - 1, false, false, true
+                ModMobEffects.PARALYSIS, paralysisDuration, paralysisStacks - 1, false, true, true
         ));
         data.putInt(NBT_PARALYSIS_STACKS, paralysisStacks);
         data.putInt(NBT_PARALYSIS_TIMER, paralysisDuration);
