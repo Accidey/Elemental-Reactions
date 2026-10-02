@@ -7,7 +7,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Everything lives under $(thing)/element$().$(br2)$(li)$(thing)/element debug$() - toggles a per-player debug mode. While on, every attack prints its damage formula and every reaction explains why it triggered or failed. This is the fastest way to understand the system.$(li)$(thing)/element reload$() - reloads all config files immediately.$(br2)$(thing)debug$() works for any player; every other subcommand requires permission level 2."
+      "text": "Everything lives under $(thing)/element$().$(br2)$(li)$(thing)/element debug$() - toggles a per-player debug mode. While on, every attack prints its damage formula and every reaction explains why it triggered or failed. This is the fastest way to understand the system.$(li)$(thing)/element reload$() - reloads all config files immediately.$(br2)$(thing)debug$() works for $(l)any$() player; $(thing)item$(), $(thing)entity$(), $(thing)biome$(), $(thing)blacklist$() and $(thing)reload$() require permission level 2."
     },
     {
       "type": "patchouli:text",
@@ -17,7 +17,7 @@
     {
       "type": "patchouli:text",
       "title": "Forced items",
-      "text": "Hold the item and run:$(br2)$(li)$(thing)/element item weapon add <element>$()$(br2)Requires a held item that has attack damage and attack speed. Marks it so it always carries that Aspect.$(br2)$(li)$(thing)/element item armor add <element> [points] [resist element] [resist points]$()$(br2)Requires a held armour piece (it must have an armour value). Example: $(thing)armor add fire 50 frost 25$()."
+      "text": "Hold the item and run:$(br2)$(li)$(thing)/element item weapon add <element>$()$(br2)Requires a held item that has attack damage and attack speed. Marks it so it always carries that Aspect.$(li)$(thing)/element item armor add <enhance element> [points] [resist element] [resist points]$()$(br2)Requires a held armour piece (it must have an armour value). Example: $(thing)armor add fire 50 frost 25$().$(br2)Both have matching $(thing)remove$() variants: $(thing)item weapon remove$() and $(thing)item armor remove$()."
     },
     {
       "type": "patchouli:text",
@@ -28,6 +28,11 @@
       "type": "patchouli:text",
       "title": "Attribute blacklist",
       "text": "Holding a spawn egg:$(br2)$(thing)/element entity blacklist add <element|all>$()$(br2)$(li)$(thing)all$() - the mob never gains any element.$(li)A single element, e.g. $(thing)fire$() - the mob may still be Frost, Thunder or Nature, but never Fire, as an attacker, an enhancement or a resistance.$(li)$(thing)entity blacklist remove <element|all>$()$(li)$(thing)entity blacklist list$()$(br2)Written as $(thing)\"minecraft:zombie:fire\"$() in the config file."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Biome bias",
+      "text": "Stand in the target biome and run:$(br2)$(li)$(thing)/element biome add <element|all> <probability>$()$(br2)Adds an element bias for the current biome; probability is 0-100.$(li)$(thing)/element biome remove <element|all>$()$(li)$(thing)/element biome list$()$(br2)The entries are written to $(thing)custom_biome_attribute_bias$() and take effect immediately."
     }
   ]
 }

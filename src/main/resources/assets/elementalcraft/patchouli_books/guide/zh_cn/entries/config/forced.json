@@ -16,7 +16,7 @@
     {
       "type": "patchouli:text",
       "title": "forced_armor",
-      "text": "同一个文件中：$(br2)$(thing)\"模组:物品ID,强化元素,强化点数,抗性元素,抗性点数\"$()$(br2)例如：$(br2)$(thing)\"minecraft:iron_chestplate,frost,50,fire,25\"$()$(br2)点数可以是单个数字或区间，例如 $(thing)20-60$()；区间会按主配置中的分档权重抽取。玩家物品单件上限为 $(thing)V 级$()。"
+      "text": "同一个文件中：$(br2)$(thing)\"模组:物品ID,强化元素,强化点数,抗性元素,抗性点数\"$()$(br2)例如：$(br2)$(thing)\"minecraft:iron_chestplate,frost,50,fire,25\"$()$(br2)点数可以是单个数字或区间，例如 $(thing)20-60$()；区间会按主配置中的分档权重抽取。$(br2)物品实际获得的附魔等级由配置推导：等级 = 点数 ÷ 每级点数，单件上限 = $(thing)max_stat_cap ÷ 每级点数$()。默认配置下即 $(thing)V 级$()；调高 $(thing)max_stat_cap$() 或每级点数可放宽上限。"
     },
     {
       "type": "patchouli:text",

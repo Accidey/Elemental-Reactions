@@ -430,7 +430,7 @@ public class SteamReactionHandler {
         }
         if ((isHighHeat || isCondensing) && !isFrostOwner) {
             if (!entity.getPersistentData().contains(NBT_STEAM_BLINDNESS)) {
-                entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 1000000, 0, false, false, true));
+                entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 1000000, 0, false, true, true));
                 entity.getPersistentData().putBoolean(NBT_STEAM_BLINDNESS, true);
             }
         } else {
@@ -626,7 +626,7 @@ public class SteamReactionHandler {
                             if ((currentParalysis == null || currentParalysis.getDuration() < paralysisDuration)
                                     && ElementalThunderFrostReactionsConfig.paralysisMaxStacks > 0) {
                                 entity.addEffect(new MobEffectInstance(
-                                        ModMobEffects.PARALYSIS, paralysisDuration, paralysisAmplifier, false, false, true
+                                        ModMobEffects.PARALYSIS, paralysisDuration, paralysisAmplifier, false, true, true
                                 ));
                                 data.putString(NBT_STATIC_CLOUD_UUID, staticCloudUUID);
                             }
@@ -730,7 +730,7 @@ public class SteamReactionHandler {
                         int fullDuration = (currentFreeze.getAmplifier() + 1) * ElementalThunderFrostReactionsConfig.freezeDurationPerStackTicks;
                         if (fullDuration < 20) fullDuration = 20;
                         entity.addEffect(new MobEffectInstance(ModMobEffects.FREEZE,
-                            fullDuration, currentFreeze.getAmplifier(), false, false, true));
+                            fullDuration, currentFreeze.getAmplifier(), false, true, true));
                     }
                 }
             }

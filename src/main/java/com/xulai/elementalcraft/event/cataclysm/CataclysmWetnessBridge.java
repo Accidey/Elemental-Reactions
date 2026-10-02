@@ -123,7 +123,7 @@ public class CataclysmWetnessBridge {
 
         int effectDuration = isPaused(entity) ? 24000 : Math.max(5, durationTicks);
         entity.addEffect(new MobEffectInstance(
-                ModMobEffects.WETNESS, effectDuration, clampedLevel - 1, true, false, true));
+                ModMobEffects.WETNESS, effectDuration, clampedLevel - 1, true, true, true));
         return true;
     }
 

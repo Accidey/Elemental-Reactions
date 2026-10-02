@@ -85,7 +85,7 @@ configurations {
 }
 
 dependencies {
-    implementation "curse.maven:jade-324717:8591319"
+    compileOnly "curse.maven:jade-324717:8591319"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

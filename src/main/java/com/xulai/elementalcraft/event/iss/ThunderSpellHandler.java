@@ -101,7 +101,7 @@ public class ThunderSpellHandler {
         data.putInt("ec_static_timer", duration);
 
         target.addEffect(new MobEffectInstance(
-                ModMobEffects.STATIC_SHOCK, duration, maxStacks - 1, false, false, true
+                ModMobEffects.STATIC_SHOCK, duration, maxStacks - 1, false, true, true
         ));
 
         if (target.isInWater()
@@ -113,7 +113,7 @@ public class ThunderSpellHandler {
                 target.removeEffect(ModMobEffects.STATIC_SHOCK);
                 WetnessHandler.clearWetnessData(target);
                 target.addEffect(new MobEffectInstance(
-                        ModMobEffects.PARALYSIS, pDuration, 0, false, false, true
+                        ModMobEffects.PARALYSIS, pDuration, 0, false, true, true
                 ));
             }
             return;
@@ -155,7 +155,7 @@ public class ThunderSpellHandler {
         if (duration < 20) duration = 20;
         target.removeEffect(ModMobEffects.PARALYSIS);
         target.addEffect(new MobEffectInstance(
-                ModMobEffects.PARALYSIS, duration, stacks - 1, false, false, true));
+                ModMobEffects.PARALYSIS, duration, stacks - 1, false, true, true));
         data.putInt("ec_paralysis_stacks", stacks);
         ELECTROCUTING_CASTERS.add(attacker.getUUID());
         if ("SCROLL".equals(attacker.getPersistentData().getString("EC_LastCastSource"))) {
@@ -292,7 +292,7 @@ public class ThunderSpellHandler {
 
             if (water.duration > 0 && ElementalThunderFrostReactionsConfig.paralysisMaxStacks > 0) {
                 entity.addEffect(new MobEffectInstance(
-                        ModMobEffects.PARALYSIS, water.duration, 0, false, false, true));
+                        ModMobEffects.PARALYSIS, water.duration, 0, false, true, true));
             }
 
             if (water.recordedDamage > 0) {
@@ -328,7 +328,7 @@ public class ThunderSpellHandler {
                 target.removeEffect(ModMobEffects.STATIC_SHOCK);
             }
             target.addEffect(new MobEffectInstance(
-                    ModMobEffects.STATIC_SHOCK, duration, newStacks - 1, false, false, true));
+                    ModMobEffects.STATIC_SHOCK, duration, newStacks - 1, false, true, true));
             com.xulai.elementalcraft.command.DebugCommand.sendStaticShockSuccess(attacker, target, stacksToAdd,
                     ElementType.THUNDER, thunderPower, baseChance, scalingSteps, scalingChance, 0, 0, 0, chance, false);
             if (ISSCore.isInOrOnWater(target)
@@ -477,7 +477,7 @@ public class ThunderSpellHandler {
         int duration = ElementalThunderFrostReactionsConfig.paralysisDurationPerStackTicks * paralysisStacks;
 
         target.addEffect(new MobEffectInstance(
-                ModMobEffects.PARALYSIS, duration, paralysisStacks - 1, false, false, true));
+                ModMobEffects.PARALYSIS, duration, paralysisStacks - 1, false, true, true));
 
         target.removeEffect(ModMobEffects.WETNESS);
         WetnessHandler.clearWetnessData(target);
@@ -529,7 +529,7 @@ public class ThunderSpellHandler {
 
                 if (duration > 0 && ElementalThunderFrostReactionsConfig.paralysisMaxStacks > 0) {
                     entity.addEffect(new MobEffectInstance(
-                            ModMobEffects.PARALYSIS, duration, 0, false, false, true));
+                            ModMobEffects.PARALYSIS, duration, 0, false, true, true));
                 }
 
                 if (recordedDamage > 0) {
@@ -646,7 +646,7 @@ public class ThunderSpellHandler {
         if (paralysisDuration <= 0) return;
 
         target.addEffect(new MobEffectInstance(
-                ModMobEffects.PARALYSIS, paralysisDuration, 2, false, false, true
+                ModMobEffects.PARALYSIS, paralysisDuration, 2, false, true, true
         ));
         target.level().playSound(null, target.getX(), target.getY(), target.getZ(),
                 ModSounds.ELECTRIC_ZAP.get(), SoundSource.PLAYERS, 0.8f, 1.0f);

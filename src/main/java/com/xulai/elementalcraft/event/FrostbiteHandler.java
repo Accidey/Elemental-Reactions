@@ -732,7 +732,7 @@ public class FrostbiteHandler {
             try {
                 entity.removeEffect(ModMobEffects.FROSTBITE);
                 entity.addEffect(new MobEffectInstance(ModMobEffects.FROSTBITE,
-                        duration, stacks - 1, false, false, true));
+                        duration, stacks - 1, false, true, true));
             } finally {
                 suppressRemoveCleanup = false;
             }
@@ -956,14 +956,14 @@ public class FrostbiteHandler {
             if (existing != null && existing.getAmplifier() == stacks - 1) {
                 if (existing.getDuration() < durationTicks) {
                     entity.removeEffect(ModMobEffects.FROSTBITE);
-                    entity.addEffect(new MobEffectInstance(ModMobEffects.FROSTBITE, durationTicks, stacks - 1, false, false, true));
+                    entity.addEffect(new MobEffectInstance(ModMobEffects.FROSTBITE, durationTicks, stacks - 1, false, true, true));
                 }
                 return;
             }
             if (existing != null) {
                 entity.removeEffect(ModMobEffects.FROSTBITE);
             }
-            entity.addEffect(new MobEffectInstance(ModMobEffects.FROSTBITE, durationTicks, stacks - 1, false, false, true));
+            entity.addEffect(new MobEffectInstance(ModMobEffects.FROSTBITE, durationTicks, stacks - 1, false, true, true));
         } finally {
             suppressRemoveCleanup = false;
         }

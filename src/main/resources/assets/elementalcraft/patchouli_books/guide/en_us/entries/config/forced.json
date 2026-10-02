@@ -16,7 +16,7 @@
     {
       "type": "patchouli:text",
       "title": "forced_armor",
-      "text": "In the same file:$(br2)$(thing)\"modid:item_id,enh_element,enh_points,res_element,res_points\"$()$(br2)Example:$(br2)$(thing)\"minecraft:iron_chestplate,frost,50,fire,25\"$()$(br2)Points may be a single number or a range such as $(thing)20-60$(); ranges are rolled from the tier weights in the common config. Player items are capped at $(thing)level V per piece$()."
+      "text": "In the same file:$(br2)$(thing)\"modid:item_id,enh_element,enh_points,res_element,res_points\"$()$(br2)Example:$(br2)$(thing)\"minecraft:iron_chestplate,frost,50,fire,25\"$()$(br2)Points may be a single number or a range such as $(thing)20-60$(); ranges are rolled from the tier weights in the common config.$(br2)The enchantment level an item actually receives is derived from the config: level = points ÷ points-per-level, capped at $(thing)max_stat_cap ÷ points-per-level$() per piece. Under defaults that is $(thing)level V$(); raising $(thing)max_stat_cap$() or the per-level points relaxes the cap."
     },
     {
       "type": "patchouli:text",

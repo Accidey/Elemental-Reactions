@@ -7,7 +7,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "所有功能都在 $(thing)/element$() 下。$(br2)$(li)$(thing)/element debug$()：为当前玩家开启调试模式。开启后，每次攻击都会打印伤害公式，每个反应都会说明为何触发或为何失败。这是理解本系统最快的方式。$(li)$(thing)/element reload$()：立即重载全部配置文件。$(br2)除 $(thing)debug$() 以外的所有子命令都需要权限等级 2。"
+      "text": "所有功能都在 $(thing)/element$() 下。$(br2)$(li)$(thing)/element debug$()：为当前玩家开启或关闭调试模式，$(l)不需要$()任何权限。开启后，每次攻击都会打印伤害公式，每个反应都会说明为何触发或为何失败。这是理解本系统最快的方式。$(li)$(thing)/element reload$()：立即重载全部配置文件。$(br2)$(thing)item$()、$(thing)entity$()、$(thing)biome$()、$(thing)blacklist$() 与 $(thing)reload$() 都需要权限等级 2。"
     },
     {
       "type": "patchouli:text",
@@ -17,7 +17,7 @@
     {
       "type": "patchouli:text",
       "title": "强制物品",
-      "text": "手持物品执行：$(br2)$(li)$(thing)/element item weapon add <元素>$()$(br2)要求手持物品自带攻击伤害与攻击速度，把它标记为始终携带该属性附魔。$(br2)$(li)$(thing)/element item armor add <元素> [点数] [抗性元素] [抗性点数]$()$(br2)要求手持护甲（必须有护甲值）。例如：$(thing)armor add fire 50 frost 25$()。"
+      "text": "手持物品执行：$(br2)$(li)$(thing)/element item weapon add <元素>$()$(br2)要求手持物品自带攻击伤害与攻击速度，把它标记为始终携带该属性附魔。$(li)$(thing)/element item armor add <强化元素> [点数] [抗性元素] [抗性点数]$()$(br2)要求手持护甲（必须有护甲值）。例如：$(thing)armor add fire 50 frost 25$()。$(br2)两种都有对应的 $(thing)remove$()：$(thing)item weapon remove$() 与 $(thing)item armor remove$()。"
     },
     {
       "type": "patchouli:text",
@@ -28,6 +28,11 @@
       "type": "patchouli:text",
       "title": "属性黑名单",
       "text": "手持刷怪蛋执行：$(br2)$(thing)/element entity blacklist add <元素|all>$()$(br2)$(li)$(thing)all$()：该生物永不获得任何属性。$(li)单个元素（如 $(thing)fire$()）：该生物仍可为冰霜、雷霆或自然，但永不为赤焰——无论作为攻击、强化还是抗性。$(li)$(thing)entity blacklist remove <元素|all>$()$(li)$(thing)entity blacklist list$()$(br2)在配置文件中写作 $(thing)\"minecraft:zombie:fire\"$()。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "群系偏向",
+      "text": "站在目标群系中执行：$(br2)$(li)$(thing)/element biome add <元素|all> <概率>$()$(br2)为当前群系添加元素偏向，概率为 0–100。$(li)$(thing)/element biome remove <元素|all>$()$(li)$(thing)/element biome list$()$(br2)偏向会写入 $(thing)custom_biome_attribute_bias$()，并立即生效。"
     }
   ]
 }
