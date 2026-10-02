@@ -3,6 +3,7 @@ package com.xulai.elementalcraft.client;
 import com.xulai.elementalcraft.ElementalCraft;
 import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
 import com.xulai.elementalcraft.potion.ModMobEffects;
+import com.xulai.elementalcraft.util.MobEffectLookup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -30,8 +31,8 @@ public class FrostbiteOverlay {
         Player player = mc.player;
         if (player == null || player.isSpectator()) return;
 
-        boolean isFrozen = player.hasEffect(ModMobEffects.FREEZE);
-        MobEffectInstance frostbiteEffect = player.getEffect(ModMobEffects.FROSTBITE);
+        boolean isFrozen = MobEffectLookup.hasEffect(player, ModMobEffects.FREEZE);
+        MobEffectInstance frostbiteEffect = MobEffectLookup.getEffect(player, ModMobEffects.FROSTBITE);
         float targetAlpha;
         if (isFrozen) {
             targetAlpha = 1.0f;
