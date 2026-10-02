@@ -752,7 +752,7 @@ public class ElementalFireNatureReactionsConfig {
 
     BUILDER.push("fire_counter");
     BUILDER.comment("赤焰反制配置 - Fire Counter",
-            "赤焰属性生物在低血量时受到伤害触发的反击机制：展开火焰环吸附敌人，随后爆炸击飞并施加灼烧效果。",
+            "赤焰属性生物在低血量时受到伤害触发的反制机制：展开火焰环吸附敌人，随后爆炸击飞并施加灼烧效果。",
             "A counter-attack triggered when a Fire entity takes damage at low health: expands a fire ring, pulls in enemies, then explodes to knock back and apply Scorched.");
     BUILDER.comment(" ");
 
@@ -1135,12 +1135,12 @@ public class ElementalFireNatureReactionsConfig {
 
     BUILDER.push("wildfire_ejection");
     BUILDER.comment("自然反制 - Nature Counter",
-            "自然属性生物在低血量时受到伤害触发的反击机制：瞬间清除自身火焰并爆发出孢子云雾，击退周围敌人并施加孢子。",
+            "自然属性生物在低血量时受到伤害触发的反制机制：瞬间清除自身火焰并爆发出孢子云雾，击退周围敌人并施加孢子。",
             "A counter-attack triggered when a Nature entity takes damage at low health: clears own fire, creates a spore cloud that knocks back enemies and applies spores.");
     BUILDER.comment(" ");
 
     WILDFIRE_TRIGGER_THRESHOLD = BUILDER
-            .comment("触发自然反制（反击）所需的最小自然属性强化点数，设为0则关闭自然反制。",
+            .comment("触发自然反制所需的最小自然属性强化点数，设为0则关闭自然反制。",
                     "Minimum Nature points required to trigger Nature Counter (counter-attack). Set to 0 to disable.",
                     "Default: 50.0 / 默认：50.0")
             .defineInRange("wildfire_trigger_threshold", 50.0, 0.0, 10000.0);
@@ -1161,28 +1161,28 @@ public class ElementalFireNatureReactionsConfig {
     BUILDER.comment(" ");
 
     WILDFIRE_RADIUS = BUILDER
-            .comment("反击爆炸的半径（格）。",
+            .comment("反制爆炸的半径（格）。",
                     "Radius (blocks) of the counter-attack explosion.",
                     "Default: 3.0 / 默认：3.0")
             .defineInRange("wildfire_radius", 3.0, 1.0, 16.0);
     BUILDER.comment(" ");
 
     WILDFIRE_KNOCKBACK = BUILDER
-            .comment("反击造成的水平击退力度。",
+            .comment("反制造成的水平击退力度。",
                     "Horizontal knockback strength of the counter-attack.",
                     "Default: 1.5 / 默认：1.5")
             .defineInRange("wildfire_knockback", 3.0, 0.0, 10.0);
     BUILDER.comment(" ");
 
     WILDFIRE_VERTICAL_KNOCKBACK = BUILDER
-            .comment("反击造成的垂直击退力度。",
+            .comment("反制造成的垂直击退力度。",
                     "Vertical knockback strength of the counter-attack.",
                     "Default: 0.5 / 默认：0.5")
             .defineInRange("wildfire_vertical_knockback", 1.0, 0.0, 10.0);
     BUILDER.comment(" ");
 
     WILDFIRE_SPORE_AMOUNT = BUILDER
-            .comment("反击时施加给敌人的孢子层数。",
+            .comment("反制时施加给敌人的孢子层数。",
                     "Number of Spore stacks applied to enemies during counter-attack.",
                     "Default: 2 / 默认：2")
             .defineInRange("wildfire_spore_amount", 2, 0, 10);

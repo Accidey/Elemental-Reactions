@@ -284,8 +284,8 @@
   "debug.elementalcraft.reaction.nature_parasite.failed.frozen": "§7[自然寄生] §f%s §7→ §f%s §7被阻止: 目标被冰冻",
   "debug.elementalcraft.reaction.nature_parasite.failed.max_stacks": "§7[自然寄生] §f%s §7→ §f%s §7被阻止: 易燃孢子层数已达最大值",
 
-  "debug.elementalcraft.reaction.wildfire.failed.cooldown": "§6[自然反击] §7被阻止: 冷却中",
-  "debug.elementalcraft.reaction.wildfire.failed.power_low": "§6[自然反击] §f%s §7被阻止: 自然属性强化 §e%s §7< 阈值 §c%s",
+  "debug.elementalcraft.reaction.wildfire.failed.cooldown": "§6[自然反制] §7被阻止: 冷却中",
+  "debug.elementalcraft.reaction.wildfire.failed.power_low": "§6[自然反制] §f%s §7被阻止: 自然属性强化 §e%s §7< 阈值 §c%s",
 
   "debug.elementalcraft.reaction.scorched.success": "§c[灼烧] §f%s §7→ §f%s §7施加了 §c灼烧 %s 概率 §a%s%% (时长 %s, 基础伤害: %s)",
   "debug.elementalcraft.reaction.scorched.failed.chance": "§7[灼烧] §f%s §7→ §f%s §7未触发%s 概率 §e%s%%",
@@ -365,8 +365,8 @@
 
   "debug.elementalcraft.reaction.cold_freeze.frozen": "§b[寒冷冻结] 温度: %s | 潮湿: %s | 雨雪: %s| 概率 §a%s%%",
 
-  "debug.elementalcraft.reaction.thunder_counter.failed.cooldown": "§e[雷霆反击] §7被阻止: 目标冷却中",
-  "debug.elementalcraft.reaction.thunder_counter.failed.power_low": "§e[雷霆反击] §f%s §7雷霆属性强化不足 (当前: %s, 需要≥: %s)",
+  "debug.elementalcraft.reaction.thunder_counter.failed.cooldown": "§e[雷霆反制] §7被阻止: 目标冷却中",
+  "debug.elementalcraft.reaction.thunder_counter.failed.power_low": "§e[雷霆反制] §f%s §7雷霆属性强化不足 (当前: %s, 需要≥: %s)",
   "debug.elementalcraft.reaction.frost_counter.failed.cooldown": "§b[冰霜反制] §7被阻止: 目标冷却中",
   "debug.elementalcraft.reaction.frost_counter.failed.power_low": "§b[冰霜反制] §f%s §7冰霜属性强化不足 (当前: %s, 需要≥: %s)",
   "debug.elementalcraft.reaction.fire_counter.header": "[赤焰反制]",
