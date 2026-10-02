@@ -1,7 +1,7 @@
 package com.xulai.elementalcraft.client;
 
+import com.google.common.reflect.TypeToken;
 import com.xulai.elementalcraft.ElementalCraft;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.resources.Identifier;
@@ -22,10 +22,9 @@ public final class LivingEntityRenderStateData {
     }
 
     @SubscribeEvent
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public static void onRegisterRenderStateModifiers(RegisterRenderStateModifiersEvent event) {
-        Class<LivingEntityRenderer<LivingEntity, LivingEntityRenderState, EntityModel<LivingEntityRenderState>>> rendererClass =
-                (Class) LivingEntityRenderer.class;
-        event.registerEntityModifier(rendererClass, (entity, state) -> state.setRenderData(ENTITY, entity));
+        event.registerEntityModifier(
+                new TypeToken<LivingEntityRenderer<LivingEntity, LivingEntityRenderState, ?>>() {},
+                (entity, state) -> state.setRenderData(ENTITY, entity));
     }
 }
