@@ -57,6 +57,9 @@ public class NatureMobVisuals {
         int tier = NatureVisuals.calculateVisualTier(entity, ElementType.NATURE);
         if (tier <= 0) return;
 
+        int interval = 5 - tier;
+        if (entity.tickCount % interval != 0) return;
+
         int count = ElementalVisualConfig.natureMobParticlesPerTier;
         double spawnHeightOffset = ElementalVisualConfig.natureMobSpawnHeightOffset;
         double horizontalSpeed = ElementalVisualConfig.natureMobHorizontalSpeed;
