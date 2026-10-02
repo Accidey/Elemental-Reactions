@@ -7,7 +7,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -35,21 +35,23 @@ public final class ServerTaskScheduler {
     public static void onServerTick(ServerTickEvent.Post event) {
         if (TASKS.isEmpty()) return;
         MinecraftServer server = event.getServer();
-        Iterator<ScheduledTask> it = TASKS.iterator();
-        while (it.hasNext()) {
-            ScheduledTask task = it.next();
+        List<ScheduledTask> toRemove = new ArrayList<>();
+        for (ScheduledTask task : TASKS) {
             if (task.server() != server) {
-                if (!task.server().isRunning()) it.remove();
+                if (!task.server().isRunning()) toRemove.add(task);
                 continue;
             }
             if (server.getTickCount() >= task.runAtTick()) {
-                it.remove();
+                toRemove.add(task);
                 try {
                     task.task().run();
                 } catch (Exception e) {
                     ElementalCraft.LOGGER.error("[ElementalCraft] Scheduled server task failed", e);
                 }
             }
+        }
+        if (!toRemove.isEmpty()) {
+            TASKS.removeAll(toRemove);
         }
     }
 }
