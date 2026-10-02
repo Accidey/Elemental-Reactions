@@ -80,13 +80,8 @@ public class SteamReactionHandler {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onLivingDamage(LivingDamageEvent.Pre event) {
-        float originalDamage = event.getNewDamage();
         if (event.getSource().getEntity() instanceof LivingEntity attacker) {
             processTriggerLogic(event, attacker, event.getEntity());
-        }
-        event.setNewDamage(originalDamage);
-        if (event.getSource().is(ModDamageTypes.STEAM_SCALDING)) {
-            processDefenseLogic(event);
         }
     }
 
@@ -244,37 +239,6 @@ public class SteamReactionHandler {
                 }
             }
         }
-    }
-
-    private static void processDefenseLogic(LivingDamageEvent.Pre event) {
-        LivingEntity target = event.getEntity();
-        float currentDamage = event.getNewDamage();
-
-        if (checkImmunity(target)) {
-            event.setNewDamage(0);
-            return;
-        }
-
-        float trueRawDamage = currentDamage;
-        int totalFireProtLevel = getTotalEnchantmentLevel(ModEnchantments.vanilla(Enchantments.FIRE_PROTECTION), target);
-        int totalProtLevel = getTotalEnchantmentLevel(ModEnchantments.vanilla(Enchantments.PROTECTION), target);
-
-        double maxFireCap = ElementalFireNatureReactionsConfig.steamMaxFireProtCap;
-        double maxGeneralCap = ElementalFireNatureReactionsConfig.steamMaxGeneralProtCap;
-        double denom = Math.max(1.0, ElementalFireNatureReactionsConfig.enchantmentCalculationDenominator);
-
-        double fireProtFactor = maxFireCap / denom;
-        double protFactor = maxGeneralCap / denom;
-
-        double calculatedFireRed = totalFireProtLevel * fireProtFactor;
-        double calculatedProtRed = totalProtLevel * protFactor;
-
-        double actualFireRed = Math.min(calculatedFireRed, maxFireCap);
-        double actualProtRed = Math.min(calculatedProtRed, maxGeneralCap);
-
-        double totalReduction = Math.min(actualFireRed + actualProtRed, 1.0);
-        float reducedDamage = trueRawDamage * (float) (1.0 - totalReduction);
-        event.setNewDamage(reducedDamage);
     }
 
     private static int getTotalEnchantmentLevel(Holder<Enchantment> ench, LivingEntity entity) {
