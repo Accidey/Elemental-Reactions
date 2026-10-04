@@ -1,7 +1,0 @@
-{
-	"version": 200,
-	"tooltipStyle": {
-		"sprite": "jade:create",
-		"tooltip": true
-	}
-}
