@@ -1,0 +1,28 @@
+{
+  "name": "The Three Enchantment Families",
+  "category": "elementalcraft:enchant",
+  "icon": "minecraft:anvil",
+  "sortnum": 0,
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Twelve enchantments carry the whole mod - three families, four elements each.$(br2)$(li)$(thing)X Aspect$() (e.g. $(#c00)Fire Aspect$()) $(#888)- level I only, goes on a $(l)weapon$(). This decides $(l)which element you attack with$().$(li)$(thing)X Enhancement$() $(#888)- levels I-V, goes on $(l)armour$(). This is your $(l)power$().$(li)$(thing)X Resistance$() $(#888)- levels I-V, goes on $(l)armour$(). This is your $(l)defence$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The golden rule",
+      "text": "A weapon with a Fire Aspect and $(l)no$() Fire Enhancement anywhere on you deals $(thing)no elemental damage at all$() and triggers $(thing)no reactions$().$(br2)Elemental attacks require $(thing)both$() halves: the aspect decides the element, the enhancement pays for it. This trips up almost every new player - if nothing is happening, check that your armour actually carries the matching enhancement."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Exclusivity",
+      "text": "Families are exclusive along different axes:$(br2)$(li)An item can only carry $(l)one$() element per family. You cannot put Fire and Frost Enhancement on the same chestplate.$(li)A piece $(l)can$() carry Enhancement of one element and Resistance of another - a common and useful build.$(li)Aspect enchantments are also exclusive with vanilla $(thing)Fire Aspect$(), $(thing)Flame$() and $(thing)Channeling$(). Choose one."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "A suggested loadout",
+      "text": "Pick one element and commit:$(br2)$(li)Weapon: $(thing)X Aspect I$()$(li)Armour: $(thing)X Enhancement$() on every piece, as high as you can get.$(li)Armour: $(thing)X Resistance$() where you have room, or the resistance of the element that counters your enemies.$(br2)Every 5 levels of Enhancement is 25 points - and 25 points is one visual power tier."
+    }
+  ]
+}

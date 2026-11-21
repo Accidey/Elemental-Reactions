@@ -1,0 +1,16 @@
+{
+  "values": [
+    "elementalcraft:fire_strike",
+    "elementalcraft:frost_strike",
+    "elementalcraft:thunder_strike",
+    "elementalcraft:nature_strike",
+    "elementalcraft:fire_enhancement",
+    "elementalcraft:frost_enhancement",
+    "elementalcraft:thunder_enhancement",
+    "elementalcraft:nature_enhancement",
+    "elementalcraft:fire_resistance",
+    "elementalcraft:frost_resistance",
+    "elementalcraft:thunder_resistance",
+    "elementalcraft:nature_resistance"
+  ]
+}

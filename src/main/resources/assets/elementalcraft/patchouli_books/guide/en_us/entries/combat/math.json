@@ -1,0 +1,27 @@
+{
+  "name": "Damage & Resistance Math",
+  "category": "elementalcraft:combat",
+  "icon": "minecraft:netherite_sword",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Elemental damage is $(l)added on top of$() your ordinary physical hit. It is a bonus, not a replacement, and it is calculated separately.$(br2)With the default settings:$(br2)$(li)Every enchantment level gives $(thing)5 points$()$(li)Every $(thing)10 points$() of Enhancement adds $(thing)0.5 damage$()$(li)So one point is worth $(thing)+0.05 damage$()"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The calculation",
+      "text": "In order:$(br2)$(thing)Elemental bonus$() = points / 10 x 0.5$(br2)then multiply by:$(br2)$(li)Restraint (x1.5 or x0.5)$(li)Target Wetness (fire only, -10% per level)$(li)Target Spores (fire only, +10% per stack)$(li)Target Scorched (nature +50%, frost -50%)$(li)Freeze (fire only, x0.5)$(br2)then $(l)subtract$() $(thing)the target's resistance for that element$(): points / 10 x 0.5."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Reading the numbers",
+      "text": "One armour piece caps at $(thing)25 points$() - five levels. Four pieces give up to $(thing)100 points$().$(br2)$(li)25 points = +1.25 elemental damage per hit$(li)100 points = +5 elemental damage per hit$(li)100 resistance = -5 damage from that element$(br2)The flat damage is modest. What you are really buying with points is passing the $(thing)thresholds$() that unlock reactions - most of which want 20 to 50 points."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Defence in practice",
+      "text": "$(li)Resistance only reduces the $(thing)matching element$(); it does nothing against physical damage.$(li)Resistance never blocks a $(thing)restrained$() attacker completely - 10% always gets through.$(li)Damage absorption (golden apples) is eaten by elemental damage $(l)before$() the physical part.$(li)Reaction damage - steam, blasts, auras - uses $(thing)Protection$() and $(thing)Fire Protection$() instead, capped at 25% and 50%."
+    }
+  ]
+}

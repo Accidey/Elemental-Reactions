@@ -1,0 +1,27 @@
+{
+  "name": "Obtaining Enchantments",
+  "category": "elementalcraft:enchant",
+  "icon": "minecraft:enchanting_table",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "All twelve enchantments are registered as normal enchantments, so they appear at the $(thing)enchanting table$() and can be applied with an $(thing)anvil$() and enchanted books.$(br2)Aspect enchantments are cheap (weight 5, level I). Enhancement and Resistance run to level V and cost more experience."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Mob drops",
+      "text": "The reliable mid-game source is $(thing)elemental mobs$() themselves. When a mob with elemental attributes dies it can drop an $(thing)enchanted book$():$(br2)$(li)Base chance $(thing)50%$()$(li)$(thing)+10%$() per level of Looting$(br2)The book is randomly one of the three families, and its level scales with how strong that mob's own attributes were - a heavily enchanted elite drops a high-level book."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "What does not drop",
+      "text": "Elemental mobs are given their gear by the mod and that gear is set to $(thing)never drop$(). You will not be able to strip a Frost zombie of its enchanted chestplate.$(br2)Kill them for the books, not for the armour."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Pack makers",
+      "text": "If you want a fixed item to always be elemental - a modded sword, a set of boss armour - use the $(thing)forced item$() system instead of enchanting by hand. See $(l:elementalcraft:config/forced)Forced Items & Attributes$(/l)."
+    }
+  ]
+}

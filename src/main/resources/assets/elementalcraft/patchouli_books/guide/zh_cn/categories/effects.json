@@ -1,0 +1,6 @@
+{
+  "name": "状态效果",
+  "description": "六种元素状态：潮湿、易燃孢子、静电、麻痹、霜冻、冻结——以及灼烧。",
+  "icon": "minecraft:potion",
+  "sortnum": 2
+}

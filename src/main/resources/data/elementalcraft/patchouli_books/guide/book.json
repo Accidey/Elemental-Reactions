@@ -1,0 +1,13 @@
+{
+  "name": "elementalcraft.book.guide.name",
+  "landing_text": "elementalcraft.book.guide.landing",
+  "subtitle": "elementalcraft.book.guide.subtitle",
+  "use_resource_pack": true,
+  "model": "elementalcraft:guide_book",
+  "book_texture": "elementalcraft:textures/gui/guide_book.png",
+  "creative_tab": "minecraft:tools_and_utilities",
+  "show_progress": false,
+  "text_overflow_mode": "resize",
+  "pause_game": false,
+  "i18n": false
+}

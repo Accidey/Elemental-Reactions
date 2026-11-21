@@ -1,0 +1,33 @@
+{
+  "name": "Steam & Thermal Shock",
+  "category": "elementalcraft:reactions",
+  "icon": "minecraft:campfire",
+  "sortnum": 0,
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Hit a $(thing)wet$() target with a $(thing)Fire$() attack worth at least $(thing)50 Fire power$() and the water flash-boils: a $(thing)High-Heat Steam Cloud$() erupts from the victim, and the wetness is consumed to fuel it.$(br2)Fire power is your total Fire Enhancement in points. 50 points is 10 levels across your armour."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Inside the cloud",
+      "text": "$(li)$(thing)1 damage per second$(), increased by 20% per cloud level.$(br2)$(li)Higher levels come from wetter victims - 5 levels of Wetness makes a level 5 cloud: 2 damage per second, radius 6.$(li)Nature and Frost-tempered victims take $(thing)50% more$() scalding.$(li)Everybody inside is $(thing)blinded$() and mobs panic and forget their target.$(li)It strips Wetness, Frostbite and Freeze from anyone inside.$(br2)Fire Resistance or 80 Fire Resistance points makes you immune."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Drying yourself off",
+      "text": "The same reaction happens to $(l)you$(). If you are wet and land a Fire attack, you dry out instantly - each $(thing)20 Fire power$() burns off one level of Wetness.$(br2)That attack deals $(thing)30% less$() damage, and a $(thing)Low-Heat Steam Cloud$() forms at your feet. Attacking while soaked is self-defence, not a free win."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Low-Heat Steam",
+      "text": "$(#8cf)Low-Heat Steam Clouds$() are cold mist, not scalding steam. They appear whenever water is evaporated without much heat:$(br2)$(li)Drying yourself off.$(li)Melted Freeze.$(li)$(thing)Thermal Shock$().$(br2)Inside one you take no damage, but you are blinded and the mist $(thing)condenses onto you$(), adding Wetness level by level until you are soaked again. Standing in your own steam re-soaks you."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Thermal Shock",
+      "text": "Scorched targets cannot be extinguished by water. Jumping into a lake while on fire instead triggers a $(thing)Thermal Shock$():$(br2)$(li)Scalding steam explodes around you.$(li)$(thing)50% of all the remaining burn damage$() is dealt at once.$(li)A Low-Heat Steam Cloud is left behind, and the water block you entered is boiled away.$(br2)Water is faster than burning, but it is not safer."
+    }
+  ]
+}
