@@ -1,0 +1,92 @@
+package com.xulai.elementalcraft.potion;
+
+import com.xulai.elementalcraft.config.ElementalThunderFrostReactionsConfig;
+import com.xulai.elementalcraft.event.FrostbiteHandler;
+import com.xulai.elementalcraft.util.EffectHelper;
+import com.xulai.elementalcraft.util.ElementType;
+import com.xulai.elementalcraft.util.ElementUtils;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+
+public class FreezeEffect extends MobEffect {
+
+    private static final String NBT_SHARED_ORIGINAL_NO_AI = "EC_SharedOriginalNoAI";
+
+    public FreezeEffect() {
+        super(MobEffectCategory.HARMFUL, 0x00BFFF);
+    }
+
+    @Override
+    public boolean applyEffectTick(net.minecraft.server.level.ServerLevel serverLevel, LivingEntity entity, int amplifier) {
+        if (!entity.level().isClientSide()) {
+            entity.setTicksFrozen(300);
+            disableAI(entity);
+
+            int damageInterval = ElementalThunderFrostReactionsConfig.frostbiteDamageIntervalTicks;
+            if (entity.tickCount % damageInterval == 0) {
+                float damage = (float) ElementalThunderFrostReactionsConfig.frostbitePeriodicDamage;
+                ElementType element = ElementUtils.getConsistentAttackElement(entity);
+                if (element == ElementType.FIRE) {
+                    damage *= (float) ElementalThunderFrostReactionsConfig.frostbiteDamageFireMultiplier;
+                } else if (element == ElementType.NATURE) {
+                    damage *= (float) ElementalThunderFrostReactionsConfig.frostbiteDamageNatureMultiplier;
+                } else if (element == ElementType.THUNDER) {
+                    damage *= (float) ElementalThunderFrostReactionsConfig.frostbiteDamageThunderMultiplier;
+                } else if (element == ElementType.FROST) {
+                    damage *= (float) ElementalThunderFrostReactionsConfig.frostbiteDamageFrostMultiplier;
+                }
+                entity.hurt(entity.damageSources().freeze(), damage);
+                entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(),
+                        SoundEvents.PLAYER_HURT_FREEZE, SoundSource.PLAYERS, 1.0f, 1.0f);
+            }
+
+            DrownHelper.tickWaterSink(entity, DrownHelper.SinkMode.FREEZE);
+
+            if (entity.tickCount % 5 == 0) {
+                EffectHelper.playFreezeAmbient(entity);
+            }
+        }
+        return true;
+    }
+
+    public static void onEffectRemoved(LivingEntity entity) {
+        entity.setTicksFrozen(0);
+        restoreAI(entity);
+    }
+
+    @Override
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+        return true;
+    }
+
+    private static void disableAI(LivingEntity entity) {
+        if (!(entity instanceof Mob mob)) return;
+        CompoundTag data = entity.getPersistentData();
+        if (data.getBooleanOr(FrostbiteHandler.NBT_FREEZE_AI_DISABLED, false)) return;
+        if (!data.contains(NBT_SHARED_ORIGINAL_NO_AI)) {
+            data.putBoolean(NBT_SHARED_ORIGINAL_NO_AI, mob.isNoAi());
+        }
+        mob.setNoAi(true);
+        data.putBoolean(FrostbiteHandler.NBT_FREEZE_AI_DISABLED, true);
+    }
+
+    private static void restoreAI(LivingEntity entity) {
+        if (!(entity instanceof Mob mob)) return;
+        CompoundTag data = entity.getPersistentData();
+        if (!data.getBooleanOr(FrostbiteHandler.NBT_FREEZE_AI_DISABLED, false)) return;
+        data.remove(FrostbiteHandler.NBT_FREEZE_AI_DISABLED);
+        if (entity.hasEffect(ModMobEffects.PARALYSIS)) return;
+        boolean wasNoAi = data.getBooleanOr(NBT_SHARED_ORIGINAL_NO_AI, false);
+        if (data.contains("EC_FleeOriginalNoAi")) {
+            wasNoAi = wasNoAi || data.getBooleanOr("EC_FleeOriginalNoAi", false);
+            data.remove("EC_FleeOriginalNoAi");
+        }
+        mob.setNoAi(wasNoAi);
+        data.remove(NBT_SHARED_ORIGINAL_NO_AI);
+    }
+}

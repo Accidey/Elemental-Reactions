@@ -1,0 +1,100 @@
+package com.xulai.elementalcraft.event;
+
+import com.xulai.elementalcraft.ElementalCraft;
+import com.xulai.elementalcraft.potion.DrownHelper;
+import com.xulai.elementalcraft.potion.ModMobEffects;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+
+@EventBusSubscriber(modid = ElementalCraft.MODID)
+public class NbtCleanupHandler {
+
+    @SubscribeEvent
+    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        cleanupStaleData(event.getEntity());
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        com.xulai.elementalcraft.util.DebugMode.remove(event.getEntity());
+    }
+
+    @SubscribeEvent
+    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        cleanupStaleData(event.getEntity());
+    }
+
+    private static void cleanupStaleData(Player player) {
+        CompoundTag data = player.getPersistentData();
+
+        if (!player.hasEffect(ModMobEffects.STATIC_SHOCK)) {
+            StaticShockHandler.clearStaticShock(player);
+            data.remove("ec_static_aura_spore_cd");
+            data.remove("ec_aura_sync_phase");
+            data.remove("ec_last_aura_log_damage");
+            data.remove("ec_last_static_base_damage");
+            data.remove("ec_last_static_element");
+            data.remove("ec_last_static_element_mult");
+            data.remove("ec_static_aura_tracked");
+        }
+
+        if (!player.hasEffect(ModMobEffects.PARALYSIS)) {
+            data.remove("ec_paralysis_stacks");
+            data.remove("ec_paralysis_timer");
+            data.remove("ec_paralysis_cooldown_timer");
+            data.remove("EC_ParalysisOriginalNoAI");
+            data.remove("EC_FleeActive");
+        }
+
+        if (!player.hasEffect(ModMobEffects.FROSTBITE)) {
+            FrostbiteHandler.clearFrostbite(player);
+            FrostbiteHandler.clearTempFrostbite(player);
+            data.remove(FrostbiteHandler.NBT_FROST_AURA_TRACKED);
+            data.remove(FrostbiteHandler.NBT_FROSTBITE_PERIODIC_LOGGED);
+            data.remove(FrostbiteHandler.NBT_FROSTBITE_LAST_PERIODIC_DMG);
+        }
+
+        if (!player.hasEffect(ModMobEffects.FREEZE)) {
+            data.remove(FrostbiteHandler.NBT_FREEZE_COOLDOWN);
+            data.remove(FrostbiteHandler.NBT_FREEZE_STACKS);
+            data.remove(FrostbiteHandler.NBT_FROZEN_FROSTBITE_STACKS);
+            data.remove(FrostbiteHandler.NBT_FREEZE_AI_DISABLED);
+            data.remove(FrostbiteHandler.NBT_FREEZE_ORIGINAL_NO_AI);
+            data.remove("EC_SharedOriginalNoAI");
+            data.remove("EC_FleeActive");
+            DrownHelper.clearTimers(player);
+            player.setTicksFrozen(0);
+        }
+
+        if (!player.hasEffect(ModMobEffects.WETNESS)) {
+            WetnessHandler.clearWetnessData(player);
+        }
+
+        if (!ScorchedHandler.isScorched(player)) {
+            ScorchedHandler.clearScorched(player);
+            data.remove(ScorchedHandler.NBT_ATTACKER_SCORCHED_COOLDOWN);
+            data.remove(ScorchedHandler.NBT_WETNESS_STEAM_COOLDOWN);
+        }
+
+        data.remove(SteamReactionHandler.NBT_CONDENSATION_TIMER);
+        data.remove(SteamReactionHandler.NBT_STEAM_ATTACKER_COOLDOWN);
+        data.remove(SteamReactionHandler.NBT_STEAM_BLINDNESS);
+        player.removeEffect(net.minecraft.world.effect.MobEffects.BLINDNESS);
+        data.remove(SteamReactionHandler.NBT_STEAM_SCALDING_LOGGED);
+        data.remove(SteamReactionHandler.NBT_FROSTED_CLOUD_UUID);
+        data.remove(SteamReactionHandler.NBT_STATIC_CLOUD_UUID);
+        data.remove(SteamReactionHandler.NBT_STATIC_DMG_CLOUD_UUID);
+
+        data.remove(SteamReactionHandler.NBT_FIRE_FROST_MELT_RESOLVED);
+        data.remove(CombatEvents.NBT_SELF_DRYING_PENALTY);
+        data.remove(CombatEvents.NBT_LAST_DRY_TICK);
+        data.remove("EC_NatureAttackCooldown");
+
+        StaticShockHandler.clearSessionState(player);
+        FrostbiteHandler.clearSessionState(player);
+        ScorchedHandler.clearSessionState(player);
+    }
+}

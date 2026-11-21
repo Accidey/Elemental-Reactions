@@ -1,0 +1,97 @@
+package com.xulai.elementalcraft.client;
+
+import com.xulai.elementalcraft.ElementalCraft;
+import com.xulai.elementalcraft.potion.ModMobEffects;
+import com.xulai.elementalcraft.util.MobEffectLookup;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.Minecraft;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+
+import java.util.Set;
+
+@EventBusSubscriber(modid = ElementalCraft.MODID, value = Dist.CLIENT)
+public class FrozenInputBlocker {
+
+    public static volatile boolean fireCounterLocked;
+
+    private static final Set<String> MOVEMENT_KEYS = Set.of(
+            "key.forward", "key.left", "key.back", "key.right", "key.jump");
+
+    private static final Set<String> ALLOWED_KEYS = Set.of(
+            "key.chat", "key.command");
+
+    private static boolean isAllowedKey(int keyCode) {
+        return keyCode == InputConstants.KEY_ESCAPE
+            || keyCode == InputConstants.KEY_F2
+            || keyCode == InputConstants.KEY_F3
+            || keyCode == InputConstants.KEY_F5;
+    }
+
+    private static boolean isAllowedKeyName(String name) {
+        return ALLOWED_KEYS.contains(name);
+    }
+
+    private static boolean isAffected(Minecraft mc) {
+        return mc.player != null
+            && (MobEffectLookup.hasEffect(mc.player, ModMobEffects.FREEZE)
+             || MobEffectLookup.hasEffect(mc.player, ModMobEffects.PARALYSIS));
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Pre event) {
+        Minecraft mc = Minecraft.getInstance();
+        boolean isFullLock = isAffected(mc);
+        if (!isFullLock && !fireCounterLocked) return;
+
+        for (var key : mc.options.keyMappings) {
+            if (isAllowedKey(key.getKey().getValue())) continue;
+            if (isAllowedKeyName(key.getName())) continue;
+            if (isFullLock) {
+                key.setDown(false);
+                while (key.consumeClick()) {}
+            } else if (fireCounterLocked && MOVEMENT_KEYS.contains(key.getName())) {
+                key.setDown(false);
+                while (key.consumeClick()) {}
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onMouseButton(InputEvent.MouseButton.Pre event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.gui.screen() != null) return;
+        if (!isAffected(mc)) return;
+
+        event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void onMouseScroll(InputEvent.MouseScrollingEvent event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.gui.screen() != null) return;
+        if (isAffected(mc)) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        fireCounterLocked = false;
+    }
+
+    @SubscribeEvent
+    public static void onPlayerClone(PlayerEvent.Clone event) {
+        fireCounterLocked = false;
+    }
+
+    @SubscribeEvent
+    public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
+        fireCounterLocked = false;
+    }
+}

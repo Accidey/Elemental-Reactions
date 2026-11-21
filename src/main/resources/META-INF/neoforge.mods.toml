@@ -1,0 +1,33 @@
+license="${mod_license}"
+
+[[mods]]
+modId="elementalcraft"
+version="${mod_version}"
+displayName="ElementalCraft"
+logoFile="logo.png"
+authors="XuLai"
+description='''
+Elemental reactions for entities: fire, frost, thunder, nature.
+'''
+
+[[dependencies.elementalcraft]]
+    modId="neoforge"
+    type="required"
+    versionRange="[26.3.0.37-beta,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.elementalcraft]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.elementalcraft]]
+    modId="jade"
+    type="required"
+    versionRange="[26.2.10,)"
+
+    ordering="AFTER"
+    side="CLIENT"
