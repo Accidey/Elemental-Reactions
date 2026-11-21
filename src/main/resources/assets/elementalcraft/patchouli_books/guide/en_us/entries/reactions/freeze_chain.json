@@ -1,0 +1,27 @@
+{
+  "name": "The Ice Chain",
+  "category": "elementalcraft:reactions",
+  "icon": "minecraft:ice",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Frost has a clean two-step combo: $(thing)Wet the target, then hit it with Frost$().$(br2)1. Frost damage applies $(thing)Frostbite$() - a slow, a damage-over-time, and a marker.$(br2)2. If the target is $(l)also wet$() at that moment, the two effects are consumed and it is $(thing)Frozen$() solid, taking settlement damage equal to its Frostbite stacks.$(br2)Mobs throw water bottles at you for exactly this reason."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Frosted clouds",
+      "text": "A $(thing)Low-Heat Steam Cloud$() touched by someone with $(thing)3+ Frostbite stacks$() - or by anything already frozen - turns into a $(thing)Frosted Steam Cloud$().$(br2)Everything inside it is frozen, its Frostbite is stripped, and the freeze is refreshed for as long as the cloud lasts. Unlike normal Freeze, this one cannot be broken with Static Shock."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Cold biome ambush",
+      "text": "In a cold, open-sky biome (snowy, freezing) while it rains or snows, being wet is dangerous on its own: each second brings a $(thing)30% chance$() (plus 10% per extra Wetness level) of being frozen outright.$(br2)Freeze duration scales with how wet you are, and a 10 second cooldown applies afterwards. Do not stand in the snow soaked."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Fire melts the ice",
+      "text": "Fire has a dedicated answer to Freeze.$(br2)With $(thing)50+ Fire power$(), a Fire attack instantly melts a frozen target: the Freeze is converted into an equal number of $(thing)Wetness$() levels and a $(thing)High-Heat Steam Cloud$() erupts - which then dries the new wetness away in the explosion.$(br2)Below 50 Fire power the attack only deals $(thing)half$() its elemental damage to the ice shell. Fire needs commitment to break ice."
+    }
+  ]
+}

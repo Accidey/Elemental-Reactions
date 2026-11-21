@@ -1,0 +1,27 @@
+{
+  "name": "Freeze",
+  "category": "elementalcraft:effects",
+  "icon": "minecraft:blue_ice",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(#0bf)Freeze$() is a full disable. It is what happens when $(thing)Frostbite$() meets $(thing)Wetness$(): the two effects are consumed and you are encased.$(br2)Up to $(thing)5 stacks$(), $(thing)1 second$() per stack, then a 10 second cooldown before you can be frozen again."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "While frozen",
+      "text": "$(li)You $(l)cannot move$() - horizontal movement is zeroed. In water you sink and drown.$(li)You $(l)cannot attack$() or cast.$(li)Mobs lose all AI.$(li)$(thing)All physical damage against you is blocked$() - melee hits and arrows do nothing.$(li)$(thing)Elemental damage still lands normally$() - fire, steam, static, spores, spells.$(li)Frostbite-style damage keeps ticking every 5 seconds.$(br2)This trade - immune to swords, open to elements - is the whole point of the effect."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Getting frozen",
+      "text": "$(li)$(thing)Frostbite + Wetness$(): any amount of both. This is the main route.$(li)A $(thing)Frosted Steam Cloud$(): low-heat clouds touched by 3+ Frostbite stacks.$(li)Cold biome rain or snow while wet: a chance each second, higher with more Wetness.$(li)The $(thing)Frost Counter$() shockwave.$(br2)Being frozen also clears your spores and blocks new infection."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Breaking out",
+      "text": "$(li)$(thing)Fire$() with 50+ Fire power melts it instantly - freeing you, soaking you and spawning a cloud of steam you should probably run from.$(li)$(thing)Static Shock$() at 3+ stacks breaks the ice, converting it to Wetness.$(li)Walking into a $(thing)high-heat steam cloud$() unfreezes you.$(li)Otherwise, wait for the timer - Freeze always expires."
+    }
+  ]
+}

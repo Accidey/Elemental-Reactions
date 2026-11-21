@@ -1,0 +1,48 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+
+license="All Rights Reserved"
+
+[[mods]]
+modId="elementalcraft"
+version="${mod_version}"
+displayName="ElementalCraft: Reactions"
+logoFile="logo.png"
+authors="XuLai"
+description='''${mod_description}'''
+
+# -----------------------------------------------------------------------
+# Dependencies / 依赖项配置
+# -----------------------------------------------------------------------
+
+# 1. Forge 依赖 (Forge Dependency)
+[[dependencies.elementalcraft]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47.4.0,)"
+    ordering="NONE"
+    side="BOTH"
+
+# 2. Minecraft 依赖 (Minecraft Dependency)
+[[dependencies.elementalcraft]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1]"
+    ordering="NONE"
+    side="BOTH"
+
+# 3. Jade 依赖 (Jade Dependency) - [Client Required]
+# Jade 用于悬浮提示展示（JadePlugin），客户端必须安装；服务端无需安装
+# Client-required: used for the overlay tooltip (JadePlugin); required on the client, not needed on the server
+[[dependencies.elementalcraft]]
+    modId="jade"
+    mandatory=true        # true = 客户端必须安装 / required on client
+    versionRange="[11.12.3,)" # 指定版本范围 / Specified version range
+    ordering="AFTER"       # 在 Jade 之后加载 / Load after Jade
+    side="CLIENT"          # 仅客户端检查 / Client-side only
+
+# -----------------------------------------------------------------------
+
+[[plugins]]
+modId = "elementalcraft"
+class = "com.xulai.elementalcraft.JadePlugin"

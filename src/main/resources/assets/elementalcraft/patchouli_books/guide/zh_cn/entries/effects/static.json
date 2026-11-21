@@ -1,0 +1,27 @@
+{
+  "name": "静电与麻痹",
+  "category": "elementalcraft:effects",
+  "icon": "minecraft:lightning_rod",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(#a0f)静电$()是雷霆的蓄能。它持续随机造成伤害，层数高时会向四周放电，与潮湿结合则产生本模组最强的控制。$(br2)最多$(thing)5 层$()，每层$(thing)5 秒$()。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "带电期间",
+      "text": "$(li)每 5 秒受到一次随机$(thing)1–5 点伤害$()。$(li)该伤害受宿主属性影响：冰霜属性$(thing)×2$()，自然属性$(thing)×0.5$()。$(li)保护附魔可减免，最高 25%（弹射物保护 50%）。$(br2)达到$(thing)3 层$()时形成$(thing)静电光环$()：$(thing)每层 1 格$()范围内的一切——$(l)包括友军$()——每 5 秒被电一次。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "麻痹",
+      "text": "潮湿 + 静电 = $(#888)麻痹$()。$(br2)$(li)无法移动、行动、攻击或施法，生物 AI 完全停止。$(li)在水中会下沉并溺水。$(li)最多 5 层，每层$(thing)2 秒$()，结束后有 10 秒冷却。$(li)麻痹期间无法获得潮湿与静电，并$(thing)立即结算剩余静电伤害的 50%$()。$(br2)潮湿状态下被闪电劈中会直接麻痹。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "雷霆的其他把戏",
+      "text": "$(li)给$(thing)苦力怕$()充能，有概率把它变成$(l)高压苦力怕$()；对已经是高压的充能则直接引爆。$(li)带电时走进$(thing)水中$()会电解水域：池中所有生物麻痹并分摊你剩余的静电伤害。见 $(l:elementalcraft:reactions/electro)感电水域$(/l)。$(li)给$(thing)蒸汽云$()充能，它会变成麻痹力场。"
+    }
+  ]
+}

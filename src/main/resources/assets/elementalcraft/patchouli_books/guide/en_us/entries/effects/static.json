@@ -1,0 +1,27 @@
+{
+  "name": "Static Shock & Paralysis",
+  "category": "elementalcraft:effects",
+  "icon": "minecraft:lightning_rod",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(#a0f)Static Shock$() is Thunder's charge. It ticks damage randomly, arcs to everything nearby once it builds up, and combines with Wetness into the hardest disable in the mod.$(br2)Up to $(thing)5 stacks$(), $(thing)5 seconds$() per stack."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "While charged",
+      "text": "$(li)Every 5 seconds you take a random $(thing)1 to 5 damage$().$(li)That damage is scaled by the victim's element: $(thing)x2$() for Frost-tempered, $(thing)x0.5$() for Nature-tempered.$(li)Protection enchants reduce it, up to 25% (50% for Projectile Protection).$(br2)At $(thing)3 stacks$() a $(thing)Static Aura$() forms: everything within $(thing)1 block per stack$() - allies included - is shocked every 5 seconds."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Paralysis",
+      "text": "Wetness + Static Shock = $(#888)Paralysis$().$(br2)$(li)You cannot move, act, attack or cast. Mobs lose all AI.$(li)You sink in water and start drowning.$(li)Up to 5 stacks, $(thing)2 seconds$() per stack; a 10 second cooldown follows.$(li)While paralysed you cannot gain Wetness or Static Shock, and $(thing)50% of your remaining Static damage is settled at once$().$(br2)Getting struck by lightning while wet paralyses you outright."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Thunder's other tricks",
+      "text": "$(li)Charge a $(thing)creeper$() and it may turn $(l)powered$() - charge a powered one and it detonates.$(li)Walk into $(thing)water$() while charged and you electrify it: everything in the pool is paralysed and shares your remaining charge damage. See $(l:elementalcraft:reactions/electro)Electrified Water$(/l).$(li)Charge a $(thing)steam cloud$() and it becomes a paralysis field."
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Spellbook Integration",
+  "description": "How Iron's Spells 'n Spellbooks spells map onto the four elements, and the reactions they unlock.",
+  "icon": "irons_spellbooks:scroll",
+  "sortnum": 7,
+  "flag": "mod:irons_spellbooks"
+}

@@ -1,0 +1,28 @@
+{
+  "name": "Spell Elements",
+  "category": "elementalcraft:iss",
+  "icon": "irons_spellbooks:scroll",
+  "sortnum": 0,
+  "flag": "mod:irons_spellbooks",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "With $(thing)Iron's Spells 'n Spellbooks$() installed, its spell schools feed straight into this system. Spells are classified by their $(thing)damage type$(), not by school name:$(br2)$(li)Fire magic $(#888)->$() $(#c00)Fire$()$(li)Ice magic $(#888)->$() $(#6cf)Frost$()$(li)Lightning magic $(#888)->$() $(#a0f)Thunder$()$(li)Nature magic $(#888)->$() $(#2a2)Nature$()$(br2)Holy, Ender, Blood, Evocation and Eldritch spells carry no element and never trigger reactions."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "How strong your spells are",
+      "text": "A spell's element is only as strong as your own $(thing)Enhancement$() in that element - exactly like a sword. If your armour carries no Frost Enhancement, an Ice spell applies no Frostbite.$(br2)$(li)Fire and Frost spells need $(thing)20 points$()$(li)Thunder spells need $(thing)20 points$()$(li)Nature spells need only $(thing)5 points$()$(br2)Spell level also caps how many stacks a single cast can apply: a level 1 spell applies one stack."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Spell-specific reactions",
+      "text": "$(li)$(thing)Poison Cloud$() touching a Scorched target is consumed, adding +50% duration and +50% damage to the burn.$(li)$(thing)Blaze Storm$() rolls for Scorched instead of ordinary ignition on every hit.$(li)$(thing)Acid Orb$() resolves its spore application over a 3.5 block area.$(li)$(thing)Root$() infects whatever it holds in place, and a burning root bursts for extra damage.$(li)Any lightning spell into water, spores or a steam cloud behaves like a charged Static Shock."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Caster mobs",
+      "text": "When the mod is installed, roughly $(thing)half$() of elemental mobs become $(thing)casters$(): they spawn with a spell book and a spell scroll matching their element, and they cast at you.$(br2)$(li)Below $(thing)50% health$() they enter an aggressive mode and cast far more often.$(li)They drop their scroll on death.$(li)They are immune to the potion-throwing logic - spells replace bottles.$(br2)Casters can be disabled per entity in the integration config."
+    }
+  ]
+}

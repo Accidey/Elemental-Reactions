@@ -1,0 +1,27 @@
+{
+  "name": "霜冻",
+  "category": "elementalcraft:effects",
+  "icon": "minecraft:powder_snow_bucket",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(#6cf)霜冻$()是冰霜留下的寒意。它把你拖慢、持续削减你，并压制孢子——但真正危险的是它在遇水瞬间引发的$(l)冻结$()。$(br2)最多$(thing)5 层$()：1 层持续 10 秒，5 层持续 30 秒。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "霜冻期间",
+      "text": "$(li)移动速度与攻击速度$(thing)每层降低 10%$()，最多 90%。$(li)每 5 秒受到$(thing)2 点伤害$()，无视护甲。该伤害随你的属性变化：自然$(thing)×2$()、赤焰$(thing)×1.5$()、雷霆$(thing)×0.5$()。$(li)你免疫原版的冰冻伤害。$(br2)达到$(thing)3 层$()时形成$(thing)霜冻光环$()，把$(thing)3 格起$()范围内的一切$(l)包括友军$()一起冻伤。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "怎样解冻",
+      "text": "霜冻只怕热：$(br2)$(li)站在火里$(thing)2 秒$()即清除。$(li)附近有岩浆、岩浆块，或点燃的营火/熔炉也会清除。$(li)在$(thing)下界$()中霜冻根本无法存在。$(li)$(thing)高温蒸汽云$()会瞬间剥离霜冻。$(br2)当然，$(thing)赤焰$()攻击也能解冻——50 点赤焰强化以上时还会把你从冻结中融出来，见 $(l:elementalcraft:reactions/freeze_chain)冻结连锁$(/l)。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "压制孢子",
+      "text": "霜冻是处理孢子感染最廉价的手段：持有霜冻时，身上的$(thing)易燃孢子$()衰减速度$(thing)快 10 倍$()，并且无法再被雷霆引爆。$(br2)寒冷群系还会让孢子持续时间与感染概率减半——雪地里的基地确实更安全。"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "Scorched",
+  "category": "elementalcraft:effects",
+  "icon": "minecraft:fire_charge",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(#c40)Scorched$() is Fire's answer to vanilla burning. It lasts $(thing)5 seconds$() by default, burns far hotter than ordinary fire, and $(l)cannot be put out with water$() - jumping in a lake triggers a $(thing)Thermal Shock$() instead.$(br2)Nature-tempered victims burn 50% longer; Frost-tempered ones only half as long."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "While scorched",
+      "text": "$(li)$(thing)1 damage per second$(), ignoring the water problem entirely - it keeps ticking.$(li)Fire Protection reduces it by up to 50%, Protection by up to 25%.$(li)You are $(l)immune to Wetness$() and to all fire damage - which also means you cannot douse yourself.$(li)Creepers are ignited on the spot and detonate with a shortened fuse.$(br2)$(thing)Fire Resistance$() at 80 points, or the vanilla potion, makes you immune up front."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Elemental vulnerability",
+      "text": "Scorched changes how other elements hurt you:$(br2)$(li)$(#2a2)Nature$() damage $(thing)+50%$()$(li)$(#c00)Fire$() and $(#a0f)Thunder$() unchanged$(li)$(#6cf)Frost$() damage $(thing)-50%$()$(br2)Scorching a target and then hitting it with Nature is one of the strongest two-element combos in the mod. Frost, meanwhile, is wasted on a burning target."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Scorched Aura",
+      "text": "If the attacker's Fire power was $(thing)50 or more$(), the victim radiates a $(thing)Scorched Aura$(): everything within 3 blocks takes the same burn damage, is set Scorched itself, and mobs panic and flee.$(br2)A poisoned victim is a special case: the poison is consumed, and the Scorched grows $(thing)50% longer$() and $(thing)50% stronger$(). This is exactly why Fire-tempered mobs throw poison potions at you."
+    }
+  ]
+}

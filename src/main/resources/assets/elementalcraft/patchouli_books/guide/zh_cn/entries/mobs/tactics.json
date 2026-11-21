@@ -1,0 +1,27 @@
+{
+  "name": "战术与掉落",
+  "category": "elementalcraft:mobs",
+  "icon": "minecraft:splash_potion",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "属性生物的打法与普通生物不同。$(br2)$(li)它们携带$(thing)喷溅药水$()并会朝你投掷。$(li)它们会$(thing)逃离$()蒸汽云与光环，而不是傻站在里面。$(li)它们在濒死时可能触发$(l:elementalcraft:reactions/counters)元素反制$(/l)。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "它们扔什么",
+      "text": "约$(thing)35%$()的属性生物副手会带着药水。扔什么取决于它的元素，而且永远服务于它自己的连招：$(br2)$(li)$(#c00)赤焰$()生物扔$(thing)喷溅剧毒$()。中毒后灼烧时长 +50%、伤害 +50%。$(li)其余生物扔$(thing)喷溅水瓶$()，先把你淋湿，好让冰霜、雷霆或它自己的元素落地。$(br2)它们只在有视线且你处于 12 格内时投掷，每轮最多 3 瓶。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "刷附魔书",
+      "text": "击杀属性生物是给自己攒元素装备的正规途径：$(br2)$(li)基础掉落$(thing)50%$()，每级$(thing)抢夺 +10%$()。$(li)书在三族中随机：属性、强化或抗性。$(li)等级大致对应生物自身强度——想拿 IV–V 级的书就去打 80–100 点的精英。$(br2)它们的护甲永不掉落，附魔书是唯一回报。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "对战要点",
+      "text": "$(li)按$(l:elementalcraft:basics/restraint)克制环$(/l)选元素——冰霜生物抗赤焰，所以带自然或雷霆。$(li)打冰霜生物前先把自己淋湿，等于白送它一个冻结。$(li)别让被孢子感染的队友站在你旁边，爆炸会连锁。$(li)正在逃离蒸汽云的生物是免费的靶子——蒸汽会完全清除仇恨。"
+    }
+  ]
+}

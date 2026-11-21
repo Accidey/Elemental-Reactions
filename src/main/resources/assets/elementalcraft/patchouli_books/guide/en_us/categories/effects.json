@@ -1,0 +1,6 @@
+{
+  "name": "Status Effects",
+  "description": "The six elemental effects: Wetness, Flammable Spores, Static Shock, Paralysis, Frostbite and Freeze - plus Scorched.",
+  "icon": "minecraft:potion",
+  "sortnum": 2
+}

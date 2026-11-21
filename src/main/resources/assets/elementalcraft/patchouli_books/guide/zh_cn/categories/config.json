@@ -1,0 +1,6 @@
+{
+  "name": "命令与配置",
+  "description": "面向整合包作者与服主：命令、配置文件、强制物品、黑名单与群系偏向。",
+  "icon": "minecraft:command_block",
+  "sortnum": 6
+}

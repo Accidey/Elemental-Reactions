@@ -1,0 +1,6 @@
+{
+  "name": "Commands & Configuration",
+  "description": "For pack makers and server admins: commands, config files, forced items, blacklists and biome bias.",
+  "icon": "minecraft:command_block",
+  "sortnum": 6
+}
